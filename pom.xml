@@ -1,0 +1,78 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.fixtrading.orchestra</groupId>
+	<artifactId>parent</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<name>${project.groupId}:${project.artifactId}</name>
+	<description>Parent project for FIX Orchestra</description>
+	<url>https://github.com/FIXTradingCommunity/fix-orchestra/wiki</url>
+	<inceptionYear>2016</inceptionYear>
+
+	<organization>
+		<name>FIX Trading Community</name>
+		<url>http://http://www.fixtradingcommunity.org/</url>
+	</organization>
+	<licenses>
+		<license>
+			<name>The Apache License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
+	</licenses>
+	<developers>
+		<developer>
+			<name>Don Mendelson</name>
+			<email>donmendelson@gmail.com</email>
+			<organization>FIX Trading Community</organization>
+			<organizationUrl>http://http://www.fixtradingcommunity.org/</organizationUrl>
+		</developer>
+	</developers>
+	<scm>
+		<developerConnection>scm:git:ssh://git@github.com/FIXTradingCommunity/fix-orchestra.git</developerConnection>
+		<url>https://github.com/FIXTradingCommunity/fix-orchestra</url>
+	</scm>
+	<issueManagement>
+		<system>GitHub</system>
+		<url>http://github.com/FIXTradingCommunity/fix-orchestra/issues</url>
+	</issueManagement>
+
+	<modules>
+		<module>session</module>
+		<module>session-quickfix</module>
+	</modules>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<junit.version>4.11</junit.version>
+		<java.version>1.8</java.version>
+		<owlapi.version>4.1.2</owlapi.version>
+		<slf4j.version>1.7.13</slf4j.version>
+		<quickfixj.version>1.6.0</quickfixj.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+			<version>${junit.version}</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.3</version>
+					<configuration>
+						<source>${java.version}</source>
+						<target>${java.version}</target>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+</project>
