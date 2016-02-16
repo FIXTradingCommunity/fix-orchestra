@@ -26,7 +26,7 @@ import quickfix.SessionID;
 import quickfix.SessionSettings;
 
 /**
- * @author Donald
+ * @author Don Mendelson
  *
  */
 public class QuickFixSessionConfigurer extends FixSessionTool {

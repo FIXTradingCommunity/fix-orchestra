@@ -17,7 +17,7 @@
 package org.fixtrading.orchestra.session;
 
 /**
- * @author Donald
+ * @author Don Mendelson
  *
  */
 public enum FixtSessionRole {

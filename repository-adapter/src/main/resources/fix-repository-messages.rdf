@@ -1,0 +1,174 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.fixprotocol.org/repository/ontologies/2016/2/messages#"
+     xml:base="http://www.fixprotocol.org/repository/ontologies/2016/2/messages"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://www.fixprotocol.org/repository/ontologies/2016/2/messages"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.fixprotocol.org/repository/ontologies/2016/2/messages#has -->
+
+    <owl:ObjectProperty rdf:about="http://www.fixprotocol.org/repository/ontologies/2016/2/messages#has">
+        <rdfs:subPropertyOf rdf:resource="http://www.fixprotocol.org/repository/ontologies/2016/2/messages#hasDatatype"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.fixprotocol.org/repository/ontologies/2016/2/messages#hasDatatype -->
+
+    <owl:ObjectProperty rdf:about="http://www.fixprotocol.org/repository/ontologies/2016/2/messages#hasDatatype"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.fixprotocol.org/repository/ontologies/2016/2/messages#hasId -->
+
+    <owl:DatatypeProperty rdf:about="http://www.fixprotocol.org/repository/ontologies/2016/2/messages#hasId">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#positiveInteger"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.fixprotocol.org/repository/ontologies/2016/2/messages#hasName -->
+
+    <owl:DatatypeProperty rdf:about="http://www.fixprotocol.org/repository/ontologies/2016/2/messages#hasName">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#Name"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.fixprotocol.org/repository/ontologies/2016/2/messages#Component -->
+
+    <owl:Class rdf:about="http://www.fixprotocol.org/repository/ontologies/2016/2/messages#Component">
+        <rdfs:subClassOf rdf:resource="http://www.fixprotocol.org/repository/ontologies/2016/2/messages#MessageEntity"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.fixprotocol.org/repository/ontologies/2016/2/messages#has"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:oneOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.fixprotocol.org/repository/ontologies/2016/2/messages#Component"/>
+                            <rdf:Description rdf:about="http://www.fixprotocol.org/repository/ontologies/2016/2/messages#Field"/>
+                        </owl:oneOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.fixprotocol.org/repository/ontologies/2016/2/messages#Message -->
+
+    <owl:Class rdf:about="http://www.fixprotocol.org/repository/ontologies/2016/2/messages#Message">
+        <rdfs:subClassOf rdf:resource="http://www.fixprotocol.org/repository/ontologies/2016/2/messages#Component"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.fixprotocol.org/repository/ontologies/2016/2/messages#MessageEntity -->
+
+    <owl:Class rdf:about="http://www.fixprotocol.org/repository/ontologies/2016/2/messages#MessageEntity">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.fixprotocol.org/repository/ontologies/2016/2/messages#hasId"/>
+                <owl:someValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#positiveInteger"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.fixprotocol.org/repository/ontologies/2016/2/messages#hasName"/>
+                <owl:someValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#Name"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:hasKey rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.fixprotocol.org/repository/ontologies/2016/2/messages#hasId"/>
+        </owl:hasKey>
+    </owl:Class>
+    
+
+
+    <!-- http://www.fixprotocol.org/repository/ontologies/2016/2/messages#RepeatingGroup -->
+
+    <owl:Class rdf:about="http://www.fixprotocol.org/repository/ontologies/2016/2/messages#RepeatingGroup">
+        <rdfs:subClassOf rdf:resource="http://www.fixprotocol.org/repository/ontologies/2016/2/messages#Component"/>
+    </owl:Class>
+    
+
+
+    <!-- http:/www.fixprotocol.org/repository/ontologies/messages#Field -->
+
+    <owl:Class rdf:about="http:/www.fixprotocol.org/repository/ontologies/messages#Field">
+        <rdfs:subClassOf rdf:resource="http://www.fixprotocol.org/repository/ontologies/2016/2/messages#MessageEntity"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.fixprotocol.org/repository/ontologies/2016/2/messages#hasDatatype"/>
+                <owl:someValuesFrom rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.fixprotocol.org/repository/ontologies/2016/2/messages#Component -->
+
+    <owl:NamedIndividual rdf:about="http://www.fixprotocol.org/repository/ontologies/2016/2/messages#Component"/>
+    
+
+
+    <!-- http://www.fixprotocol.org/repository/ontologies/2016/2/messages#Field -->
+
+    <owl:NamedIndividual rdf:about="http://www.fixprotocol.org/repository/ontologies/2016/2/messages#Field"/>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.1.3.20151118-2017) https://github.com/owlcs/owlapi -->
+
