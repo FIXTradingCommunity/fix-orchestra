@@ -24,7 +24,7 @@ import javax.xml.bind.Unmarshaller;
 import org.fixtrading.orchestra.repository.jaxb.FixRepository;
 
 /**
- * @author Donald
+ * @author Don Mendelson
  *
  */
 public final class Serializer {

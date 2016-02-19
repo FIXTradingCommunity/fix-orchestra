@@ -17,7 +17,7 @@
 package org.fixtrading.orchestra.messages;
 
 /**
- * @author Donald
+ * @author Don Mendelson
  *
  */
 public interface Field {
