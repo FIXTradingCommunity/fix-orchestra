@@ -281,7 +281,7 @@ public class MessageOntologyManager {
    * @param dataType
    * @return
    */
-  public FieldObject createField(BigInteger id, String name, String dataType) {
+  public MessageEntity createField(BigInteger id, String name, String dataType) {
     Objects.requireNonNull(id, "ID cannot be null");
     Objects.requireNonNull(name, "Name cannot be null");
     Objects.requireNonNull(dataType, "Data type cannot be null");

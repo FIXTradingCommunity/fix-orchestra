@@ -165,7 +165,7 @@
 			<xs:attribute name="baseCategoryAbbrName" type="Name_t"/>
 			<xs:attribute name="notReqXML" type="BOOL_t"/>
 			<xs:attribute name="notUsed" type="BOOL_t"/>
-			<xs:attribute name="enumDatatype" type="xs:short"/>
+			<xs:attribute name="enumDatatype" type="id_t"/>
 			<xs:attribute name="unionDataType" type="UnionDataType_t"/>
 			<xs:attribute name="implMinLength" type="xs:short" use="optional"/>
 			<xs:attribute name="implMaxLength" type="xs:short" use="optional"/>
