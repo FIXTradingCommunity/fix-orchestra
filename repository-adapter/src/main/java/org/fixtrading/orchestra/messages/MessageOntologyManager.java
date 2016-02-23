@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 FIX Protocol Ltd
+ * Copyright 2016 FIX Protocol Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -47,7 +47,8 @@ import org.semanticweb.owlapi.util.DefaultPrefixManager;
 import com.google.common.base.Optional;
 
 /**
- * Populates message ontology 
+ * Populates message ontology
+ * 
  * @author Don Mendelson
  *
  */
@@ -55,16 +56,19 @@ public class MessageOntologyManager {
 
   class DataTypeObject implements MessageEntity, ObjectHolder {
     private final OWLNamedIndividual messageObject;
+    private final MessageModel model;
 
-    DataTypeObject(OWLNamedIndividual messageObject) {
+    DataTypeObject(MessageModel messageModel, OWLNamedIndividual messageObject) {
       this.messageObject = messageObject;
+      this.model = messageModel;
     }
 
     public String getName() {
       String name = null;
       OWLDataProperty hasNameProperty =
           getDataFactory().getOWLDataProperty(":hasName", prefixManager);
-      Set<OWLLiteral> values = getReasoner().getDataPropertyValues(getObject(), hasNameProperty);
+      Set<OWLLiteral> values =
+          model.getReasoner().getDataPropertyValues(getObject(), hasNameProperty);
       final OWLLiteral first = values.iterator().next();
       if (first != null) {
         name = first.getLiteral();
@@ -87,7 +91,7 @@ public class MessageOntologyManager {
 
       OWLDataPropertyAssertionAxiom dataPropertyAssertion = getDataFactory()
           .getOWLDataPropertyAssertionAxiom(hasNameProperty, getObject(), dataLiteral);
-      ontologyManager.addAxiom(derivedModel, dataPropertyAssertion);
+      ontologyManager.addAxiom(model.getDerivedModel(), dataPropertyAssertion);
       return this;
     }
   }
@@ -95,10 +99,11 @@ public class MessageOntologyManager {
   class FieldObject extends MessageObject implements MessageEntity {
 
     /**
+     * @param messageModel
      * @param messageObject
      */
-    FieldObject(OWLNamedIndividual messageObject) {
-      super(messageObject);
+    FieldObject(MessageModel messageModel, OWLNamedIndividual messageObject) {
+      super(messageModel, messageObject);
     }
 
 
@@ -110,14 +115,14 @@ public class MessageOntologyManager {
           getDataFactory().getOWLObjectProperty(":hasDataType", getPrefixManager());
 
       OWLNamedIndividual datatypeInd =
-          getDataFactory().getOWLNamedIndividual(createDatatypeIRI(dataType));
+          getDataFactory().getOWLNamedIndividual(createDatatypeIRI(getModel(), dataType));
       OWLClassAssertionAxiom classAssertion =
           getDataFactory().getOWLClassAssertionAxiom(dataTypeClass, datatypeInd);
-      getOntologyManager().addAxiom(getDerivedModel(), classAssertion);
+      getOntologyManager().addAxiom(getModel().getDerivedModel(), classAssertion);
 
       OWLObjectPropertyAssertionAxiom propertyAssertion = getDataFactory()
           .getOWLObjectPropertyAssertionAxiom(hasProperty, getObject(), datatypeInd);
-      getOntologyManager().addAxiom(getDerivedModel(), propertyAssertion);
+      getOntologyManager().addAxiom(getModel().getDerivedModel(), propertyAssertion);
 
       return this;
     }
@@ -126,15 +131,26 @@ public class MessageOntologyManager {
   class MessageObject implements MessageEntity, ObjectHolder {
     private final OWLNamedIndividual messageObject;
 
-    MessageObject(OWLNamedIndividual messageObject) {
+    private final MessageModel model;
+
+    MessageObject(MessageModel model, OWLNamedIndividual messageObject) {
       this.messageObject = messageObject;
+      this.model = model;
+    }
+
+    /**
+     * @return the model
+     */
+    public MessageModel getModel() {
+      return model;
     }
 
     public String getName() {
       String name = null;
       OWLDataProperty hasNameProperty =
           getDataFactory().getOWLDataProperty(":hasName", prefixManager);
-      Set<OWLLiteral> values = getReasoner().getDataPropertyValues(getObject(), hasNameProperty);
+      Set<OWLLiteral> values =
+          model.getReasoner().getDataPropertyValues(getObject(), hasNameProperty);
       final OWLLiteral first = values.iterator().next();
       if (first != null) {
         name = first.getLiteral();
@@ -152,7 +168,7 @@ public class MessageOntologyManager {
       OWLDataProperty hasShortNameProperty =
           getDataFactory().getOWLDataProperty(":hasShortName", prefixManager);
       Set<OWLLiteral> values =
-          getReasoner().getDataPropertyValues(getObject(), hasShortNameProperty);
+          model.getReasoner().getDataPropertyValues(getObject(), hasShortNameProperty);
       final OWLLiteral first = values.iterator().next();
       if (first != null) {
         name = first.getLiteral();
@@ -169,7 +185,7 @@ public class MessageOntologyManager {
 
       OWLDataPropertyAssertionAxiom dataPropertyAssertion = getDataFactory()
           .getOWLDataPropertyAssertionAxiom(hasIdProperty, getObject(), dataLiteral);
-      ontologyManager.addAxiom(derivedModel, dataPropertyAssertion);
+      ontologyManager.addAxiom(model.getDerivedModel(), dataPropertyAssertion);
       return this;
     }
 
@@ -183,7 +199,7 @@ public class MessageOntologyManager {
 
       OWLDataPropertyAssertionAxiom dataPropertyAssertion = getDataFactory()
           .getOWLDataPropertyAssertionAxiom(hasNameProperty, getObject(), dataLiteral);
-      ontologyManager.addAxiom(derivedModel, dataPropertyAssertion);
+      ontologyManager.addAxiom(model.getDerivedModel(), dataPropertyAssertion);
       return this;
     }
 
@@ -197,14 +213,15 @@ public class MessageOntologyManager {
 
       OWLDataPropertyAssertionAxiom dataPropertyAssertion = getDataFactory()
           .getOWLDataPropertyAssertionAxiom(hasShortNameProperty, getObject(), dataLiteral);
-      ontologyManager.addAxiom(derivedModel, dataPropertyAssertion);
+      ontologyManager.addAxiom(model.getDerivedModel(), dataPropertyAssertion);
       return this;
     }
 
     int getId() {
       int id = 0;
       OWLDataProperty hasIdProperty = getDataFactory().getOWLDataProperty(":hasId", prefixManager);
-      Set<OWLLiteral> values = getReasoner().getDataPropertyValues(getObject(), hasIdProperty);
+      Set<OWLLiteral> values =
+          model.getReasoner().getDataPropertyValues(getObject(), hasIdProperty);
       final OWLLiteral first = values.iterator().next();
       if (first != null) {
         id = first.parseInteger();
@@ -223,54 +240,198 @@ public class MessageOntologyManager {
     OWLNamedIndividual getObject();
   }
 
+  private class MessageModel implements Model {
+
+    private IRI derivedIRI;
+    private OWLOntology derivedModel;
+    private OWLReasoner reasoner;
+
+    /**
+     * @param derivedIRI2
+     * @param createOntology
+     */
+    public MessageModel(IRI derivedIRI, OWLOntology derivedModel, OWLReasoner reasoner) {
+      this.derivedIRI = derivedIRI;
+      this.derivedModel = derivedModel;
+      this.reasoner = reasoner;
+    }
+
+    /**
+     * @return the derivedIRI
+     */
+    public IRI getDerivedIRI() {
+      return derivedIRI;
+    }
+
+    /**
+     * @return the derivedModel
+     */
+    public OWLOntology getDerivedModel() {
+      return derivedModel;
+    }
+
+    /**
+     * @return the reasoner
+     */
+    public OWLReasoner getReasoner() {
+      return reasoner;
+    }
+
+  }
+
   private IRI baseIRI;
   private OWLOntology baseModel;
   private OWLClass componentClass;
   private OWLDataFactory dataFactory;
   private OWLClass dataTypeClass;
-  private IRI derivedIRI;
-  private OWLOntology derivedModel;
   private OWLClass fieldClass;
   private OWLClass messageClass;
   private OWLOntologyManager ontologyManager;
   private String prefix;
   private PrefixManager prefixManager;
-  private OWLReasoner reasoner;
-  private OWLClass stateClass;
   private OWLClass repeatingGroupClass;
+  private OWLClass stateClass;
+
+  public void addComponent(MessageEntity component, BigInteger entityId, String name,
+      boolean isRequired) {
+    Objects.requireNonNull(component, "Component cannot be null");
+    Objects.requireNonNull(name, "Name cannot be null");
+
+    MessageObject messageObject = (MessageObject) component;
+    String componentName = messageObject.getName();
+    OWLNamedIndividual componentInd = messageObject.getObject();
+
+    OWLObjectProperty hasProperty = null;
+    if (isRequired) {
+      hasProperty = getDataFactory().getOWLObjectProperty(":requires", getPrefixManager());
+    } else {
+      hasProperty = getDataFactory().getOWLObjectProperty(":has", getPrefixManager());
+    }
+
+    MessageModel model = messageObject.getModel();
+
+    IRI iri = createComponentIRI(model, name);
+
+    OWLNamedIndividual entity = getDataFactory().getOWLNamedIndividual(iri);
+
+    OWLObjectPropertyAssertionAxiom propertyAssertion =
+        getDataFactory().getOWLObjectPropertyAssertionAxiom(hasProperty, componentInd, entity);
+    getOntologyManager().addAxiom(model.getDerivedModel(), propertyAssertion);
+  }
+
+  /**
+   * @param entityType
+   * @param parent
+   * @param entityId
+   * @param entityName
+   * @param b
+   */
+  public void addField(MessageEntity component, BigInteger entityId, String name,
+      boolean isRequired) {
+    Objects.requireNonNull(component, "Component cannot be null");
+    Objects.requireNonNull(name, "Name cannot be null");
+
+    MessageObject messageObject = (MessageObject) component;
+    String componentName = messageObject.getName();
+    OWLNamedIndividual componentInd = messageObject.getObject();
+
+    OWLObjectProperty hasProperty = null;
+    if (isRequired) {
+      hasProperty = getDataFactory().getOWLObjectProperty(":requires", getPrefixManager());
+    } else {
+      hasProperty = getDataFactory().getOWLObjectProperty(":has", getPrefixManager());
+    }
+
+    MessageModel model = messageObject.getModel();
+
+    IRI iri = createFieldIRI(model, name);
+
+    OWLNamedIndividual entity = getDataFactory().getOWLNamedIndividual(iri);
+
+    OWLObjectPropertyAssertionAxiom propertyAssertion =
+        getDataFactory().getOWLObjectPropertyAssertionAxiom(hasProperty, componentInd, entity);
+    getOntologyManager().addAxiom(model.getDerivedModel(), propertyAssertion);
+  }
+
+  public void addNumInGroupField(MessageEntity component, BigInteger entityId, String name,
+      boolean isRequired) {
+    Objects.requireNonNull(component, "Component cannot be null");
+
+    MessageObject messageObject = (MessageObject) component;
+    String componentName = messageObject.getName();
+    OWLNamedIndividual componentInd = messageObject.getObject();
+
+    OWLObjectProperty hasSizeProperty =
+        getDataFactory().getOWLObjectProperty(":hasSize", getPrefixManager());
+
+    OWLDataProperty hasIdProperty = dataFactory.getOWLDataProperty(":hasId", prefixManager);
+    OWLDataProperty hasNameProperty = dataFactory.getOWLDataProperty(":hasName", prefixManager);
+
+    MessageModel model = messageObject.getModel();
+
+    String fieldName = null;
+    Set<OWLNamedIndividual> fields =
+        model.getReasoner().getInstances(fieldClass, true).getFlattened();
+    for (OWLNamedIndividual fieldInd : fields) {
+      Set<OWLLiteral> values = model.getReasoner().getDataPropertyValues(fieldInd, hasIdProperty);
+      final OWLLiteral first = values.iterator().next();
+      if (first != null && first.parseInteger() == entityId.intValue()) {
+        Set<OWLLiteral> names =
+            model.getReasoner().getDataPropertyValues(fieldInd, hasNameProperty);
+        fieldName = names.iterator().next().getLiteral();
+        break;
+      }
+    }
+
+    IRI iri = createFieldIRI(model, fieldName);
+
+    OWLNamedIndividual entity = getDataFactory().getOWLNamedIndividual(iri);
+
+    OWLObjectPropertyAssertionAxiom propertyAssertion =
+        getDataFactory().getOWLObjectPropertyAssertionAxiom(hasSizeProperty, componentInd, entity);
+    getOntologyManager().addAxiom(model.getDerivedModel(), propertyAssertion);
+  }
 
   /**
    * @param id
    * @param name
    * @return
    */
-  public MessageObject createComponent(BigInteger id, String name) {
+  public MessageObject createComponent(Model model, BigInteger id, String name) {
+    Objects.requireNonNull(model, "Model cannot be null");
     Objects.requireNonNull(id, "ID cannot be null");
     Objects.requireNonNull(name, "Name cannot be null");
 
-    OWLNamedIndividual component = getDataFactory().getOWLNamedIndividual(createComponentIRI(name));
+    MessageModel messageModel = (MessageModel) model;
+
+    OWLNamedIndividual component =
+        getDataFactory().getOWLNamedIndividual(createComponentIRI(messageModel, name));
     OWLClassAssertionAxiom classAssertion =
         getDataFactory().getOWLClassAssertionAxiom(componentClass, component);
-    getOntologyManager().addAxiom(getDerivedModel(), classAssertion);
+    getOntologyManager().addAxiom(messageModel.getDerivedModel(), classAssertion);
 
-    MessageObject messageObject = new MessageObject(component);
+    MessageObject messageObject = new MessageObject(messageModel, component);
     messageObject.withId(id.intValue()).withName(name);
     return messageObject;
   }
+
 
   /**
    * @param name
    * @return
    */
-  public DataTypeObject createDataType(String name) {
+  public DataTypeObject createDataType(Model model, String name) {
+    Objects.requireNonNull(model, "Model cannot be null");
     Objects.requireNonNull(name, "Name cannot be null");
 
-    OWLNamedIndividual field = getDataFactory().getOWLNamedIndividual(createDatatypeIRI(name));
+    MessageModel messageModel = (MessageModel) model;
+    OWLNamedIndividual datatype =
+        getDataFactory().getOWLNamedIndividual(createDatatypeIRI(messageModel, name));
     OWLClassAssertionAxiom classAssertion =
-        getDataFactory().getOWLClassAssertionAxiom(dataTypeClass, field);
-    getOntologyManager().addAxiom(getDerivedModel(), classAssertion);
+        getDataFactory().getOWLClassAssertionAxiom(dataTypeClass, datatype);
+    getOntologyManager().addAxiom(messageModel.getDerivedModel(), classAssertion);
 
-    DataTypeObject dataTypeObject = new DataTypeObject(field);
+    DataTypeObject dataTypeObject = new DataTypeObject(messageModel, datatype);
     dataTypeObject.withName(name);
     return dataTypeObject;
   }
@@ -281,35 +442,42 @@ public class MessageOntologyManager {
    * @param dataType
    * @return
    */
-  public MessageEntity createField(BigInteger id, String name, String dataType) {
+  public MessageEntity createField(Model model, BigInteger id, String name, String dataType) {
+    Objects.requireNonNull(model, "Model cannot be null");
     Objects.requireNonNull(id, "ID cannot be null");
     Objects.requireNonNull(name, "Name cannot be null");
     Objects.requireNonNull(dataType, "Data type cannot be null");
 
-    OWLNamedIndividual field = getDataFactory().getOWLNamedIndividual(createFieldIRI(name));
+    MessageModel messageModel = (MessageModel) model;
+
+    OWLNamedIndividual field =
+        getDataFactory().getOWLNamedIndividual(createFieldIRI(messageModel, name));
     OWLClassAssertionAxiom classAssertion =
         getDataFactory().getOWLClassAssertionAxiom(fieldClass, field);
-    getOntologyManager().addAxiom(getDerivedModel(), classAssertion);
+    getOntologyManager().addAxiom(messageModel.getDerivedModel(), classAssertion);
 
-    FieldObject messageObject = new FieldObject(field);
+    FieldObject messageObject = new FieldObject(messageModel, field);
     messageObject.withDataType(dataType).withId(id.intValue()).withName(name);
     return messageObject;
   }
 
-  public MessageObject createMessage(BigInteger id, String name, String shortName) {
+  public MessageObject createMessage(Model model, BigInteger id, String name, String shortName) {
+    Objects.requireNonNull(model, "Model cannot be null");
     Objects.requireNonNull(id, "ID cannot be null");
     Objects.requireNonNull(name, "Name cannot be null");
 
-    OWLNamedIndividual message = getDataFactory().getOWLNamedIndividual(createMessageIRI(name));
+    MessageModel messageModel = (MessageModel) model;
+
+    OWLNamedIndividual message =
+        getDataFactory().getOWLNamedIndividual(createMessageIRI(messageModel, name));
     OWLClassAssertionAxiom classAssertion =
         getDataFactory().getOWLClassAssertionAxiom(messageClass, message);
-    getOntologyManager().addAxiom(getDerivedModel(), classAssertion);
+    getOntologyManager().addAxiom(messageModel.getDerivedModel(), classAssertion);
 
-    MessageObject messageObject = new MessageObject(message);
+    MessageObject messageObject = new MessageObject(messageModel, message);
     messageObject.withId(id.intValue()).withName(name).withShortName(shortName);
     return messageObject;
   }
-
 
   /**
    * Create a new ontology model
@@ -318,42 +486,71 @@ public class MessageOntologyManager {
    * @param uri identifier of the model
    * @throws Exception if an ontology cannot be created
    */
-  public void createNewModel(String prefix, URI uri) throws Exception {
-    removeOntology();
-    this.derivedIRI = IRI.create(uri);
-    this.derivedModel = ontologyManager.createOntology(derivedIRI);
+  public Model createNewModel(String prefix, URI uri) throws Exception {
+    IRI derivedIRI = IRI.create(uri);
     this.prefixManager.setPrefix(prefix, derivedIRI.toString());
     this.prefix = prefix;
     StructuralReasonerFactory reasonerFactory = new StructuralReasonerFactory();
-    this.reasoner = reasonerFactory.createReasoner(getDerivedModel());
+    final OWLOntology derivedModel = ontologyManager.createOntology(derivedIRI);
+    final OWLReasoner reasoner = reasonerFactory.createReasoner(derivedModel);
+    Model model = new MessageModel(derivedIRI, derivedModel, reasoner);
+    return model;
   }
+
+  /**
+   * @param id
+   * @param name
+   * @return
+   */
+  public MessageEntity createRepeatingGroup(Model model, BigInteger id, String name) {
+    Objects.requireNonNull(model, "Model cannot be null");
+    Objects.requireNonNull(id, "ID cannot be null");
+    Objects.requireNonNull(name, "Name cannot be null");
+
+    MessageModel messageModel = (MessageModel) model;
+
+    OWLNamedIndividual component =
+        getDataFactory().getOWLNamedIndividual(createComponentIRI(messageModel, name));
+    OWLClassAssertionAxiom classAssertion =
+        getDataFactory().getOWLClassAssertionAxiom(repeatingGroupClass, component);
+    getOntologyManager().addAxiom(messageModel.getDerivedModel(), classAssertion);
+
+    MessageObject messageObject = new MessageObject(messageModel, component);
+    messageObject.withId(id.intValue()).withName(name);
+    return messageObject;
+  }
+
 
   /**
    * @param field
    * @param name
    * @param valueAsString
    */
-  public void createState(MessageEntity field, String name, String valueAsString) {
+  public void createState(Model model, MessageEntity field, String name, String valueAsString) {
+    Objects.requireNonNull(model, "Model cannot be null");
     Objects.requireNonNull(field, "Field cannot be null");
     Objects.requireNonNull(name, "Name cannot be null");
     Objects.requireNonNull(valueAsString, "Value cannot be null");
+
+    MessageModel messageModel = (MessageModel) model;
 
     FieldObject fieldObject = (FieldObject) field;
     String fieldName = fieldObject.getName();
     OWLNamedIndividual fieldInd = fieldObject.getObject();
 
     OWLNamedIndividual state =
-        getDataFactory().getOWLNamedIndividual(createStateIRI(name, fieldName));
+        getDataFactory().getOWLNamedIndividual(createStateIRI(messageModel, name, fieldName));
     OWLClassAssertionAxiom classAssertion =
         getDataFactory().getOWLClassAssertionAxiom(stateClass, state);
-    getOntologyManager().addAxiom(getDerivedModel(), classAssertion);
+    final OWLOntology derivedModel = messageModel.getDerivedModel();
+    getOntologyManager().addAxiom(derivedModel, classAssertion);
 
     OWLObjectProperty hasProperty =
         getDataFactory().getOWLObjectProperty(":hasState", getPrefixManager());
 
     OWLObjectPropertyAssertionAxiom propertyAssertion =
         getDataFactory().getOWLObjectPropertyAssertionAxiom(hasProperty, fieldInd, state);
-    getOntologyManager().addAxiom(getDerivedModel(), propertyAssertion);
+    getOntologyManager().addAxiom(derivedModel, propertyAssertion);
 
     OWLDataProperty hasValueProperty =
         getDataFactory().getOWLDataProperty(":hasValue", getPrefixManager());
@@ -371,20 +568,26 @@ public class MessageOntologyManager {
    * @param messageName name of a Message
    * @return a Message
    */
-  public MessageEntity getMessage(String messageName) {
+  public MessageEntity getMessage(Model model, String messageName) {
+    MessageModel messageModel = (MessageModel) model;
     OWLNamedIndividual message = getInstance(getPrefix() + ":" + messageName);
-    return new MessageObject(message);
+    return new MessageObject(messageModel, message);
   }
+
 
   /**
    * Returns a collection of Message objects
    * 
    * @return collection of messages
    */
-  public Set<MessageEntity> getMessages() {
-    NodeSet<OWLNamedIndividual> instances = getReasoner().getInstances(messageClass, true);
+  public Set<MessageEntity> getMessages(Model model) {
+    MessageModel messageModel = (MessageModel) model;
+
+    NodeSet<OWLNamedIndividual> instances =
+        messageModel.getReasoner().getInstances(messageClass, true);
     Set<OWLNamedIndividual> objects = instances.getFlattened();
-    return objects.stream().map(o -> new MessageObject(o)).collect(Collectors.toSet());
+    return objects.stream().map(o -> new MessageObject(messageModel, o))
+        .collect(Collectors.toSet());
   }
 
   /**
@@ -415,21 +618,21 @@ public class MessageOntologyManager {
 
   }
 
-
   /**
    * Load an ontology model from an input stream
    * 
    * @param in stream
    * @throws Exception if an ontology cannot be read or parsed
    */
-  public void loadModel(InputStream in) throws Exception {
-    this.derivedModel = loadOntologyModel(in);
-    Optional<IRI> optional = this.derivedModel.getOntologyID().getOntologyIRI();
+  public Model loadModel(InputStream in) throws Exception {
+    OWLOntology derivedModel = loadOntologyModel(in);
+    Optional<IRI> optional = derivedModel.getOntologyID().getOntologyIRI();
     if (optional.isPresent()) {
-      this.derivedIRI = optional.get();
       StructuralReasonerFactory reasonerFactory = new StructuralReasonerFactory();
-      this.reasoner = reasonerFactory.createReasoner(getDerivedModel());
-      this.reasoner.precomputeInferences();
+      OWLReasoner reasoner = reasonerFactory.createReasoner(derivedModel);
+      reasoner.precomputeInferences();
+      Model model = new MessageModel(optional.get(), derivedModel, reasoner);
+      return model;
     } else {
       throw new RuntimeException("No ontoloty IRI found");
     }
@@ -441,32 +644,17 @@ public class MessageOntologyManager {
    * @param out stream
    * @throws Exception if the model cannot be written
    */
-  public void storeModel(OutputStream out) throws Exception {
-    write(derivedModel, out);
-  }
+  public void storeModel(Model model, OutputStream out) throws Exception {
+    MessageModel messageModel = (MessageModel) model;
 
+    write(messageModel.getDerivedModel(), out);
+  }
 
   /**
    * @return the dataFactory
    */
   protected OWLDataFactory getDataFactory() {
     return dataFactory;
-  }
-
-  /**
-   * @return the derivedIRI
-   */
-  protected IRI getDerivedIRI() {
-    return derivedIRI;
-  }
-
-
-
-  /**
-   * @return the derivedModel
-   */
-  protected OWLOntology getDerivedModel() {
-    return derivedModel;
   }
 
   protected OWLClass getMessageClass() {
@@ -500,13 +688,6 @@ public class MessageOntologyManager {
   }
 
   /**
-   * @return the reasoner
-   */
-  OWLReasoner getReasoner() {
-    return reasoner;
-  }
-
-  /**
    * Create the base ontology model
    * 
    * @param in input stream
@@ -515,20 +696,15 @@ public class MessageOntologyManager {
    *         ontology.
    */
   OWLOntology loadOntologyModel(InputStream in) throws OWLOntologyCreationException {
-    removeOntology();
     return ontologyManager.loadOntologyFromOntologyDocument(in);
   }
 
-  void removeOntology() {
-    if (reasoner != null) {
-      reasoner.dispose();
-      reasoner = null;
-    }
-    if (derivedModel != null) {
-      ontologyManager.removeOntology(derivedModel);
-      derivedModel = null;
-      derivedIRI = null;
-    }
+  void removeOntology(Model model) {
+    MessageModel messageModel = (MessageModel) model;
+
+    ontologyManager.removeOntology(messageModel.getDerivedModel());
+    messageModel.getReasoner().dispose();
+
   }
 
   /**
@@ -543,136 +719,24 @@ public class MessageOntologyManager {
     ontologyManager.saveOntology(ontology, new RDFXMLDocumentFormat(), out);
   }
 
-  private IRI createComponentIRI(String name) {
-    return IRI.create(getDerivedIRI().toString(), "component/" + name);
+  private IRI createComponentIRI(MessageModel messageModel, String name) {
+    return IRI.create(messageModel.getDerivedIRI().toString(), "component/" + name);
   }
 
-  private IRI createDatatypeIRI(String name) {
-    return IRI.create(getDerivedIRI().toString(), "datatype/" + name);
+  private IRI createDatatypeIRI(MessageModel messageModel, String name) {
+    return IRI.create(messageModel.getDerivedIRI().toString(), "datatype/" + name);
   }
 
-  private IRI createFieldIRI(String name) {
-    return IRI.create(getDerivedIRI().toString(), "field/" + name);
+  private IRI createFieldIRI(MessageModel messageModel, String name) {
+    return IRI.create(messageModel.getDerivedIRI().toString(), "field/" + name);
   }
 
-  private IRI createMessageIRI(String name) {
-    return IRI.create(getDerivedIRI().toString(), "message/" + name);
+  private IRI createMessageIRI(MessageModel messageModel, String name) {
+    return IRI.create(messageModel.getDerivedIRI().toString(), "message/" + name);
   }
 
-  private IRI createStateIRI(String name, String fieldName) {
-    return IRI.create(getDerivedIRI().toString(), "state/" + fieldName + "/" + name);
-  }
-
-  /**
-   * @param id
-   * @param name
-   * @return
-   */
-  public MessageEntity createRepeatingGroup(BigInteger id, String name) {
-    Objects.requireNonNull(id, "ID cannot be null");
-    Objects.requireNonNull(name, "Name cannot be null");
-
-    OWLNamedIndividual component = getDataFactory().getOWLNamedIndividual(createComponentIRI(name));
-    OWLClassAssertionAxiom classAssertion =
-        getDataFactory().getOWLClassAssertionAxiom(repeatingGroupClass, component);
-    getOntologyManager().addAxiom(getDerivedModel(), classAssertion);
-
-    MessageObject messageObject = new MessageObject(component);
-    messageObject.withId(id.intValue()).withName(name);
-    return messageObject;
-  }
-
-  /**
-   * @param entityType 
-   * @param parent
-   * @param entityId
-   * @param entityName
-   * @param b
-   */
-  public void addField(MessageEntity component, BigInteger entityId, String name, boolean isRequired) {
-    Objects.requireNonNull(component, "Component cannot be null");
-    Objects.requireNonNull(name, "Name cannot be null");
-
-    MessageObject messageObject = (MessageObject) component;
-    String componentName = messageObject.getName();
-    OWLNamedIndividual componentInd = messageObject.getObject();
-
-    OWLObjectProperty hasProperty = null;
-    if (isRequired) {
-      hasProperty = getDataFactory().getOWLObjectProperty(":requires", getPrefixManager());    
-    } else {
-      hasProperty = getDataFactory().getOWLObjectProperty(":has", getPrefixManager());
-    }
-    
-    IRI iri  = createFieldIRI(name);
-    
-    OWLNamedIndividual entity =
-        getDataFactory().getOWLNamedIndividual(iri);
-
-    OWLObjectPropertyAssertionAxiom propertyAssertion =
-        getDataFactory().getOWLObjectPropertyAssertionAxiom(hasProperty, componentInd, entity);
-    getOntologyManager().addAxiom(getDerivedModel(), propertyAssertion);
-  }
-
-  public void addNumInGroupField(MessageEntity component, BigInteger entityId, String name, boolean isRequired) {
-    Objects.requireNonNull(component, "Component cannot be null");
-
-    MessageObject messageObject = (MessageObject) component;
-    String componentName = messageObject.getName();
-    OWLNamedIndividual componentInd = messageObject.getObject();
-
-    OWLObjectProperty hasSizeProperty = getDataFactory().getOWLObjectProperty(":hasSize", getPrefixManager());    
-
-    OWLDataProperty hasIdProperty =
-        dataFactory.getOWLDataProperty(":hasId", prefixManager);
-    OWLDataProperty hasNameProperty =
-        dataFactory.getOWLDataProperty(":hasName", prefixManager);
-
-    String fieldName = null;
-    Set<OWLNamedIndividual> fields = getReasoner().getInstances(fieldClass, true).getFlattened();
-    for (OWLNamedIndividual fieldInd : fields) {     
-      Set<OWLLiteral> values = getReasoner().getDataPropertyValues(fieldInd, hasIdProperty);
-      final OWLLiteral first = values.iterator().next();
-      if (first != null && first.parseInteger() == entityId.intValue()) {
-        Set<OWLLiteral> names = getReasoner().getDataPropertyValues(fieldInd, hasNameProperty);
-        fieldName = names.iterator().next().getLiteral();
-        break;
-      }
-    }
-
-    IRI iri = createFieldIRI(fieldName);
-    
-    OWLNamedIndividual entity =
-        getDataFactory().getOWLNamedIndividual(iri);
-
-    OWLObjectPropertyAssertionAxiom propertyAssertion =
-        getDataFactory().getOWLObjectPropertyAssertionAxiom(hasSizeProperty, componentInd, entity);
-    getOntologyManager().addAxiom(getDerivedModel(), propertyAssertion);
-  }
-  
-  public void addComponent(MessageEntity component, BigInteger entityId, String name, boolean isRequired) {
-    Objects.requireNonNull(component, "Component cannot be null");
-    Objects.requireNonNull(name, "Name cannot be null");
-
-    MessageObject messageObject = (MessageObject) component;
-    String componentName = messageObject.getName();
-    OWLNamedIndividual componentInd = messageObject.getObject();
-
-    OWLObjectProperty hasProperty = null;
-    if (isRequired) {
-      hasProperty = getDataFactory().getOWLObjectProperty(":requires", getPrefixManager());    
-    } else {
-      hasProperty = getDataFactory().getOWLObjectProperty(":has", getPrefixManager());
-    }
-    
-    IRI iri = createComponentIRI(name);
-    
-    OWLNamedIndividual entity =
-        getDataFactory().getOWLNamedIndividual(iri);
-
-    OWLObjectPropertyAssertionAxiom propertyAssertion =
-        getDataFactory().getOWLObjectPropertyAssertionAxiom(hasProperty, componentInd, entity);
-    getOntologyManager().addAxiom(getDerivedModel(), propertyAssertion);
+  private IRI createStateIRI(MessageModel messageModel, String name, String fieldName) {
+    return IRI.create(messageModel.getDerivedIRI().toString(), "state/" + fieldName + "/" + name);
   }
 
 }

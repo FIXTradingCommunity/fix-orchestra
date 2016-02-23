@@ -26,6 +26,7 @@ import javax.xml.bind.JAXBException;
 
 import org.fixtrading.orchestra.messages.MessageEntity;
 import org.fixtrading.orchestra.messages.MessageOntologyManager;
+import org.fixtrading.orchestra.messages.Model;
 import org.fixtrading.orchestra.repository.jaxb.Component;
 import org.fixtrading.orchestra.repository.jaxb.ComponentRef;
 import org.fixtrading.orchestra.repository.jaxb.ComponentTypeT;
@@ -45,7 +46,7 @@ import org.fixtrading.orchestra.repository.jaxb.RepeatingGroup;
 import org.fixtrading.orchestra.repository.messages.Serializer;
 
 /**
- * @author Donald
+ * @author Don Mendelson
  *
  */
 public class RepositoryTool {
@@ -75,6 +76,7 @@ public class RepositoryTool {
     System.out.println("Usage: RepositoryParser <repository-file-name> [ontology-file-name]");
   }
 
+  private Model model;
   private MessageOntologyManager ontologyManager = new MessageOntologyManager();
 
   /**
@@ -83,9 +85,28 @@ public class RepositoryTool {
    */
   public RepositoryTool() throws Exception {}
 
+  public void addEntity(MessageEntity parent, MessageEntityT entity) {
+    BigInteger entityId = entity.getId();
+    String name = entity.getName();
+    boolean isRequired = entity.getRequired() != 0;
+    if (entity instanceof FieldRef) {
+      ontologyManager.addField(parent, entityId, name, isRequired);
+    } else if (entity instanceof ComponentRef) {
+      ontologyManager.addComponent(parent, entityId, name, isRequired);
+    } else if (entity instanceof RepeatingGroup) {
+      ontologyManager.addNumInGroupField(parent, entityId, name, isRequired);
+      RepeatingGroup group = (RepeatingGroup) entity;
+      List<JAXBElement<? extends MessageEntityT>> entityList = group.getMessageEntity();
+      for (JAXBElement<? extends MessageEntityT> childElement : entityList) {
+        MessageEntityT child = childElement.getValue();
+        addEntity(parent, child);
+      }
+    }
+  }
+
   public void init() throws Exception {
     ontologyManager.init();
-    ontologyManager.createNewModel("fix", URI.create("http://FixRepositoryOntology/"));
+    model = ontologyManager.createNewModel("fix", URI.create("http://FixRepositoryOntology/"));
   }
 
   public void parse(InputStream inputStream) throws JAXBException {
@@ -95,14 +116,14 @@ public class RepositoryTool {
       Datatypes datatypes = fix.getDatatypes();
       List<Datatype> datatypeList = datatypes.getDatatype();
       for (Datatype datatype : datatypeList) {
-        ontologyManager.createDataType(datatype.getName());
+        ontologyManager.createDataType(model, datatype.getName());
       }
 
       Fields fields = fix.getFields();
       List<Field> fieldList = fields.getField();
       for (Field field : fieldList) {
         MessageEntity fieldObject =
-            ontologyManager.createField(field.getId(), field.getName(), field.getType());
+            ontologyManager.createField(model, field.getId(), field.getName(), field.getType());
 
         List<Enum> enumList = null;
         BigInteger referencedTag = field.getEnumDatatype();
@@ -114,10 +135,11 @@ public class RepositoryTool {
         }
 
         for (Enum fixEnum : enumList) {
-          ontologyManager.createState(fieldObject, fixEnum.getSymbolicName(), fixEnum.getValue());
+          ontologyManager.createState(model, fieldObject, fixEnum.getSymbolicName(),
+              fixEnum.getValue());
         }
       }
-      
+
       Components components = fix.getComponents();
       List<Component> componentList = components.getComponent();
       for (Component component : componentList) {
@@ -129,49 +151,32 @@ public class RepositoryTool {
           case BLOCK:
           case IMPLICIT_BLOCK:
           case XML_DATA_BLOCK:
-            parent = ontologyManager.createComponent(id, name);
+            parent = ontologyManager.createComponent(model, id, name);
             break;
           case BLOCK_REPEATING:
           case IMPLICIT_BLOCK_REPEATING:
           case OPTIMISED_IMPLICIT_BLOCK_REPEATING:
-            parent = ontologyManager.createRepeatingGroup(id, name);
+            parent = ontologyManager.createRepeatingGroup(model, id, name);
             break;
         }
-        List<JAXBElement<? extends MessageEntityT>> messageEntityList = component.getMessageEntity();
+        List<JAXBElement<? extends MessageEntityT>> messageEntityList =
+            component.getMessageEntity();
         for (JAXBElement<? extends MessageEntityT> messageEntity : messageEntityList) {
           MessageEntityT entity = messageEntity.getValue();
           addEntity(parent, entity);
         }
       }
-      
+
       Messages messages = fix.getMessages();
       List<Message> messageList = messages.getMessage();
       for (Message message : messageList) {
-        MessageEntity parent = ontologyManager.createMessage(message.getId(), message.getName(), message.getMsgType());
+        MessageEntity parent = ontologyManager.createMessage(model, message.getId(),
+            message.getName(), message.getMsgType());
         List<JAXBElement<? extends MessageEntityT>> messageEntityList = message.getMessageEntity();
         for (JAXBElement<? extends MessageEntityT> messageEntity : messageEntityList) {
           MessageEntityT entity = messageEntity.getValue();
           addEntity(parent, entity);
-        }        
-      }
-    }
-  }
-
-  public void addEntity(MessageEntity parent, MessageEntityT entity) {
-    BigInteger entityId = entity.getId();
-    String name = entity.getName();
-    boolean isRequired = entity.getRequired() != 0;
-    if (entity instanceof FieldRef) {
-      ontologyManager.addField(parent, entityId, name, isRequired);
-    } else if (entity instanceof ComponentRef) {
-      ontologyManager.addComponent(parent, entityId, name, isRequired);      
-    } else if (entity instanceof RepeatingGroup) {
-      ontologyManager.addNumInGroupField(parent, entityId, name, isRequired); 
-      RepeatingGroup group = (RepeatingGroup) entity;
-      List<JAXBElement<? extends MessageEntityT>> entityList = group.getMessageEntity();
-      for (JAXBElement<? extends MessageEntityT> childElement: entityList) {
-        MessageEntityT child = childElement.getValue();
-        addEntity(parent, child);
+        }
       }
     }
   }
@@ -181,7 +186,7 @@ public class RepositoryTool {
    * @throws Exception
    */
   public void store(FileOutputStream outputStream) throws Exception {
-    ontologyManager.storeModel(outputStream);
+    ontologyManager.storeModel(model, outputStream);
   }
 
   private Field findField(BigInteger referencedTag, List<Field> fieldList) {

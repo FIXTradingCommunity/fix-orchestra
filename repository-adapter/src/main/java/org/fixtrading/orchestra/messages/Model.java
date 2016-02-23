@@ -1,5 +1,5 @@
 /**
- *    Copyright 2015 FIX Protocol Ltd
+ *    Copyright 2016 FIX Protocol Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ package org.fixtrading.orchestra.messages;
  * @author Don Mendelson
  *
  */
-public interface Field {
+public interface Model {
+
 
 }

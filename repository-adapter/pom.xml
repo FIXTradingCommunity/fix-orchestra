@@ -40,7 +40,6 @@
 				<configuration>
 					<!-- The package of your generated sources -->
 					<packageName>org.fixtrading.orchestra.repository.jaxb</packageName>
-					<outputDirectory>${project.build.sourceDirectory}</outputDirectory>
 					<sources>
 						<source>src/main/resources/xsd/FixRepository.xsd</source>
 					</sources>
