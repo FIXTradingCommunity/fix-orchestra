@@ -238,8 +238,6 @@ abstract class AbstractSessionTool {
     }
   }
 
-  private IRI baseIRI;
-  private OWLOntology baseModel;
   private OWLDataFactory dataFactory;
   private IRI derivedIRI;
   private OWLOntology derivedModel;
@@ -292,10 +290,10 @@ abstract class AbstractSessionTool {
     this.dataFactory = OWLManager.getOWLDataFactory();
 
     InputStream in = ClassLoader.class.getResourceAsStream("/fix-orch-session.rdf");
-    this.baseModel = loadOntologyModel(in);
-    Optional<IRI> optional = this.baseModel.getOntologyID().getOntologyIRI();
+    OWLOntology baseModel = loadOntologyModel(in);
+    Optional<IRI> optional = baseModel.getOntologyID().getOntologyIRI();
     if (optional.isPresent()) {
-      this.baseIRI = optional.get();
+      IRI baseIRI = optional.get();
       this.prefixManager = new DefaultPrefixManager(null, null, baseIRI.toString());
     } else {
       throw new RuntimeException("No ontoloty IRI found");
@@ -398,12 +396,12 @@ abstract class AbstractSessionTool {
    * @throws OWLOntologyCreationException If there was a problem in creating and loading the
    *         ontology.
    */
-  OWLOntology loadOntologyModel(InputStream in) throws OWLOntologyCreationException {
+  private OWLOntology loadOntologyModel(InputStream in) throws OWLOntologyCreationException {
     removeOntology();
     return ontologyManager.loadOntologyFromOntologyDocument(in);
   }
 
-  void removeOntology() {
+  private void removeOntology() {
     if (reasoner != null) {
       reasoner.dispose();
       reasoner = null;
@@ -423,7 +421,7 @@ abstract class AbstractSessionTool {
    * @throws OWLOntologyStorageException If there was a problem saving this ontology to the
    *         specified output stream
    */
-  void write(OWLOntology ontology, OutputStream out) throws OWLOntologyStorageException {
+  private void write(OWLOntology ontology, OutputStream out) throws OWLOntologyStorageException {
     ontologyManager.saveOntology(ontology, new RDFXMLDocumentFormat(), out);
   }
 

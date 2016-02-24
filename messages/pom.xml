@@ -6,7 +6,7 @@
 		<artifactId>parent</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>repository-adapter</artifactId>
+	<artifactId>messages</artifactId>
 	<name>${project.groupId}:${project.artifactId}</name>
 	
 	<dependencies>

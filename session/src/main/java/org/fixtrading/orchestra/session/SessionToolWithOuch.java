@@ -41,7 +41,7 @@ public class SessionToolWithOuch extends AbstractSessionTool {
   class OuchSessionObject extends AbstractSessionTool.SessionObject {
 
     /**
-     * @param sessionObject
+     * @param sessionObject an OWL individual for this session
      */
     OuchSessionObject(OWLNamedIndividual sessionObject) {
       super(sessionObject);
@@ -59,7 +59,7 @@ public class SessionToolWithOuch extends AbstractSessionTool {
     OWLClass sessionClass = getSessionClass();
     NodeSet<OWLNamedIndividual> instances = reasoner.getInstances(sessionClass, true);
     Set<OWLNamedIndividual> objects = instances.getFlattened();
-    return objects.stream().map(o -> new OuchSessionObject(o)).collect(Collectors.toSet());
+    return objects.stream().map(OuchSessionObject::new).collect(Collectors.toSet());
   }
 
   protected OWLClass getSessionClass() {

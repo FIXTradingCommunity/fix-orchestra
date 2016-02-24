@@ -1,12 +1,78 @@
 <?xml version="1.0"?>
 <rdf:RDF xmlns="http://www.fixprotocol.org/repository/ontologies/2016/2/messages#"
      xml:base="http://www.fixprotocol.org/repository/ontologies/2016/2/messages"
+     xmlns:dct="http://purl.org/dc/terms/"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:xml="http://www.w3.org/XML/1998/namespace"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+     xmlns:sm="http://www.omg.org/techprocess/ab/SpecificationMetadata/"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-    <owl:Ontology rdf:about="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/"/>
+    <owl:Ontology rdf:about="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/">
+        <owl:versionIRI rdf:resource="http://fixtrading.org/fix-orchestra-messages/1.0-RC1"/>
+        <owl:imports rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/"/>
+        <sm:specificationAbstract rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A
+			machine readable format
+			for specifying message attributes and
+			structures
+		</sm:specificationAbstract>
+        <sm:fileAbbreviation rdf:datatype="http://www.w3.org/2001/XMLSchema#string">orch-msg
+		</sm:fileAbbreviation>
+        <sm:dependsOn rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://www.omg.org/techprocess/ab/SpecificationMetadata/
+		</sm:dependsOn>
+        <sm:specificationVersionURL rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://fixtrading.org/fix-orchestra-messages/1.0-RC1/
+		</sm:specificationVersionURL>
+        <sm:submitter rdf:datatype="http://www.w3.org/2001/XMLSchema#string">FIX Protocol Limited
+		</sm:submitter>
+        <rdfs:label>FIX Orchestra Message Ontology</rdfs:label>
+        <sm:thisVersion rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.0 RC1</sm:thisVersion>
+        <sm:specificationAbbreviation rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ORCH-MSG</sm:specificationAbbreviation>
+        <sm:contentLanguage rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://www.w3.org/standards/techs/owl#w3c_all
+		</sm:contentLanguage>
+        <sm:specificationURL rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://fixtrading.org/fix-orchestra-messsages/
+		</sm:specificationURL>
+        <dct:license rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://www.apache.org/licenses/LICENSE-2.0
+		</dct:license>
+        <sm:specificationTitle rdf:datatype="http://www.w3.org/2001/XMLSchema#string">FIX
+			Orchestra Messages
+		</sm:specificationTitle>
+        <dct:license rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Licensed under the Apache
+			License, Version 2.0 (the &quot;License&quot;);
+			you may not use this
+			file except
+			in compliance with the License.
+			You may obtain a copy of
+			the License
+			at
+
+			http://www.apache.org/licenses/LICENSE-2.0
+
+			Unless
+			required by
+			applicable law or agreed to in writing, software
+			distributed under the
+			License is distributed on an &quot;AS IS&quot;
+			BASIS,
+			WITHOUT WARRANTIES OR
+			CONDITIONS OF ANY KIND, either express or
+			implied.
+			See the License for
+			the specific language governing
+			permissions and
+			limitations under the
+			License.
+		</dct:license>
+        <sm:copyright rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Copyright (c) 2016,
+			FIX
+			Protocol Limited
+		</sm:copyright>
+        <sm:filename rdf:datatype="http://www.w3.org/2001/XMLSchema#string">FIX Orchestra Message
+			Ontology
+		</sm:filename>
+        <sm:contentLanguage rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://www.omg.org/spec/ODM/
+		</sm:contentLanguage>
+    </owl:Ontology>
     
 
 
@@ -234,7 +300,8 @@
             <rdf:Description rdf:about="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/#RepeatingGroup"/>
             <rdf:Description rdf:about="http:/www.fixprotocol.org/repository/ontologies/messages#Field"/>
         </owl:disjointUnionOf>
-        <rdfs:comment>a literal value in the value space of a field, known as an enum in the FIX repository</rdfs:comment>
+        <rdfs:comment>a literal value in the value space of a field, known as
+			an enum in the FIX repository</rdfs:comment>
     </owl:Class>
     
 

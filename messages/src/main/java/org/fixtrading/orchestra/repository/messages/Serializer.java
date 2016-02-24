@@ -24,12 +24,20 @@ import javax.xml.bind.Unmarshaller;
 import org.fixtrading.orchestra.repository.jaxb.FixRepository;
 
 /**
+ * Serializes or deserializes a FIX Repository
+ * 
  * @author Don Mendelson
  *
  */
 public final class Serializer {
 
 
+  /**
+   * Serializes a repository to an output stream
+   * @param jaxbElement root element of tree to marshal
+   * @param outputStream stream to write to
+   * @throws JAXBException if a marshalling error occurs
+   */
   public static void marshal(FixRepository jaxbElement, OutputStream outputStream)
       throws JAXBException {
     JAXBContext jaxbContext = JAXBContext.newInstance(FixRepository.class);
@@ -37,6 +45,12 @@ public final class Serializer {
     jaxbMarshaller.marshal(jaxbElement, outputStream);
   }
 
+  /**
+   * Deserializes a repository from an input stream
+   * @param inputStream stream to read
+   * @return the root element of the repository tree
+   * @throws JAXBException if an unmarshalling error occurs
+   */
   public static FixRepository unmarshal(InputStream inputStream) throws JAXBException {
     JAXBContext jaxbContext = JAXBContext.newInstance(FixRepository.class);
     Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();

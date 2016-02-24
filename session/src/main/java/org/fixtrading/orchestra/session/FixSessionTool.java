@@ -147,7 +147,7 @@ public class FixSessionTool extends AbstractSessionTool {
   }
 
   /**
-   * @param args
+   * @param args command line arguments
    */
   public static void main(String[] args) {
     FixSessionTool tool = new FixSessionTool();
@@ -306,12 +306,11 @@ public class FixSessionTool extends AbstractSessionTool {
     OWLClass sessionClass = getSessionClass();
     NodeSet<OWLNamedIndividual> instances = getReasoner().getInstances(sessionClass, true);
     Set<OWLNamedIndividual> objects = instances.getFlattened();
-    return objects.stream().map(o -> new FixSessionObject(o)).collect(Collectors.toSet());
+    return objects.stream().map(FixSessionObject::new).collect(Collectors.toSet());
   }
 
   protected OWLClass getSessionClass() {
-    OWLClass sessionClass = getDataFactory().getOWLClass(":FixtSession", getPrefixManager());
-    return sessionClass;
+    return getDataFactory().getOWLClass(":FixtSession", getPrefixManager());
   }
 
   public void init() throws Exception {

@@ -46,13 +46,21 @@ import org.fixtrading.orchestra.repository.jaxb.RepeatingGroup;
 import org.fixtrading.orchestra.repository.messages.Serializer;
 
 /**
+ * Imports FIX Repository 2010 edition
+ * 
  * @author Don Mendelson
  *
  */
 public class RepositoryTool {
 
   /**
-   * @param args
+   * Translates a FIX Repository file to an ontology file
+   * 
+   * @param args command line arguments
+   *        <ol>
+   *        <li>repository-file-name</li>
+   *        <li>ontology-file-name</li>
+   *        </ol>
    */
   public static void main(String[] args) {
     if (args.length < 2) {
@@ -72,19 +80,23 @@ public class RepositoryTool {
 
   }
 
+  /**
+   * Prints application usage
+   */
   public static void usage() {
     System.out.println("Usage: RepositoryParser <repository-file-name> [ontology-file-name]");
   }
 
   private Model model;
-  private MessageOntologyManager ontologyManager = new MessageOntologyManager();
+  private final MessageOntologyManager ontologyManager = new MessageOntologyManager();
+
 
   /**
-   * @throws Exception
+   * Add a message element to the ontology
    * 
+   * @param parent containing component
+   * @param entity an element to add
    */
-  public RepositoryTool() throws Exception {}
-
   public void addEntity(MessageEntity parent, MessageEntityT entity) {
     BigInteger entityId = entity.getId();
     String name = entity.getName();
@@ -104,11 +116,22 @@ public class RepositoryTool {
     }
   }
 
+  /**
+   * Initializes resources
+   * 
+   * @throws Exception if resources cannot be initialized
+   */
   public void init() throws Exception {
     ontologyManager.init();
     model = ontologyManager.createNewModel("fix", URI.create("http://FixRepositoryOntology/"));
   }
 
+  /**
+   * Parses a FIX repository
+   * 
+   * @param inputStream stream of the repository contents
+   * @throws JAXBException if a parsing failure occurs
+   */
   public void parse(InputStream inputStream) throws JAXBException {
     FixRepository fixRepository = Serializer.unmarshal(inputStream);
     List<Fix> fixList = fixRepository.getFix();
@@ -129,6 +152,7 @@ public class RepositoryTool {
         BigInteger referencedTag = field.getEnumDatatype();
         if (referencedTag != null) {
           Field referencedField = findField(referencedTag, fieldList);
+          assert referencedField != null;
           enumList = referencedField.getEnum();
         } else {
           enumList = field.getEnum();
@@ -182,8 +206,10 @@ public class RepositoryTool {
   }
 
   /**
-   * @param outputStream
-   * @throws Exception
+   * Stores a translated ontology
+   * 
+   * @param outputStream stream of the ontology contents
+   * @throws Exception if the ontology cannot be written
    */
   public void store(FileOutputStream outputStream) throws Exception {
     ontologyManager.storeModel(model, outputStream);

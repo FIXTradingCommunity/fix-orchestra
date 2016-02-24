@@ -17,10 +17,10 @@
 package org.fixtrading.orchestra.messages;
 
 /**
+ * A message entity to hide details of a message ontology
  * @author Don Mendelson
  *
  */
-public interface Model {
-
+public interface MessageEntity {
 
 }

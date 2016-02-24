@@ -47,7 +47,7 @@ import org.semanticweb.owlapi.util.DefaultPrefixManager;
 import com.google.common.base.Optional;
 
 /**
- * Populates message ontology
+ * Populates a message ontology
  * 
  * @author Don Mendelson
  *
@@ -242,9 +242,9 @@ public class MessageOntologyManager {
 
   private class MessageModel implements Model {
 
-    private IRI derivedIRI;
-    private OWLOntology derivedModel;
-    private OWLReasoner reasoner;
+    private final IRI derivedIRI;
+    private final OWLOntology derivedModel;
+    private final OWLReasoner reasoner;
 
     /**
      * @param derivedIRI2
@@ -279,8 +279,6 @@ public class MessageOntologyManager {
 
   }
 
-  private IRI baseIRI;
-  private OWLOntology baseModel;
   private OWLClass componentClass;
   private OWLDataFactory dataFactory;
   private OWLClass dataTypeClass;
@@ -292,14 +290,21 @@ public class MessageOntologyManager {
   private OWLClass repeatingGroupClass;
   private OWLClass stateClass;
 
-  public void addComponent(MessageEntity component, BigInteger entityId, String name,
+  /**
+   * Adds a FIX message component to its parent component
+   * 
+   * @param parent component to which the new component will be added
+   * @param entityId unique ID of the added component
+   * @param name name of the added component
+   * @param isRequired the component is required if {@code true}
+   */
+  public void addComponent(MessageEntity parent, BigInteger entityId, String name,
       boolean isRequired) {
-    Objects.requireNonNull(component, "Component cannot be null");
+    Objects.requireNonNull(parent, "Parent component cannot be null");
     Objects.requireNonNull(name, "Name cannot be null");
 
-    MessageObject messageObject = (MessageObject) component;
-    String componentName = messageObject.getName();
-    OWLNamedIndividual componentInd = messageObject.getObject();
+    MessageObject parentObject = (MessageObject) parent;
+    OWLNamedIndividual parentInd = parentObject.getObject();
 
     OWLObjectProperty hasProperty = null;
     if (isRequired) {
@@ -308,32 +313,32 @@ public class MessageOntologyManager {
       hasProperty = getDataFactory().getOWLObjectProperty(":has", getPrefixManager());
     }
 
-    MessageModel model = messageObject.getModel();
+    MessageModel model = parentObject.getModel();
 
     IRI iri = createComponentIRI(model, name);
 
     OWLNamedIndividual entity = getDataFactory().getOWLNamedIndividual(iri);
 
     OWLObjectPropertyAssertionAxiom propertyAssertion =
-        getDataFactory().getOWLObjectPropertyAssertionAxiom(hasProperty, componentInd, entity);
+        getDataFactory().getOWLObjectPropertyAssertionAxiom(hasProperty, parentInd, entity);
     getOntologyManager().addAxiom(model.getDerivedModel(), propertyAssertion);
   }
 
   /**
-   * @param entityType
-   * @param parent
-   * @param entityId
-   * @param entityName
-   * @param b
+   * 
+   * Adds a FIX message field to its parent component
+   * 
+   * @param parent component to which the new field will be added
+   * @param entityId unique ID of the added field
+   * @param name name of the added field
+   * @param isRequired the field is required if {@code true}
    */
-  public void addField(MessageEntity component, BigInteger entityId, String name,
-      boolean isRequired) {
-    Objects.requireNonNull(component, "Component cannot be null");
+  public void addField(MessageEntity parent, BigInteger entityId, String name, boolean isRequired) {
+    Objects.requireNonNull(parent, "Parent component cannot be null");
     Objects.requireNonNull(name, "Name cannot be null");
 
-    MessageObject messageObject = (MessageObject) component;
-    String componentName = messageObject.getName();
-    OWLNamedIndividual componentInd = messageObject.getObject();
+    MessageObject parentObject = (MessageObject) parent;
+    OWLNamedIndividual parentInd = parentObject.getObject();
 
     OWLObjectProperty hasProperty = null;
     if (isRequired) {
@@ -342,24 +347,23 @@ public class MessageOntologyManager {
       hasProperty = getDataFactory().getOWLObjectProperty(":has", getPrefixManager());
     }
 
-    MessageModel model = messageObject.getModel();
+    MessageModel model = parentObject.getModel();
 
     IRI iri = createFieldIRI(model, name);
 
     OWLNamedIndividual entity = getDataFactory().getOWLNamedIndividual(iri);
 
     OWLObjectPropertyAssertionAxiom propertyAssertion =
-        getDataFactory().getOWLObjectPropertyAssertionAxiom(hasProperty, componentInd, entity);
+        getDataFactory().getOWLObjectPropertyAssertionAxiom(hasProperty, parentInd, entity);
     getOntologyManager().addAxiom(model.getDerivedModel(), propertyAssertion);
   }
 
-  public void addNumInGroupField(MessageEntity component, BigInteger entityId, String name,
+  public void addNumInGroupField(MessageEntity parent, BigInteger entityId, String name,
       boolean isRequired) {
-    Objects.requireNonNull(component, "Component cannot be null");
+    Objects.requireNonNull(parent, "Parent component cannot be null");
 
-    MessageObject messageObject = (MessageObject) component;
-    String componentName = messageObject.getName();
-    OWLNamedIndividual componentInd = messageObject.getObject();
+    MessageObject parentObject = (MessageObject) parent;
+    OWLNamedIndividual parentInd = parentObject.getObject();
 
     OWLObjectProperty hasSizeProperty =
         getDataFactory().getOWLObjectProperty(":hasSize", getPrefixManager());
@@ -367,7 +371,7 @@ public class MessageOntologyManager {
     OWLDataProperty hasIdProperty = dataFactory.getOWLDataProperty(":hasId", prefixManager);
     OWLDataProperty hasNameProperty = dataFactory.getOWLDataProperty(":hasName", prefixManager);
 
-    MessageModel model = messageObject.getModel();
+    MessageModel model = parentObject.getModel();
 
     String fieldName = null;
     Set<OWLNamedIndividual> fields =
@@ -388,14 +392,17 @@ public class MessageOntologyManager {
     OWLNamedIndividual entity = getDataFactory().getOWLNamedIndividual(iri);
 
     OWLObjectPropertyAssertionAxiom propertyAssertion =
-        getDataFactory().getOWLObjectPropertyAssertionAxiom(hasSizeProperty, componentInd, entity);
+        getDataFactory().getOWLObjectPropertyAssertionAxiom(hasSizeProperty, parentInd, entity);
     getOntologyManager().addAxiom(model.getDerivedModel(), propertyAssertion);
   }
 
   /**
-   * @param id
-   * @param name
-   * @return
+   * Create a new component in the model
+   * 
+   * @param model ontology to update
+   * @param id unique identifier of the new component
+   * @param name name of the new component
+   * @return a wrapper for the new component
    */
   public MessageObject createComponent(Model model, BigInteger id, String name) {
     Objects.requireNonNull(model, "Model cannot be null");
@@ -417,8 +424,11 @@ public class MessageOntologyManager {
 
 
   /**
-   * @param name
-   * @return
+   * Create a new data type in the model
+   * 
+   * @param model ontology to update
+   * @param name name of the new data type
+   * @return a wrapper for the new data type
    */
   public DataTypeObject createDataType(Model model, String name) {
     Objects.requireNonNull(model, "Model cannot be null");
@@ -437,10 +447,13 @@ public class MessageOntologyManager {
   }
 
   /**
-   * @param id
-   * @param name
-   * @param dataType
-   * @return
+   * Create a new field in the model
+   * 
+   * @param model ontology to update
+   * @param id unique identifier of the new field
+   * @param name name of the new field
+   * @param dataType data type of the field
+   * @return a wrapper for the new field
    */
   public MessageEntity createField(Model model, BigInteger id, String name, String dataType) {
     Objects.requireNonNull(model, "Model cannot be null");
@@ -461,6 +474,15 @@ public class MessageOntologyManager {
     return messageObject;
   }
 
+  /**
+   * Create a new message in the model
+   * 
+   * @param model ontology to update
+   * @param id unique identifier of the new message
+   * @param name name of the new field
+   * @param shortName alternative name of the new field
+   * @return a wrapper for the new field
+   */
   public MessageObject createMessage(Model model, BigInteger id, String name, String shortName) {
     Objects.requireNonNull(model, "Model cannot be null");
     Objects.requireNonNull(id, "ID cannot be null");
@@ -493,15 +515,18 @@ public class MessageOntologyManager {
     StructuralReasonerFactory reasonerFactory = new StructuralReasonerFactory();
     final OWLOntology derivedModel = ontologyManager.createOntology(derivedIRI);
     final OWLReasoner reasoner = reasonerFactory.createReasoner(derivedModel);
-    Model model = new MessageModel(derivedIRI, derivedModel, reasoner);
-    return model;
+    return new MessageModel(derivedIRI, derivedModel, reasoner);
   }
 
   /**
-   * @param id
-   * @param name
-   * @return
+   * Create a new repeating group component in the model
+   * 
+   * @param model ontology to update
+   * @param id unique identifier of the new component
+   * @param name name of the new component
+   * @return a wrapper for the new component
    */
+
   public MessageEntity createRepeatingGroup(Model model, BigInteger id, String name) {
     Objects.requireNonNull(model, "Model cannot be null");
     Objects.requireNonNull(id, "ID cannot be null");
@@ -522,9 +547,16 @@ public class MessageOntologyManager {
 
 
   /**
-   * @param field
-   * @param name
-   * @param valueAsString
+   * Create a new valid value of a field.
+   * <p>
+   * This is known as an 'enum' in FIX repository, but it is not truly an enumeration since codes
+   * have no inherent order or ordinal. A state, by contrast, has no order.
+   * 
+   * @param model ontology to update
+   * @param field the field to which the value applies
+   * @param name symbolic name of the new value
+   * @param valueAsString the valid value in string format. It may need to be cast or converted to
+   *        the true data type of the field.
    */
   public void createState(Model model, MessageEntity field, String name, String valueAsString) {
     Objects.requireNonNull(model, "Model cannot be null");
@@ -563,10 +595,10 @@ public class MessageOntologyManager {
   }
 
   /**
-   * Returns a named Message
+   * Returns a named message
    * 
    * @param messageName name of a Message
-   * @return a Message
+   * @return a wrapped message object
    */
   public MessageEntity getMessage(Model model, String messageName) {
     MessageModel messageModel = (MessageModel) model;
@@ -576,7 +608,7 @@ public class MessageOntologyManager {
 
 
   /**
-   * Returns a collection of Message objects
+   * Returns all message objects in the ontology
    * 
    * @return collection of messages
    */
@@ -592,18 +624,16 @@ public class MessageOntologyManager {
 
   /**
    * Initialize resources and base ontology
-   * 
-   * @throws Exception if any resource cannot be initialized
    */
   public void init() throws Exception {
     this.ontologyManager = OWLManager.createOWLOntologyManager();
     this.dataFactory = OWLManager.getOWLDataFactory();
 
     InputStream in = ClassLoader.class.getResourceAsStream("/fix-repository-messages" + ".rdf");
-    this.baseModel = loadOntologyModel(in);
-    Optional<IRI> optional = this.baseModel.getOntologyID().getOntologyIRI();
+    OWLOntology baseModel = loadOntologyModel(in);
+    Optional<IRI> optional = baseModel.getOntologyID().getOntologyIRI();
     if (optional.isPresent()) {
-      this.baseIRI = optional.get();
+      IRI baseIRI = optional.get();
       this.prefixManager = new DefaultPrefixManager(null, null, baseIRI.toString());
     } else {
       throw new RuntimeException("No ontoloty IRI found");
@@ -615,13 +645,13 @@ public class MessageOntologyManager {
     stateClass = getDataFactory().getOWLClass(":State", getPrefixManager());
     componentClass = getDataFactory().getOWLClass(":Component", getPrefixManager());
     repeatingGroupClass = getDataFactory().getOWLClass(":RepeatingGroup", getPrefixManager());
-
   }
 
   /**
    * Load an ontology model from an input stream
    * 
-   * @param in stream
+   * @param in input stream
+   * @return a wrapped reference to the ontology
    * @throws Exception if an ontology cannot be read or parsed
    */
   public Model loadModel(InputStream in) throws Exception {
@@ -631,8 +661,7 @@ public class MessageOntologyManager {
       StructuralReasonerFactory reasonerFactory = new StructuralReasonerFactory();
       OWLReasoner reasoner = reasonerFactory.createReasoner(derivedModel);
       reasoner.precomputeInferences();
-      Model model = new MessageModel(optional.get(), derivedModel, reasoner);
-      return model;
+      return new MessageModel(optional.get(), derivedModel, reasoner);
     } else {
       throw new RuntimeException("No ontoloty IRI found");
     }
@@ -641,7 +670,8 @@ public class MessageOntologyManager {
   /**
    * Store the current ontology model to an output stream
    * 
-   * @param out stream
+   * @param model ontology to update
+   * @param out output stream
    * @throws Exception if the model cannot be written
    */
   public void storeModel(Model model, OutputStream out) throws Exception {
@@ -658,8 +688,7 @@ public class MessageOntologyManager {
   }
 
   protected OWLClass getMessageClass() {
-    OWLClass sessionClass = getDataFactory().getOWLClass(":Message", getPrefixManager());
-    return sessionClass;
+    return getDataFactory().getOWLClass(":Message", getPrefixManager());
   }
 
   /**
