@@ -10,6 +10,16 @@ This project is a **prototype**. Requirements are still being gathered and discu
 ### Session Configuration
 This module allows counterparties to discover configurations of sessions between them. Direct support is supplied for FIXT sessions (the traditional FIX session layer) as well as FIXP, the FIX performance session layer. The prototype also demonstrates how session definitions could be extended to cover non-FIX protocols, such as NASDAQ OUCH.
 
+#### Session Configuration for QuickFIX
+A demonstration of session configuration for QuickFIXj open source FIX engine. A module like
+this needs to be developed for each FIX engine that uses a proprietary configuration format.
+
+### Messages
+Exposes message structures to discovery.
+
+#### Repository
+Parses FIX Repository to import its message structures.
+
 ## License
 © Copyright 2016 FIX Protocol Limited
 
