@@ -108,14 +108,14 @@ public class MessageOntologyManager {
 
 
     /**
-     * @param dataType
+     * @param name of data type
      */
-    public FieldObject withDataType(String dataType) {
+    public FieldObject withDataType(String name) {
       OWLObjectProperty hasProperty =
-          getDataFactory().getOWLObjectProperty(":hasDataType", getPrefixManager());
+          getDataFactory().getOWLObjectProperty(":hasDataType", getDefaultPrefixManager());
 
       OWLNamedIndividual datatypeInd =
-          getDataFactory().getOWLNamedIndividual(createDatatypeIRI(getModel(), dataType));
+          getDataFactory().getOWLNamedIndividual("#datatype/" + name, getModel().getPrefixManager());
       OWLClassAssertionAxiom classAssertion =
           getDataFactory().getOWLClassAssertionAxiom(dataTypeClass, datatypeInd);
       getOntologyManager().addAxiom(getModel().getDerivedModel(), classAssertion);
@@ -245,6 +245,7 @@ public class MessageOntologyManager {
     private final IRI derivedIRI;
     private final OWLOntology derivedModel;
     private final OWLReasoner reasoner;
+	private final PrefixManager prefixManager;
 
     /**
      * @param derivedIRI2
@@ -254,6 +255,7 @@ public class MessageOntologyManager {
       this.derivedIRI = derivedIRI;
       this.derivedModel = derivedModel;
       this.reasoner = reasoner;
+      this.prefixManager = new DefaultPrefixManager(null, null, derivedIRI.toString());
     }
 
     /**
@@ -275,6 +277,10 @@ public class MessageOntologyManager {
      */
     public OWLReasoner getReasoner() {
       return reasoner;
+    }
+
+    public PrefixManager getPrefixManager() {
+    	return prefixManager;
     }
 
   }
@@ -308,16 +314,14 @@ public class MessageOntologyManager {
 
     OWLObjectProperty hasProperty = null;
     if (isRequired) {
-      hasProperty = getDataFactory().getOWLObjectProperty(":requires", getPrefixManager());
+      hasProperty = getDataFactory().getOWLObjectProperty(":requires", getDefaultPrefixManager());
     } else {
-      hasProperty = getDataFactory().getOWLObjectProperty(":has", getPrefixManager());
+      hasProperty = getDataFactory().getOWLObjectProperty(":has", getDefaultPrefixManager());
     }
 
     MessageModel model = parentObject.getModel();
 
-    IRI iri = createComponentIRI(model, name);
-
-    OWLNamedIndividual entity = getDataFactory().getOWLNamedIndividual(iri);
+    OWLNamedIndividual entity = getDataFactory().getOWLNamedIndividual("#component/" + name, model.getPrefixManager());
 
     OWLObjectPropertyAssertionAxiom propertyAssertion =
         getDataFactory().getOWLObjectPropertyAssertionAxiom(hasProperty, parentInd, entity);
@@ -342,16 +346,14 @@ public class MessageOntologyManager {
 
     OWLObjectProperty hasProperty = null;
     if (isRequired) {
-      hasProperty = getDataFactory().getOWLObjectProperty(":requires", getPrefixManager());
+      hasProperty = getDataFactory().getOWLObjectProperty(":requires", getDefaultPrefixManager());
     } else {
-      hasProperty = getDataFactory().getOWLObjectProperty(":has", getPrefixManager());
+      hasProperty = getDataFactory().getOWLObjectProperty(":has", getDefaultPrefixManager());
     }
 
     MessageModel model = parentObject.getModel();
 
-    IRI iri = createFieldIRI(model, name);
-
-    OWLNamedIndividual entity = getDataFactory().getOWLNamedIndividual(iri);
+    OWLNamedIndividual entity = getDataFactory().getOWLNamedIndividual("#field/" + name, model.getPrefixManager());
 
     OWLObjectPropertyAssertionAxiom propertyAssertion =
         getDataFactory().getOWLObjectPropertyAssertionAxiom(hasProperty, parentInd, entity);
@@ -366,7 +368,7 @@ public class MessageOntologyManager {
     OWLNamedIndividual parentInd = parentObject.getObject();
 
     OWLObjectProperty hasSizeProperty =
-        getDataFactory().getOWLObjectProperty(":hasSize", getPrefixManager());
+        getDataFactory().getOWLObjectProperty(":hasSize", getDefaultPrefixManager());
 
     OWLDataProperty hasIdProperty = dataFactory.getOWLDataProperty(":hasId", prefixManager);
     OWLDataProperty hasNameProperty = dataFactory.getOWLDataProperty(":hasName", prefixManager);
@@ -387,9 +389,7 @@ public class MessageOntologyManager {
       }
     }
 
-    IRI iri = createFieldIRI(model, fieldName);
-
-    OWLNamedIndividual entity = getDataFactory().getOWLNamedIndividual(iri);
+    OWLNamedIndividual entity = getDataFactory().getOWLNamedIndividual("#field/" + name, model.getPrefixManager());
 
     OWLObjectPropertyAssertionAxiom propertyAssertion =
         getDataFactory().getOWLObjectPropertyAssertionAxiom(hasSizeProperty, parentInd, entity);
@@ -412,7 +412,7 @@ public class MessageOntologyManager {
     MessageModel messageModel = (MessageModel) model;
 
     OWLNamedIndividual component =
-        getDataFactory().getOWLNamedIndividual(createComponentIRI(messageModel, name));
+        getDataFactory().getOWLNamedIndividual("#component/" + name, messageModel.getPrefixManager());
     OWLClassAssertionAxiom classAssertion =
         getDataFactory().getOWLClassAssertionAxiom(componentClass, component);
     getOntologyManager().addAxiom(messageModel.getDerivedModel(), classAssertion);
@@ -436,7 +436,7 @@ public class MessageOntologyManager {
 
     MessageModel messageModel = (MessageModel) model;
     OWLNamedIndividual datatype =
-        getDataFactory().getOWLNamedIndividual(createDatatypeIRI(messageModel, name));
+        getDataFactory().getOWLNamedIndividual("#datatype/" + name, messageModel.getPrefixManager());
     OWLClassAssertionAxiom classAssertion =
         getDataFactory().getOWLClassAssertionAxiom(dataTypeClass, datatype);
     getOntologyManager().addAxiom(messageModel.getDerivedModel(), classAssertion);
@@ -464,7 +464,7 @@ public class MessageOntologyManager {
     MessageModel messageModel = (MessageModel) model;
 
     OWLNamedIndividual field =
-        getDataFactory().getOWLNamedIndividual(createFieldIRI(messageModel, name));
+        getDataFactory().getOWLNamedIndividual("#field/" + name, messageModel.getPrefixManager());
     OWLClassAssertionAxiom classAssertion =
         getDataFactory().getOWLClassAssertionAxiom(fieldClass, field);
     getOntologyManager().addAxiom(messageModel.getDerivedModel(), classAssertion);
@@ -491,7 +491,7 @@ public class MessageOntologyManager {
     MessageModel messageModel = (MessageModel) model;
 
     OWLNamedIndividual message =
-        getDataFactory().getOWLNamedIndividual(createMessageIRI(messageModel, name));
+        getDataFactory().getOWLNamedIndividual("#message/" + name, messageModel.getPrefixManager());
     OWLClassAssertionAxiom classAssertion =
         getDataFactory().getOWLClassAssertionAxiom(messageClass, message);
     getOntologyManager().addAxiom(messageModel.getDerivedModel(), classAssertion);
@@ -535,7 +535,7 @@ public class MessageOntologyManager {
     MessageModel messageModel = (MessageModel) model;
 
     OWLNamedIndividual component =
-        getDataFactory().getOWLNamedIndividual(createComponentIRI(messageModel, name));
+        getDataFactory().getOWLNamedIndividual("#component/" + name, messageModel.getPrefixManager());
     OWLClassAssertionAxiom classAssertion =
         getDataFactory().getOWLClassAssertionAxiom(repeatingGroupClass, component);
     getOntologyManager().addAxiom(messageModel.getDerivedModel(), classAssertion);
@@ -571,21 +571,21 @@ public class MessageOntologyManager {
     OWLNamedIndividual fieldInd = fieldObject.getObject();
 
     OWLNamedIndividual state =
-        getDataFactory().getOWLNamedIndividual(createStateIRI(messageModel, name, fieldName));
+        getDataFactory().getOWLNamedIndividual("#state/" + fieldName + "/" + name, messageModel.getPrefixManager());
     OWLClassAssertionAxiom classAssertion =
         getDataFactory().getOWLClassAssertionAxiom(stateClass, state);
     final OWLOntology derivedModel = messageModel.getDerivedModel();
     getOntologyManager().addAxiom(derivedModel, classAssertion);
 
     OWLObjectProperty hasProperty =
-        getDataFactory().getOWLObjectProperty(":hasState", getPrefixManager());
+        getDataFactory().getOWLObjectProperty(":hasState", getDefaultPrefixManager());
 
     OWLObjectPropertyAssertionAxiom propertyAssertion =
         getDataFactory().getOWLObjectPropertyAssertionAxiom(hasProperty, fieldInd, state);
     getOntologyManager().addAxiom(derivedModel, propertyAssertion);
 
     OWLDataProperty hasValueProperty =
-        getDataFactory().getOWLDataProperty(":hasValue", getPrefixManager());
+        getDataFactory().getOWLDataProperty(":hasValue", getDefaultPrefixManager());
 
     OWLLiteral dataLiteral = getDataFactory().getOWLLiteral(valueAsString);
 
@@ -639,12 +639,12 @@ public class MessageOntologyManager {
       throw new RuntimeException("No ontoloty IRI found");
     }
 
-    messageClass = getDataFactory().getOWLClass(":Message", getPrefixManager());
-    fieldClass = getDataFactory().getOWLClass(":Field", getPrefixManager());
-    dataTypeClass = getDataFactory().getOWLClass(":DataType", getPrefixManager());
-    stateClass = getDataFactory().getOWLClass(":State", getPrefixManager());
-    componentClass = getDataFactory().getOWLClass(":Component", getPrefixManager());
-    repeatingGroupClass = getDataFactory().getOWLClass(":RepeatingGroup", getPrefixManager());
+    messageClass = getDataFactory().getOWLClass(":Message", getDefaultPrefixManager());
+    fieldClass = getDataFactory().getOWLClass(":Field", getDefaultPrefixManager());
+    dataTypeClass = getDataFactory().getOWLClass(":DataType", getDefaultPrefixManager());
+    stateClass = getDataFactory().getOWLClass(":State", getDefaultPrefixManager());
+    componentClass = getDataFactory().getOWLClass(":Component", getDefaultPrefixManager());
+    repeatingGroupClass = getDataFactory().getOWLClass(":RepeatingGroup", getDefaultPrefixManager());
   }
 
   /**
@@ -688,7 +688,7 @@ public class MessageOntologyManager {
   }
 
   protected OWLClass getMessageClass() {
-    return getDataFactory().getOWLClass(":Message", getPrefixManager());
+    return getDataFactory().getOWLClass(":Message", getDefaultPrefixManager());
   }
 
   /**
@@ -701,7 +701,7 @@ public class MessageOntologyManager {
   /**
    * @return the prefixManager
    */
-  protected PrefixManager getPrefixManager() {
+  protected PrefixManager getDefaultPrefixManager() {
     return prefixManager;
   }
 
@@ -746,26 +746,6 @@ public class MessageOntologyManager {
    */
   void write(OWLOntology ontology, OutputStream out) throws OWLOntologyStorageException {
     ontologyManager.saveOntology(ontology, new RDFXMLDocumentFormat(), out);
-  }
-
-  private IRI createComponentIRI(MessageModel messageModel, String name) {
-    return IRI.create(messageModel.getDerivedIRI().toString(), "component/" + name);
-  }
-
-  private IRI createDatatypeIRI(MessageModel messageModel, String name) {
-    return IRI.create(messageModel.getDerivedIRI().toString(), "datatype/" + name);
-  }
-
-  private IRI createFieldIRI(MessageModel messageModel, String name) {
-    return IRI.create(messageModel.getDerivedIRI().toString(), "field/" + name);
-  }
-
-  private IRI createMessageIRI(MessageModel messageModel, String name) {
-    return IRI.create(messageModel.getDerivedIRI().toString(), "message/" + name);
-  }
-
-  private IRI createStateIRI(MessageModel messageModel, String name, String fieldName) {
-    return IRI.create(messageModel.getDerivedIRI().toString(), "state/" + fieldName + "/" + name);
   }
 
 }

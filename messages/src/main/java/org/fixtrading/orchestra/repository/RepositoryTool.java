@@ -123,7 +123,7 @@ public class RepositoryTool {
    */
   public void init() throws Exception {
     ontologyManager.init();
-    model = ontologyManager.createNewModel("fix", URI.create("http://FixRepositoryOntology/"));
+    model = ontologyManager.createNewModel("fix", URI.create("http://fixtrading.org/fix-orchestra-messages/repository"));
   }
 
   /**
