@@ -76,7 +76,7 @@ abstract class AbstractSessionTool {
       ZonedDateTime activationTime = null;
       
       OWLDataProperty hasActivateTimeProperty =
-          dataFactory.getOWLDataProperty(":hasActivation", prefixManager);
+          dataFactory.getOWLDataProperty(":hasActivation", getDefaultPrefixManager());
       Set<OWLLiteral> values =
           getReasoner().getDataPropertyValues(getObject(), hasActivateTimeProperty);
       final OWLLiteral first = values.iterator().next();
@@ -92,7 +92,7 @@ abstract class AbstractSessionTool {
       ZonedDateTime deactivationTime = null;
       
       OWLDataProperty hasDeactivateTimeProperty =
-          dataFactory.getOWLDataProperty(":hasDeactivation", prefixManager);
+          dataFactory.getOWLDataProperty(":hasDeactivation", getDefaultPrefixManager());
       Set<OWLLiteral> values =
           getReasoner().getDataPropertyValues(getObject(), hasDeactivateTimeProperty);
       final OWLLiteral first = values.iterator().next();
@@ -113,7 +113,7 @@ abstract class AbstractSessionTool {
       String dateTime = xmlCal.toXMLFormat();
 
       OWLDataProperty hasActivateTimeProperty =
-          dataFactory.getOWLDataProperty(":hasActivation", prefixManager);
+          dataFactory.getOWLDataProperty(":hasActivation", getDefaultPrefixManager());
 
       OWLLiteral dataLiteral = getDataFactory().getOWLLiteral(dateTime, OWL2Datatype.XSD_DATE_TIME);
 
@@ -132,7 +132,7 @@ abstract class AbstractSessionTool {
       String dateTime = xmlCal.toXMLFormat();
 
       OWLDataProperty hasDeactivateTimeProperty =
-          dataFactory.getOWLDataProperty(":hasDeactivation", prefixManager);
+          dataFactory.getOWLDataProperty(":hasDeactivation", getDefaultPrefixManager());
 
       OWLLiteral dataLiteral = getDataFactory().getOWLLiteral(dateTime, OWL2Datatype.XSD_DATE_TIME);
 
@@ -152,17 +152,18 @@ abstract class AbstractSessionTool {
     public SessionObject withTcpTransport(String ipAddress, int port) {
       Objects.requireNonNull(ipAddress, "Address cannot be null");
 
-      OWLClass tcpTransportClass = dataFactory.getOWLClass(":TcpTransport", prefixManager);
-      OWLObjectProperty hasProperty = dataFactory.getOWLObjectProperty(":has", prefixManager);
+      OWLClass tcpTransportClass = dataFactory.getOWLClass(":TcpTransport", getDefaultPrefixManager());
+      OWLObjectProperty hasProperty = dataFactory.getOWLObjectProperty(":has", getDefaultPrefixManager());
 
       OWLDataProperty hasAddressProperty =
-          dataFactory.getOWLDataProperty(":hasAddress", prefixManager);
-      OWLDataProperty hasPortProperty = dataFactory.getOWLDataProperty(":hasPort", prefixManager);
+          dataFactory.getOWLDataProperty(":hasAddress", getDefaultPrefixManager());
+      OWLDataProperty hasPortProperty = dataFactory.getOWLDataProperty(":hasPort", getDefaultPrefixManager());
 
       String sessionName = getName();
 
       OWLNamedIndividual transport = dataFactory
-          .getOWLNamedIndividual(IRI.create(derivedIRI.toString(), sessionName + "/transport"));
+          .getOWLNamedIndividual("#transport/" + sessionName, getPrefixManager());
+
       OWLClassAssertionAxiom classAssertion =
           dataFactory.getOWLClassAssertionAxiom(tcpTransportClass, transport);
       ontologyManager.addAxiom(derivedModel, classAssertion);
@@ -184,10 +185,10 @@ abstract class AbstractSessionTool {
     String getIpAddress() {
       String ipAddresss = null;
       OWLNamedIndividual sessionInd = getObject();
-      OWLClass tcpTransportClass = dataFactory.getOWLClass(":TcpTransport", prefixManager);
+      OWLClass tcpTransportClass = dataFactory.getOWLClass(":TcpTransport", getDefaultPrefixManager());
 
       OWLObjectProperty hasProperty =
-          getDataFactory().getOWLObjectProperty(":has", getPrefixManager());
+          getDataFactory().getOWLObjectProperty(":has", getDefaultPrefixManager());
 
       Set<OWLNamedIndividual> objects =
           getReasoner().getObjectPropertyValues(sessionInd, hasProperty).getFlattened();
@@ -196,7 +197,7 @@ abstract class AbstractSessionTool {
         Set<OWLClass> classes = getReasoner().getTypes(sessionChild, true).getFlattened();
         if (classes.contains(tcpTransportClass)) {
           OWLDataProperty hasAddressProperty =
-              dataFactory.getOWLDataProperty(":hasAddress", prefixManager);
+              dataFactory.getOWLDataProperty(":hasAddress", getDefaultPrefixManager());
           Set<OWLLiteral> values =
               getReasoner().getDataPropertyValues(sessionChild, hasAddressProperty);
           final OWLLiteral first = values.iterator().next();
@@ -212,10 +213,10 @@ abstract class AbstractSessionTool {
     int getPort() {
       int port = 0;
       OWLNamedIndividual sessionInd = getObject();
-      OWLClass tcpTransportClass = dataFactory.getOWLClass(":TcpTransport", prefixManager);
+      OWLClass tcpTransportClass = dataFactory.getOWLClass(":TcpTransport", getDefaultPrefixManager());
 
       OWLObjectProperty hasProperty =
-          getDataFactory().getOWLObjectProperty(":has", getPrefixManager());
+          getDataFactory().getOWLObjectProperty(":has", getDefaultPrefixManager());
 
       Set<OWLNamedIndividual> objects =
           getReasoner().getObjectPropertyValues(sessionInd, hasProperty).getFlattened();
@@ -224,7 +225,7 @@ abstract class AbstractSessionTool {
         Set<OWLClass> classes = getReasoner().getTypes(sessionChild, true).getFlattened();
         if (classes.contains(tcpTransportClass)) {
           OWLDataProperty hasPortProperty =
-              dataFactory.getOWLDataProperty(":hasPort", prefixManager);
+              dataFactory.getOWLDataProperty(":hasPort", getDefaultPrefixManager());
           Set<OWLLiteral> values =
               getReasoner().getDataPropertyValues(sessionChild, hasPortProperty);
           final OWLLiteral first = values.iterator().next();
@@ -242,7 +243,7 @@ abstract class AbstractSessionTool {
   private IRI derivedIRI;
   private OWLOntology derivedModel;
   private OWLOntologyManager ontologyManager;
-  private String prefix;
+  private PrefixManager defaultPrefixManager;
   private PrefixManager prefixManager;
   private OWLReasoner reasoner;
 
@@ -257,8 +258,7 @@ abstract class AbstractSessionTool {
     removeOntology();
     this.derivedIRI = IRI.create(uri);
     this.derivedModel = ontologyManager.createOntology(derivedIRI);
-    this.prefixManager.setPrefix(prefix, derivedIRI.toString());
-    this.prefix = prefix;
+    this.prefixManager = new DefaultPrefixManager(null, null, derivedIRI.toString());
     StructuralReasonerFactory reasonerFactory = new StructuralReasonerFactory();
     this.reasoner = reasonerFactory.createReasoner(getDerivedModel());
   }
@@ -294,7 +294,7 @@ abstract class AbstractSessionTool {
     Optional<IRI> optional = baseModel.getOntologyID().getOntologyIRI();
     if (optional.isPresent()) {
       IRI baseIRI = optional.get();
-      this.prefixManager = new DefaultPrefixManager(null, null, baseIRI.toString());
+      this.defaultPrefixManager = new DefaultPrefixManager(null, null, baseIRI.toString());
     } else {
       throw new RuntimeException("No ontoloty IRI found");
     }
@@ -364,24 +364,17 @@ abstract class AbstractSessionTool {
   /**
    * @return the prefixManager
    */
+  protected PrefixManager getDefaultPrefixManager() {
+    return defaultPrefixManager;
+  }
+
   protected PrefixManager getPrefixManager() {
-    return prefixManager;
+	    return prefixManager;
   }
 
   protected abstract OWLClass getSessionClass();
 
-  OWLNamedIndividual getInstance(String abbreviatedIRI) {
-    return dataFactory.getOWLNamedIndividual(abbreviatedIRI, prefixManager);
-  }
-
-  /**
-   * @return the prefix
-   */
-  String getPrefix() {
-    return prefix;
-  }
-
-  /**
+   /**
    * @return the reasoner
    */
   OWLReasoner getReasoner() {

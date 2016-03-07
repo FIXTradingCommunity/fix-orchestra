@@ -47,7 +47,7 @@ public class FixSessionTool extends AbstractSessionTool {
     FixVersion getFixVersion() {
       FixVersion version = null;
       OWLNamedIndividual sessionInd = getObject();
-      OWLObjectProperty hasProperty = getDataFactory().getOWLObjectProperty(":has", getPrefixManager());
+      OWLObjectProperty hasProperty = getDataFactory().getOWLObjectProperty(":has", getDefaultPrefixManager());
 
       Set<OWLNamedIndividual> objects = getReasoner().getObjectPropertyValues(
           sessionInd,
@@ -73,7 +73,7 @@ public class FixSessionTool extends AbstractSessionTool {
     FixtSessionRole getSessionRole() {
       FixtSessionRole role = null;
       OWLNamedIndividual sessionInd = getObject();
-      OWLObjectProperty hasProperty = getDataFactory().getOWLObjectProperty(":has", getPrefixManager());
+      OWLObjectProperty hasProperty = getDataFactory().getOWLObjectProperty(":has", getDefaultPrefixManager());
 
       Set<OWLNamedIndividual> objects = getReasoner().getObjectPropertyValues(
           sessionInd,
@@ -97,7 +97,7 @@ public class FixSessionTool extends AbstractSessionTool {
       String senderCompId = null;
       OWLNamedIndividual sessionInd = getObject();
       OWLObjectProperty hasProperty =
-          getDataFactory().getOWLObjectProperty(":has", getPrefixManager());
+          getDataFactory().getOWLObjectProperty(":has", getDefaultPrefixManager());
 
       Set<OWLNamedIndividual> objects =
           getReasoner().getObjectPropertyValues(sessionInd, hasProperty).getFlattened();
@@ -106,7 +106,7 @@ public class FixSessionTool extends AbstractSessionTool {
         Set<OWLClass> classes = getReasoner().getTypes(sessionChild, true).getFlattened();
         if (classes.contains(sessionIdClass)) {
           OWLDataProperty hasSenderCompIdProperty =
-              getDataFactory().getOWLDataProperty(":hasSenderCompId", getPrefixManager());
+              getDataFactory().getOWLDataProperty(":hasSenderCompId", getDefaultPrefixManager());
           Set<OWLLiteral> values =
               getReasoner().getDataPropertyValues(sessionChild, hasSenderCompIdProperty);
           final OWLLiteral first = values.iterator().next();
@@ -123,7 +123,7 @@ public class FixSessionTool extends AbstractSessionTool {
       String targetCompId = null;
       OWLNamedIndividual sessionInd = getObject();
       OWLObjectProperty hasProperty =
-          getDataFactory().getOWLObjectProperty(":has", getPrefixManager());
+          getDataFactory().getOWLObjectProperty(":has", getDefaultPrefixManager());
 
       Set<OWLNamedIndividual> objects =
           getReasoner().getObjectPropertyValues(sessionInd, hasProperty).getFlattened();
@@ -132,7 +132,7 @@ public class FixSessionTool extends AbstractSessionTool {
         Set<OWLClass> classes = getReasoner().getTypes(sessionChild, true).getFlattened();
         if (classes.contains(sessionIdClass)) {
           OWLDataProperty hastargetCompIdProperty =
-              getDataFactory().getOWLDataProperty(":hasTargetCompId", getPrefixManager());
+              getDataFactory().getOWLDataProperty(":hasTargetCompId", getDefaultPrefixManager());
           Set<OWLLiteral> values =
               getReasoner().getDataPropertyValues(sessionChild, hastargetCompIdProperty);
           final OWLLiteral first = values.iterator().next();
@@ -187,29 +187,31 @@ public class FixSessionTool extends AbstractSessionTool {
 
     OWLClass sessionClass = getSessionClass();
 
-    OWLObjectProperty hasProperty = getDataFactory().getOWLObjectProperty(":has", getPrefixManager());
+    OWLObjectProperty hasProperty = getDataFactory().getOWLObjectProperty(":has", getDefaultPrefixManager());
 
     OWLDataProperty hasSenderCompIdProperty =
-        getDataFactory().getOWLDataProperty(":hasSenderCompId", getPrefixManager());
+        getDataFactory().getOWLDataProperty(":hasSenderCompId", getDefaultPrefixManager());
     OWLDataProperty hasSenderSubIdProperty =
-        getDataFactory().getOWLDataProperty(":hasSenderSubId", getPrefixManager());
+        getDataFactory().getOWLDataProperty(":hasSenderSubId", getDefaultPrefixManager());
     OWLDataProperty hasSenderLocationProperty =
-        getDataFactory().getOWLDataProperty(":hasSenderLocation", getPrefixManager());
+        getDataFactory().getOWLDataProperty(":hasSenderLocation", getDefaultPrefixManager());
     OWLDataProperty hasTargetCompIdProperty =
-        getDataFactory().getOWLDataProperty(":hasTargetCompId", getPrefixManager());
+        getDataFactory().getOWLDataProperty(":hasTargetCompId", getDefaultPrefixManager());
     OWLDataProperty hasTargetSubIdProperty =
-        getDataFactory().getOWLDataProperty(":hasTargetSubId", getPrefixManager());
+        getDataFactory().getOWLDataProperty(":hasTargetSubId", getDefaultPrefixManager());
     OWLDataProperty hasTargetLocationProperty =
-        getDataFactory().getOWLDataProperty(":hasTargetLocation", getPrefixManager());
+        getDataFactory().getOWLDataProperty(":hasTargetLocation", getDefaultPrefixManager());
 
     OWLNamedIndividual session =
-        getDataFactory().getOWLNamedIndividual(IRI.create(getDerivedIRI().toString(), sessionName));
+  		getDataFactory().getOWLNamedIndividual("#session/" + sessionName, getPrefixManager());
+
     OWLClassAssertionAxiom classAssertion =
         getDataFactory().getOWLClassAssertionAxiom(sessionClass, session);
     getOntologyManager().addAxiom(getDerivedModel(), classAssertion);
 
     OWLNamedIndividual sessionId = getDataFactory()
-        .getOWLNamedIndividual(IRI.create(getDerivedIRI().toString(), sessionName + "/sessionId"));
+		.getOWLNamedIndividual("#sessionId/" + sessionName, getPrefixManager());
+
     classAssertion = getDataFactory().getOWLClassAssertionAxiom(sessionIdClass, sessionId);
     getOntologyManager().addAxiom(getDerivedModel(), classAssertion);
     OWLObjectPropertyAssertionAxiom propertyAssertion =
@@ -248,9 +250,10 @@ public class FixSessionTool extends AbstractSessionTool {
       getOntologyManager().addAxiom(getDerivedModel(), dataPropertyAssertion);
     }
 
-    OWLClass encodingClass = getDataFactory().getOWLClass(":TagValue", getPrefixManager());
+    OWLClass encodingClass = getDataFactory().getOWLClass(":TagValue", getDefaultPrefixManager());
     OWLNamedIndividual encoding = getDataFactory()
-        .getOWLNamedIndividual(IRI.create(getDerivedIRI().toString(), sessionName + "/encoding"));
+ 		.getOWLNamedIndividual("#encoding/" + sessionName, getPrefixManager());
+
     classAssertion = getDataFactory().getOWLClassAssertionAxiom(encodingClass, encoding);
     getOntologyManager().addAxiom(getDerivedModel(), classAssertion);
     propertyAssertion =
@@ -270,7 +273,8 @@ public class FixSessionTool extends AbstractSessionTool {
         break;
     }
     OWLNamedIndividual fixVersion = getDataFactory()
-        .getOWLNamedIndividual(IRI.create(getDerivedIRI().toString(), sessionName + "/fixVersion"));
+		.getOWLNamedIndividual("#fixVersion/" + sessionName, getPrefixManager());
+
     classAssertion = getDataFactory().getOWLClassAssertionAxiom(fixClass, fixVersion);
     getOntologyManager().addAxiom(getDerivedModel(), classAssertion);
     propertyAssertion =
@@ -287,7 +291,8 @@ public class FixSessionTool extends AbstractSessionTool {
         break;
     }
     OWLNamedIndividual roleInd = getDataFactory()
-        .getOWLNamedIndividual(IRI.create(getDerivedIRI().toString(), sessionName + "/role"));
+		.getOWLNamedIndividual("#role/" + sessionName, getPrefixManager());
+
     classAssertion = getDataFactory().getOWLClassAssertionAxiom(connectorClass, roleInd);
     getOntologyManager().addAxiom(getDerivedModel(), classAssertion);
     propertyAssertion =
@@ -298,7 +303,7 @@ public class FixSessionTool extends AbstractSessionTool {
   }
 
   public Session getSession(String sessionName) {
-    OWLNamedIndividual session = getInstance(getPrefix() + ":" + sessionName);
+    OWLNamedIndividual session = getDataFactory().getOWLNamedIndividual("#session/" + sessionName, getPrefixManager());
     return new FixSessionObject(session);
   }
 
@@ -310,17 +315,17 @@ public class FixSessionTool extends AbstractSessionTool {
   }
 
   protected OWLClass getSessionClass() {
-    return getDataFactory().getOWLClass(":FixtSession", getPrefixManager());
+    return getDataFactory().getOWLClass(":FixtSession", getDefaultPrefixManager());
   }
 
   public void init() throws Exception {
     super.init();
-    fix42Class = getDataFactory().getOWLClass(":FIX4.2", getPrefixManager());
-    fix44Class = getDataFactory().getOWLClass(":FIX4.4", getPrefixManager());
-    fix50Class = getDataFactory().getOWLClass(":FIX5.0_SP2", getPrefixManager());
-    initiatorClass = getDataFactory().getOWLClass(":INITIATOR", getPrefixManager());
-    acceptorClass = getDataFactory().getOWLClass(":ACCEPTOR", getPrefixManager());
-    sessionIdClass = getDataFactory().getOWLClass(":FixtSessionIdentifier", getPrefixManager());
+    fix42Class = getDataFactory().getOWLClass(":FIX4.2", getDefaultPrefixManager());
+    fix44Class = getDataFactory().getOWLClass(":FIX4.4", getDefaultPrefixManager());
+    fix50Class = getDataFactory().getOWLClass(":FIX5.0_SP2", getDefaultPrefixManager());
+    initiatorClass = getDataFactory().getOWLClass(":INITIATOR", getDefaultPrefixManager());
+    acceptorClass = getDataFactory().getOWLClass(":ACCEPTOR", getDefaultPrefixManager());
+    sessionIdClass = getDataFactory().getOWLClass(":FixtSessionIdentifier", getDefaultPrefixManager());
 
   }
 }

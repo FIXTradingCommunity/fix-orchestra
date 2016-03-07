@@ -46,7 +46,7 @@ public class SessionToolWithOuchTest {
 
   @Test
   public void testCreateFixtSession() throws Exception {
-    tool.createNewModel("test", URI.create("http://OuchTestModel/"));
+    tool.createNewModel("ouch", URI.create("http://www.fixtrading.org/fix-orchestra-session/ouch"));
     Session session1 = tool.createOuchSession("ouch1").withTcpTransport("192.168.2.3", 6543);
     assertNotNull(session1);
     

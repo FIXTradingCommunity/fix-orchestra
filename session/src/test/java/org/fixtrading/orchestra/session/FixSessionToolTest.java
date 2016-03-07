@@ -47,7 +47,7 @@ public class FixSessionToolTest {
 
   @Test
   public void testCreateFixtSession() throws Exception {
-    tool.createNewModel("test", URI.create("http://FixTestModel/"));
+    tool.createNewModel("fix", URI.create("http://www.fixtrading.org/fix-orchestra-session/fix"));
     Session session1 = tool
         .createFixtSession(FixVersion.FIX4_4, FixtSessionRole.INITIATOR,
             "session1", "sender1", "senderSub1", null, "target1",
