@@ -238,7 +238,6 @@
     <!-- http://www.fixprotocol.org/repository/ontologies/2016/2/messages/#MessageEntity -->
 
     <owl:Class rdf:about="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/#MessageEntity">
-        <rdfs:subClassOf rdf:resource="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/#DataType"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/#hasId"/>

@@ -45,7 +45,7 @@ public class QuickFixSessionConfigurerTest {
 
   @Test
   public void testCreateFixSession() throws Exception {
-    tool.createNewModel("quickfix", URI.create("http://www.fixtrading.org/fix-orchestra-session/quickfix"));
+    tool.createNewModel("quickfix", URI.create("http://www.fixtrading.org/session-test/quickfix/"));
     final ZonedDateTime activateTime = ZonedDateTime.now().minusDays(7);
     final ZonedDateTime deactivateTime = ZonedDateTime.now().plusDays(30);
     Session session1 = tool

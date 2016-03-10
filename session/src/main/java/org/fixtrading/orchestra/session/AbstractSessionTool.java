@@ -162,7 +162,7 @@ abstract class AbstractSessionTool {
       String sessionName = getName();
 
       OWLNamedIndividual transport = dataFactory
-          .getOWLNamedIndividual("#transport/" + sessionName, getPrefixManager());
+          .getOWLNamedIndividual("transports/" + sessionName, getPrefixManager());
 
       OWLClassAssertionAxiom classAssertion =
           dataFactory.getOWLClassAssertionAxiom(tcpTransportClass, transport);

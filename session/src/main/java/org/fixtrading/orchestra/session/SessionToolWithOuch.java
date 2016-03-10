@@ -49,7 +49,7 @@ public class SessionToolWithOuch extends AbstractSessionTool {
   }
 
   public Session getSession(String sessionName) {
-    OWLNamedIndividual session = getDataFactory().getOWLNamedIndividual("#session/" + sessionName, getPrefixManager());
+    OWLNamedIndividual session = getDataFactory().getOWLNamedIndividual("sessions/" + sessionName, getPrefixManager());
     return new OuchSessionObject(session);
   }
 
@@ -94,7 +94,7 @@ public class SessionToolWithOuch extends AbstractSessionTool {
         getDataFactory().getOWLDataProperty(":hasTextIdentifer", getDefaultPrefixManager());
 
     OWLNamedIndividual session =
-      	getDataFactory().getOWLNamedIndividual("#session/" + sessionName, getPrefixManager());
+      	getDataFactory().getOWLNamedIndividual("sessions/" + sessionName, getPrefixManager());
 
     OWLClassAssertionAxiom classAssertion =
         getDataFactory().getOWLClassAssertionAxiom(sessionClass, session);
@@ -107,7 +107,7 @@ public class SessionToolWithOuch extends AbstractSessionTool {
     OWLClass sessionProtocolClass = getSessionProtocolClass();
 
     OWLNamedIndividual sessionProtocol = getDataFactory()
-    		.getOWLNamedIndividual("#sessionProtocol/" + sessionName, getPrefixManager());
+    		.getOWLNamedIndividual("sessionProtocols/" + sessionName, getPrefixManager());
 
     classAssertion =
         getDataFactory().getOWLClassAssertionAxiom(sessionProtocolClass, sessionProtocol);

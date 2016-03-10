@@ -115,7 +115,7 @@ public class MessageOntologyManager {
           getDataFactory().getOWLObjectProperty(":hasDataType", getDefaultPrefixManager());
 
       OWLNamedIndividual datatypeInd =
-          getDataFactory().getOWLNamedIndividual("#datatype/" + name, getModel().getPrefixManager());
+          getDataFactory().getOWLNamedIndividual("datatype/" + name, getModel().getPrefixManager());
       OWLClassAssertionAxiom classAssertion =
           getDataFactory().getOWLClassAssertionAxiom(dataTypeClass, datatypeInd);
       getOntologyManager().addAxiom(getModel().getDerivedModel(), classAssertion);
@@ -321,7 +321,7 @@ public class MessageOntologyManager {
 
     MessageModel model = parentObject.getModel();
 
-    OWLNamedIndividual entity = getDataFactory().getOWLNamedIndividual("#component/" + name, model.getPrefixManager());
+    OWLNamedIndividual entity = getDataFactory().getOWLNamedIndividual("components/" + name, model.getPrefixManager());
 
     OWLObjectPropertyAssertionAxiom propertyAssertion =
         getDataFactory().getOWLObjectPropertyAssertionAxiom(hasProperty, parentInd, entity);
@@ -353,7 +353,7 @@ public class MessageOntologyManager {
 
     MessageModel model = parentObject.getModel();
 
-    OWLNamedIndividual entity = getDataFactory().getOWLNamedIndividual("#field/" + name, model.getPrefixManager());
+    OWLNamedIndividual entity = getDataFactory().getOWLNamedIndividual("fields/" + name, model.getPrefixManager());
 
     OWLObjectPropertyAssertionAxiom propertyAssertion =
         getDataFactory().getOWLObjectPropertyAssertionAxiom(hasProperty, parentInd, entity);
@@ -389,7 +389,7 @@ public class MessageOntologyManager {
       }
     }
 
-    OWLNamedIndividual entity = getDataFactory().getOWLNamedIndividual("#field/" + name, model.getPrefixManager());
+    OWLNamedIndividual entity = getDataFactory().getOWLNamedIndividual("fields/" + name, model.getPrefixManager());
 
     OWLObjectPropertyAssertionAxiom propertyAssertion =
         getDataFactory().getOWLObjectPropertyAssertionAxiom(hasSizeProperty, parentInd, entity);
@@ -412,7 +412,7 @@ public class MessageOntologyManager {
     MessageModel messageModel = (MessageModel) model;
 
     OWLNamedIndividual component =
-        getDataFactory().getOWLNamedIndividual("#component/" + name, messageModel.getPrefixManager());
+        getDataFactory().getOWLNamedIndividual("components/" + name, messageModel.getPrefixManager());
     OWLClassAssertionAxiom classAssertion =
         getDataFactory().getOWLClassAssertionAxiom(componentClass, component);
     getOntologyManager().addAxiom(messageModel.getDerivedModel(), classAssertion);
@@ -436,7 +436,7 @@ public class MessageOntologyManager {
 
     MessageModel messageModel = (MessageModel) model;
     OWLNamedIndividual datatype =
-        getDataFactory().getOWLNamedIndividual("#datatype/" + name, messageModel.getPrefixManager());
+        getDataFactory().getOWLNamedIndividual("datatypes/" + name, messageModel.getPrefixManager());
     OWLClassAssertionAxiom classAssertion =
         getDataFactory().getOWLClassAssertionAxiom(dataTypeClass, datatype);
     getOntologyManager().addAxiom(messageModel.getDerivedModel(), classAssertion);
@@ -464,7 +464,7 @@ public class MessageOntologyManager {
     MessageModel messageModel = (MessageModel) model;
 
     OWLNamedIndividual field =
-        getDataFactory().getOWLNamedIndividual("#field/" + name, messageModel.getPrefixManager());
+        getDataFactory().getOWLNamedIndividual("fields/" + name, messageModel.getPrefixManager());
     OWLClassAssertionAxiom classAssertion =
         getDataFactory().getOWLClassAssertionAxiom(fieldClass, field);
     getOntologyManager().addAxiom(messageModel.getDerivedModel(), classAssertion);
@@ -491,7 +491,7 @@ public class MessageOntologyManager {
     MessageModel messageModel = (MessageModel) model;
 
     OWLNamedIndividual message =
-        getDataFactory().getOWLNamedIndividual("#message/" + name, messageModel.getPrefixManager());
+        getDataFactory().getOWLNamedIndividual("messages/" + name, messageModel.getPrefixManager());
     OWLClassAssertionAxiom classAssertion =
         getDataFactory().getOWLClassAssertionAxiom(messageClass, message);
     getOntologyManager().addAxiom(messageModel.getDerivedModel(), classAssertion);
@@ -535,7 +535,7 @@ public class MessageOntologyManager {
     MessageModel messageModel = (MessageModel) model;
 
     OWLNamedIndividual component =
-        getDataFactory().getOWLNamedIndividual("#component/" + name, messageModel.getPrefixManager());
+        getDataFactory().getOWLNamedIndividual("components/" + name, messageModel.getPrefixManager());
     OWLClassAssertionAxiom classAssertion =
         getDataFactory().getOWLClassAssertionAxiom(repeatingGroupClass, component);
     getOntologyManager().addAxiom(messageModel.getDerivedModel(), classAssertion);
@@ -571,7 +571,7 @@ public class MessageOntologyManager {
     OWLNamedIndividual fieldInd = fieldObject.getObject();
 
     OWLNamedIndividual state =
-        getDataFactory().getOWLNamedIndividual("#state/" + fieldName + "/" + name, messageModel.getPrefixManager());
+        getDataFactory().getOWLNamedIndividual("states/" + fieldName + "/" + name, messageModel.getPrefixManager());
     OWLClassAssertionAxiom classAssertion =
         getDataFactory().getOWLClassAssertionAxiom(stateClass, state);
     final OWLOntology derivedModel = messageModel.getDerivedModel();

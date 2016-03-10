@@ -18,7 +18,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLDataProperty;
@@ -203,14 +202,14 @@ public class FixSessionTool extends AbstractSessionTool {
         getDataFactory().getOWLDataProperty(":hasTargetLocation", getDefaultPrefixManager());
 
     OWLNamedIndividual session =
-  		getDataFactory().getOWLNamedIndividual("#session/" + sessionName, getPrefixManager());
+  		getDataFactory().getOWLNamedIndividual("sessions/" + sessionName, getPrefixManager());
 
     OWLClassAssertionAxiom classAssertion =
         getDataFactory().getOWLClassAssertionAxiom(sessionClass, session);
     getOntologyManager().addAxiom(getDerivedModel(), classAssertion);
 
     OWLNamedIndividual sessionId = getDataFactory()
-		.getOWLNamedIndividual("#sessionId/" + sessionName, getPrefixManager());
+		.getOWLNamedIndividual("sessionIds/" + sessionName, getPrefixManager());
 
     classAssertion = getDataFactory().getOWLClassAssertionAxiom(sessionIdClass, sessionId);
     getOntologyManager().addAxiom(getDerivedModel(), classAssertion);
@@ -252,7 +251,7 @@ public class FixSessionTool extends AbstractSessionTool {
 
     OWLClass encodingClass = getDataFactory().getOWLClass(":TagValue", getDefaultPrefixManager());
     OWLNamedIndividual encoding = getDataFactory()
- 		.getOWLNamedIndividual("#encoding/" + sessionName, getPrefixManager());
+ 		.getOWLNamedIndividual("encodings/" + sessionName, getPrefixManager());
 
     classAssertion = getDataFactory().getOWLClassAssertionAxiom(encodingClass, encoding);
     getOntologyManager().addAxiom(getDerivedModel(), classAssertion);
@@ -273,7 +272,7 @@ public class FixSessionTool extends AbstractSessionTool {
         break;
     }
     OWLNamedIndividual fixVersion = getDataFactory()
-		.getOWLNamedIndividual("#fixVersion/" + sessionName, getPrefixManager());
+		.getOWLNamedIndividual("fixVersions/" + sessionName, getPrefixManager());
 
     classAssertion = getDataFactory().getOWLClassAssertionAxiom(fixClass, fixVersion);
     getOntologyManager().addAxiom(getDerivedModel(), classAssertion);
@@ -291,7 +290,7 @@ public class FixSessionTool extends AbstractSessionTool {
         break;
     }
     OWLNamedIndividual roleInd = getDataFactory()
-		.getOWLNamedIndividual("#role/" + sessionName, getPrefixManager());
+		.getOWLNamedIndividual("roles/" + sessionName, getPrefixManager());
 
     classAssertion = getDataFactory().getOWLClassAssertionAxiom(connectorClass, roleInd);
     getOntologyManager().addAxiom(getDerivedModel(), classAssertion);
@@ -303,7 +302,7 @@ public class FixSessionTool extends AbstractSessionTool {
   }
 
   public Session getSession(String sessionName) {
-    OWLNamedIndividual session = getDataFactory().getOWLNamedIndividual("#session/" + sessionName, getPrefixManager());
+    OWLNamedIndividual session = getDataFactory().getOWLNamedIndividual("sessions/" + sessionName, getPrefixManager());
     return new FixSessionObject(session);
   }
 
