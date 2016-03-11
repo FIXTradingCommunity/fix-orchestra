@@ -87,11 +87,21 @@
     
 
 
-    <!-- http://www.fixprotocol.org/repository/ontologies/2016/2/messages/hasSize -->
+    <!-- http://www.fixprotocol.org/repository/ontologies/2016/2/messages/hasSizeField -->
 
-    <owl:ObjectProperty rdf:about="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/hasSize">
+    <owl:ObjectProperty rdf:about="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/hasSizeField">
+        <owl:inverseOf rdf:resource="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/isSizeOf"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
         <rdfs:domain rdf:resource="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/#RepeatingGroup"/>
         <rdfs:range rdf:resource="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/SizeField"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.fixprotocol.org/repository/ontologies/2016/2/messages/isSizeOf -->
+
+    <owl:ObjectProperty rdf:about="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/isSizeOf">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
     </owl:ObjectProperty>
     
 
@@ -138,11 +148,67 @@
     
 
 
+    <!-- http://www.fixprotocol.org/repository/ontologies/2016/2/messages/hasConstraint -->
+
+    <owl:DatatypeProperty rdf:about="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/hasConstraint"/>
+    
+
+
+    <!-- http://www.fixprotocol.org/repository/ontologies/2016/2/messages/hasMaximumSize -->
+
+    <owl:DatatypeProperty rdf:about="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/hasMaximumSize">
+        <rdfs:subPropertyOf rdf:resource="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/hasConstraint"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#nonNegativeInteger"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.fixprotocol.org/repository/ontologies/2016/2/messages/hasMaximumValue -->
+
+    <owl:DatatypeProperty rdf:about="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/hasMaximumValue">
+        <rdfs:subPropertyOf rdf:resource="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/hasConstraint"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.fixprotocol.org/repository/ontologies/2016/2/messages/hasMinimumSize -->
+
+    <owl:DatatypeProperty rdf:about="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/hasMinimumSize">
+        <rdfs:subPropertyOf rdf:resource="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/hasConstraint"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#nonNegativeInteger"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.fixprotocol.org/repository/ontologies/2016/2/messages/hasMinimumValue -->
+
+    <owl:DatatypeProperty rdf:about="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/hasMinimumValue">
+        <rdfs:subPropertyOf rdf:resource="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/hasConstraint"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.fixprotocol.org/repository/ontologies/2016/2/messages/hasSize -->
+
+    <owl:DatatypeProperty rdf:about="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/hasSize">
+        <rdfs:subPropertyOf rdf:resource="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/hasConstraint"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:comment>has constant size</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- http://www.fixprotocol.org/repository/ontologies/2016/2/messages/hasValue -->
 
     <owl:DatatypeProperty rdf:about="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/hasValue">
+        <rdfs:subPropertyOf rdf:resource="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/hasConstraint"/>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>has a constant value</rdfs:comment>
     </owl:DatatypeProperty>
     
 
@@ -181,6 +247,21 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
+    
+
+
+    <!-- http://www.fixprotocol.org/repository/ontologies/2016/2/messages/DataField -->
+
+    <owl:Class rdf:about="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/DataField">
+        <rdfs:subClassOf rdf:resource="http:/www.fixprotocol.org/repository/ontologies/messages#Field"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/hasSizeField"/>
+                <owl:someValuesFrom rdf:resource="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/SizeField"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/SizeField"/>
+    </owl:Class>
     
 
 
@@ -270,7 +351,7 @@
         <rdfs:subClassOf rdf:resource="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/#Component"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/hasSize"/>
+                <owl:onProperty rdf:resource="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/hasSizeField"/>
                 <owl:someValuesFrom rdf:resource="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/SizeField"/>
             </owl:Restriction>
         </rdfs:subClassOf>
