@@ -46,7 +46,6 @@ public class FixSessionTool extends AbstractSessionTool {
     FixVersion getFixVersion() {
       FixVersion version = null;
       OWLNamedIndividual sessionInd = getObject();
-      OWLObjectProperty hasProperty = getDataFactory().getOWLObjectProperty(":has", getDefaultPrefixManager());
 
       Set<OWLNamedIndividual> objects = getReasoner().getObjectPropertyValues(
           sessionInd,
@@ -72,7 +71,6 @@ public class FixSessionTool extends AbstractSessionTool {
     FixtSessionRole getSessionRole() {
       FixtSessionRole role = null;
       OWLNamedIndividual sessionInd = getObject();
-      OWLObjectProperty hasProperty = getDataFactory().getOWLObjectProperty(":has", getDefaultPrefixManager());
 
       Set<OWLNamedIndividual> objects = getReasoner().getObjectPropertyValues(
           sessionInd,
@@ -95,8 +93,6 @@ public class FixSessionTool extends AbstractSessionTool {
     String getSenderCompId() {
       String senderCompId = null;
       OWLNamedIndividual sessionInd = getObject();
-      OWLObjectProperty hasProperty =
-          getDataFactory().getOWLObjectProperty(":has", getDefaultPrefixManager());
 
       Set<OWLNamedIndividual> objects =
           getReasoner().getObjectPropertyValues(sessionInd, hasProperty).getFlattened();
@@ -121,8 +117,6 @@ public class FixSessionTool extends AbstractSessionTool {
     String getTargetCompId() {
       String targetCompId = null;
       OWLNamedIndividual sessionInd = getObject();
-      OWLObjectProperty hasProperty =
-          getDataFactory().getOWLObjectProperty(":has", getDefaultPrefixManager());
 
       Set<OWLNamedIndividual> objects =
           getReasoner().getObjectPropertyValues(sessionInd, hasProperty).getFlattened();
@@ -163,6 +157,7 @@ public class FixSessionTool extends AbstractSessionTool {
   private OWLClass sessionIdClass;
   private OWLClass initiatorClass;
   private OWLClass acceptorClass;
+private OWLObjectProperty hasProperty;
 
   /**
    * Create a new FIXT session configuration
@@ -185,8 +180,6 @@ public class FixSessionTool extends AbstractSessionTool {
     Objects.requireNonNull(targetCompId, "TargetCompID cannot be null");
 
     OWLClass sessionClass = getSessionClass();
-
-    OWLObjectProperty hasProperty = getDataFactory().getOWLObjectProperty(":has", getDefaultPrefixManager());
 
     OWLDataProperty hasSenderCompIdProperty =
         getDataFactory().getOWLDataProperty(":hasSenderCompId", getDefaultPrefixManager());
@@ -325,6 +318,8 @@ public class FixSessionTool extends AbstractSessionTool {
     initiatorClass = getDataFactory().getOWLClass(":INITIATOR", getDefaultPrefixManager());
     acceptorClass = getDataFactory().getOWLClass(":ACCEPTOR", getDefaultPrefixManager());
     sessionIdClass = getDataFactory().getOWLClass(":FixtSessionIdentifier", getDefaultPrefixManager());
+
+    hasProperty = getDataFactory().getOWLObjectProperty(":has", getDefaultPrefixManager());
 
   }
 }

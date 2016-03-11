@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.formats.RDFXMLDocumentFormat;
+import org.semanticweb.owlapi.formats.TurtleDocumentFormat;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
@@ -756,11 +757,11 @@ public class MessageOntologyManager {
 	public void storeModel(Model model, OutputStream out) throws Exception {
 		MessageModel messageModel = (MessageModel) model;
 
-		write(messageModel.getDerivedModel(), out);
+		writeAsRdf(messageModel.getDerivedModel(), out);
 	}
 
 	/**
-	 * Save an ontology to an output stream as OWL XML format
+	 * Save an ontology to an output stream as RDF XML format
 	 * 
 	 * @param ontology
 	 *            a populated ontology
@@ -770,8 +771,22 @@ public class MessageOntologyManager {
 	 *             If there was a problem saving this ontology to the specified
 	 *             output stream
 	 */
-	void write(OWLOntology ontology, OutputStream out) throws OWLOntologyStorageException {
+	void writeAsRdf(OWLOntology ontology, OutputStream out) throws OWLOntologyStorageException {
 		ontologyManager.saveOntology(ontology, new RDFXMLDocumentFormat(), out);
 	}
 
+	/**
+	 * Save an ontology to an output stream as Turtle format
+	 * 
+	 * @param ontology
+	 *            a populated ontology
+	 * @param out
+	 *            output stream
+	 * @throws OWLOntologyStorageException
+	 *             If there was a problem saving this ontology to the specified
+	 *             output stream
+	 */
+	void writeAsTurtle(OWLOntology ontology, OutputStream out) throws OWLOntologyStorageException {
+		ontologyManager.saveOntology(ontology, new TurtleDocumentFormat(), out);
+	}
 }
