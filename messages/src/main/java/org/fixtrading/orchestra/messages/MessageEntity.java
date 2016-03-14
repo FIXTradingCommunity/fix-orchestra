@@ -22,5 +22,10 @@ package org.fixtrading.orchestra.messages;
  *
  */
 public interface MessageEntity {
-
+	
+	/**
+	 * Returns the name of an underlying object, possibly abbreviated
+	 * @return an object name
+	 */
+	String getName();
 }

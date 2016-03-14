@@ -85,7 +85,7 @@ public class RepositoryTool {
 	 * Prints application usage
 	 */
 	public static void usage() {
-		System.out.println("Usage: RepositoryParser <repository-file-name> [ontology-file-name]");
+		System.out.println("Usage: RepositoryTool <repository-file-name> [ontology-file-name]");
 	}
 
 	private Model model;
@@ -104,11 +104,11 @@ public class RepositoryTool {
 		String name = entity.getName();
 		boolean isRequired = entity.getRequired() != 0;
 		if (entity instanceof FieldRef) {
-			ontologyManager.addField(parent, entityId, name, isRequired);
+			ontologyManager.addField(parent, entityId.intValue(), name, isRequired);
 		} else if (entity instanceof ComponentRef) {
-			ontologyManager.addComponent(parent, entityId, name, isRequired);
+			ontologyManager.addComponent(parent, entityId.intValue(), name, isRequired);
 		} else if (entity instanceof RepeatingGroup) {
-			ontologyManager.addNumInGroupField(parent, entityId, name, isRequired);
+			ontologyManager.addNumInGroupField(parent, entityId.intValue(), name, isRequired);
 			RepeatingGroup group = (RepeatingGroup) entity;
 			List<JAXBElement<? extends MessageEntityT>> entityList = group.getMessageEntity();
 			for (JAXBElement<? extends MessageEntityT> childElement : entityList) {
@@ -160,7 +160,7 @@ public class RepositoryTool {
 			Fields fields = fix.getFields();
 			List<Field> fieldList = fields.getField();
 			for (Field field : fieldList) {
-				MessageEntity fieldObject = ontologyManager.createField(model, field.getId(), field.getName(),
+				MessageEntity fieldObject = ontologyManager.createField(model, field.getId().intValue(), field.getName(),
 						field.getType());
 
 				List<Enum> enumList = null;
@@ -182,7 +182,7 @@ public class RepositoryTool {
 			for (Field field : fieldList) {
 				final BigInteger associatedDataTag = field.getAssociatedDataTag();
 				if (associatedDataTag != null) {
-					ontologyManager.associateFields(model, field.getId(), associatedDataTag);
+					ontologyManager.associateFields(model, field.getId().intValue(), associatedDataTag.intValue());
 				}
 			}
 
@@ -197,12 +197,12 @@ public class RepositoryTool {
 				case BLOCK:
 				case IMPLICIT_BLOCK:
 				case XML_DATA_BLOCK:
-					parent = ontologyManager.createComponent(model, id, name);
+					parent = ontologyManager.createComponent(model, id.intValue(), name);
 					break;
 				case BLOCK_REPEATING:
 				case IMPLICIT_BLOCK_REPEATING:
 				case OPTIMISED_IMPLICIT_BLOCK_REPEATING:
-					parent = ontologyManager.createRepeatingGroup(model, id, name);
+					parent = ontologyManager.createRepeatingGroup(model, id.intValue(), name);
 					break;
 				}
 				List<JAXBElement<? extends MessageEntityT>> messageEntityList = component.getMessageEntity();
@@ -215,7 +215,7 @@ public class RepositoryTool {
 			Messages messages = fix.getMessages();
 			List<Message> messageList = messages.getMessage();
 			for (Message message : messageList) {
-				MessageEntity parent = ontologyManager.createMessage(model, message.getId(), message.getName(),
+				MessageEntity parent = ontologyManager.createMessage(model, message.getId().intValue(), message.getName(),
 						message.getMsgType());
 				List<JAXBElement<? extends MessageEntityT>> messageEntityList = message.getMessageEntity();
 				for (JAXBElement<? extends MessageEntityT> messageEntity : messageEntityList) {
