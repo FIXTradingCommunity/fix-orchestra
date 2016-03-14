@@ -685,14 +685,42 @@ public class MessageOntologyManager {
 	/**
 	 * Returns a named message
 	 * 
-	 * @param messageName
+	 * @param name
 	 *            name of a Message
 	 * @return a wrapped message object
 	 */
-	public MessageEntity getMessage(Model model, String messageName) {
+	public MessageEntity getMessage(Model model, String name) {
+		Objects.requireNonNull(model, "Model cannot be null");
+		Objects.requireNonNull(name, "Name cannot be null");
+
 		MessageModel messageModel = (MessageModel) model;
-		OWLNamedIndividual message = getInstance(getPrefix() + ":" + messageName);
+		OWLNamedIndividual message = getDataFactory().getOWLNamedIndividual("messages/" + name,
+				messageModel.getPrefixManager());
 		return new MessageObject(messageModel, message);
+	}
+	
+	public Set<MessageEntity> getRequiredFields(MessageEntity parent) {
+		Objects.requireNonNull(parent, "Message entity cannot be null");
+
+		MessageObject parentObject = (MessageObject) parent;
+		OWLNamedIndividual parentInd = parentObject.getObject();
+		MessageModel messageModel = parentObject.getModel();
+
+		Set<OWLNamedIndividual> required = messageModel.getReasoner().getObjectPropertyValues(parentInd, requiresProperty).getFlattened();
+
+		return required.stream().map(o -> new MessageObject(messageModel, o)).collect(Collectors.toSet());
+	}
+	
+	public Set<MessageEntity> getOptionalFields(MessageEntity parent) {
+		Objects.requireNonNull(parent, "Message entity cannot be null");
+
+		MessageObject parentObject = (MessageObject) parent;
+		OWLNamedIndividual parentInd = parentObject.getObject();
+		MessageModel messageModel = parentObject.getModel();
+		
+		Set<OWLNamedIndividual> has = messageModel.getReasoner().getObjectPropertyValues(parentInd, hasProperty).getFlattened();
+
+		return has.stream().map(o -> new MessageObject(messageModel, o)).collect(Collectors.toSet());
 	}
 
 	protected OWLClass getMessageClass() {
