@@ -77,7 +77,7 @@ public class MessageOntologyManager {
 
 		public String getName() {
 			String name = null;
-			OWLDataProperty hasNameProperty = getDataFactory().getOWLDataProperty(":hasName", prefixManager);
+			OWLDataProperty hasNameProperty = getDataFactory().getOWLDataProperty(":hasName", getDefaultPrefixManager());
 			Set<OWLLiteral> values = model.getReasoner().getDataPropertyValues(getObject(), hasNameProperty);
 			final OWLLiteral first = values.iterator().next();
 			if (first != null) {
@@ -102,7 +102,7 @@ public class MessageOntologyManager {
 		public DataTypeObject withName(String name) {
 			Objects.requireNonNull(name, "Name cannot be null");
 
-			OWLDataProperty hasNameProperty = getDataFactory().getOWLDataProperty(":hasName", prefixManager);
+			OWLDataProperty hasNameProperty = getDataFactory().getOWLDataProperty(":hasName", getDefaultPrefixManager());
 
 			OWLLiteral dataLiteral = getDataFactory().getOWLLiteral(name);
 
@@ -134,6 +134,18 @@ public class MessageOntologyManager {
 			return getName().equals(other.getName());
 		}
 
+		public DataTypeObject getDataType() {
+			DataTypeObject datatype = null;
+			Set<OWLNamedIndividual> values = getModel().getReasoner()
+					.getObjectPropertyValues(getObject(), hasDataTypeProperty).getFlattened();
+			final OWLNamedIndividual first = values.iterator().next();
+			if (first != null) {
+				datatype = new DataTypeObject(getModel(), first);
+			}
+
+			return datatype;
+		}
+
 		@Override
 		public int hashCode() {
 			final int prime = 31;
@@ -147,7 +159,7 @@ public class MessageOntologyManager {
 		 *            of data type
 		 */
 		public FieldObject withDataType(String name) {
-			OWLNamedIndividual datatypeInd = getDataFactory().getOWLNamedIndividual("datatype/" + name,
+			OWLNamedIndividual datatypeInd = getDataFactory().getOWLNamedIndividual("datatypes/" + name,
 					getModel().getPrefixManager());
 			OWLClassAssertionAxiom classAssertion = getDataFactory().getOWLClassAssertionAxiom(dataTypeClass,
 					datatypeInd);
@@ -230,7 +242,7 @@ public class MessageOntologyManager {
 
 		int getId() {
 			int id = 0;
-			OWLDataProperty hasIdProperty = getDataFactory().getOWLDataProperty(":hasId", prefixManager);
+			OWLDataProperty hasIdProperty = getDataFactory().getOWLDataProperty(":hasId", getDefaultPrefixManager());
 			Set<OWLLiteral> values = model.getReasoner().getDataPropertyValues(getObject(), hasIdProperty);
 			final OWLLiteral first = values.iterator().next();
 			if (first != null) {
@@ -249,7 +261,7 @@ public class MessageOntologyManager {
 
 		public String getName() {
 			String name = null;
-			OWLDataProperty hasNameProperty = getDataFactory().getOWLDataProperty(":hasName", prefixManager);
+			OWLDataProperty hasNameProperty = getDataFactory().getOWLDataProperty(":hasName", getDefaultPrefixManager());
 			Set<OWLLiteral> values = model.getReasoner().getDataPropertyValues(getObject(), hasNameProperty);
 			final OWLLiteral first = values.iterator().next();
 			if (first != null) {
@@ -265,7 +277,7 @@ public class MessageOntologyManager {
 
 		public String getShortName() {
 			String name = null;
-			OWLDataProperty hasShortNameProperty = getDataFactory().getOWLDataProperty(":hasShortName", prefixManager);
+			OWLDataProperty hasShortNameProperty = getDataFactory().getOWLDataProperty(":hasShortName", getDefaultPrefixManager());
 			Set<OWLLiteral> values = model.getReasoner().getDataPropertyValues(getObject(), hasShortNameProperty);
 			final OWLLiteral first = values.iterator().next();
 			if (first != null) {
@@ -285,7 +297,7 @@ public class MessageOntologyManager {
 
 		public MessageObject withId(int id) {
 
-			OWLDataProperty hasIdProperty = getDataFactory().getOWLDataProperty(":hasId", prefixManager);
+			OWLDataProperty hasIdProperty = getDataFactory().getOWLDataProperty(":hasId", getDefaultPrefixManager());
 
 			OWLLiteral dataLiteral = getDataFactory().getOWLLiteral(id);
 
@@ -298,7 +310,7 @@ public class MessageOntologyManager {
 		public MessageObject withName(String name) {
 			Objects.requireNonNull(name, "Name cannot be null");
 
-			OWLDataProperty hasNameProperty = getDataFactory().getOWLDataProperty(":hasName", prefixManager);
+			OWLDataProperty hasNameProperty = getDataFactory().getOWLDataProperty(":hasName", getDefaultPrefixManager());
 
 			OWLLiteral dataLiteral = getDataFactory().getOWLLiteral(name);
 
@@ -311,7 +323,7 @@ public class MessageOntologyManager {
 		public MessageObject withShortName(String name) {
 			Objects.requireNonNull(name, "Name cannot be null");
 
-			OWLDataProperty hasShortNameProperty = getDataFactory().getOWLDataProperty(":hasShortName", prefixManager);
+			OWLDataProperty hasShortNameProperty = getDataFactory().getOWLDataProperty(":hasShortName", getDefaultPrefixManager());
 
 			OWLLiteral dataLiteral = getDataFactory().getOWLLiteral(name);
 
@@ -414,7 +426,7 @@ public class MessageOntologyManager {
 
 		MessageModel model = parentObject.getModel();
 
-		OWLNamedIndividual entity = findField(entityId, model);
+		OWLNamedIndividual entity = getFieldById(entityId, model);
 
 		OWLObjectPropertyAssertionAxiom propertyAssertion = getDataFactory()
 				.getOWLObjectPropertyAssertionAxiom(hasSizeFieldProperty, parentInd, entity);
@@ -424,9 +436,9 @@ public class MessageOntologyManager {
 	public void associateFields(Model model, int id, int associatedDataTag) {
 		MessageModel messageModel = (MessageModel) model;
 
-		OWLNamedIndividual field = findField(id, messageModel);
+		OWLNamedIndividual field = getFieldById(id, messageModel);
 
-		OWLNamedIndividual associatedField = findField(associatedDataTag, messageModel);
+		OWLNamedIndividual associatedField = getFieldById(associatedDataTag, messageModel);
 		OWLObjectPropertyAssertionAxiom propertyAssertion = getDataFactory()
 				.getOWLObjectPropertyAssertionAxiom(isSizeOfProperty, field, associatedField);
 		getOntologyManager().addAxiom(messageModel.getDerivedModel(), propertyAssertion);
@@ -643,9 +655,40 @@ public class MessageOntologyManager {
 		getOntologyManager().addAxiom(derivedModel, dataPropertyAssertion);
 	}
 
-	private OWLNamedIndividual findField(int entityId, MessageModel model) {
-		OWLDataProperty hasIdProperty = dataFactory.getOWLDataProperty(":hasId", prefixManager);
-		OWLDataProperty hasNameProperty = dataFactory.getOWLDataProperty(":hasName", prefixManager);
+	/**
+	 * @return the dataFactory
+	 */
+	protected OWLDataFactory getDataFactory() {
+		return dataFactory;
+	}
+
+	/**
+	 * @return the prefixManager
+	 */
+	protected PrefixManager getDefaultPrefixManager() {
+		return prefixManager;
+	}
+
+	/**
+	 * Returns a named field
+	 * 
+	 * @param name
+	 *            name of a field
+	 * @return a wrapped field object
+	 */
+	public FieldObject getField(Model model, String name) {
+		Objects.requireNonNull(model, "Model cannot be null");
+		Objects.requireNonNull(name, "Name cannot be null");
+
+		MessageModel messageModel = (MessageModel) model;
+		OWLNamedIndividual field = getDataFactory().getOWLNamedIndividual("fields/" + name,
+				messageModel.getPrefixManager());
+		return new FieldObject(messageModel, field);
+	}
+
+	private OWLNamedIndividual getFieldById(int entityId, MessageModel model) {
+		OWLDataProperty hasIdProperty = dataFactory.getOWLDataProperty(":hasId", getDefaultPrefixManager());
+		OWLDataProperty hasNameProperty = dataFactory.getOWLDataProperty(":hasName", getDefaultPrefixManager());
 
 		String fieldName = null;
 		Set<OWLNamedIndividual> fields = model.getReasoner().getInstances(fieldClass, true).getFlattened();
@@ -662,20 +705,6 @@ public class MessageOntologyManager {
 		OWLNamedIndividual entity = getDataFactory().getOWLNamedIndividual("fields/" + fieldName,
 				model.getPrefixManager());
 		return entity;
-	}
-
-	/**
-	 * @return the dataFactory
-	 */
-	protected OWLDataFactory getDataFactory() {
-		return dataFactory;
-	}
-
-	/**
-	 * @return the prefixManager
-	 */
-	protected PrefixManager getDefaultPrefixManager() {
-		return prefixManager;
 	}
 
 	OWLNamedIndividual getInstance(String abbreviatedIRI) {
@@ -697,30 +726,6 @@ public class MessageOntologyManager {
 		OWLNamedIndividual message = getDataFactory().getOWLNamedIndividual("messages/" + name,
 				messageModel.getPrefixManager());
 		return new MessageObject(messageModel, message);
-	}
-	
-	public Set<MessageEntity> getRequiredFields(MessageEntity parent) {
-		Objects.requireNonNull(parent, "Message entity cannot be null");
-
-		MessageObject parentObject = (MessageObject) parent;
-		OWLNamedIndividual parentInd = parentObject.getObject();
-		MessageModel messageModel = parentObject.getModel();
-
-		Set<OWLNamedIndividual> required = messageModel.getReasoner().getObjectPropertyValues(parentInd, requiresProperty).getFlattened();
-
-		return required.stream().map(o -> new MessageObject(messageModel, o)).collect(Collectors.toSet());
-	}
-	
-	public Set<MessageEntity> getOptionalFields(MessageEntity parent) {
-		Objects.requireNonNull(parent, "Message entity cannot be null");
-
-		MessageObject parentObject = (MessageObject) parent;
-		OWLNamedIndividual parentInd = parentObject.getObject();
-		MessageModel messageModel = parentObject.getModel();
-		
-		Set<OWLNamedIndividual> has = messageModel.getReasoner().getObjectPropertyValues(parentInd, hasProperty).getFlattened();
-
-		return has.stream().map(o -> new MessageObject(messageModel, o)).collect(Collectors.toSet());
 	}
 
 	protected OWLClass getMessageClass() {
@@ -747,11 +752,53 @@ public class MessageOntologyManager {
 		return ontologyManager;
 	}
 
+	public void getOptionalFields(MessageEntity parent, Set<FieldObject> fields) {
+		Objects.requireNonNull(parent, "Message entity cannot be null");
+
+		MessageObject parentObject = (MessageObject) parent;
+		OWLNamedIndividual parentInd = parentObject.getObject();
+		MessageModel messageModel = parentObject.getModel();
+
+		Set<OWLNamedIndividual> hasSet = messageModel.getReasoner().getObjectPropertyValues(parentInd, hasProperty)
+				.getFlattened();
+
+		for (OWLNamedIndividual ind : hasSet) {
+			Set<OWLClass> classes = messageModel.getReasoner().getTypes(ind, true).getFlattened();
+			if (classes.contains(fieldClass)) {
+				fields.add(new FieldObject(messageModel, ind));
+			} else if (classes.contains(componentClass)) {
+				// Recursively expand components
+				getOptionalFields(new MessageObject(messageModel, ind), fields);
+			}
+		}
+	}
+
 	/**
 	 * @return the prefix
 	 */
 	String getPrefix() {
 		return prefix;
+	}
+
+	public void getRequiredFields(MessageEntity parent, Set<FieldObject> fields) {
+		Objects.requireNonNull(parent, "Message entity cannot be null");
+
+		MessageObject parentObject = (MessageObject) parent;
+		OWLNamedIndividual parentInd = parentObject.getObject();
+		MessageModel messageModel = parentObject.getModel();
+
+		Set<OWLNamedIndividual> requiredSet = messageModel.getReasoner()
+				.getObjectPropertyValues(parentInd, requiresProperty).getFlattened();
+
+		for (OWLNamedIndividual ind : requiredSet) {
+			Set<OWLClass> classes = messageModel.getReasoner().getTypes(ind, true).getFlattened();
+			if (classes.contains(fieldClass)) {
+				fields.add(new FieldObject(messageModel, ind));
+			} else if (classes.contains(componentClass)) {
+				// Recursively expand components
+				getRequiredFields(new MessageObject(messageModel, ind), fields);
+			}
+		}
 	}
 
 	/**

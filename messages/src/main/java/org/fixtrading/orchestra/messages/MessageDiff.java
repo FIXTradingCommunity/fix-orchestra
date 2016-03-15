@@ -3,8 +3,12 @@ package org.fixtrading.orchestra.messages;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.fixtrading.orchestra.messages.MessageOntologyManager.DataTypeObject;
+import org.fixtrading.orchestra.messages.MessageOntologyManager.FieldObject;
 
 public class MessageDiff {
 
@@ -35,6 +39,12 @@ public class MessageDiff {
 
 	}
 
+	/**
+	 * Compares two message ontologies. By default, report is sent to console.
+	 * 
+	 * @param args
+	 *            file names of two ontologies to compare
+	 */
 	public static void main(String[] args) {
 		if (args.length < 2) {
 			usage();
@@ -79,34 +89,59 @@ public class MessageDiff {
 
 		in1only.forEach(m -> listener.accept(MessageDiffListener.Source.FIRST_SOURCE, m.getName()));
 		in2only.forEach(m -> listener.accept(MessageDiffListener.Source.SECOND_SOURCE, m.getName()));
-		
-		intersection.forEach(m -> diff(m, ontologyManager.getMessage(model2, m.getName())));	
-	} 
+
+		intersection.forEach(m -> diff(m, ontologyManager.getMessage(model2, m.getName())));
+	}
+
+	public void diff(FieldObject field1, FieldObject field2) {
+		DataTypeObject type1 = field1.getDataType();
+		DataTypeObject type2 = field2.getDataType();
+		if (!type1.equals(type2)) {
+			listener.accept(MessageDiffListener.Source.FIRST_SOURCE,
+					String.format("Datatype of %s=%s", field1.getName(), type1.getName()));
+			listener.accept(MessageDiffListener.Source.SECOND_SOURCE,
+					String.format("Datatype of %s=%s", field2.getName(), type2.getName()));
+		}
+	}
 
 	public void diff(MessageEntity msg1, MessageEntity msg2) {
-		Set<MessageEntity> req1 = ontologyManager.getRequiredFields(msg1);
-		Set<MessageEntity> req2 = ontologyManager.getRequiredFields(msg2);
-		
-		Set<MessageEntity> ReqIn1only = req1.stream().filter(m -> !req2.contains(m))
-				.collect(Collectors.toSet());
-		Set<MessageEntity> ReqIn2only = req2.stream().filter(m -> !req1.contains(m))
-				.collect(Collectors.toSet());
+		Set<FieldObject> req1 = new HashSet<>();
+		ontologyManager.getRequiredFields(msg1, req1);
+		Set<FieldObject> req2 = new HashSet<>();
+		ontologyManager.getRequiredFields(msg2, req2);
 
-		ReqIn1only.forEach(m -> listener.accept(MessageDiffListener.Source.FIRST_SOURCE, String.format("Required %s/%s", msg1.getName(), m.getName())));
-		ReqIn2only.forEach(m -> listener.accept(MessageDiffListener.Source.SECOND_SOURCE, String.format("Required %s/%s", msg1.getName(), m.getName())));
-		
-		Set<MessageEntity> opt1 = ontologyManager.getOptionalFields(msg1);
-		Set<MessageEntity> opt2 = ontologyManager.getOptionalFields(msg2);
-		
-		Set<MessageEntity> OptIn1only = opt1.stream().filter(m -> !opt2.contains(m))
-				.collect(Collectors.toSet());
-		Set<MessageEntity> OptIn2only = opt2.stream().filter(m -> !opt1.contains(m))
-				.collect(Collectors.toSet());
+		Set<FieldObject> reqIntersection = req1.stream().filter(m -> req2.contains(m)).collect(Collectors.toSet());
+		Set<FieldObject> ReqIn1only = req1.stream().filter(m -> !req2.contains(m)).collect(Collectors.toSet());
+		Set<FieldObject> ReqIn2only = req2.stream().filter(m -> !req1.contains(m)).collect(Collectors.toSet());
 
-		OptIn1only.forEach(m -> listener.accept(MessageDiffListener.Source.FIRST_SOURCE, String.format("Optional %s/%s", msg1.getName(), m.getName())));
-		OptIn2only.forEach(m -> listener.accept(MessageDiffListener.Source.SECOND_SOURCE, String.format("Optional %s/%s", msg1.getName(), m.getName())));
+		ReqIn1only.forEach(m -> listener.accept(MessageDiffListener.Source.FIRST_SOURCE,
+				String.format("Required %s/%s", msg1.getName(), m.getName())));
+		ReqIn2only.forEach(m -> listener.accept(MessageDiffListener.Source.SECOND_SOURCE,
+				String.format("Required %s/%s", msg1.getName(), m.getName())));
+
+		for (FieldObject field : reqIntersection) {
+			diff(field, ontologyManager.getField(model2, field.getName()));
+		}
+
+		Set<FieldObject> opt1 = new HashSet<>();
+		ontologyManager.getOptionalFields(msg1, opt1);
+		Set<FieldObject> opt2 = new HashSet<>();
+		ontologyManager.getOptionalFields(msg2, opt2);
+
+		Set<FieldObject> optIntersection = opt1.stream().filter(m -> opt2.contains(m)).collect(Collectors.toSet());
+		Set<FieldObject> OptIn1only = opt1.stream().filter(m -> !opt2.contains(m)).collect(Collectors.toSet());
+		Set<FieldObject> OptIn2only = opt2.stream().filter(m -> !opt1.contains(m)).collect(Collectors.toSet());
+
+		OptIn1only.forEach(m -> listener.accept(MessageDiffListener.Source.FIRST_SOURCE,
+				String.format("Optional %s/%s", msg1.getName(), m.getName())));
+		OptIn2only.forEach(m -> listener.accept(MessageDiffListener.Source.SECOND_SOURCE,
+				String.format("Optional %s/%s", msg1.getName(), m.getName())));
+
+		for (FieldObject field : optIntersection) {
+			diff(field, ontologyManager.getField(model2, field.getName()));
+		}
 	}
-	
+
 	/**
 	 * Initializes resources
 	 * 
@@ -117,6 +152,13 @@ public class MessageDiff {
 		ontologyManager.init();
 	}
 
+	/**
+	 * Registers a listener for ontology differences. If one is not registered,
+	 * a default listener sends reports to the console.
+	 * 
+	 * @param listener
+	 *            a listener
+	 */
 	public void setListener(MessageDiffListener listener) {
 		this.listener = listener;
 	}
