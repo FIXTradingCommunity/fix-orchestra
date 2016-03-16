@@ -36,17 +36,18 @@ public class MessageDiffTest {
 		MessageObject msg1 = manager.createMessage(model, 1, "MessageOne", "A");
 		MessageObject msg2 = manager.createMessage(model, 2, "MessageTwo", "B");
 		MessageObject msg3 = manager.createMessage(model, 3, "MessageThree", "C");
-		MessageObject msg4 = manager.createMessage(model, 4, "MessageFour", "D");
+		MessageObject msg4 = manager.createMessage(model, 4, "MessageFour", "D");		
 		
-		MessageEntity fld1 = manager.createField(model, 101, "FieldOne", "int");
+		manager.createCodeSet(model, "FieldOneCodeSet", "int");
+		manager.createCode(model, "FieldOneCodeSet", "Enum1", "1");
+		manager.createCode(model, "FieldOneCodeSet", "Enum2", "2");
+		manager.createCode(model, "FieldOneCodeSet", "Enum3", "3");
+		manager.createCode(model, "FieldOneCodeSet", "Enum4", "4");
+		
+		MessageEntity fld1 = manager.createField(model, 101, "FieldOne", "FieldOneCodeSet");
 		MessageEntity fld2 = manager.createField(model, 102, "FieldTwo", "int");
 		MessageEntity fld3 = manager.createField(model, 103, "FieldThree", "int");
 		MessageEntity fld4 = manager.createField(model, 104, "FieldFour", "int");
-		
-		manager.createState(model, fld4, "Enum1", "1");
-		manager.createState(model, fld4, "Enum2", "2");
-		manager.createState(model, fld4, "Enum3", "3");
-		manager.createState(model, fld4, "Enum4", "4");
 		
 		manager.addField(msg1, 101, "FieldOne", true);
 		manager.addField(msg1, 102, "FieldTwo", false);
@@ -69,18 +70,19 @@ public class MessageDiffTest {
 		manager.createMessage(model, 4, "MessageFour", "D");
 		manager.createMessage(model, 5, "MessageFive", "E");
 		
+		manager.createCodeSet(model, "FieldOneCodeSet", "int");
+		manager.createCode(model, "FieldOneCodeSet", "Enum1", "1");
+		manager.createCode(model, "FieldOneCodeSet", "Enum2", "2");
+		manager.createCode(model, "FieldOneCodeSet", "Enum3", "3");
+
 		MessageObject cmp1 = manager.createComponent(model, 1001, "BlockOne");
 		
-		MessageEntity fld1 = manager.createField(model, 101, "FieldOne", "int");
+		MessageEntity fld1 = manager.createField(model, 101, "FieldOne", "FieldOneCodeSet");
 		MessageEntity fld2 = manager.createField(model, 102, "FieldTwo", "int");
 		MessageEntity fld3 = manager.createField(model, 103, "FieldThree", "int");
 		MessageEntity fld4 = manager.createField(model, 104, "FieldFour", "UTCTimestamp");
 		MessageEntity fld5 = manager.createField(model, 105, "FieldFive", "int");
 		
-		manager.createState(model, fld4, "Enum1", "1");
-		manager.createState(model, fld4, "Enum2", "2");
-		manager.createState(model, fld4, "Enum3", "3");
-
 		manager.addField(msg1, 101, "FieldOne", true);
 		manager.addField(msg1, 102, "FieldTwo", false);
 		manager.addField(msg1, 103, "FieldThree", false);

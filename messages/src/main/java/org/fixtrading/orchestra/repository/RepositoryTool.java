@@ -160,21 +160,24 @@ public class RepositoryTool {
 			Fields fields = fix.getFields();
 			List<Field> fieldList = fields.getField();
 			for (Field field : fieldList) {
-				MessageEntity fieldObject = ontologyManager.createField(model, field.getId().intValue(), field.getName(),
-						field.getType());
+				List<Enum> enumList = field.getEnum();
+				if (!enumList.isEmpty()) {
+					ontologyManager.createCodeSet(model, field.getName(), field.getType());
 
-				List<Enum> enumList = null;
-				BigInteger referencedTag = field.getEnumDatatype();
-				if (referencedTag != null) {
-					Field referencedField = findField(referencedTag, fieldList);
-					assert referencedField != null;
-					enumList = referencedField.getEnum();
+					for (Enum fixEnum : enumList) {
+						ontologyManager.createCode(model, field.getName(), fixEnum.getSymbolicName(), fixEnum.getValue());
+					}
+					
+					ontologyManager.createField(model, field.getId().intValue(), field.getName(),
+							field.getName());
 				} else {
-					enumList = field.getEnum();
-				}
-
-				for (Enum fixEnum : enumList) {
-					ontologyManager.createState(model, fieldObject, fixEnum.getSymbolicName(), fixEnum.getValue());
+					final BigInteger associatedDataTag = field.getAssociatedDataTag();
+					if (associatedDataTag != null) {
+						ontologyManager.createField(model, field.getId().intValue(), field.getName(),
+							field.getType());
+					} else {
+						ontologyManager.createField(model, field.getId().intValue(), field.getName());
+					}
 				}
 			}
 
@@ -183,6 +186,11 @@ public class RepositoryTool {
 				final BigInteger associatedDataTag = field.getAssociatedDataTag();
 				if (associatedDataTag != null) {
 					ontologyManager.associateFields(model, field.getId().intValue(), associatedDataTag.intValue());
+				}
+				
+				final BigInteger referencedTag = field.getEnumDatatype();
+				if (referencedTag != null) {
+					ontologyManager.associateCodeList(model, field.getName(), referencedTag.intValue());
 				}
 			}
 

@@ -54,12 +54,144 @@ import com.google.common.base.Optional;
  */
 public class MessageOntologyManager {
 
-	class DataTypeObject implements MessageEntity, ObjectHolder {
-		private final OWLNamedIndividual messageObject;
+	class CodeObject implements ObjectHolder {
+
+		private final OWLNamedIndividual codeInd;
 		private final MessageModel model;
 
-		DataTypeObject(MessageModel messageModel, OWLNamedIndividual messageObject) {
-			this.messageObject = messageObject;
+		CodeObject(MessageModel messageModel, OWLNamedIndividual codeInd) {
+			this.model = messageModel;
+			this.codeInd = codeInd;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + getOuterType().hashCode();
+			result = prime * result + ((getName() == null) ? 0 : getName().hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			CodeObject other = (CodeObject) obj;
+			if (!getOuterType().equals(other.getOuterType()))
+				return false;
+			if (getName() == null) {
+				if (other.getName() != null)
+					return false;
+			} else if (!getName().equals(other.getName()))
+				return false;
+			return true;
+		}
+
+		public String getName() {
+			String name = null;
+			OWLDataProperty hasNameProperty = getDataFactory().getOWLDataProperty(":hasName",
+					getDefaultPrefixManager());
+			Set<OWLLiteral> values = model.getReasoner().getDataPropertyValues(getObject(), hasNameProperty);
+			final OWLLiteral first = values.iterator().next();
+			if (first != null) {
+				name = first.getLiteral();
+			}
+
+			return name;
+		}
+
+		public OWLNamedIndividual getObject() {
+			return codeInd;
+		}
+
+		public String getValue() {
+			String value = null;
+			OWLDataProperty hasValueProperty = getDataFactory().getOWLDataProperty(":hasValue",
+					getDefaultPrefixManager());
+			Set<OWLLiteral> values = model.getReasoner().getDataPropertyValues(getObject(), hasValueProperty);
+			final OWLLiteral first = values.iterator().next();
+			if (first != null) {
+				value = first.getLiteral();
+			}
+
+			return value;
+		}
+
+		public CodeObject withName(String name) {
+			Objects.requireNonNull(name, "Name cannot be null");
+
+			OWLDataProperty hasNameProperty = getDataFactory().getOWLDataProperty(":hasName",
+					getDefaultPrefixManager());
+
+			OWLLiteral dataLiteral = getDataFactory().getOWLLiteral(name);
+
+			OWLDataPropertyAssertionAxiom dataPropertyAssertion = getDataFactory()
+					.getOWLDataPropertyAssertionAxiom(hasNameProperty, getObject(), dataLiteral);
+			ontologyManager.addAxiom(model.getDerivedModel(), dataPropertyAssertion);
+			return this;
+		}
+
+		public CodeObject withValue(String value) {
+			Objects.requireNonNull(value, "Value cannot be null");
+
+			OWLDataProperty hasValueProperty = getDataFactory().getOWLDataProperty(":hasValue",
+					getDefaultPrefixManager());
+
+			OWLLiteral dataLiteral = getDataFactory().getOWLLiteral(value);
+
+			OWLDataPropertyAssertionAxiom dataPropertyAssertion = getDataFactory()
+					.getOWLDataPropertyAssertionAxiom(hasValueProperty, getObject(), dataLiteral);
+			ontologyManager.addAxiom(model.getDerivedModel(), dataPropertyAssertion);
+			return this;
+		}
+
+		private MessageOntologyManager getOuterType() {
+			return MessageOntologyManager.this;
+		}
+
+	}
+
+	class CodeSetObject extends DataTypeObject {
+
+		CodeSetObject(MessageModel messageModel, OWLNamedIndividual messageObject) {
+			super(messageModel, messageObject);
+		}
+
+		public CodeSetObject getDataType() {
+			CodeSetObject datatype = null;
+			Set<OWLNamedIndividual> values = getModel().getReasoner()
+					.getObjectPropertyValues(getObject(), hasDataTypeProperty).getFlattened();
+			final OWLNamedIndividual first = values.iterator().next();
+			if (first != null) {
+				datatype = new CodeSetObject(getModel(), first);
+			}
+
+			return datatype;
+		}
+
+		public CodeSetObject withDataType(String name) {
+			OWLNamedIndividual datatypeInd = getDataFactory().getOWLNamedIndividual("datatypes/" + name,
+					getModel().getPrefixManager());
+
+			OWLObjectPropertyAssertionAxiom propertyAssertion = getDataFactory()
+					.getOWLObjectPropertyAssertionAxiom(hasDataTypeProperty, getObject(), datatypeInd);
+			getOntologyManager().addAxiom(getModel().getDerivedModel(), propertyAssertion);
+
+			return this;
+		}
+	}
+
+	class DataTypeObject implements MessageEntity, ObjectHolder {
+		private final OWLNamedIndividual dataTypeObject;
+		private final MessageModel model;
+
+		DataTypeObject(MessageModel messageModel, OWLNamedIndividual dataTypeObject) {
+			this.dataTypeObject = dataTypeObject;
 			this.model = messageModel;
 		}
 
@@ -75,9 +207,14 @@ public class MessageOntologyManager {
 			return getName().equals(other.getName());
 		}
 
+		public MessageModel getModel() {
+			return model;
+		}
+
 		public String getName() {
 			String name = null;
-			OWLDataProperty hasNameProperty = getDataFactory().getOWLDataProperty(":hasName", getDefaultPrefixManager());
+			OWLDataProperty hasNameProperty = getDataFactory().getOWLDataProperty(":hasName",
+					getDefaultPrefixManager());
 			Set<OWLLiteral> values = model.getReasoner().getDataPropertyValues(getObject(), hasNameProperty);
 			final OWLLiteral first = values.iterator().next();
 			if (first != null) {
@@ -88,7 +225,7 @@ public class MessageOntologyManager {
 		}
 
 		public OWLNamedIndividual getObject() {
-			return messageObject;
+			return dataTypeObject;
 		}
 
 		@Override
@@ -102,7 +239,8 @@ public class MessageOntologyManager {
 		public DataTypeObject withName(String name) {
 			Objects.requireNonNull(name, "Name cannot be null");
 
-			OWLDataProperty hasNameProperty = getDataFactory().getOWLDataProperty(":hasName", getDefaultPrefixManager());
+			OWLDataProperty hasNameProperty = getDataFactory().getOWLDataProperty(":hasName",
+					getDefaultPrefixManager());
 
 			OWLLiteral dataLiteral = getDataFactory().getOWLLiteral(name);
 
@@ -140,7 +278,11 @@ public class MessageOntologyManager {
 					.getObjectPropertyValues(getObject(), hasDataTypeProperty).getFlattened();
 			final OWLNamedIndividual first = values.iterator().next();
 			if (first != null) {
-				datatype = new DataTypeObject(getModel(), first);
+				if (isCodeSet(getModel(), first)) {
+					datatype = new CodeSetObject(getModel(), first);				
+				} else {
+					datatype = new DataTypeObject(getModel(), first);
+				}
 			}
 
 			return datatype;
@@ -261,7 +403,8 @@ public class MessageOntologyManager {
 
 		public String getName() {
 			String name = null;
-			OWLDataProperty hasNameProperty = getDataFactory().getOWLDataProperty(":hasName", getDefaultPrefixManager());
+			OWLDataProperty hasNameProperty = getDataFactory().getOWLDataProperty(":hasName",
+					getDefaultPrefixManager());
 			Set<OWLLiteral> values = model.getReasoner().getDataPropertyValues(getObject(), hasNameProperty);
 			final OWLLiteral first = values.iterator().next();
 			if (first != null) {
@@ -277,7 +420,8 @@ public class MessageOntologyManager {
 
 		public String getShortName() {
 			String name = null;
-			OWLDataProperty hasShortNameProperty = getDataFactory().getOWLDataProperty(":hasShortName", getDefaultPrefixManager());
+			OWLDataProperty hasShortNameProperty = getDataFactory().getOWLDataProperty(":hasShortName",
+					getDefaultPrefixManager());
 			Set<OWLLiteral> values = model.getReasoner().getDataPropertyValues(getObject(), hasShortNameProperty);
 			final OWLLiteral first = values.iterator().next();
 			if (first != null) {
@@ -310,7 +454,8 @@ public class MessageOntologyManager {
 		public MessageObject withName(String name) {
 			Objects.requireNonNull(name, "Name cannot be null");
 
-			OWLDataProperty hasNameProperty = getDataFactory().getOWLDataProperty(":hasName", getDefaultPrefixManager());
+			OWLDataProperty hasNameProperty = getDataFactory().getOWLDataProperty(":hasName",
+					getDefaultPrefixManager());
 
 			OWLLiteral dataLiteral = getDataFactory().getOWLLiteral(name);
 
@@ -323,7 +468,8 @@ public class MessageOntologyManager {
 		public MessageObject withShortName(String name) {
 			Objects.requireNonNull(name, "Name cannot be null");
 
-			OWLDataProperty hasShortNameProperty = getDataFactory().getOWLDataProperty(":hasShortName", getDefaultPrefixManager());
+			OWLDataProperty hasShortNameProperty = getDataFactory().getOWLDataProperty(":hasShortName",
+					getDefaultPrefixManager());
 
 			OWLLiteral dataLiteral = getDataFactory().getOWLLiteral(name);
 
@@ -343,6 +489,8 @@ public class MessageOntologyManager {
 		OWLNamedIndividual getObject();
 	}
 
+	private OWLClass codeLiteralClass;
+	private static OWLClass codeSetClass;
 	private OWLClass componentClass;
 	private OWLDataFactory dataFactory;
 	private OWLClass dataTypeClass;
@@ -350,16 +498,19 @@ public class MessageOntologyManager {
 	private OWLObjectProperty hasDataTypeProperty;
 	private OWLObjectProperty hasProperty;
 	private OWLObjectProperty hasSizeFieldProperty;
-	private OWLObjectProperty hasStateProperty;
 	private OWLObjectProperty isSizeOfProperty;
+	private OWLObjectProperty memberProperty;
 	private OWLClass messageClass;
 	private OWLOntologyManager ontologyManager;
 	private String prefix;
 	private PrefixManager prefixManager;
 	private OWLClass repeatingGroupClass;
 	private OWLObjectProperty requiresProperty;
-	private OWLClass stateClass;
 
+	public static boolean isCodeSet(MessageModel model, OWLNamedIndividual dataTypeObject) {
+		return model.getReasoner().getTypes(dataTypeObject, true).containsEntity(codeSetClass);
+	}
+	
 	/**
 	 * Adds a FIX message component to its parent component
 	 * 
@@ -433,6 +584,19 @@ public class MessageOntologyManager {
 		getOntologyManager().addAxiom(model.getDerivedModel(), propertyAssertion);
 	}
 
+	public void associateCodeList(Model model, String name, int referencedTag) {
+		MessageModel messageModel = (MessageModel) model;
+
+		OWLNamedIndividual field = getField(messageModel, name).getObject();
+
+		OWLNamedIndividual referencedField = getFieldById(referencedTag, messageModel);
+		FieldObject refFieldObj = new FieldObject(messageModel, referencedField);
+
+		OWLObjectPropertyAssertionAxiom propertyAssertion = getDataFactory()
+				.getOWLObjectPropertyAssertionAxiom(hasDataTypeProperty, field, refFieldObj.getDataType().getObject());
+		getOntologyManager().addAxiom(messageModel.getDerivedModel(), propertyAssertion);
+	}
+
 	public void associateFields(Model model, int id, int associatedDataTag) {
 		MessageModel messageModel = (MessageModel) model;
 
@@ -442,6 +606,74 @@ public class MessageOntologyManager {
 		OWLObjectPropertyAssertionAxiom propertyAssertion = getDataFactory()
 				.getOWLObjectPropertyAssertionAxiom(isSizeOfProperty, field, associatedField);
 		getOntologyManager().addAxiom(messageModel.getDerivedModel(), propertyAssertion);
+	}
+
+	/**
+	 * Create a new valid value of a field.
+	 * <p>
+	 * This is known as an 'enum' in FIX repository, but it is not truly an
+	 * enumeration since codes have no inherent order or ordinal. An Alt, by
+	 * contrast, has no order.
+	 * 
+	 * @param model
+	 *            ontology to update
+	 * @param codeSetName
+	 *            name of the code set
+	 * @param name
+	 *            symbolic name of the new value
+	 * @param valueAsString
+	 *            the valid value in string format. It may need to be cast or
+	 *            converted to the true data type of the field.
+	 */
+	public void createCode(Model model, String codeSetName, String name, String valueAsString) {
+		Objects.requireNonNull(model, "Model cannot be null");
+		Objects.requireNonNull(codeSetName, "Code set name cannot be null");
+		Objects.requireNonNull(name, "Symbolic name cannot be null");
+		Objects.requireNonNull(valueAsString, "Value cannot be null");
+
+		MessageModel messageModel = (MessageModel) model;
+
+		OWLNamedIndividual codeInd = getDataFactory().getOWLNamedIndividual("datatypes/" + codeSetName + "/" + name,
+				messageModel.getPrefixManager());
+		OWLClassAssertionAxiom classAssertion = getDataFactory().getOWLClassAssertionAxiom(codeLiteralClass, codeInd);
+		final OWLOntology derivedModel = messageModel.getDerivedModel();
+		getOntologyManager().addAxiom(derivedModel, classAssertion);
+
+		OWLNamedIndividual codeSetInd = getDataFactory().getOWLNamedIndividual("datatypes/" + codeSetName,
+				messageModel.getPrefixManager());
+
+		OWLObjectPropertyAssertionAxiom propertyAssertion = getDataFactory()
+				.getOWLObjectPropertyAssertionAxiom(memberProperty, codeSetInd, codeInd);
+		getOntologyManager().addAxiom(derivedModel, propertyAssertion);
+
+		OWLDataProperty hasNameProperty = getDataFactory().getOWLDataProperty(":hasName", getDefaultPrefixManager());
+		OWLLiteral nameLiteral = getDataFactory().getOWLLiteral(name);
+
+		OWLDataPropertyAssertionAxiom namePropertyAssertion = getDataFactory()
+				.getOWLDataPropertyAssertionAxiom(hasNameProperty, codeInd, nameLiteral);
+		getOntologyManager().addAxiom(derivedModel, namePropertyAssertion);
+
+		OWLDataProperty hasValueProperty = getDataFactory().getOWLDataProperty(":hasValue", getDefaultPrefixManager());
+		OWLLiteral valueLiteral = getDataFactory().getOWLLiteral(valueAsString);
+
+		OWLDataPropertyAssertionAxiom valuePropertyAssertion = getDataFactory()
+				.getOWLDataPropertyAssertionAxiom(hasValueProperty, codeInd, valueLiteral);
+		getOntologyManager().addAxiom(derivedModel, valuePropertyAssertion);
+	}
+
+	public CodeSetObject createCodeSet(Model model, String codeSetName, String primitiveDatatypeName) {
+		Objects.requireNonNull(model, "Model cannot be null");
+		Objects.requireNonNull(codeSetName, "Name cannot be null");
+
+		MessageModel messageModel = (MessageModel) model;
+		OWLNamedIndividual datatype = getDataFactory().getOWLNamedIndividual("datatypes/" + codeSetName,
+				messageModel.getPrefixManager());
+		OWLClassAssertionAxiom classAssertion = getDataFactory().getOWLClassAssertionAxiom(codeSetClass, datatype);
+		getOntologyManager().addAxiom(messageModel.getDerivedModel(), classAssertion);
+
+		CodeSetObject dataTypeObject = new CodeSetObject(messageModel, datatype);
+		dataTypeObject.withDataType(primitiveDatatypeName).withName(codeSetName);
+		return dataTypeObject;
 	}
 
 	/**
@@ -496,6 +728,23 @@ public class MessageOntologyManager {
 		return dataTypeObject;
 	}
 
+	public FieldObject createField(Model model, int id, String name) {
+		Objects.requireNonNull(model, "Model cannot be null");
+		Objects.requireNonNull(id, "ID cannot be null");
+		Objects.requireNonNull(name, "Name cannot be null");
+
+		MessageModel messageModel = (MessageModel) model;
+
+		OWLNamedIndividual field = getDataFactory().getOWLNamedIndividual("fields/" + name,
+				messageModel.getPrefixManager());
+		OWLClassAssertionAxiom classAssertion = getDataFactory().getOWLClassAssertionAxiom(fieldClass, field);
+		getOntologyManager().addAxiom(messageModel.getDerivedModel(), classAssertion);
+
+		FieldObject messageObject = new FieldObject(messageModel, field);
+		messageObject.withId(id).withName(name);
+		return messageObject;
+	}
+
 	/**
 	 * Create a new field in the model
 	 * 
@@ -509,7 +758,7 @@ public class MessageOntologyManager {
 	 *            data type of the field
 	 * @return a wrapper for the new field
 	 */
-	public MessageEntity createField(Model model, int id, String name, String dataType) {
+	public FieldObject createField(Model model, int id, String name, String dataType) {
 		Objects.requireNonNull(model, "Model cannot be null");
 		Objects.requireNonNull(id, "ID cannot be null");
 		Objects.requireNonNull(name, "Name cannot be null");
@@ -607,52 +856,17 @@ public class MessageOntologyManager {
 		return messageObject;
 	}
 
-	/**
-	 * Create a new valid value of a field.
-	 * <p>
-	 * This is known as an 'enum' in FIX repository, but it is not truly an
-	 * enumeration since codes have no inherent order or ordinal. A state, by
-	 * contrast, has no order.
-	 * 
-	 * @param model
-	 *            ontology to update
-	 * @param field
-	 *            the field to which the value applies
-	 * @param name
-	 *            symbolic name of the new value
-	 * @param valueAsString
-	 *            the valid value in string format. It may need to be cast or
-	 *            converted to the true data type of the field.
-	 */
-	public void createState(Model model, MessageEntity field, String name, String valueAsString) {
+	public Set<CodeObject> getCodes(Model model, String codeSetName) {
 		Objects.requireNonNull(model, "Model cannot be null");
-		Objects.requireNonNull(field, "Field cannot be null");
-		Objects.requireNonNull(name, "Name cannot be null");
-		Objects.requireNonNull(valueAsString, "Value cannot be null");
+		Objects.requireNonNull(codeSetName, "Name cannot be null");
 
 		MessageModel messageModel = (MessageModel) model;
-
-		FieldObject fieldObject = (FieldObject) field;
-		String fieldName = fieldObject.getName();
-		OWLNamedIndividual fieldInd = fieldObject.getObject();
-
-		OWLNamedIndividual state = getDataFactory().getOWLNamedIndividual("states/" + fieldName + "/" + name,
+		OWLNamedIndividual codeSetInd = getDataFactory().getOWLNamedIndividual("datatypes/" + codeSetName,
 				messageModel.getPrefixManager());
-		OWLClassAssertionAxiom classAssertion = getDataFactory().getOWLClassAssertionAxiom(stateClass, state);
-		final OWLOntology derivedModel = messageModel.getDerivedModel();
-		getOntologyManager().addAxiom(derivedModel, classAssertion);
 
-		OWLObjectPropertyAssertionAxiom propertyAssertion = getDataFactory()
-				.getOWLObjectPropertyAssertionAxiom(hasStateProperty, fieldInd, state);
-		getOntologyManager().addAxiom(derivedModel, propertyAssertion);
-
-		OWLDataProperty hasValueProperty = getDataFactory().getOWLDataProperty(":hasValue", getDefaultPrefixManager());
-
-		OWLLiteral dataLiteral = getDataFactory().getOWLLiteral(valueAsString);
-
-		OWLDataPropertyAssertionAxiom dataPropertyAssertion = getDataFactory()
-				.getOWLDataPropertyAssertionAxiom(hasValueProperty, state, dataLiteral);
-		getOntologyManager().addAxiom(derivedModel, dataPropertyAssertion);
+		Set<OWLNamedIndividual> members = messageModel.getReasoner().getObjectPropertyValues(codeSetInd, memberProperty)
+				.getFlattened();
+		return members.stream().map(m -> new CodeObject(messageModel, m)).collect(Collectors.toSet());
 	}
 
 	/**
@@ -821,16 +1035,17 @@ public class MessageOntologyManager {
 		messageClass = getDataFactory().getOWLClass(":Message", getDefaultPrefixManager());
 		fieldClass = getDataFactory().getOWLClass(":Field", getDefaultPrefixManager());
 		dataTypeClass = getDataFactory().getOWLClass(":DataType", getDefaultPrefixManager());
-		stateClass = getDataFactory().getOWLClass(":State", getDefaultPrefixManager());
+		codeSetClass = getDataFactory().getOWLClass(":CodeSet", getDefaultPrefixManager());
+		codeLiteralClass = getDataFactory().getOWLClass(":CodeLiteral", getDefaultPrefixManager());
 		componentClass = getDataFactory().getOWLClass(":Component", getDefaultPrefixManager());
 		repeatingGroupClass = getDataFactory().getOWLClass(":RepeatingGroup", getDefaultPrefixManager());
 
 		hasSizeFieldProperty = getDataFactory().getOWLObjectProperty(":hasSizeField", getDefaultPrefixManager());
 		isSizeOfProperty = getDataFactory().getOWLObjectProperty(":isSizeOf", getDefaultPrefixManager());
-		hasStateProperty = getDataFactory().getOWLObjectProperty(":hasState", getDefaultPrefixManager());
 		hasDataTypeProperty = getDataFactory().getOWLObjectProperty(":hasDataType", getDefaultPrefixManager());
 		requiresProperty = getDataFactory().getOWLObjectProperty(":requires", getDefaultPrefixManager());
 		hasProperty = getDataFactory().getOWLObjectProperty(":has", getDefaultPrefixManager());
+		memberProperty = getDataFactory().getOWLObjectProperty("rdfs:member", getDefaultPrefixManager());
 	}
 
 	/**

@@ -7,6 +7,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.fixtrading.orchestra.messages.MessageOntologyManager.CodeObject;
+import org.fixtrading.orchestra.messages.MessageOntologyManager.CodeSetObject;
 import org.fixtrading.orchestra.messages.MessageOntologyManager.DataTypeObject;
 import org.fixtrading.orchestra.messages.MessageOntologyManager.FieldObject;
 
@@ -101,6 +103,22 @@ public class MessageDiff {
 					String.format("Datatype of %s=%s", field1.getName(), type1.getName()));
 			listener.accept(MessageDiffListener.Source.SECOND_SOURCE,
 					String.format("Datatype of %s=%s", field2.getName(), type2.getName()));
+		} else if (type1 instanceof CodeSetObject) {
+			CodeSetObject cs1 = (CodeSetObject) type1;
+			CodeSetObject cs2 = (CodeSetObject) type2;
+			
+			Set<CodeObject> codes1 = ontologyManager.getCodes(model1, cs1.getName());
+			Set<CodeObject> codes2 = ontologyManager.getCodes(model2, cs2.getName());
+			
+			Set<CodeObject> CodeIn1only = codes1.stream().filter(m -> !codes2.contains(m)).collect(Collectors.toSet());
+			Set<CodeObject> CodeIn2only = codes2.stream().filter(m -> !codes1.contains(m)).collect(Collectors.toSet());
+
+			CodeIn1only.forEach(c -> listener.accept(MessageDiffListener.Source.FIRST_SOURCE,
+					String.format("Code %s/%s [%s]", field1.getName(), c.getName(), c.getValue())));
+			CodeIn2only.forEach(c -> listener.accept(MessageDiffListener.Source.SECOND_SOURCE,
+					String.format("Code %s/%s [%s]", field1.getName(), c.getName(), c.getValue())));
+
+
 		}
 	}
 
