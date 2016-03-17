@@ -1036,7 +1036,7 @@ public class MessageOntologyManager {
 		fieldClass = getDataFactory().getOWLClass(":Field", getDefaultPrefixManager());
 		dataTypeClass = getDataFactory().getOWLClass(":DataType", getDefaultPrefixManager());
 		codeSetClass = getDataFactory().getOWLClass(":CodeSet", getDefaultPrefixManager());
-		codeLiteralClass = getDataFactory().getOWLClass(":CodeLiteral", getDefaultPrefixManager());
+		codeLiteralClass = getDataFactory().getOWLClass(":Code", getDefaultPrefixManager());
 		componentClass = getDataFactory().getOWLClass(":Component", getDefaultPrefixManager());
 		repeatingGroupClass = getDataFactory().getOWLClass(":RepeatingGroup", getDefaultPrefixManager());
 

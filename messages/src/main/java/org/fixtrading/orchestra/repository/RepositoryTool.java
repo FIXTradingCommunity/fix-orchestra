@@ -171,8 +171,8 @@ public class RepositoryTool {
 					ontologyManager.createField(model, field.getId().intValue(), field.getName(),
 							field.getName());
 				} else {
-					final BigInteger associatedDataTag = field.getAssociatedDataTag();
-					if (associatedDataTag != null) {
+					final BigInteger referencedTag = field.getEnumDatatype();
+					if (referencedTag == null) {
 						ontologyManager.createField(model, field.getId().intValue(), field.getName(),
 							field.getType());
 					} else {
