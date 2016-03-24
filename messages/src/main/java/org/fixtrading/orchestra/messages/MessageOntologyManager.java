@@ -24,7 +24,11 @@ import java.util.stream.Collectors;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.formats.RDFXMLDocumentFormat;
 import org.semanticweb.owlapi.formats.TurtleDocumentFormat;
+import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAnnotation;
+import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLDataFactory;
@@ -43,6 +47,7 @@ import org.semanticweb.owlapi.reasoner.NodeSet;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.structural.StructuralReasonerFactory;
 import org.semanticweb.owlapi.util.DefaultPrefixManager;
+import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 
 import com.google.common.base.Optional;
 
@@ -638,7 +643,14 @@ public class MessageOntologyManager {
 		OWLClassAssertionAxiom classAssertion = getDataFactory().getOWLClassAssertionAxiom(codeLiteralClass, codeInd);
 		final OWLOntology derivedModel = messageModel.getDerivedModel();
 		getOntologyManager().addAxiom(derivedModel, classAssertion);
-
+		OWLLiteral literal = getDataFactory().getOWLLiteral(codeSetName + "/" + name);
+		OWLAnnotation label =
+				getDataFactory().getOWLAnnotation( 
+						getDataFactory().getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_LABEL.getIRI()), literal);
+		OWLAnnotationAssertionAxiom annotationAxiom = getDataFactory().getOWLAnnotationAssertionAxiom(codeInd.asOWLNamedIndividual().getIRI(), label);
+		getOntologyManager().addAxiom(derivedModel, annotationAxiom);
+		
+		
 		OWLNamedIndividual codeSetInd = getDataFactory().getOWLNamedIndividual("datatypes/" + codeSetName,
 				messageModel.getPrefixManager());
 

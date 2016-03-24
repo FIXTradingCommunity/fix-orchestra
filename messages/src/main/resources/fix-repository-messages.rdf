@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<rdf:RDF xmlns="http://www.fixprotocol.org/repository/ontologies/2016/2/messages#"
-     xml:base="http://www.fixprotocol.org/repository/ontologies/2016/2/messages"
+<rdf:RDF xmlns="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/"
+     xml:base="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/"
      xmlns:dct="http://purl.org/dc/terms/"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
@@ -27,16 +27,15 @@
 		</sm:submitter>
         <rdfs:label>FIX Orchestra Message Ontology</rdfs:label>
         <sm:thisVersion rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.0 RC1</sm:thisVersion>
+        <sm:filename rdf:datatype="http://www.w3.org/2001/XMLSchema#string">FIX Orchestra Message Ontology</sm:filename>
         <sm:specificationAbbreviation rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ORCH-MSG</sm:specificationAbbreviation>
         <sm:contentLanguage rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://www.w3.org/standards/techs/owl#w3c_all
 		</sm:contentLanguage>
+        <sm:specificationTitle rdf:datatype="http://www.w3.org/2001/XMLSchema#string">FIX Orchestra Messages</sm:specificationTitle>
         <sm:specificationURL rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://fixtrading.org/fix-orchestra-messsages/
 		</sm:specificationURL>
         <dct:license rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://www.apache.org/licenses/LICENSE-2.0
 		</dct:license>
-        <sm:specificationTitle rdf:datatype="http://www.w3.org/2001/XMLSchema#string">FIX
-			Orchestra Messages
-		</sm:specificationTitle>
         <dct:license rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Licensed under the Apache
 			License, Version 2.0 (the &quot;License&quot;);
 			you may not use this
@@ -67,9 +66,6 @@
 			FIX
 			Protocol Limited
 		</sm:copyright>
-        <sm:filename rdf:datatype="http://www.w3.org/2001/XMLSchema#string">FIX Orchestra Message
-			Ontology
-		</sm:filename>
         <sm:contentLanguage rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://www.omg.org/spec/ODM/
 		</sm:contentLanguage>
     </owl:Ontology>
@@ -294,7 +290,6 @@
                 <owl:someValuesFrom rdf:resource="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/SizeField"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <owl:disjointWith rdf:resource="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/SizeField"/>
         <rdfs:comment>a field containing opaque data, ususally variable-length</rdfs:comment>
         <rdfs:label>Data Field</rdfs:label>
     </owl:Class>
@@ -326,12 +321,6 @@
                 <owl:someValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#Name"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <owl:disjointUnionOf rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/#DataType"/>
-            <rdf:Description rdf:about="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/#Message"/>
-            <rdf:Description rdf:about="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/#RepeatingGroup"/>
-            <rdf:Description rdf:about="http:/www.fixprotocol.org/repository/ontologies/messages#Field"/>
-        </owl:disjointUnionOf>
         <rdfs:comment>a literal value in the value space of a field</rdfs:comment>
     </owl:Class>
     
@@ -445,11 +434,6 @@
                 <owl:someValuesFrom rdf:resource="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/#DataType"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <owl:disjointUnionOf rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/#DataType"/>
-            <rdf:Description rdf:about="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/#Message"/>
-            <rdf:Description rdf:about="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/#RepeatingGroup"/>
-        </owl:disjointUnionOf>
         <rdfs:comment>a semantic unit of a message</rdfs:comment>
     </owl:Class>
     
@@ -488,6 +472,25 @@
 
     <rdf:Description rdf:about="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/#Component">
         <rdfs:comment>a message fragment consisting of a group of fields</rdfs:comment>
+    </rdf:Description>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // General axioms
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/#Code"/>
+            <rdf:Description rdf:about="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/#DataType"/>
+            <rdf:Description rdf:about="http://www.fixprotocol.org/repository/ontologies/2016/2/messages/#MessageEntity"/>
+        </owl:members>
     </rdf:Description>
 </rdf:RDF>
 
