@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2013 rel. 2 sp2 (x64) (http://www.altova.com) by Richard Shriver (R. Shriver Associates LLC) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+targetNamespace="http://fixprotocol.io/2016/fixrepository"
+xmlns:fixr="http://fixprotocol.io/2016/fixrepository"
+elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0-rc1">
+	<xs:annotation>
+		<xs:documentation>
+		© Copyright 2016 FIX Protocol Limited
+        Creative Commons Attribution-NoDerivatives 4.0
+        International Public License
+		</xs:documentation>
+	</xs:annotation>
+
+	<xs:simpleType name="purpose_t">
+		<xs:annotation>
+			<xs:documentation>Permitted text purposes</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="SYNOPSIS"/>
+			<xs:enumeration value="ELABORATION"/>
+			<xs:enumeration value="EXAMPLE"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<!-- Basic datatypes used in the extension packs -->
+	<xs:simpleType name="id_t">
+		<xs:restriction base="xs:integer"/>
+	</xs:simpleType>
+	<xs:simpleType name="language_t">
+		<xs:restriction base="xs:language"/>
+	</xs:simpleType>
+	<xs:simpleType name="changeType_t">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Editorial"/>
+			<xs:enumeration value="Definitional"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Name_t">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="255"/>
+			<xs:pattern value="([A-Z]|[a-z]|_)([0-9]|[A-Z]|[a-z]|_)*"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Tag_t">
+		<xs:restriction base="xs:positiveInteger"/>
+	</xs:simpleType>
+	<xs:simpleType name="FieldName_t">
+		<xs:restriction base="fixr:Name_t"/>
+	</xs:simpleType>
+	<xs:simpleType name="Datatype_t">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="255"/>
+			<xs:pattern value="([A-Z]|[a-z])([0-9]|[A-Z]|[a-z]|_|-)*"/>
+		</xs:restriction>
+	</xs:simpleType>
+		<xs:simpleType name="datatypeStandard_t">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="XML"/>
+			<xs:enumeration value="ISO11404"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Edition_t">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="8"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SymbolicName_t">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="255"/>
+			<xs:pattern value="([A-Z]|[a-z]|_)([0-9]|[A-Z]|[a-z]|_)*"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Group_t">
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="Sort_t">
+		<xs:restriction base="xs:nonNegativeInteger"/>
+	</xs:simpleType>
+	<xs:simpleType name="MsgType_t">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="2"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="MessageName_t">
+		<xs:restriction base="fixr:Name_t"/>
+	</xs:simpleType>
+	<xs:simpleType name="CategoryID_t">
+		<xs:restriction base="fixr:Name_t"/>
+	</xs:simpleType>
+	<xs:simpleType name="MsgID_t">
+		<xs:restriction base="xs:positiveInteger">
+			<xs:maxExclusive value="1000"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="CompID_t">
+		<xs:restriction base="xs:positiveInteger">
+			<xs:minInclusive value="1000"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="MsgOrCompID_t">
+		<xs:union memberTypes="fixr:MsgID_t fixr:CompID_t"/>
+	</xs:simpleType>
+	<xs:simpleType name="CatComponentType_t">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Field"/>
+			<xs:enumeration value="Message"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="CatIncludeFile_t">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="components"/>
+			<xs:enumeration value="fields"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SectionID_t">
+		<xs:restriction base="fixr:Name_t">
+			<xs:enumeration value="Session"/>
+			<xs:enumeration value="PreTrade"/>
+			<xs:enumeration value="Trade"/>
+			<xs:enumeration value="PostTrade"/>
+			<xs:enumeration value="Infrastructure"/>
+			<xs:enumeration value="Other"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ComponentName_t">
+		<xs:restriction base="fixr:Name_t"/>
+	</xs:simpleType>
+	<xs:simpleType name="UnionDataType_t">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Qty"/>
+			<xs:enumeration value="Reserved100Plus"/>
+			<xs:enumeration value="Reserved1000Plus"/>
+			<xs:enumeration value="Reserved4000Plus"/>
+			<xs:enumeration value="Tenor"/>
+			<!-- JimN - added specifically for Jira RPOS-271 -->
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Version_t">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="(FIX.2.7)|(FIX.3.0)|(FIX\.4\.[0-4])|(FIX\.5\.0(SP\d{1,2})?(_EP((9[8-9])|([1-9][0-9][0-9])))?)|(FIXT.1.1)"/>		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="EP_t">
+		<xs:restriction base="xs:integer"/>
+	</xs:simpleType>
+	<!-- following three types are currently used in Abbreviations.xsd -->
+	<xs:simpleType name="Term_t">
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="Usage_t">
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="Abbreviation_t">
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="VolumeNumber_t">
+		<xs:restriction base="xs:nonNegativeInteger">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="5"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="VolumeName_t">
+		<xs:restriction base="fixr:Name_t">
+			<xs:enumeration value="Volume1"/>
+			<xs:enumeration value="Volume2"/>
+			<xs:enumeration value="Volume3"/>
+			<xs:enumeration value="Volume4"/>
+			<xs:enumeration value="Volume5"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="presence_t">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="optional"/>
+			<xs:enumeration value="required"/>
+			<xs:enumeration value="conditional"/>
+			<xs:enumeration value="forbidden"/>
+			<xs:enumeration value="ignored"/>
+			<xs:enumeration value="constant"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Volume_t">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="1"/>
+			<xs:enumeration value="2"/>
+			<xs:enumeration value="3"/>
+			<xs:enumeration value="4"/>
+			<xs:enumeration value="5"/>
+			<xs:enumeration value="6"/>
+			<xs:enumeration value="FIXT.1.1"/>
+			<xs:enumeration value="?"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="CategoryComponentType_t">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Field"/>
+			<xs:enumeration value="Message"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="IncludeFile_t">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="components"/>
+			<xs:enumeration value="fields"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="BOOL_t">
+		<xs:restriction base="xs:short">
+			<xs:enumeration value="1"/>
+			<xs:enumeration value="0"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

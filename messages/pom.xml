@@ -12,7 +12,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>repository</artifactId>
+			<artifactId>repository2010</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>

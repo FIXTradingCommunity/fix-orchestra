@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+targetNamespace="http://fixprotocol.io/2016/fixrepository"
+xmlns:fixr="http://fixprotocol.io/2016/fixrepository"
+elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0-rc1">
+	<xs:annotation>
+		<xs:documentation>
+		© Copyright 2016 FIX Protocol Limited
+        Creative Commons Attribution-NoDerivatives 4.0
+        International Public License
+		</xs:documentation>
+	</xs:annotation>
+	
+	<xs:include schemaLocation="repositorytypes2016.xsd"/>
+	
+	<xs:attributeGroup name="containerAttribGrp">
+		<xs:attribute name="latestEP" type="fixr:EP_t"/>
+	</xs:attributeGroup>
+	<xs:attributeGroup name="entityAttribGrp">
+		<xs:attribute name="added" type="fixr:Version_t" use="optional"/>
+		<xs:attribute name="addedEP" type="fixr:EP_t" use="optional"/>
+		<xs:attribute name="changeType" type="fixr:changeType_t" use="optional"/>
+		<xs:attribute name="custom" type="fixr:BOOL_t" use="optional"/>
+		<xs:attribute name="deprecated" type="fixr:Version_t" use="optional"/>
+		<xs:attribute name="deprecatedEP" type="fixr:EP_t"/>
+		<xs:attribute name="issue" type="xs:string"/>
+		<xs:attribute name="lastModified" type="fixr:Version_t" use="optional"/>
+		<xs:attribute name="replaced" type="fixr:Version_t"/>
+		<xs:attribute name="replacedEP" type="fixr:EP_t"/>
+		<xs:attribute name="supported" type="fixr:BOOL_t" use="optional"/>
+		<xs:attribute name="updated" type="fixr:Version_t"/>
+		<xs:attribute name="updatedEP" type="fixr:EP_t"/>
+	</xs:attributeGroup>
+	<xs:attributeGroup name="datatypeGrp">
+		    <xs:attribute name="standard" type="fixr:datatypeStandard_t" use="required"/>
+			<xs:attribute name="builtin" type="xs:string" use="required"/>
+			<xs:attribute name="base" type="xs:string" use="required"/>
+			<xs:attribute name="pattern" type="xs:string"/>
+			<xs:attribute name="element" type="xs:string"/>
+			<xs:attribute name="parameter" type="xs:string"/>
+			<xs:attribute name="lowerBound" type="xs:string"/>
+			<xs:attribute name="upperBound" type="xs:string"/>
+	</xs:attributeGroup>
+	<!-- The abstract type (for substitution group for entities that make up components, groups, and messages) -->
+	<xs:complexType name="messageEntity_t">
+		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
+		<xs:attribute name="id" type="fixr:id_t" use="required"/>
+		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="presence" type="fixr:presence_t" use="optional" default="optional"/>
+		<xs:attribute name="abbrName" type="xs:string"/>
+	</xs:complexType>
+		<xs:element name="text">
+		<xs:complexType mixed="true">
+			<xs:sequence>
+				<xs:any processContents="skip" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="langId" type="fixr:language_t" use="optional"/>
+			<xs:attribute name="purpose" type="fixr:purpose_t" use="optional"/>
+			<xs:attributeGroup ref="fixr:entityAttribGrp"/>
+			<!-- Ability to classify the purpose for a given  text block -->
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="phrase">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="fixr:text" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attributeGroup ref="fixr:entityAttribGrp"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="messageEntity" type="fixr:messageEntity_t" abstract="true"/>
+	<xs:element name="codeSets">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="fixr:codeSet" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="codeSet">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="fixr:code" maxOccurs="unbounded"/>
+				<xs:element ref="fixr:phrase" />
+			</xs:sequence>
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attributeGroup ref="fixr:entityAttribGrp"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="code">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="fixr:phrase" />
+			</xs:sequence>
+			<xs:attribute name="value" type="xs:string" use="required"/>
+			<xs:attribute name="name" type="xs:NCName" use="optional"/>
+			<xs:attribute name="symbolicName"/>
+			<xs:attribute name="sort" type="xs:string" use="optional"/>
+			<xs:attribute name="group" type="xs:string" use="optional"/>
+			<xs:attributeGroup ref="fixr:entityAttribGrp"/>
+			<!-- override and require a description for enumerations -->
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="messages">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="fixr:message" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="message">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="fixr:messageEntity" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="fixr:phrase" />
+			</xs:sequence>
+			<xs:attributeGroup ref="fixr:entityAttribGrp"/>
+			<xs:attribute name="id" type="fixr:id_t" use="required"/>
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="msgType" type="xs:string" use="required"/>
+			<xs:attribute name="category" type="xs:string" use="required"/>
+			<xs:attribute name="section" type="xs:string" use="required"/>
+			<xs:attribute name="abbrName" type="xs:string" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="languages">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="fixr:language"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="language">
+		<xs:complexType>
+			<xs:attribute name="native" type="xs:string" use="required"/>
+			<xs:attribute name="id" type="fixr:language_t" use="required"/>
+			<xs:attribute name="english" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="fixRepository">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="fixr:abbreviations" minOccurs="0"/>
+				<xs:element ref="fixr:codeSets"/>
+				<xs:element ref="fixr:datatypes"/>
+				<xs:element ref="fixr:categories" minOccurs="0"/>
+				<xs:element ref="fixr:sections" minOccurs="0"/>
+				<xs:element ref="fixr:fields"/>
+				<xs:element ref="fixr:fix" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="edition" type="xs:integer" use="required"/>
+			<xs:attribute name="copyright" type="xs:string" use="required"/>
+			<xs:attribute name="generated" type="xs:dateTime" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="fix">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="fixr:components"/>
+				<xs:element ref="fixr:messages"/>
+			</xs:sequence>
+			<xs:attribute name="version" type="fixr:Version_t" use="required"/>
+			<xs:attribute name="guid" type="xs:string" use="optional"/>
+			<xs:attribute name="customVersion" type="xs:string" use="optional"/>
+			<xs:attribute name="fixml" type="fixr:BOOL_t" use="required"/>
+			<xs:attribute name="hasComponents" type="fixr:BOOL_t" use="required"/>
+			<xs:attribute name="specUrl" type="xs:anyURI"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="abbreviations">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="fixr:abbreviation" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="abbreviation">
+		<xs:complexType>
+			<xs:attributeGroup ref="fixr:entityAttribGrp"/>
+			<xs:attribute name="abbrTerm" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="fields">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="fixr:field" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="latestEP" type="fixr:EP_t"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="field">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="fixr:codeSet" minOccurs="0" />
+				<xs:element ref="fixr:phrase" />
+			</xs:sequence>
+			<xs:attributeGroup ref="fixr:entityAttribGrp"/>
+			<xs:attribute name="id" type="fixr:id_t" use="required"/>
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="type" type="xs:string" use="required"/>
+			<xs:attribute name="lengthId" type="fixr:id_t" use="optional"/>
+			<xs:attribute name="lengthName" type="xs:string" use="optional"/>
+			<xs:attribute name="abbrName" type="xs:string" use="optional"/>
+			<xs:attribute name="baseCategory" type="fixr:CategoryID_t"/>
+			<xs:attribute name="baseCategoryAbbrName" type="fixr:Name_t"/>
+			<xs:attribute name="unionDataType" type="fixr:UnionDataType_t"/>
+			<xs:attribute name="implMinLength" type="xs:short" use="optional"/>
+			<xs:attribute name="implMaxLength" type="xs:short" use="optional"/>
+			<xs:attribute name="replacedByField" type="fixr:Tag_t"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="fieldRef" substitutionGroup="fixr:messageEntity">
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="fixr:messageEntity_t">
+					<xs:attribute name="implMinLength" type="xs:short" use="optional"/>
+					<xs:attribute name="implMaxLength" type="xs:short" use="optional"/>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="components">
+		<xs:complexType>
+			<xs:choice maxOccurs="unbounded">
+				<xs:element ref="fixr:component"/>
+				<xs:element ref="fixr:group"/>
+			</xs:choice>
+			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="component">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="fixr:messageEntity" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="fixr:phrase" />
+			</xs:sequence>
+			<xs:attributeGroup ref="fixr:entityAttribGrp"/>
+			<xs:attribute name="id" type="fixr:id_t" use="required"/>
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="category" type="xs:string" use="optional"/>
+			<xs:attribute name="abbrName" type="xs:string" use="optional"/>
+			<!-- would like to force a description of the component -->
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="group">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="fixr:messageEntity" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="fixr:phrase" />
+			</xs:sequence>
+			<xs:attributeGroup ref="fixr:entityAttribGrp"/>
+			<xs:attribute name="id" type="fixr:id_t" use="required"/>
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="numInGroupId" type="fixr:id_t" use="required"/>
+			<xs:attribute name="numInGroupName" type="xs:string" use="required"/>
+			<xs:attribute name="category" type="xs:string" use="optional"/>
+			<xs:attribute name="abbrName" type="xs:string" use="optional"/>
+			<xs:attribute name="implMinOccurs" type="xs:short" use="optional"/>
+			<xs:attribute name="implMaxOccurs" type="xs:short" use="optional"/>
+			<!-- would like to force a description of the component -->
+		</xs:complexType>
+	</xs:element>	
+	<xs:element name="componentRef" substitutionGroup="fixr:messageEntity">
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="fixr:messageEntity_t">
+					<xs:attribute name="inlined" type="xs:boolean" use="optional"/>
+					<xs:attribute name="implMinOccurs" type="xs:short" use="optional"/>
+					<xs:attribute name="implMaxOccurs" type="xs:short" use="optional"/>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<!-- datatypes definition -->
+	<xs:element name="datatypes">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="fixr:datatype" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="datatype">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="fixr:mappedDatatype" maxOccurs="unbounded"/>
+				<xs:element ref="fixr:phrase" />
+			</xs:sequence>
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="baseType" type="xs:string"/>
+			<xs:attributeGroup ref="fixr:entityAttribGrp"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="mappedDatatype">
+		<xs:complexType>
+		    <xs:sequence>
+		    	<xs:element ref="fixr:mappedDatatype" minOccurs="0" maxOccurs="unbounded"/>
+		    	<xs:element ref="fixr:phrase" />
+		    </xs:sequence>
+		    <xs:attributeGroup ref="fixr:datatypeGrp"/>
+		</xs:complexType>
+	</xs:element>
+	<!-- Categories definition -->
+	<xs:element name="categories">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="fixr:category" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="category">
+		<xs:complexType>
+			<xs:attribute name="id" type="fixr:CategoryID_t"/>
+			<xs:attribute name="FIXMLFileName" type="fixr:Name_t"/>
+			<xs:attribute name="componentType" type="fixr:CatComponentType_t"/>
+			<xs:attribute name="section" type="fixr:SectionID_t"/>
+			<xs:attribute name="volume" type="fixr:Volume_t"/>
+			<xs:attribute name="includeFile" type="fixr:CatIncludeFile_t"/>
+			<xs:attributeGroup ref="fixr:entityAttribGrp"/>
+		</xs:complexType>
+	</xs:element>
+	<!-- Sections definition -->
+	<xs:element name="sections">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="fixr:section" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="section">
+		<xs:complexType>
+			<xs:attribute name="id" type="fixr:SectionID_t"/>
+			<xs:attribute name="name" type="fixr:Name_t"/>
+			<xs:attribute name="displayOrder" type="xs:int"/>
+			<xs:attribute name="volume" type="fixr:Volume_t"/>
+			<xs:attribute name="FIXMLFileName" type="fixr:Name_t"/>
+			<xs:attributeGroup ref="fixr:entityAttribGrp"/>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

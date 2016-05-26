@@ -24,11 +24,9 @@ import java.util.stream.Collectors;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.formats.RDFXMLDocumentFormat;
 import org.semanticweb.owlapi.formats.TurtleDocumentFormat;
-import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
-import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLDataFactory;
@@ -1116,7 +1114,8 @@ public class MessageOntologyManager {
 	public void storeModel(Model model, OutputStream out) throws Exception {
 		MessageModel messageModel = (MessageModel) model;
 
-		writeAsRdf(messageModel.getDerivedModel(), out);
+		//writeAsRdf(messageModel.getDerivedModel(), out);
+        writeAsTurtle(messageModel.getDerivedModel(), out);
 	}
 
 	/**

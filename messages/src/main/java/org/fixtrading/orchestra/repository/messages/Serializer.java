@@ -31,7 +31,10 @@ import org.fixtrading.orchestra.repository.jaxb.FixRepository;
  */
 public final class Serializer {
 
-
+  private Serializer() {
+    
+  }
+  
   /**
    * Serializes a repository to an output stream
    * @param jaxbElement root element of tree to marshal
