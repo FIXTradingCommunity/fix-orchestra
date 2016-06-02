@@ -14,90 +14,94 @@
 	</xs:annotation>
 	<xs:import namespace="http://fixprotocol.io/2016/fixrepository"
 		schemaLocation="FixRepository2016.xsd" />
-    <xs:complexType name="actorType">
-    	<xs:sequence>
-    		<!-- state variables -->
-			<xs:element ref="fixr:field" minOccurs="0" maxOccurs="unbounded"/>
-			<xs:element name="stateMachine" type="fixo:stateMachineType" minOccurs="0" maxOccurs="unbounded"/>
-			<xs:element name="timer" type="fixo:timerType" minOccurs="0" maxOccurs="unbounded"/>
+	<xs:complexType name="actorType">
+		<xs:sequence>
+			<xs:element ref="fixr:field" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>State variables</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="states" type="fixo:stateMachineType"
+				minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="timer" type="fixo:timerType" minOccurs="0"
+				maxOccurs="unbounded" />
+			<xs:element name="responses" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="response" type="fixo:responseType"
+							maxOccurs="unbounded" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
 		</xs:sequence>
-    	<xs:attribute name="name" type="xs:string" use="required"/>
-    </xs:complexType>
-    
-    <xs:complexType name="timerType">
-    	<xs:attribute name="name" type="xs:string" use="required"/>
-    </xs:complexType>
-    
-    <xs:simpleType name="timerOperation">
+		<xs:attribute name="name" type="xs:string" use="required" />
+	</xs:complexType>
+	<xs:complexType name="timerType">
+		<xs:attribute name="name" type="xs:string" use="required" />
+	</xs:complexType>
+	<xs:simpleType name="timerOperation">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="START" />
 			<xs:enumeration value="CANCEL" />
 		</xs:restriction>
 	</xs:simpleType>
-	
 	<xs:complexType name="timerRefType">
-	    <xs:sequence>
-			<xs:element name="event" type="fixo:transitionRefType" minOccurs="0">
-	    		<xs:annotation><xs:documentation>Transition event to fire when timer expires</xs:documentation></xs:annotation>
-	    	</xs:element>
+		<xs:sequence>
+			<xs:element name="event" type="fixo:transitionRefType"
+				minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Transition event to fire when timer expires
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 		</xs:sequence>
-    	<xs:attribute name="name" type="xs:string" use="required"/>
-    	<xs:attribute name="operation" type="fixo:timerOperation" use="required"/>
-    	<xs:attribute name="interval" type="xs:duration"/>
-    </xs:complexType>
-    
-    <xs:complexType name="stateMachineType">
-    	<xs:sequence>
-			<xs:element name="initial" type="fixo:stateType"/>
-			<xs:element name="state" type="fixo:stateType" maxOccurs="unbounded"/>
+		<xs:attribute name="name" type="xs:string" use="required" />
+		<xs:attribute name="operation" type="fixo:timerOperation"
+			use="required" />
+		<xs:attribute name="interval" type="xs:duration" />
+	</xs:complexType>
+	<xs:complexType name="stateMachineType">
+		<xs:sequence>
+			<xs:element name="initial" type="fixo:stateType" />
+			<xs:element name="state" type="fixo:stateType" maxOccurs="unbounded" />
 		</xs:sequence>
-    	<xs:attribute name="name" type="xs:string" use="required"/>
-    </xs:complexType>
-    
-    <xs:complexType name="stateType">
-    	<xs:sequence>
-			<xs:element name="transition" type="fixo:transitionType" maxOccurs="unbounded"/>
+		<xs:attribute name="name" type="xs:string" use="required" />
+	</xs:complexType>
+	<xs:complexType name="stateType">
+		<xs:sequence>
+			<xs:element name="transition" type="fixo:transitionType"
+				maxOccurs="unbounded" />
 		</xs:sequence>
-    	<xs:attribute name="name" type="xs:string" use="required"/>
-    </xs:complexType>
-    
-    <xs:complexType name="stateRefType">
-        <xs:sequence>
-    		<xs:element ref="fixr:field" minOccurs="0" maxOccurs="unbounded"/>
-    	</xs:sequence>
-    </xs:complexType>
-    
-    <xs:complexType name="transitionType">
-    	<xs:attribute name="name" type="xs:string" use="required"/>
-    	<xs:attribute name="target" type="xs:string" use="required"/>
-    </xs:complexType>
-    
-    <xs:complexType name="transitionRefType">
-        <xs:attribute name="stateMachine" type="xs:string"/>
-    	<xs:attribute name="name" type="xs:string"/>
-    </xs:complexType>
-    
-    <xs:complexType name="responseType">
-        <xs:sequence>
-			<xs:element name="messageRef" type="fixo:messageRefType" minOccurs="0" maxOccurs="unbounded"/>
-			<xs:element name="stateRef" type="fixo:stateRefType" minOccurs="0"/>
-			<xs:element name="transitionRef" type="fixo:transitionRefType" minOccurs="0"/>
-			<xs:element name="when" type="fixo:expressionType"/>
+		<xs:attribute name="name" type="xs:string" use="required" />
+	</xs:complexType>
+	<xs:complexType name="stateRefType">
+		<xs:sequence>
+			<xs:element ref="fixr:field" minOccurs="0" maxOccurs="unbounded" />
 		</xs:sequence>
-    	<xs:attribute name="name" type="xs:string"/>
-    </xs:complexType>
-    
-     <xs:complexType name="messageRefType">
-		<xs:attribute name="name" type="xs:string" use="required"/>
-		<xs:attribute name="msgType" type="xs:string" use="required"/>
-		<xs:attribute name="context" type="xs:string" use="required" />		
-     </xs:complexType>
-
-	<xs:simpleType name="expressionType">
-		<xs:annotation><xs:documentation>Boolean predicate expressed in a Domain Specific Language</xs:documentation></xs:annotation>
-		<xs:restriction base="xs:string">
-			<xs:maxLength value="1024" />
-		</xs:restriction>
-	</xs:simpleType>
-
+	</xs:complexType>
+	<xs:complexType name="transitionType">
+		<xs:attribute name="name" type="xs:string" use="required" />
+		<xs:attribute name="target" type="xs:string" use="required" />
+	</xs:complexType>
+	<xs:complexType name="transitionRefType">
+		<xs:attribute name="stateMachine" type="xs:string" />
+		<xs:attribute name="name" type="xs:string" />
+	</xs:complexType>
+	<xs:complexType name="responseType">
+		<xs:sequence>
+			<xs:element name="messageRef" type="fixo:messageRefType"
+				minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="stateRef" type="fixo:stateRefType"
+				minOccurs="0" />
+			<xs:element name="transitionRef" type="fixo:transitionRefType"
+				minOccurs="0" />
+			<xs:element name="when" type="fixr:expressionType" />
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" />
+	</xs:complexType>
+	<xs:complexType name="messageRefType" mixed="true">
+		<xs:attribute name="name" type="xs:string" use="required" />
+		<xs:attribute name="msgType" type="xs:string" use="required" />
+		<xs:attribute name="context" type="xs:string" default="base" />
+	</xs:complexType>
 </xs:schema>

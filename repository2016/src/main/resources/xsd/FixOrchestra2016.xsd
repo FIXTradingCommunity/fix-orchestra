@@ -40,10 +40,8 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="actor">
-		<xs:complexType>
-			<xs:sequence />
-		</xs:complexType>
+	<xs:element name="actor" type="fixo:actorType">
+
 	</xs:element>
 	<xs:element name="messages">
 		<xs:complexType>
@@ -53,7 +51,7 @@
 			<xs:attributeGroup ref="fixr:containerAttribGrp" />
 		</xs:complexType>
 		<xs:unique name="messageId">
-			<xs:selector xpath="message" />
+			<xs:selector xpath="fixo:message" />
 			<xs:field xpath="@id" />
 		</xs:unique>
 	</xs:element>
@@ -62,9 +60,13 @@
 			<xs:sequence>
 				<xs:element name="structure">
 					<xs:complexType>
-						<xs:sequence>
+						<!-- message elements may be by reference or inline -->
+						<xs:choice maxOccurs="unbounded">
+							<xs:element ref="fixr:component" />
+							<xs:element ref="fixr:group" />
+							<xs:element ref="fixr:field" />
 							<xs:element ref="fixr:messageEntity" maxOccurs="unbounded" />
-						</xs:sequence>
+						</xs:choice>
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="responses" minOccurs="0">
@@ -75,11 +77,11 @@
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
-				<xs:element ref="fixr:phrase" minOccurs="0" />
+				<xs:element name="phrase" type="fixr:phrase" minOccurs="0" />
 			</xs:sequence>
 			<xs:attributeGroup ref="fixr:messageAttribGrp" />
 			<xs:attributeGroup ref="fixr:entityAttribGrp" />
-			<xs:attribute name="context" type="xs:string" use="optional" />
+			<xs:attribute name="context" type="xs:string" default="base" />
 			<xs:attribute name="originator" type="xs:string" use="optional" />
 			<xs:attribute name="destination" type="xs:string" use="optional" />
 		</xs:complexType>

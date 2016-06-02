@@ -13,13 +13,29 @@
 			International Public License
 		</xs:documentation>
 	</xs:annotation>
+
+	<xs:complexType name="text" mixed="true">
+		<xs:sequence>
+			<xs:any processContents="skip" minOccurs="0" maxOccurs="unbounded" />
+		</xs:sequence>
+		<xs:attribute name="langId" type="fixr:language_t" use="optional" />
+		<xs:attribute name="purpose" type="fixr:purpose_t" use="optional" />
+		<xs:attributeGroup ref="fixr:entityAttribGrp" />
+	</xs:complexType>
+	<xs:complexType name="phrase">
+		<xs:sequence>
+			<xs:element name="text" type="fixr:text" minOccurs="0"
+				maxOccurs="unbounded" />
+		</xs:sequence>
+		<xs:attributeGroup ref="fixr:entityAttribGrp" />
+	</xs:complexType>
 	<xs:attributeGroup name="messageAttribGrp">
-			<xs:attribute name="id" type="fixr:id_t" use="required"/>
-			<xs:attribute name="name" type="xs:string" use="required"/>
-			<xs:attribute name="msgType" type="xs:string" use="required"/>
-			<xs:attribute name="category" type="xs:string" use="required"/>
-			<xs:attribute name="section" type="xs:string" use="required"/>
-			<xs:attribute name="abbrName" type="xs:string" use="optional"/>
+		<xs:attribute name="id" type="fixr:id_t" use="required" />
+		<xs:attribute name="name" type="xs:string" use="required" />
+		<xs:attribute name="msgType" type="xs:string" use="required" />
+		<xs:attribute name="category" type="xs:string" use="optional" />
+		<xs:attribute name="section" type="xs:string" use="optional" />
+		<xs:attribute name="abbrName" type="xs:string" use="optional" />
 	</xs:attributeGroup>
 	<xs:attributeGroup name="containerAttribGrp">
 		<xs:attribute name="latestEP" type="fixr:EP_t" />
@@ -51,16 +67,23 @@
 		<xs:attribute name="element" type="xs:string" />
 		<xs:attribute name="parameter" type="xs:string" />
 		<!-- upper and lower bounds are inclusive -->
-		<xs:attribute name="lowerBound" type="xs:string">		
-			<xs:annotation><xs:documentation>Inclusive lower bound</xs:documentation></xs:annotation>
+		<xs:attribute name="minInclusive" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>Inclusive lower bound</xs:documentation>
+			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="upperBound" type="xs:string">
-			<xs:annotation><xs:documentation>Inclusive upper bound</xs:documentation></xs:annotation>
+		<xs:attribute name="maxInclusive" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>Inclusive upper bound</xs:documentation>
+			</xs:annotation>
 		</xs:attribute>
 	</xs:attributeGroup>
 	<!-- The abstract type (for substitution group for entities that make up 
 		components, groups, and messages) -->
-	<xs:complexType name="messageEntity_t">
+	<xs:complexType name="messageEntity_t" mixed="true">
+		<xs:sequence>
+			<xs:element name="phrase" type="fixr:phrase" minOccurs="0" />
+		</xs:sequence>
 		<xs:attributeGroup ref="fixr:entityAttribGrp" />
 		<xs:attribute name="id" type="fixr:id_t" use="required" />
 		<xs:attribute name="name" type="xs:string" use="required" />
@@ -265,6 +288,15 @@
 		<xs:restriction base="xs:short">
 			<xs:enumeration value="1" />
 			<xs:enumeration value="0" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="expressionType">
+		<xs:annotation>
+			<xs:documentation>Boolean predicate expressed in a Domain Specific
+				Language</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="1024" />
 		</xs:restriction>
 	</xs:simpleType>
 </xs:schema>
