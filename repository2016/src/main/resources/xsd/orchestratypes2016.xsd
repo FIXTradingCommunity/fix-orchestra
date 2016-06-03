@@ -7,7 +7,8 @@
 	<xs:annotation>
 		<xs:documentation>
 			Types for FIX Orchestra 2016
-			© Copyright 2016 FIX Protocol Limited
+			© Copyright 2016 FIX
+			Protocol Limited
 			Creative Commons Attribution-NoDerivatives 4.0
 			International Public License
 		</xs:documentation>
@@ -16,11 +17,13 @@
 		schemaLocation="FixRepository2016.xsd" />
 	<xs:complexType name="actorType">
 		<xs:sequence>
-			<xs:element ref="fixr:field" minOccurs="0" maxOccurs="unbounded">
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
 				<xs:annotation>
 					<xs:documentation>State variables</xs:documentation>
 				</xs:annotation>
-			</xs:element>
+				<xs:element ref="fixr:field" />
+				<xs:element ref="fixr:fieldRef" />
+			</xs:choice>
 			<xs:element name="states" type="fixo:stateMachineType"
 				minOccurs="0" maxOccurs="unbounded" />
 			<xs:element name="timer" type="fixo:timerType" minOccurs="0"
@@ -33,8 +36,10 @@
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
+			<xs:element name="phrase" type="fixr:phrase" minOccurs="0" />
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string" use="required" />
+		<xs:attribute name="extends" type="xs:string" use="optional" />
 	</xs:complexType>
 	<xs:complexType name="timerType">
 		<xs:attribute name="name" type="xs:string" use="required" />
@@ -76,7 +81,7 @@
 	</xs:complexType>
 	<xs:complexType name="stateRefType">
 		<xs:sequence>
-			<xs:element ref="fixr:field" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element ref="fixr:fieldRef" minOccurs="0" maxOccurs="unbounded" />
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="transitionType">
@@ -87,14 +92,44 @@
 		<xs:attribute name="stateMachine" type="xs:string" />
 		<xs:attribute name="name" type="xs:string" />
 	</xs:complexType>
+	<xs:complexType name="messageType">
+		<xs:sequence>
+			<xs:element name="structure">
+				<xs:complexType>
+					<xs:choice maxOccurs="unbounded">
+						<xs:element ref="fixr:component" />
+						<xs:element ref="fixr:group" />
+						<xs:element ref="fixr:field" />
+						<xs:element ref="fixr:messageEntity" maxOccurs="unbounded" />
+					</xs:choice>
+					<!-- message elements may be by reference or inline -->
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="responses" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="response" type="fixo:responseType"
+							maxOccurs="unbounded" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="phrase" type="fixr:phrase" minOccurs="0" />
+		</xs:sequence>
+		<xs:attributeGroup ref="fixr:messageAttribGrp" />
+		<xs:attributeGroup ref="fixr:entityAttribGrp" />
+		<xs:attribute name="context" type="xs:string" default="base" />
+		<xs:attribute name="extends" type="xs:string" use="optional" />
+		<xs:attribute name="originator" type="xs:string" use="optional" />
+		<xs:attribute name="destination" type="xs:string" use="optional" />
+	</xs:complexType>
 	<xs:complexType name="responseType">
 		<xs:sequence>
 			<xs:element name="messageRef" type="fixo:messageRefType"
 				minOccurs="0" maxOccurs="unbounded" />
 			<xs:element name="stateRef" type="fixo:stateRefType"
-				minOccurs="0" />
+				minOccurs="0" maxOccurs="unbounded" />
 			<xs:element name="transitionRef" type="fixo:transitionRefType"
-				minOccurs="0" />
+				minOccurs="0" maxOccurs="unbounded" />
 			<xs:element name="when" type="fixr:expressionType" />
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string" />

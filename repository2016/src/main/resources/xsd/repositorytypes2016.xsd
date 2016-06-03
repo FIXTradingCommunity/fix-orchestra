@@ -9,11 +9,11 @@
 	<xs:annotation>
 		<xs:documentation>
 			© Copyright 2016 FIX Protocol Limited
-			Creative Commons Attribution-NoDerivatives 4.0
+			Creative
+			Commons Attribution-NoDerivatives 4.0
 			International Public License
 		</xs:documentation>
 	</xs:annotation>
-
 	<xs:complexType name="text" mixed="true">
 		<xs:sequence>
 			<xs:any processContents="skip" minOccurs="0" maxOccurs="unbounded" />
@@ -22,11 +22,24 @@
 		<xs:attribute name="purpose" type="fixr:purpose_t" use="optional" />
 		<xs:attributeGroup ref="fixr:entityAttribGrp" />
 	</xs:complexType>
+	<xs:complexType name="link" mixed="true">
+		<xs:annotation>
+			<xs:documentation>Link to an external reference or standard
+			</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:extension base="xs:anyURI">
+				<xs:attribute name="langId" type="fixr:language_t" use="optional" />
+				<xs:attribute name="purpose" type="fixr:purpose_t" use="optional" />
+				<xs:attributeGroup ref="fixr:entityAttribGrp" />
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
 	<xs:complexType name="phrase">
-		<xs:sequence>
-			<xs:element name="text" type="fixr:text" minOccurs="0"
-				maxOccurs="unbounded" />
-		</xs:sequence>
+		<xs:choice maxOccurs="unbounded">
+			<xs:element name="text" type="fixr:text" />
+			<xs:element name="link" type="fixr:link" />
+		</xs:choice>
 		<xs:attributeGroup ref="fixr:entityAttribGrp" />
 	</xs:complexType>
 	<xs:attributeGroup name="messageAttribGrp">
