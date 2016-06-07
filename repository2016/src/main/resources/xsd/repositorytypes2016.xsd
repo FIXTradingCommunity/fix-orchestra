@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- edited with XMLSpy v2013 rel. 2 sp2 (x64) (http://www.altova.com) by 
-	Richard Shriver (R. Shriver Associates LLC) -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:fixr="http://fixprotocol.io/2016/fixrepository"
 	targetNamespace="http://fixprotocol.io/2016/fixrepository"
@@ -8,8 +6,7 @@
 	version="1.0-rc1">
 	<xs:annotation>
 		<xs:documentation>
-			© Copyright 2016 FIX Protocol Limited
-			Creative
+			© Copyright 2016 FIX Protocol Limited Creative
 			Commons Attribution-NoDerivatives 4.0
 			International Public License
 		</xs:documentation>
@@ -58,7 +55,6 @@
 		<xs:attribute name="addedEP" type="fixr:EP_t" use="optional" />
 		<xs:attribute name="changeType" type="fixr:changeType_t"
 			use="optional" />
-		<xs:attribute name="custom" type="fixr:BOOL_t" use="optional" />
 		<xs:attribute name="deprecated" type="fixr:Version_t"
 			use="optional" />
 		<xs:attribute name="deprecatedEP" type="fixr:EP_t" />
@@ -67,7 +63,8 @@
 			use="optional" />
 		<xs:attribute name="replaced" type="fixr:Version_t" />
 		<xs:attribute name="replacedEP" type="fixr:EP_t" />
-		<xs:attribute name="supported" type="fixr:BOOL_t" use="optional" />
+		<xs:attribute name="supported" type="fixr:supportType"
+			default="SUPPORTED" />
 		<xs:attribute name="updated" type="fixr:Version_t" />
 		<xs:attribute name="updatedEP" type="fixr:EP_t" />
 	</xs:attributeGroup>
@@ -297,19 +294,24 @@
 			<xs:enumeration value="fields" />
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:simpleType name="BOOL_t">
-		<xs:restriction base="xs:short">
-			<xs:enumeration value="1" />
-			<xs:enumeration value="0" />
-		</xs:restriction>
-	</xs:simpleType>
 	<xs:simpleType name="expressionType">
 		<xs:annotation>
 			<xs:documentation>Boolean predicate expressed in a Domain Specific
-				Language</xs:documentation>
+				Language
+			</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
 			<xs:maxLength value="1024" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="supportType">
+		<xs:annotation>
+			<xs:documentation>Support level</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="SUPPORTED" />
+			<xs:enumeration value="FORBIDDEN" />
+			<xs:enumeration value="IGNORED" />
 		</xs:restriction>
 	</xs:simpleType>
 </xs:schema>

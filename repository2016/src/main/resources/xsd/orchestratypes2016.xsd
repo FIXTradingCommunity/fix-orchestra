@@ -7,8 +7,7 @@
 	<xs:annotation>
 		<xs:documentation>
 			Types for FIX Orchestra 2016
-			© Copyright 2016 FIX
-			Protocol Limited
+			© Copyright 2016 FIX Protocol Limited
 			Creative Commons Attribution-NoDerivatives 4.0
 			International Public License
 		</xs:documentation>
@@ -118,9 +117,24 @@
 		<xs:attributeGroup ref="fixr:messageAttribGrp" />
 		<xs:attributeGroup ref="fixr:entityAttribGrp" />
 		<xs:attribute name="context" type="xs:string" default="base" />
-		<xs:attribute name="extends" type="xs:string" use="optional" />
-		<xs:attribute name="originator" type="xs:string" use="optional" />
-		<xs:attribute name="destination" type="xs:string" use="optional" />
+		<xs:attribute name="extends" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>If present, refers to another context, assuming
+					the same message name</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="originator" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>If present, refers to an actor name
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="destination" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>If present, refers to an actor name
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 	</xs:complexType>
 	<xs:complexType name="responseType">
 		<xs:sequence>

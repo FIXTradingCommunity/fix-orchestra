@@ -6,11 +6,9 @@
 	version="1.0-rc1">
 	<xs:annotation>
 		<xs:documentation>
-			FIX Orchestra 2016: Machine readable rules of
-			engagement
+			FIX Orchestra 2016: Machine readable rules of engagement
 			© Copyright 2016 FIX Protocol Limited
-			Creative Commons
-			Attribution-NoDerivatives 4.0
+			Creative Commons Attribution-NoDerivatives 4.0
 			International Public License
 		</xs:documentation>
 	</xs:annotation>
@@ -21,10 +19,10 @@
 		schemaLocation="dcterms.xsd" />
 	<xs:element name="fixOrchestra">
 		<xs:complexType>
-			<xs:sequence>
+			<xs:all>
 				<xs:element name="metadata" type="dcterms:elementOrRefinementContainer" />
-				<xs:element ref="fixr:abbreviations" minOccurs="0" />
 				<xs:element ref="fixr:codeSets" />
+				<xs:element ref="fixr:abbreviations" minOccurs="0" />
 				<xs:element ref="fixr:datatypes" />
 				<xs:element ref="fixr:categories" minOccurs="0" />
 				<xs:element ref="fixr:sections" minOccurs="0" />
@@ -32,7 +30,7 @@
 				<xs:element ref="fixr:components" />
 				<xs:element ref="fixo:actors" minOccurs="0" />
 				<xs:element ref="fixo:messages" />
-			</xs:sequence>
+			</xs:all>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="actors">
@@ -42,16 +40,16 @@
 			</xs:sequence>
 		</xs:complexType>
 		<xs:unique name="actor">
-			<xs:selector xpath="actor"></xs:selector>
-			<xs:field xpath="@name"></xs:field>
+			<xs:selector xpath="fixo:actor" />
+			<xs:field xpath="@name" />
 		</xs:unique>
 		<xs:key name="actorKey">
-			<xs:selector xpath="actor"></xs:selector>
-			<xs:field xpath="@name"></xs:field>
+			<xs:selector xpath="fixo:actor" />
+			<xs:field xpath="@name" />
 		</xs:key>
 		<xs:keyref name="actorKeyRef" refer="fixo:actorKey">
-			<xs:selector xpath="actor"></xs:selector>
-			<xs:field xpath="@extends"></xs:field>
+			<xs:selector xpath="actor" />
+			<xs:field xpath="@extends" />
 		</xs:keyref>
 	</xs:element>
 	<xs:element name="messages">
@@ -63,8 +61,13 @@
 			<xs:attributeGroup ref="fixr:containerAttribGrp" />
 		</xs:complexType>
 		<xs:unique name="messageId">
+			<xs:annotation>
+				<xs:documentation>Combination of message name and context must be
+					unique</xs:documentation>
+			</xs:annotation>
 			<xs:selector xpath="fixo:message" />
-			<xs:field xpath="@id" />
+			<xs:field xpath="@name" />
+			<xs:field xpath="@context" />
 		</xs:unique>
 	</xs:element>
 </xs:schema>
