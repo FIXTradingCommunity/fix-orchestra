@@ -64,7 +64,7 @@
 		<xs:attribute name="replaced" type="fixr:Version_t" />
 		<xs:attribute name="replacedEP" type="fixr:EP_t" />
 		<xs:attribute name="supported" type="fixr:supportType"
-			default="SUPPORTED" />
+			default="supported" />
 		<xs:attribute name="updated" type="fixr:Version_t" />
 		<xs:attribute name="updatedEP" type="fixr:EP_t" />
 	</xs:attributeGroup>
@@ -309,9 +309,9 @@
 			<xs:documentation>Support level</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="SUPPORTED" />
-			<xs:enumeration value="FORBIDDEN" />
-			<xs:enumeration value="IGNORED" />
+			<xs:enumeration value="supported" />
+			<xs:enumeration value="forbidden" />
+			<xs:enumeration value="ignored" />
 		</xs:restriction>
 	</xs:simpleType>
 </xs:schema>

@@ -94,9 +94,7 @@
 			</xs:sequence>
 			<xs:attribute name="version" type="fixr:Version_t" use="required" />
 			<xs:attribute name="guid" type="xs:string" use="optional" />
-			<xs:attribute name="customVersion" type="xs:string" use="optional" />
-			<xs:attribute name="fixml" type="fixr:BOOL_t" use="required" />
-			<xs:attribute name="hasComponents" type="fixr:BOOL_t"
+			<xs:attribute name="hasComponents" type="xs:boolean"
 				use="required" />
 			<xs:attribute name="specUrl" type="xs:anyURI" />
 		</xs:complexType>
@@ -129,8 +127,10 @@
 				<xs:element ref="fixr:codeSet" minOccurs="0">
 					<xs:annotation>
 						<xs:documentation>CodeSet may be specified inline or referenced by
-							attribute, but not both. Not currently enforced by this schema.
-							Consider XML schema assertion in future.</xs:documentation>
+							type attribute, but not both. Not currently enforced by this
+							schema.
+							Consider XML schema assertion in future.
+						</xs:documentation>
 					</xs:annotation>
 				</xs:element>
 				<xs:element name="phrase" type="fixr:phrase" minOccurs="0" />
@@ -138,12 +138,11 @@
 			<xs:attributeGroup ref="fixr:entityAttribGrp" />
 			<xs:attribute name="id" type="fixr:id_t" use="required" />
 			<xs:attribute name="name" type="xs:string" use="required" />
-			<xs:attribute name="type" type="xs:string" use="required" />
-			<xs:attribute name="codeSet" type="xs:string" use="optional">
+			<xs:attribute name="type" type="xs:string" use="required">
 				<xs:annotation>
-					<xs:documentation>Attribute type not needed if codeSet if provided.
-						Alternative attributes not currently allowed by this schema.
-						Consider XML schema assertion in future.</xs:documentation>
+					<xs:documentation>Attribute type refers to either a datatype or a
+						codeSet, which carries an underlying datatype.
+					</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
 			<xs:attribute name="lengthId" type="fixr:id_t" use="optional">
