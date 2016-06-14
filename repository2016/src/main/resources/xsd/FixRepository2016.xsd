@@ -42,40 +42,10 @@
 			<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="code">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
-			</xs:sequence>
-			<xs:attribute name="value" type="xs:string" use="required"/>
-			<xs:attribute name="name" type="xs:NCName" use="optional"/>
-			<xs:attribute name="symbolicName"/>
-			<xs:attribute name="sort" type="xs:string" use="optional"/>
-			<xs:attribute name="group" type="xs:string" use="optional"/>
-			<xs:attributeGroup ref="fixr:entityAttribGrp"/>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="codeSet">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="fixr:code" maxOccurs="unbounded"/>
-				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
-			</xs:sequence>
-			<xs:attribute name="name" type="xs:string" use="required"/>
-			<xs:attribute name="type" type="xs:string" use="required">
-				<xs:annotation>
-					<xs:documentation>Underlying FIX datatype of codes
-					</xs:documentation>
-				</xs:annotation>
-			</xs:attribute>
-			<xs:attribute name="default" type="xs:string" use="optional"/>
-			<xs:attributeGroup ref="fixr:entityAttribGrp"/>
-		</xs:complexType>
-	</xs:element>
 	<xs:element name="codeSets">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="fixr:codeSet" maxOccurs="unbounded"/>
+				<xs:element name="codeSet" type="fixr:codeSetType" maxOccurs="unbounded"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -133,7 +103,7 @@
 	<xs:element name="field">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="fixr:codeSet" minOccurs="0">
+				<xs:element name="codeSet" type="fixr:codeSetType" minOccurs="0">
 					<xs:annotation>
 						<xs:documentation>CodeSet may be specified inline or referenced by
 							type attribute, but not both. Not currently enforced by this schema.
@@ -179,7 +149,7 @@
 				<xs:extension base="fixr:messageEntity_t">
 					<xs:sequence>
 						<!-- optionally a codeset may be defined inline -->
-						<xs:element ref="fixr:codeSet" minOccurs="0"/>
+						<xs:element name="codeSet" type="fixr:codeSetType" minOccurs="0"/>
 						<xs:element name="required" minOccurs="0">
 							<xs:complexType>
 								<xs:sequence>
@@ -266,7 +236,13 @@
 	<xs:element name="message">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="fixr:messageEntity" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="structure">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element ref="fixr:messageEntity" minOccurs="0" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
 				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attributeGroup ref="fixr:messageAttribGrp"/>
