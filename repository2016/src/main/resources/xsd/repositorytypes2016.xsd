@@ -7,31 +7,288 @@
 			International Public License
 		</xs:documentation>
 	</xs:annotation>
-	<xs:complexType name="codeSetType">
-			<xs:sequence>
-				<xs:element name="code" type="fixr:codeType" maxOccurs="unbounded"/>
-				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
-			</xs:sequence>
-			<xs:attribute name="name" type="xs:string" use="required"/>
-			<xs:attribute name="type" type="xs:string" use="required">
+	<xs:complexType name="componentType">
+		<xs:sequence>
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:element name="componentRef" type="fixr:componentRefType"/>
+				<xs:element name="fieldRef" type="fixr:fieldRefType"/>
+			</xs:choice>
+			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
+		<xs:attribute name="id" type="fixr:id_t" use="required"/>
+		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="category" type="xs:string" use="optional"/>
+		<xs:attribute name="abbrName" type="xs:string" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="componentRefType">
+		<xs:complexContent>
+			<xs:extension base="fixr:messageEntity_t"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="groupType">
+		<xs:complexContent>
+			<xs:extension base="fixr:componentType">
+				<xs:attribute name="numInGroupId" type="fixr:id_t" use="required"/>
+				<xs:attribute name="numInGroupName" type="xs:string" use="required"/>
+				<xs:attribute name="implMinOccurs" type="xs:short" use="optional"/>
+				<xs:attribute name="implMaxOccurs" type="xs:short" use="optional"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="groupRefType">
+		<xs:complexContent>
+			<xs:extension base="fixr:componentRefType">
+				<xs:attribute name="implMinOccurs" type="xs:short" use="optional"/>
+				<xs:attribute name="implMaxOccurs" type="xs:short" use="optional"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="fieldType">
+		<xs:sequence>
+			<xs:element name="codeSet" type="fixr:codeSetType" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>Underlying FIX datatype of codes
+					<xs:documentation>CodeSet may be specified inline or referenced by
+							type attribute, but not both. Not currently enforced by this schema.
+							Consider XML schema assertion in future.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
+		<xs:attribute name="id" type="fixr:id_t" use="required"/>
+		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="type" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation>Attribute type refers to either a datatype or a codeSet,
+						which carries an underlying datatype.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="lengthId" type="fixr:id_t" use="optional">
+			<xs:annotation>
+				<xs:documentation>Identifies a field used as a length prefix
+					</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="lengthName" type="xs:string" use="optional"/>
+		<xs:attribute name="abbrName" type="xs:string" use="optional"/>
+		<xs:attribute name="baseCategory" type="fixr:CategoryID_t"/>
+		<xs:attribute name="baseCategoryAbbrName" type="fixr:Name_t"/>
+		<xs:attribute name="unionDataType" type="fixr:UnionDataType_t"/>
+		<xs:attribute name="implLength" type="xs:short" use="optional">
+			<xs:annotation>
+				<xs:documentation>Fixed length</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="implMinLength" type="xs:short" use="optional"/>
+		<xs:attribute name="implMaxLength" type="xs:short" use="optional"/>
+		<xs:attribute name="replacedByField" type="fixr:Tag_t"/>
+		<xs:attribute name="presence" type="fixr:presence_t" default="optional"/>
+	</xs:complexType>
+	<xs:complexType name="fieldRefType" mixed="true">
+		<xs:sequence>
+			<xs:element name="codeSet" type="fixr:codeSetType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>CodeSet may be specified inline or referenced by
+							type attribute, but not both. Not currently enforced by this schema.
+							Consider XML schema assertion in future.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="required" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="when" type="fixr:expressionType"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="forbidden" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="when" type="fixr:expressionType"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
+		<xs:attribute name="id" type="fixr:id_t" use="required"/>
+		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="lengthId" type="fixr:id_t" use="optional">
+			<xs:annotation>
+				<xs:documentation>Identifies a field used as a length prefix
+					</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="implLength" type="xs:short" use="optional">
+			<xs:annotation>
+				<xs:documentation>Fixed length</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="implMinLength" type="xs:short" use="optional"/>
+		<xs:attribute name="implMaxLength" type="xs:short" use="optional"/>
+		<xs:attribute name="replacedByField" type="fixr:Tag_t"/>
+		<xs:attribute name="presence" type="fixr:presence_t" default="optional"/>
+	</xs:complexType>
+	<xs:complexType name="actorType">
+		<xs:sequence>
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>State variables</xs:documentation>
+				</xs:annotation>
+				<xs:element name="field" type="fixr:fieldType"/>
+				<xs:element name="fieldRef" type="fixr:fieldRefType"/>
+			</xs:choice>
+			<xs:element name="states" type="fixr:stateMachineType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="timer" type="fixr:timerType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="responses" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="response" type="fixr:responseType" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="extends" type="xs:string" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="timerType">
+		<xs:attribute name="name" type="xs:string" use="required"/>
+	</xs:complexType>
+	<xs:simpleType name="timerOperation">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="START"/>
+			<xs:enumeration value="CANCEL"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="timerRefType">
+		<xs:sequence>
+			<xs:element name="event" type="fixr:transitionRefType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Transition event to fire when timer expires
 					</xs:documentation>
 				</xs:annotation>
-			</xs:attribute>
-			<xs:attribute name="default" type="xs:string" use="optional"/>
-			<xs:attributeGroup ref="fixr:entityAttribGrp"/>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="operation" type="fixr:timerOperation" use="required"/>
+		<xs:attribute name="interval" type="xs:duration"/>
+	</xs:complexType>
+	<xs:complexType name="stateMachineType">
+		<xs:sequence>
+			<xs:element name="initial" type="fixr:stateType"/>
+			<xs:element name="state" type="fixr:stateType" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="stateType">
+		<xs:sequence>
+			<xs:element name="transition" type="fixr:transitionType" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="stateRefType">
+		<xs:sequence>
+			<xs:element name="fieldRef" type="fixr:fieldRefType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="transitionType">
+		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="target" type="xs:string" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="transitionRefType">
+		<xs:attribute name="stateMachine" type="xs:string"/>
+		<xs:attribute name="name" type="xs:string"/>
+	</xs:complexType>
+	<xs:complexType name="messageType">
+		<xs:sequence>
+			<xs:element name="structure">
+				<xs:complexType>
+					<xs:choice maxOccurs="unbounded">
+						<xs:element name="component" type="fixr:componentType"/>
+						<xs:element name="componentRef" type="fixr:componentRefType"/>
+						<xs:element name="group" type="fixr:groupType"/>
+						<xs:element name="field" type="fixr:fieldType"/>
+						<xs:element name="fieldRef" type="fixr:fieldRefType"/>
+					</xs:choice>
+					<!-- message elements may be by reference or inline -->
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="responses" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="response" type="fixr:responseType" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="fixr:messageAttribGrp"/>
+		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
+		<xs:attribute name="context" type="xs:string" default="base"/>
+		<xs:attribute name="extends" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>If present, refers to another context, assuming
+					the same message name</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="originator" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>If present, refers to an actor name
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="destination" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>If present, refers to an actor name
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="responseType">
+		<xs:sequence>
+			<xs:element name="messageRef" type="fixr:messageRefType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="stateRef" type="fixr:stateRefType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="transitionRef" type="fixr:transitionRefType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="when" type="fixr:expressionType"/>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string"/>
+	</xs:complexType>
+	<xs:complexType name="messageRefType" mixed="true">
+		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="msgType" type="xs:string" use="required"/>
+		<xs:attribute name="context" type="xs:string" default="base"/>
+	</xs:complexType>
+	<xs:complexType name="codeSetType">
+		<xs:sequence>
+			<xs:element name="code" type="fixr:codeType" maxOccurs="unbounded"/>
+			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="type" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation>Underlying FIX datatype of codes
+					</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="default" type="xs:string" use="optional"/>
+		<xs:attribute name="source" type="xs:anyURI" use="optional">
+			<xs:annotation>
+				<xs:documentation>Link to an external reference for valid codes</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 	</xs:complexType>
 	<xs:complexType name="codeType">
-			<xs:sequence>
-				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
-			</xs:sequence>
-			<xs:attribute name="value" type="xs:string" use="required"/>
-			<xs:attribute name="name" type="xs:NCName" use="optional"/>
-			<xs:attribute name="symbolicName"/>
-			<xs:attribute name="sort" type="xs:string" use="optional"/>
-			<xs:attribute name="group" type="xs:string" use="optional"/>
-			<xs:attributeGroup ref="fixr:entityAttribGrp"/>
+		<xs:sequence>
+			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="value" type="xs:string" use="required"/>
+		<xs:attribute name="name" type="xs:NCName" use="optional"/>
+		<xs:attribute name="symbolicName"/>
+		<xs:attribute name="sort" type="xs:string" use="optional"/>
+		<xs:attribute name="group" type="xs:string" use="optional"/>
+		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 	</xs:complexType>
 	<xs:complexType name="documentation" mixed="true">
 		<xs:sequence>
