@@ -415,8 +415,13 @@
 	</xs:simpleType>
 	<xs:simpleType name="datatypeStandard_t">
 		<xs:restriction base="xs:string">
+			<xs:enumeration value="ISO11404">
+				<xs:annotation><xs:documentation>General Purpose Datatypes</xs:documentation></xs:annotation>
+			</xs:enumeration>		
+			<xs:enumeration value="GPB"/>
+			<xs:enumeration value="JSON"/>
+			<xs:enumeration value="SBE"/>
 			<xs:enumeration value="XML"/>
-			<xs:enumeration value="ISO11404"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="Edition_t">
