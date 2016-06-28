@@ -23,14 +23,20 @@
 	</xs:complexType>
 	<xs:complexType name="componentRefType">
 		<xs:complexContent>
-			<xs:extension base="fixr:messageEntity_t"/>
+			<xs:extension base="fixr:messageEntity_t">
+				<xs:attribute name="instanceName" type="fixr:ComponentName_t">
+					<xs:annotation>
+						<xs:documentation>Override the component name for this instance, for code generation and the like. Allows more than one instance of a component in a message.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:complexType name="groupType">
 		<xs:complexContent>
 			<xs:extension base="fixr:componentType">
 				<xs:attribute name="numInGroupId" type="fixr:id_t" use="required"/>
-				<xs:attribute name="numInGroupName" type="xs:string" use="required"/>
+				<xs:attribute name="numInGroupName" type="fixr:FieldName_t" use="required"/>
 				<xs:attribute name="implMinOccurs" type="xs:short" use="optional"/>
 				<xs:attribute name="implMaxOccurs" type="xs:short" use="optional"/>
 			</xs:extension>
@@ -70,7 +76,7 @@
 					</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="lengthName" type="xs:string" use="optional"/>
+		<xs:attribute name="lengthName" type="fixr:FieldName_t" use="optional"/>
 		<xs:attribute name="abbrName" type="fixr:Abbreviation_t" use="optional"/>
 		<xs:attribute name="baseCategory" type="fixr:CategoryID_t"/>
 		<xs:attribute name="baseCategoryAbbrName" type="fixr:Name_t"/>
@@ -256,7 +262,7 @@
 	</xs:complexType>
 	<xs:complexType name="messageRefType" mixed="true">
 		<xs:attribute name="name" type="fixr:MessageName_t" use="required"/>
-		<xs:attribute name="msgType" type="fixr:MsgType_t" />
+		<xs:attribute name="msgType" type="fixr:MsgType_t"/>
 		<xs:attribute name="context" type="xs:string" default="base"/>
 	</xs:complexType>
 	<xs:complexType name="codeSetType">
@@ -317,7 +323,7 @@
 	<xs:attributeGroup name="messageAttribGrp">
 		<xs:attribute name="id" type="fixr:id_t" use="required"/>
 		<xs:attribute name="name" type="fixr:MessageName_t" use="required"/>
-		<xs:attribute name="msgType" type="fixr:MsgType_t" />
+		<xs:attribute name="msgType" type="fixr:MsgType_t"/>
 		<xs:attribute name="category" type="fixr:CategoryID_t" use="optional"/>
 		<xs:attribute name="section" type="fixr:SectionID_t" use="optional"/>
 		<xs:attribute name="abbrName" type="fixr:Abbreviation_t" use="optional"/>
