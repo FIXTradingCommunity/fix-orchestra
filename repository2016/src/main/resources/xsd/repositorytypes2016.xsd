@@ -17,9 +17,9 @@
 		</xs:sequence>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 		<xs:attribute name="id" type="fixr:id_t" use="required"/>
-		<xs:attribute name="name" type="xs:string" use="required"/>
-		<xs:attribute name="category" type="xs:string" use="optional"/>
-		<xs:attribute name="abbrName" type="xs:string" use="optional"/>
+		<xs:attribute name="name" type="fixr:ComponentName_t" use="required"/>
+		<xs:attribute name="category" type="fixr:CategoryID_t" use="optional"/>
+		<xs:attribute name="abbrName" type="fixr:Abbreviation_t" use="optional"/>
 	</xs:complexType>
 	<xs:complexType name="componentRefType">
 		<xs:complexContent>
@@ -57,7 +57,7 @@
 		</xs:sequence>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 		<xs:attribute name="id" type="fixr:id_t" use="required"/>
-		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="name" type="fixr:FieldName_t" use="required"/>
 		<xs:attribute name="type" type="xs:string" use="required">
 			<xs:annotation>
 				<xs:documentation>Attribute type refers to either a datatype or a codeSet,
@@ -71,7 +71,7 @@
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attribute name="lengthName" type="xs:string" use="optional"/>
-		<xs:attribute name="abbrName" type="xs:string" use="optional"/>
+		<xs:attribute name="abbrName" type="fixr:Abbreviation_t" use="optional"/>
 		<xs:attribute name="baseCategory" type="fixr:CategoryID_t"/>
 		<xs:attribute name="baseCategoryAbbrName" type="fixr:Name_t"/>
 		<xs:attribute name="unionDataType" type="fixr:UnionDataType_t"/>
@@ -112,7 +112,7 @@
 		</xs:sequence>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 		<xs:attribute name="id" type="fixr:id_t" use="required"/>
-		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="name" type="fixr:FieldName_t" use="required"/>
 		<xs:attribute name="lengthId" type="fixr:id_t" use="optional">
 			<xs:annotation>
 				<xs:documentation>Identifies a field used as a length prefix
@@ -149,11 +149,11 @@
 			</xs:element>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
-		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
 		<xs:attribute name="extends" type="xs:string" use="optional"/>
 	</xs:complexType>
 	<xs:complexType name="timerType">
-		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
 	</xs:complexType>
 	<xs:simpleType name="timerOperation">
 		<xs:restriction base="xs:string">
@@ -170,7 +170,7 @@
 				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
-		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
 		<xs:attribute name="operation" type="fixr:timerOperation" use="required"/>
 		<xs:attribute name="interval" type="xs:duration"/>
 	</xs:complexType>
@@ -179,13 +179,13 @@
 			<xs:element name="initial" type="fixr:stateType"/>
 			<xs:element name="state" type="fixr:stateType" maxOccurs="unbounded"/>
 		</xs:sequence>
-		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
 	</xs:complexType>
 	<xs:complexType name="stateType">
 		<xs:sequence>
 			<xs:element name="transition" type="fixr:transitionType" maxOccurs="unbounded"/>
 		</xs:sequence>
-		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
 	</xs:complexType>
 	<xs:complexType name="stateRefType">
 		<xs:sequence>
@@ -193,12 +193,12 @@
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="transitionType">
-		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
 		<xs:attribute name="target" type="xs:string" use="required"/>
 	</xs:complexType>
 	<xs:complexType name="transitionRefType">
 		<xs:attribute name="stateMachine" type="xs:string"/>
-		<xs:attribute name="name" type="xs:string"/>
+		<xs:attribute name="name" type="fixr:Name_t"/>
 	</xs:complexType>
 	<xs:complexType name="messageType">
 		<xs:sequence>
@@ -252,11 +252,11 @@
 			<xs:element name="transitionRef" type="fixr:transitionRefType" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="when" type="fixr:expressionType"/>
 		</xs:sequence>
-		<xs:attribute name="name" type="xs:string"/>
+		<xs:attribute name="name" type="fixr:Name_t"/>
 	</xs:complexType>
 	<xs:complexType name="messageRefType" mixed="true">
-		<xs:attribute name="name" type="xs:string" use="required"/>
-		<xs:attribute name="msgType" type="xs:string" use="required"/>
+		<xs:attribute name="name" type="fixr:MessageName_t" use="required"/>
+		<xs:attribute name="msgType" type="fixr:MsgType_t" />
 		<xs:attribute name="context" type="xs:string" default="base"/>
 	</xs:complexType>
 	<xs:complexType name="codeSetType">
@@ -264,8 +264,8 @@
 			<xs:element name="code" type="fixr:codeType" maxOccurs="unbounded"/>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
-		<xs:attribute name="name" type="xs:string" use="required"/>
-		<xs:attribute name="type" type="xs:string" use="required">
+		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
+		<xs:attribute name="type" type="fixr:Datatype_t" use="required">
 			<xs:annotation>
 				<xs:documentation>Underlying FIX datatype of codes
 					</xs:documentation>
@@ -284,8 +284,7 @@
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attribute name="value" type="xs:string" use="required"/>
-		<xs:attribute name="name" type="xs:NCName" use="optional"/>
-		<xs:attribute name="symbolicName"/>
+		<xs:attribute name="symbolicName" type="fixr:SymbolicName_t"/>
 		<xs:attribute name="sort" type="xs:string" use="optional"/>
 		<xs:attribute name="group" type="xs:string" use="optional"/>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
@@ -317,11 +316,11 @@
 	</xs:complexType>
 	<xs:attributeGroup name="messageAttribGrp">
 		<xs:attribute name="id" type="fixr:id_t" use="required"/>
-		<xs:attribute name="name" type="xs:string" use="required"/>
-		<xs:attribute name="msgType" type="xs:string" use="required"/>
-		<xs:attribute name="category" type="xs:string" use="optional"/>
-		<xs:attribute name="section" type="xs:string" use="optional"/>
-		<xs:attribute name="abbrName" type="xs:string" use="optional"/>
+		<xs:attribute name="name" type="fixr:MessageName_t" use="required"/>
+		<xs:attribute name="msgType" type="fixr:MsgType_t" />
+		<xs:attribute name="category" type="fixr:CategoryID_t" use="optional"/>
+		<xs:attribute name="section" type="fixr:SectionID_t" use="optional"/>
+		<xs:attribute name="abbrName" type="fixr:Abbreviation_t" use="optional"/>
 	</xs:attributeGroup>
 	<xs:attributeGroup name="containerAttribGrp">
 		<xs:attribute name="latestEP" type="fixr:EP_t"/>
@@ -367,9 +366,9 @@
 		</xs:sequence>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 		<xs:attribute name="id" type="fixr:id_t" use="required"/>
-		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
 		<xs:attribute name="presence" type="fixr:presence_t" use="optional" default="optional"/>
-		<xs:attribute name="abbrName" type="xs:string"/>
+		<xs:attribute name="abbrName" type="fixr:Abbreviation_t"/>
 	</xs:complexType>
 	<xs:simpleType name="purpose_t">
 		<xs:annotation>
@@ -416,8 +415,10 @@
 	<xs:simpleType name="datatypeStandard_t">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="ISO11404">
-				<xs:annotation><xs:documentation>General Purpose Datatypes</xs:documentation></xs:annotation>
-			</xs:enumeration>		
+				<xs:annotation>
+					<xs:documentation>General Purpose Datatypes</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
 			<xs:enumeration value="GPB"/>
 			<xs:enumeration value="JSON"/>
 			<xs:enumeration value="SBE"/>
@@ -436,7 +437,7 @@
 			<xs:pattern value="([A-Z]|[a-z]|_)([0-9]|[A-Z]|[a-z]|_)*"/>
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:simpleType name="Group_t">
+	<xs:simpleType name="GroupName_t">
 		<xs:restriction base="xs:string"/>
 	</xs:simpleType>
 	<xs:simpleType name="Sort_t">
@@ -504,7 +505,10 @@
 	</xs:simpleType>
 	<xs:simpleType name="Version_t">
 		<xs:restriction base="xs:string">
-			<xs:pattern value="(FIX.2.7)|(FIX.3.0)|(FIX\.4\.[0-4])|(FIX\.5\.0(SP\d{1,2})?(_EP((9[8-9])|([1-9][0-9][0-9])))?)|(FIXT.1.1)"/>
+			<xs:annotation>
+				<xs:documentation>Enumerated FIX versions or major.minor or date as yyyymmdd of any protocol</xs:documentation>
+			</xs:annotation>
+			<xs:pattern value="(FIX.2.7)|(FIX.3.0)|(FIX\.4\.[0-4])|(FIX\.5\.0(SP\d{1,2})?(_EP((9[8-9])|([1-9][0-9][0-9])))?)|(FIXT.1.1)|([0-9]+)\.([0-9]+)|(\d{8})"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="EP_t">

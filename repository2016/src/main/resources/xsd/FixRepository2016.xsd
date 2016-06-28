@@ -48,6 +48,7 @@
 			<xs:sequence>
 				<xs:element name="codeSet" type="fixr:codeSetType" maxOccurs="unbounded"/>
 			</xs:sequence>
+			<xs:attribute name="name" type="fixr:Name_t"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="components">
@@ -65,8 +66,8 @@
 				<xs:element ref="fixr:mappedDatatype" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
-			<xs:attribute name="name" type="xs:string" use="required"/>
-			<xs:attribute name="baseType" type="xs:string"/>
+			<xs:attribute name="name" type="fixr:Datatype_t" use="required"/>
+			<xs:attribute name="baseType" type="fixr:Datatype_t"/>
 			<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 		</xs:complexType>
 	</xs:element>
@@ -105,7 +106,7 @@
 			<xs:field xpath="@extends"/>
 		</xs:keyref>
 	</xs:element>
-	<xs:element name="fix">
+	<xs:element name="protocol">
 		<xs:complexType>
 			<xs:all>
 				<xs:element ref="fixr:actors" minOccurs="0"/>
@@ -118,22 +119,29 @@
 			<xs:attribute name="specUrl" type="xs:anyURI"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="fixRepository">
+	<xs:element name="repository">
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="metadata" type="dcterms:elementOrRefinementContainer"/>
-				<xs:element ref="fixr:codeSets"/>
+				<xs:element ref="fixr:codeSets" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>May have more than one section of code sets, for example internal and external codes</xs:documentation>
+					</xs:annotation>
+				</xs:element>
 				<xs:element ref="fixr:abbreviations" minOccurs="0"/>
 				<xs:element ref="fixr:datatypes"/>
 				<xs:element ref="fixr:categories" minOccurs="0"/>
 				<xs:element ref="fixr:sections" minOccurs="0"/>
 				<xs:element ref="fixr:fields"/>
-				<xs:element ref="fixr:fix" maxOccurs="unbounded"/>
+				<xs:element ref="fixr:protocol" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>May have a section for each supported version of FIX or other protocol</xs:documentation>
+					</xs:annotation>
+				</xs:element>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="group">
-	</xs:element>
+	<xs:element name="group"/>
 	<xs:element name="mappedDatatype">
 		<xs:complexType>
 			<xs:sequence>
