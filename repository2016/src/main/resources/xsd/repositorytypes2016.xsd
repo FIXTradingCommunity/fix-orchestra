@@ -11,6 +11,7 @@
 		<xs:sequence>
 			<xs:choice minOccurs="0" maxOccurs="unbounded">
 				<xs:element name="componentRef" type="fixr:componentRefType"/>
+				<xs:element name="groupRef" type="fixr:groupRefType"/>
 				<xs:element name="fieldRef" type="fixr:fieldRefType"/>
 			</xs:choice>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
@@ -22,15 +23,19 @@
 		<xs:attribute name="abbrName" type="fixr:Abbreviation_t" use="optional"/>
 	</xs:complexType>
 	<xs:complexType name="componentRefType">
-		<xs:complexContent>
-			<xs:extension base="fixr:messageEntity_t">
-				<xs:attribute name="instanceName" type="fixr:ComponentName_t">
-					<xs:annotation>
-						<xs:documentation>Override the component name for this instance, for code generation and the like. Allows more than one instance of a component in a message.</xs:documentation>
-					</xs:annotation>
-				</xs:attribute>
-			</xs:extension>
-		</xs:complexContent>
+		<xs:sequence>
+			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
+		<xs:attribute name="id" type="fixr:id_t" use="required"/>
+		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
+		<xs:attribute name="presence" type="fixr:presence_t" use="optional" default="optional"/>
+		<xs:attribute name="abbrName" type="fixr:Abbreviation_t"/>	
+		<xs:attribute name="instanceName" type="fixr:ComponentName_t">
+			<xs:annotation>
+				<xs:documentation>Override the component name for this instance, for code generation and the like. Allows more than one instance of a component in a message.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 	</xs:complexType>
 	<xs:complexType name="groupType">
 		<xs:complexContent>
@@ -214,6 +219,7 @@
 						<xs:element name="component" type="fixr:componentType"/>
 						<xs:element name="componentRef" type="fixr:componentRefType"/>
 						<xs:element name="group" type="fixr:groupType"/>
+						<xs:element name="groupRef" type="fixr:groupRefType"/>
 						<xs:element name="field" type="fixr:fieldType"/>
 						<xs:element name="fieldRef" type="fixr:fieldRefType"/>
 					</xs:choice>
@@ -364,18 +370,6 @@
 			</xs:annotation>
 		</xs:attribute>
 	</xs:attributeGroup>
-	<!-- The abstract type (for substitution group for entities that make up 
-		components, groups, and messages) -->
-	<xs:complexType name="messageEntity_t" mixed="true">
-		<xs:sequence>
-			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
-		</xs:sequence>
-		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
-		<xs:attribute name="id" type="fixr:id_t" use="required"/>
-		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
-		<xs:attribute name="presence" type="fixr:presence_t" use="optional" default="optional"/>
-		<xs:attribute name="abbrName" type="fixr:Abbreviation_t"/>
-	</xs:complexType>
 	<xs:simpleType name="purpose_t">
 		<xs:annotation>
 			<xs:documentation>Permitted text purposes</xs:documentation>

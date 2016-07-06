@@ -141,7 +141,6 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="group"/>
 	<xs:element name="mappedDatatype">
 		<xs:complexType>
 			<xs:sequence>
