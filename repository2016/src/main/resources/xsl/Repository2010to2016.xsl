@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="2.0"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fn="http://www.w3.org/2005/xpath-functions"
-	exclude-result-prefixes="fn">
+	exclude-result-prefixes="fn" xmlns:fixr="http://fixprotocol.io/2016/fixrepository" xmlns:dc="http://purl.org/dc/elements/1.1/" >
 	<xsl:param name="phrases-file" select="'FIX.5.0SP2_EP208_en_phrases.xml'" />
 	<xsl:variable name="phrases-doc" select="fn:document($phrases-file)" />
 	<xsl:key name="phrases-key" match="phrase" use="@textId" />
 	<xsl:output method="xml" indent="yes" />
+	<xsl:namespace-alias stylesheet-prefix="#default" result-prefix="fixr"/>
 	<xsl:template match="/">
 		<xsl:apply-templates />
 	</xsl:template>
 	<xsl:template match="fixRepository">
 		<xsl:copy>
-			<xsl:attribute name="edition">2016</xsl:attribute>
-			<xsl:attribute name="copyright">Copyright (c) FIX Protocol Ltd. All Rights Reserved.</xsl:attribute>
-			<xsl:attribute name="generated"><xsl:value-of
-				select="fn:current-dateTime()" /></xsl:attribute>
+			<metadata>
+				<dc:creator>Repository2010to2016</dc:creator>
+				<dc:date><xsl:value-of select="fn:current-dateTime()"/></dc:date>
+			</metadata>
 			<codeSets>
 				<xsl:for-each select="/fixRepository/fix/fields/field[enum]">
 					<xsl:variable name="fieldName" select="@name"></xsl:variable>
@@ -194,7 +195,7 @@
 	</xsl:template>
 	<xsl:template match="@required">
 		<xsl:if test="current() = '1'">
-			<xsl:attribute name="presence">REQUIRED</xsl:attribute>
+			<xsl:attribute name="presence">required</xsl:attribute>
 		</xsl:if>
 	</xsl:template>
 	<!-- don't copy deprecated attributes -->
