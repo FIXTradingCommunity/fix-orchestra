@@ -45,6 +45,7 @@
 		<module>repository2010</module>
 		<module>repository2016</module>
 		<module>provenance</module>
+		<module>dsl-antlr</module>
 	</modules>
 
 	<properties>
