@@ -18,6 +18,8 @@ public class DslTest {
 
   @BeforeClass
   public static void init() {
+    fieldConditions.add("this.OrdType");
+    fieldConditions.add("\"Stop\"");
     fieldConditions.add("this.OrdType == \"Stop\"");
     fieldConditions.add("this.OrdType in {\"Stop\", \"StopLimit\"}");
   }

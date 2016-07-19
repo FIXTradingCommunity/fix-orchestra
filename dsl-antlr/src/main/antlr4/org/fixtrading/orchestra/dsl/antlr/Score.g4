@@ -33,6 +33,7 @@ anyExpression
     : assignment
     | conditionalOrExpression
     | conditionalAndExpression
+	| relationalExpression
     ;
 
 assignment
@@ -76,7 +77,7 @@ factor
    ;
 
 value // immutable
-    : 'this' '.' qualifiedId
+    : THIS '.' qualifiedId
     ;
 
 variable // mutable
