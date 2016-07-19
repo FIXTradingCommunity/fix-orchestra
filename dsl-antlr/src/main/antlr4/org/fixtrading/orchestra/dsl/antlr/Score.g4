@@ -51,6 +51,7 @@ conditionalAndExpression
 relationalExpression
    : simpleExpression (('==' | '!=' | '<' | '<=' | '>=' | '>') simpleExpression)*
    | simpleExpression 'in' setExpression
+   | simpleExpression rangeExpression
    ;
 
 simpleExpression
@@ -63,6 +64,10 @@ term
 
 setExpression
      : '{' factor (',' factor)* '}'
+     ;
+
+rangeExpression
+     : 'between' factor 'and' factor
      ;
 
 factor

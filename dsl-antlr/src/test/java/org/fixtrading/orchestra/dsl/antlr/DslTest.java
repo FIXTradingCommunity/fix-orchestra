@@ -34,6 +34,7 @@ public class DslTest {
       {"this.OrdQty != 0"},
       {"this.OrdQty > 0 and this.OrdQty <= 10"},
       {"this.Price < 100.00"},
+      {"this.Price between 50.00 and 100.00"},
      });
   }
 
