@@ -34,14 +34,6 @@
 					<schemaIncludes>
 						<include>*.xsd</include>
 					</schemaIncludes>
-
-					<!-- The package of your generated sources -->
-					<packageName>org.fixtrading.orchestra.repository.jaxb</packageName>
-					<sources>
-						<source>src/main/resources/xsd/FixRepository2016.xsd</source>
-					</sources>
-					<encoding>${project.build.sourceEncoding}</encoding>
-					<extension>true</extension>
 				</configuration>
 			</plugin>
 		</plugins>
