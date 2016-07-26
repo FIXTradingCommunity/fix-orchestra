@@ -18,23 +18,30 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>jaxb2-maven-plugin</artifactId>
-				<version>2.2</version>
+				<groupId>org.jvnet.jaxb2.maven2</groupId>
+				<artifactId>maven-jaxb2-plugin</artifactId>
+				<version>0.13.1</version>
 				<executions>
 					<execution>
 						<id>xjc</id>
 						<goals>
-							<goal>xjc</goal>
+							<goal>generate</goal>
 						</goals>
 					</execution>
 				</executions>
 				<configuration>
+					<schemaDirectory>src/main/resources/xsd</schemaDirectory>
+					<schemaIncludes>
+						<include>*.xsd</include>
+					</schemaIncludes>
+
 					<!-- The package of your generated sources -->
 					<packageName>org.fixtrading.orchestra.repository.jaxb</packageName>
 					<sources>
 						<source>src/main/resources/xsd/FixRepository2016.xsd</source>
 					</sources>
+					<encoding>${project.build.sourceEncoding}</encoding>
+					<extension>true</extension>
 				</configuration>
 			</plugin>
 		</plugins>
