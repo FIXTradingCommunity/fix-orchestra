@@ -69,6 +69,12 @@
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 		<xs:attribute name="id" type="fixr:id_t" use="required"/>
 		<xs:attribute name="name" type="fixr:FieldName_t" use="required"/>
+		<xs:attribute name="type" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation>Attribute type refers to either a datatype or a codeSet,
+						which carries an underlying datatype.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 		<xs:attributeGroup ref="fixr:fieldAttribGrp"/>
 		<xs:attribute name="lengthId" type="fixr:id_t" use="optional">
 			<xs:annotation>
@@ -99,6 +105,11 @@
 					<xs:sequence>
 						<xs:element name="when" type="fixr:expressionType"/>
 					</xs:sequence>
+					<xs:attribute name="type" type="xs:string" use="optional">
+						<xs:annotation>
+							<xs:documentation>Overrides the type of the referenced field.</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
 					<xs:attributeGroup ref="fixr:fieldAttribGrp"/>
 				</xs:complexType>
 			</xs:element>
@@ -312,12 +323,6 @@
 		<xs:annotation>
 			<xs:documentation>Attributes of a field that be overridden by a rule</xs:documentation>
 		</xs:annotation>
-		<xs:attribute name="type" type="xs:string" use="required">
-			<xs:annotation>
-				<xs:documentation>Attribute type refers to either a datatype or a codeSet,
-						which carries an underlying datatype.</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
 		<xs:attribute name="implLength" type="xs:short" use="optional">
 			<xs:annotation>
 				<xs:documentation>Fixed length</xs:documentation>
