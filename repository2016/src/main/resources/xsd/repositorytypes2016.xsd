@@ -277,9 +277,9 @@
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attribute name="default" type="xs:string" use="optional"/>
-		<xs:attribute name="source" type="xs:anyURI" use="optional">
+		<xs:attribute name="specUrl" type="xs:anyURI" use="optional">
 			<xs:annotation>
-				<xs:documentation>Link to an external reference for valid codes</xs:documentation>
+				<xs:documentation>Reference documentation for an external code set</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
@@ -307,7 +307,9 @@
 			<xs:documentation>Usage specific annotation, optionally with link to an external reference or standard
 			</xs:documentation>
 		</xs:annotation>
-		<xs:attribute name="source" type="xs:anyURI"/>
+		<xs:attribute name="specUrl" type="xs:anyURI">
+				<xs:annotation><xs:documentation>Reference documentation</xs:documentation></xs:annotation>
+			</xs:attribute>
 		<xs:attribute name="langId" type="fixr:language_t" use="optional"/>
 		<xs:attribute name="purpose" type="fixr:purpose_t" use="optional"/>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
@@ -331,6 +333,9 @@
 		<xs:attribute name="implMinLength" type="xs:short" use="optional"/>
 		<xs:attribute name="implMaxLength" type="xs:short" use="optional"/>
 		<xs:attribute name="presence" type="fixr:presence_t" default="optional"/>
+		<xs:attribute name="encoding" type="xs:string" use="optional">
+			<xs:annotation><xs:documentation>Character encoding if other than US-ASCII</xs:documentation></xs:annotation>
+		</xs:attribute>
 	</xs:attributeGroup>
 	<xs:attributeGroup name="messageAttribGrp">
 		<xs:attribute name="id" type="fixr:id_t" use="required"/>

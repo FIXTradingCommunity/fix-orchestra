@@ -116,7 +116,13 @@
 			<xs:attribute name="version" type="fixr:Version_t" use="required"/>
 			<xs:attribute name="guid" type="xs:string" use="optional"/>
 			<xs:attribute name="hasComponents" type="xs:boolean" use="required"/>
-			<xs:attribute name="specUrl" type="xs:anyURI"/>
+			<xs:attribute name="specUrl" type="xs:anyURI">
+				<xs:annotation><xs:documentation>Reference documentation</xs:documentation></xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="namespace" type="xs:anyURI">
+				<xs:annotation><xs:documentation>An associated namespace as URI</xs:documentation></xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="applVerId" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="repository">
