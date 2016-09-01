@@ -44,7 +44,7 @@
 		<module>messages</module>
 		<module>repository2010</module>
 		<module>repository2016</module>
-		<module>provenance</module>
+                <!--<module>provenance</module>-->
 		<module>dsl-antlr</module>
 	</modules>
 
@@ -54,7 +54,7 @@
 		<java.version>1.8</java.version>
 		<owlapi.version>4.1.2</owlapi.version>
 		<slf4j.version>1.7.13</slf4j.version>
-		<quickfixj.version>1.6.0</quickfixj.version>
+		<quickfixj.version>1.6.1_1</quickfixj.version>
 	</properties>
 
 	<dependencies>
@@ -78,6 +78,11 @@
 						<target>${java.version}</target>
 					</configuration>
 				</plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>2.4</version>
+                </plugin>
 			</plugins>
 		</pluginManagement>
 	</build>

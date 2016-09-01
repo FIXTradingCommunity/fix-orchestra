@@ -115,7 +115,7 @@
 				<xs:element ref="categories" minOccurs="0"/>
 				<xs:element ref="sections" minOccurs="0"/>
 				<xs:element ref="fields"/>
-				<xs:element ref="components"/>
+				<!--<xs:element ref="components"/>-->
 				<xs:element ref="messages"/>
 			</xs:sequence>
 			<xs:attribute name="version" type="Version_t" use="required"/>
