@@ -115,14 +115,14 @@
 				<xs:element ref="categories" minOccurs="0"/>
 				<xs:element ref="sections" minOccurs="0"/>
 				<xs:element ref="fields"/>
-				<!--<xs:element ref="components"/>-->
+				<xs:element ref="components"/>
 				<xs:element ref="messages"/>
 			</xs:sequence>
 			<xs:attribute name="version" type="Version_t" use="required"/>
 			<xs:attribute name="guid" type="xs:string" use="optional"/>
 			<xs:attribute name="customVersion" type="xs:string" use="optional"/>
 			<xs:attribute name="fixml" type="BOOL_t" use="required"/>
-			<xs:attribute name="components" type="BOOL_t" use="required"/>
+			<xs:attribute name="hasComponents" type="BOOL_t" use="required"/>
 			<xs:attribute name="specUrl" type="xs:anyURI"/>
 		</xs:complexType>
 	</xs:element>
