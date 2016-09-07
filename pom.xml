@@ -56,6 +56,7 @@
 		<slf4j.version>1.7.13</slf4j.version>
 		<quickfixj.version>1.6.1_1</quickfixj.version>
 		<logback.version>1.0.13</logback.version>
+		<saxon.version>9.7.0-8</saxon.version>
 	</properties>
 
     <dependencies>
@@ -75,7 +76,7 @@
             <artifactId>logback-access</artifactId>
             <version>${logback.version}</version>
         </dependency>
-    </dependencies>
+	</dependencies>
 
 	<build>
 		<pluginManagement>

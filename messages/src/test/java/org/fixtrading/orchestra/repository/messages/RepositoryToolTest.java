@@ -1,7 +1,6 @@
 package org.fixtrading.orchestra.repository.messages;
 
 import org.fixtrading.orchestra.repository.RepositoryTool;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -23,7 +22,8 @@ public class RepositoryToolTest {
 
     @Test
     public void test01() {
-        String[] strings = {"/home/udithaw/MIT/new_development/fix-orchestra/messages/src/test/resources/FixRepository.xml", "output_file.rdf"};
+        String[] strings = {"/home/udithaw/MIT/new_development/fix-orchestra/messages/src/test/resources/" +
+                "FixRepository.xml", "output_file.rdf"};
         RepositoryTool.main(strings);
     }
 }
