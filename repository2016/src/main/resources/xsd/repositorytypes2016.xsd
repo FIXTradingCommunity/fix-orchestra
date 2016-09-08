@@ -327,6 +327,16 @@
 		<xs:annotation>
 			<xs:documentation>Attributes of a field that be overridden by a rule</xs:documentation>
 		</xs:annotation>
+		<xs:attribute name="minInclusive" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>Inclusive lower bound</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="maxInclusive" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>Inclusive upper bound</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 		<xs:attribute name="implLength" type="xs:short" use="optional">
 			<xs:annotation>
 				<xs:documentation>Fixed length</xs:documentation>
