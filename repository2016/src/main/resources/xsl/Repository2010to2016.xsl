@@ -2,8 +2,7 @@
 <xsl:stylesheet version="2.0"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fn="http://www.w3.org/2005/xpath-functions"
 	exclude-result-prefixes="fn" xmlns:fixr="http://fixprotocol.io/2016/fixrepository" xmlns:dc="http://purl.org/dc/elements/1.1/" >
-	<xsl:param name="phrases-file" select="'FIX.5.0SP2_EP208_en_phrases.xml'" />
-	<xsl:variable name="phrases-doc" select="fn:document($phrases-file)" />
+	<xsl:variable name="phrases-doc" select="fn:document('FIX.5.0SP2_EP208_en_phrases.xml')" />
 	<xsl:key name="phrases-key" match="phrase" use="@textId" />
 	<xsl:output method="xml" indent="yes" />
 	<xsl:namespace-alias stylesheet-prefix="#default" result-prefix="fixr"/>
@@ -43,9 +42,9 @@
 	</xsl:template>
 	<xsl:template match="abbreviation">
 		<!-- text merge not working -->
-		<xsl:value-of select="fn:key('phrases-key', '@textId', $phrases-doc)" />
 		<xsl:copy>
 			<xsl:apply-templates select="@*" />
+            <xsl:apply-templates select="@textId" />
 		</xsl:copy>
 	</xsl:template>
 	<xsl:template match="datatypes">
@@ -198,8 +197,12 @@
 			<xsl:attribute name="presence">required</xsl:attribute>
 		</xsl:if>
 	</xsl:template>
+
+    <xsl:variable name="text-id" >
+
+    </xsl:variable>
+
 	<!-- don't copy deprecated attributes -->
-	<xsl:template match="@textId" />
 	<xsl:template match="@elaborationTextId" />
 	<xsl:template match="@fixml" />
 	<xsl:template match="@notReqXML" />
@@ -209,12 +212,29 @@
 	<xsl:template match="@inlined" />
 	<xsl:template match="@repeating" />
 	<xsl:template match="@associatedDataTag" />
+
 	<!-- copy attributes by default -->
 	<xsl:template match="@*">
 		<xsl:if test="not(. = '')">
 			<xsl:copy>
-				<xsl:apply-templates select="@*" />
+				<xsl:apply-templates select="../@*"/>
 			</xsl:copy>
 		</xsl:if>
 	</xsl:template>
+
+    <xsl:template match="@textId">
+        <annotation>
+			<xsl:for-each select="fn:key('phrases-key', ../@textId, $phrases-doc)//text">
+				<documentation>
+						<xsl:if test="not(./@purpose = '')" >
+							<xsl:attribute name="purpose">
+								<xsl:value-of select="./@purpose"/>
+							</xsl:attribute>
+						</xsl:if>
+					<xsl:value-of select="." />
+				</documentation>
+			</xsl:for-each>
+        </annotation>
+    </xsl:template>
+
 </xsl:stylesheet>
