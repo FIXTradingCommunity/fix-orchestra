@@ -28,6 +28,7 @@ SUB_ASSIGN : '-=' ;
 IN : 'in' ;
 LBRACE : '{' ;
 RBRACE : '}' ;
+BETWEEN : 'between' ;
 
 anyExpression
     : assignment
