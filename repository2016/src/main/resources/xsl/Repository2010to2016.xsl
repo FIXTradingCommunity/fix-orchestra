@@ -45,7 +45,8 @@
     </xsl:template>
     <xsl:template match="abbreviation">
         <xsl:copy>
-            <xsl:apply-templates select="@*"/>
+            <xsl:apply-templates select="@* except @textId"/>
+            <xsl:apply-templates select="@textId"/>
         </xsl:copy>
     </xsl:template>
     <xsl:template match="datatypes">
@@ -80,8 +81,9 @@
     </xsl:template>
     <xsl:template match="category">
         <xsl:copy>
-            <xsl:apply-templates select="@*"/>
+            <xsl:apply-templates select="@* except @textId"/>
             <xsl:apply-templates/>
+            <xsl:apply-templates select="@textId"/>
         </xsl:copy>
     </xsl:template>
     <xsl:template match="sections">
@@ -91,8 +93,9 @@
     </xsl:template>
     <xsl:template match="section">
         <xsl:copy>
-            <xsl:apply-templates select="@*"/>
+            <xsl:apply-templates select="@* except @textId"/>
             <xsl:apply-templates/>
+            <xsl:apply-templates select="@textId"/>
         </xsl:copy>
     </xsl:template>
     <xsl:template match="fields">
@@ -102,7 +105,7 @@
     </xsl:template>
     <xsl:template match="field">
         <xsl:copy>
-            <xsl:apply-templates select="@*"/>
+            <xsl:apply-templates select="@* except @textId"/>
             <xsl:choose>
                 <xsl:when test="current()/enum">
                     <xsl:attribute name="codeSet" select="concat(@name, 'CodeSet')"/>
@@ -114,6 +117,7 @@
                                    select="//field[@associatedDataTag = current()/@id]/@name"/>
                 </xsl:when>
             </xsl:choose>
+            <xsl:apply-templates select="@textId"/>
         </xsl:copy>
     </xsl:template>
     <xsl:template match="fix">
@@ -136,15 +140,16 @@
             </xsl:when>
             <xsl:otherwise>
                 <xsl:copy>
-                    <xsl:apply-templates select="@* except @type"/>
+                    <xsl:apply-templates select="@* except @type except @textId"/>
                     <xsl:apply-templates/>
+                    <xsl:apply-templates select="@textId"/>
                 </xsl:copy>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
     <xsl:template match="repeatingGroup">
         <group>
-            <xsl:apply-templates select="@* except @required"/>
+            <xsl:apply-templates select="@* except @required except @textId"/>
             <xsl:attribute name="id" select="../@id"/>
             <xsl:attribute name="name" select="../@name"/>
             <xsl:attribute name="numInGroupId" select="@id"/>
@@ -153,6 +158,7 @@
             <xsl:attribute name="category" select="../@category"/>
             <xsl:attribute name="abbrName" select="../@abbrName"/>
             <xsl:apply-templates/>
+            <xsl:apply-templates select="@textId"/>
         </group>
     </xsl:template>
     <xsl:template match="messages">
@@ -163,8 +169,9 @@
     </xsl:template>
     <xsl:template match="message">
         <xsl:copy>
-            <xsl:apply-templates select="@*"/>
+            <xsl:apply-templates select="@* except @textId"/>
             <xsl:apply-templates/>
+            <xsl:apply-templates select="@textId"/>
         </xsl:copy>
     </xsl:template>
     <xsl:template match="componentRef">
@@ -203,10 +210,6 @@
         </xsl:if>
     </xsl:template>
 
-    <xsl:variable name="text-id">
-
-    </xsl:variable>
-
     <!-- don't copy deprecated attributes -->
     <xsl:template match="@elaborationTextId"/>
     <xsl:template match="@fixml"/>
@@ -228,17 +231,19 @@
     </xsl:template>
 
     <xsl:template match="@textId">
-        <annotation>
+        <xsl:element name="fixr:annotation">
             <xsl:for-each select="fn:key('phrases-key', ../@textId, $phrases-doc)//text">
-                <documentation>
-                    <xsl:if test="not(./@purpose = '')">
-                        <xsl:attribute name="purpose">
-                            <xsl:value-of select="./@purpose"/>
-                        </xsl:attribute>
-                    </xsl:if>
+                <xsl:element name="fixr:documentation">
+                    <xsl:apply-templates select="@purpose"/>
                     <xsl:value-of select="."/>
-                </documentation>
+                </xsl:element>
             </xsl:for-each>
-        </annotation>
+        </xsl:element>
+    </xsl:template>
+
+    <xsl:template match="@purpose">
+        <xsl:attribute name="purpose">
+            <xsl:value-of select="."/>
+        </xsl:attribute>
     </xsl:template>
 </xsl:stylesheet>
