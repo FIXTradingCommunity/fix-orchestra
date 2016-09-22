@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet version="2.0"
-                xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fn="http://www.w3.org/2005/xpath-functions"
-                exclude-result-prefixes="fn" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:fn="http://www.w3.org/2005/xpath-functions" xmlns:fixr="http://fixprotocol.io/2016/fixrepository"
+                xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0"
+                exclude-result-prefixes="fn">
     <xsl:variable name="phrases-doc" select="fn:document('FIX.5.0SP2_EP208_en_phrases.xml')"/>
     <xsl:key name="phrases-key" match="phrase" use="@textId"/>
     <xsl:output method="xml" indent="yes"/>
@@ -43,7 +44,6 @@
         </xsl:copy>
     </xsl:template>
     <xsl:template match="abbreviation">
-        <!-- text merge not working -->
         <xsl:copy>
             <xsl:apply-templates select="@*"/>
         </xsl:copy>
@@ -241,5 +241,4 @@
             </xsl:for-each>
         </annotation>
     </xsl:template>
-
 </xsl:stylesheet>
