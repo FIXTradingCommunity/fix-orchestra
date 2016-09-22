@@ -122,7 +122,7 @@
 			<xs:attribute name="guid" type="xs:string" use="optional"/>
 			<xs:attribute name="customVersion" type="xs:string" use="optional"/>
 			<xs:attribute name="fixml" type="BOOL_t" use="required"/>
-			<xs:attribute name="components" type="BOOL_t" use="required"/>
+			<xs:attribute name="hasComponents" type="BOOL_t" use="required"/>
 			<xs:attribute name="specUrl" type="xs:anyURI"/>
 		</xs:complexType>
 	</xs:element>

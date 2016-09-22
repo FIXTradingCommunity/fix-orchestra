@@ -1114,8 +1114,8 @@ public class MessageOntologyManager {
 	public void storeModel(Model model, OutputStream out) throws Exception {
 		MessageModel messageModel = (MessageModel) model;
 
-		//writeAsRdf(messageModel.getDerivedModel(), out);
-        writeAsTurtle(messageModel.getDerivedModel(), out);
+		writeAsRdf(messageModel.getDerivedModel(), out);
+        //writeAsTurtle(messageModel.getDerivedModel(), out);
 	}
 
 	/**

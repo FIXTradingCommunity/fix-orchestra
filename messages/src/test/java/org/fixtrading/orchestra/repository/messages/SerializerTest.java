@@ -51,7 +51,7 @@ public class SerializerTest {
    */
   @Test
   public void testUnmarshal() throws JAXBException, IOException {
-    InputStream inputStream = new FileInputStream("FixRepository.xml");
+    InputStream inputStream = new FileInputStream(this.getClass().getResource("/FixRepository.xml").getPath());
     FixRepository fixRepository = Serializer.unmarshal(inputStream);
     inputStream.close();
   }

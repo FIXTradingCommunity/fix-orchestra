@@ -82,7 +82,7 @@ public class MessageDiff {
 		Set<MessageEntity> messageSet1 = ontologyManager.getMessages(model1);
 		Set<MessageEntity> messageSet2 = ontologyManager.getMessages(model2);
 
-		Set<MessageEntity> intersection = messageSet1.stream().filter(m -> messageSet2.contains(m))
+		Set<MessageEntity> intersection = messageSet1.stream().filter(messageSet2::contains)
 				.collect(Collectors.toSet());
 		Set<MessageEntity> in1only = messageSet1.stream().filter(m -> !messageSet2.contains(m))
 				.collect(Collectors.toSet());
@@ -128,7 +128,7 @@ public class MessageDiff {
 		Set<FieldObject> req2 = new HashSet<>();
 		ontologyManager.getRequiredFields(msg2, req2);
 
-		Set<FieldObject> reqIntersection = req1.stream().filter(m -> req2.contains(m)).collect(Collectors.toSet());
+		Set<FieldObject> reqIntersection = req1.stream().filter(req2::contains).collect(Collectors.toSet());
 		Set<FieldObject> ReqIn1only = req1.stream().filter(m -> !req2.contains(m)).collect(Collectors.toSet());
 		Set<FieldObject> ReqIn2only = req2.stream().filter(m -> !req1.contains(m)).collect(Collectors.toSet());
 
@@ -146,7 +146,7 @@ public class MessageDiff {
 		Set<FieldObject> opt2 = new HashSet<>();
 		ontologyManager.getOptionalFields(msg2, opt2);
 
-		Set<FieldObject> optIntersection = opt1.stream().filter(m -> opt2.contains(m)).collect(Collectors.toSet());
+		Set<FieldObject> optIntersection = opt1.stream().filter(opt2::contains).collect(Collectors.toSet());
 		Set<FieldObject> OptIn1only = opt1.stream().filter(m -> !opt2.contains(m)).collect(Collectors.toSet());
 		Set<FieldObject> OptIn2only = opt2.stream().filter(m -> !opt1.contains(m)).collect(Collectors.toSet());
 
