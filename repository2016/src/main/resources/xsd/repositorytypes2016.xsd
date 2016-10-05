@@ -147,7 +147,8 @@
 			<xs:annotation>
 				<xs:documentation>Override the component name for this instance, for
 					code generation and the like. Allows more than one instance of a
-					component in a message.</xs:documentation>
+					component in a message.
+				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 	</xs:complexType>
@@ -291,6 +292,14 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
+		<xs:attribute name="value" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>If presence is optional, then it represents a
+					default when the sender does not provide the field.
+					If presence is constant, then it is the constant value.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 	</xs:attributeGroup>
 	<xs:simpleType name="FieldName_t">
 		<xs:restriction base="fixr:Name_t" />
@@ -312,7 +321,8 @@
 				<xs:annotation>
 					<xs:documentation>Rule to tell when a conditionally require field
 						is required or forbidden, to override other attributes, or perform
-						validation.</xs:documentation>
+						validation.
+					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="annotation" type="fixr:annotation"
@@ -327,15 +337,7 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="implLength" type="xs:short">
-			<xs:annotation>
-				<xs:documentation>Fixed length</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
-		<xs:attribute name="implMinLength" type="xs:short" />
-		<xs:attribute name="implMaxLength" type="xs:short" />
-		<xs:attribute name="presence" type="fixr:presence_t"
-			default="optional" />
+		<xs:attributeGroup ref="fixr:fieldAttribGrp" />
 	</xs:complexType>
 	<xs:complexType name="fieldRuleType">
 		<xs:sequence>
@@ -344,7 +346,8 @@
 				minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Set a state variable when rule evaluates true.
-						This can be used for field validation.</xs:documentation>
+						This can be used for field validation.
+					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
@@ -378,7 +381,8 @@
 				<xs:annotation>
 					<xs:documentation>Rule to tell when a conditionally require field
 						is required or forbidden, to override other attributes, or perform
-						validation.</xs:documentation>
+						validation.
+					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="annotation" type="fixr:annotation"
@@ -407,14 +411,6 @@
 		<xs:attribute name="baseCategory" type="fixr:CategoryID_t" />
 		<xs:attribute name="baseCategoryAbbrName" type="fixr:Name_t" />
 		<xs:attribute name="unionDataType" type="fixr:UnionDataType_t" />
-		<xs:attribute name="value" type="xs:string">
-			<xs:annotation>
-				<xs:documentation>If presence is optional, then it represents a default
-					when the sender does not provide the field.
-					If presence is constant, then it is the constant value.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
 	</xs:complexType>
 	<xs:simpleType name="GroupName_t">
 		<xs:restriction base="xs:string" />
@@ -557,7 +553,8 @@
 			<xs:enumeration value="DISPLAY">
 				<xs:annotation>
 					<xs:documentation>For UI when different from canonical name; may
-						have multi-language displays</xs:documentation>
+						have multi-language displays
+					</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
 		</xs:restriction>
@@ -583,7 +580,8 @@
 				<xs:annotation>
 					<xs:documentation>A common condition for all of the actions. If it
 						evalutes true, then the actions are invoked. If 'when' is not
-						present, the actions are unconditional.</xs:documentation>
+						present, the actions are unconditional.
+					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
@@ -615,7 +613,8 @@
 				maxOccurs="unbounded">
 				<xs:annotation>
 					<xs:documentation>Content of element holds assignment expression
-						for a state variable</xs:documentation>
+						for a state variable
+					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
@@ -725,7 +724,8 @@
 				<xs:annotation>
 					<xs:documentation>Optional guard condition. The transition is
 						allowed if the condition evaluates true. If not present, the
-						transition is unconditional.</xs:documentation>
+						transition is unconditional.
+					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
@@ -753,7 +753,8 @@
 		<xs:restriction base="xs:string">
 			<xs:annotation>
 				<xs:documentation>Enumerated FIX versions or major.minor or date as
-					yyyymmdd of any protocol</xs:documentation>
+					yyyymmdd of any protocol
+				</xs:documentation>
 			</xs:annotation>
 			<xs:pattern
 				value="(FIX.2.7)|(FIX.3.0)|(FIX\.4\.[0-4])|(FIX\.5\.0(SP\d{1,2})?(_EP((9[8-9])|([1-9][0-9][0-9])))?)|(FIXT.1.1)|([0-9]+)\.([0-9]+)|(\d{8})" />

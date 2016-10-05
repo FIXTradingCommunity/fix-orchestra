@@ -35,7 +35,6 @@
                         <goals>
                             <goal>generate</goal>
                         </goals>
-                        <phase>none</phase> <!--disabling xjc for the moment-->
                     </execution>
                 </executions>
                 <configuration>
