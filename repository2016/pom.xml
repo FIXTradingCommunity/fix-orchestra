@@ -5,9 +5,9 @@
         xmlns="http://maven.apache.org/POM/4.0.0">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.fixtrading.orchestra</groupId>
+        <groupId>io.fixprotocol.orchestra</groupId>
         <artifactId>parent</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>0.1.0-RC1-SNAPSHOT</version>
     </parent>
     <artifactId>repository2016</artifactId>
     <name>${project.groupId}:${project.artifactId}</name>
@@ -49,7 +49,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.fixtrading.orchestra.transformers.RepositoryXslTransformer</mainClass>
+                            <mainClass>io.fixprotocol.orchestra.transformers.RepositoryXslTransformer</mainClass>
                         </manifest>
                     </archive>
 

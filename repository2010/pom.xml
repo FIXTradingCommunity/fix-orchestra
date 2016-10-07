@@ -4,9 +4,9 @@
 	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>org.fixtrading.orchestra</groupId>
+		<groupId>io.fixprotocol.orchestra</groupId>
 		<artifactId>parent</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>0.1.0-RC1-SNAPSHOT</version>
 	</parent>
 	<artifactId>repository2010</artifactId>
 	<name>${project.groupId}:${project.artifactId}</name>

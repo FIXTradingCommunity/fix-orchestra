@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>parent</artifactId>
-        <groupId>org.fixtrading.orchestra</groupId>
-        <version>0.0.1-SNAPSHOT</version>
+        <groupId>io.fixprotocol.orchestra</groupId>
+        <version>0.1.0-RC1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>dsl-antlr</artifactId>
@@ -39,4 +39,5 @@
     <properties>
     	<antlr.version>4.5.3</antlr.version>
     </properties>
+    <name>${project.groupId}:${project.artifactId}</name>
 </project>
