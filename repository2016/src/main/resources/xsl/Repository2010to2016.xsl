@@ -11,7 +11,7 @@
         <xsl:apply-templates/>
     </xsl:template>
     <xsl:template match="fixRepository">
-        <xsl:copy>
+    <fixr:repository>
             <metadata>
                 <dc:creator>Repository2010to2016</dc:creator>
                 <dc:date>
@@ -21,9 +21,12 @@
             <codeSets>
                 <xsl:for-each select="/fixRepository/fix/fields/field[enum]">
                     <xsl:variable name="fieldName" select="@name"></xsl:variable>
-                    <xsl:element name="{concat($fieldName, 'CodeSet')}">
+                    <xsl:variable name="fieldType" select="@type"></xsl:variable>
+                    <xsl:element name="fixr:codeSet">
+						<xsl:attribute name="name"><xsl:value-of select="concat($fieldName, 'CodeSet')"/></xsl:attribute>
+						<xsl:attribute name="type"><xsl:value-of select="$fieldType"/></xsl:attribute>
                         <xsl:for-each select="//field[@name = $fieldName]/enum">
-                            <xsl:element name="code">
+                            <xsl:element name="fixr:code">
                                 <xsl:apply-templates select="@*"/>
                             </xsl:element>
                         </xsl:for-each>
@@ -36,7 +39,7 @@
             <xsl:apply-templates select="//datatypes[last()]"/>
             <xsl:apply-templates select="//fields[last()]"/>
             <xsl:apply-templates select="//fix"/>
-        </xsl:copy>
+    </fixr:repository>
     </xsl:template>
     <xsl:template match="abbreviations">
         <xsl:copy>
@@ -121,11 +124,11 @@
         </xsl:copy>
     </xsl:template>
     <xsl:template match="fix">
-        <xsl:copy>
+		<fixr:protocol>
             <xsl:apply-templates select="@*"/>
             <xsl:apply-templates select="components"/>
             <xsl:apply-templates select="messages"/>
-        </xsl:copy>
+        </fixr:protocol>
     </xsl:template>
     <xsl:template match="components">
         <xsl:copy>
@@ -189,11 +192,6 @@
         <xsl:attribute name="codeSet" select="concat($fieldName, 'CodeSet')"/>
     </xsl:template>
     <!-- name changes -->
-    <xsl:template match="@minInclusive">
-        <xsl:attribute name="lowerBound">
-            <xsl:value-of select="current()"/>
-        </xsl:attribute>
-    </xsl:template>
     <xsl:template match="@components">
         <xsl:attribute name="hasComponents">
             <xsl:value-of select="current()"/>

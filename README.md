@@ -10,10 +10,22 @@ version 1.0.
 
 ## Normative Module
 
-#### Repository2016
+### Repository2016
 The **normative** part of FIX Orchestra RC1 is an XML schema, also known as FIX Repository 2016 Edition. It is used to convey message structures and their
 components, as well as FIX application behaviors. Users may express workflow as responses to messages under different scenarios, as well as external
 state information that may influence behaviors.
+
+In addition to providing the XML schema as a resource, the module builds Java bindings for the schema.
+
+The module may be included as a dependency in an application Maven project as follows:
+
+```xml
+<dependency>
+  <groupId>io.fixprotocol.orchestra</groupId>
+  <artifactId>repository2016</artifactId>
+  <version>0.1.0-RC1</version>
+</dependency>
+```
 
 ## Prototype Module
 The following module should be considered a **prototype**, and is expected to be finalized in Release Candidate 2.
@@ -36,7 +48,7 @@ this needs to be developed for each FIX engine that uses a proprietary configura
 ### Messages
 Exposes message structures to discovery via FIX Orchestra through the use of [semantic web](https://en.wikipedia.org/wiki/Semantic_Web) technologies.
 
-#### Repository2010
+### Repository2010
 Parses FIX Repository 2010 Edition to import its message structures.
 
 ## License
@@ -55,8 +67,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 ## Prerequisites
-This project requires Java 8. It should run on any platform for which the JVM is supported.
+This project requires Java 8 or later. It should run on any platform for which the JVM is supported.
 
 ## Build
-The project is built with Maven. 
+The project is built with Maven version 3.0 or later. 
 
