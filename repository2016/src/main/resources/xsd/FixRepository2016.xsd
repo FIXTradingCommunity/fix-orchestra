@@ -10,16 +10,10 @@
 	</xs:annotation>
 	<xs:include schemaLocation="repositorytypes2016.xsd"/>
 	<xs:import namespace="http://purl.org/dc/terms/" schemaLocation="dcterms.xsd"/>
-	<xs:element name="abbreviation">
-		<xs:complexType>
-			<xs:attributeGroup ref="fixr:entityAttribGrp"/>
-			<xs:attribute name="abbrTerm" type="xs:string"/>
-		</xs:complexType>
-	</xs:element>
 	<xs:element name="abbreviations">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="fixr:abbreviation" maxOccurs="unbounded"/>
+				<xs:element name="abbreviation" type="fixr:abbreviationType" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
 		</xs:complexType>
@@ -27,20 +21,9 @@
 	<xs:element name="categories">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="fixr:category" maxOccurs="unbounded"/>
+				<xs:element name="category" type="fixr:categoryType" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="category">
-		<xs:complexType>
-			<xs:attribute name="id" type="fixr:CategoryID_t"/>
-			<xs:attribute name="FIXMLFileName" type="fixr:Name_t"/>
-			<xs:attribute name="componentType" type="fixr:CatComponentType_t"/>
-			<xs:attribute name="section" type="fixr:SectionID_t"/>
-			<xs:attribute name="volume" type="fixr:Volume_t"/>
-			<xs:attribute name="includeFile" type="fixr:CatIncludeFile_t"/>
-			<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="codeSets">

@@ -34,43 +34,50 @@
                 </xsl:for-each>
             </codeSets>
             <xsl:apply-templates select="//abbreviations[last()]"/>
+            <xsl:apply-templates select="//datatypes[last()]"/>
             <xsl:apply-templates select="//categories[last()]"/>
             <xsl:apply-templates select="//sections[last()]"/>
-            <xsl:apply-templates select="//datatypes[last()]"/>
             <xsl:apply-templates select="//fields[last()]"/>
             <xsl:apply-templates select="//fix"/>
     </fixr:repository>
     </xsl:template>
     <xsl:template match="abbreviations">
-        <xsl:copy>
+    <fixr:abbreviations>
             <xsl:apply-templates/>
-        </xsl:copy>
+    </fixr:abbreviations>
     </xsl:template>
     <xsl:template match="abbreviation">
-        <xsl:copy>
+    <fixr:abbreviation>
             <xsl:apply-templates select="@* except @textId"/>
             <xsl:apply-templates select="@textId"/>
-        </xsl:copy>
+    </fixr:abbreviation>
     </xsl:template>
     <xsl:template match="datatypes">
-        <xsl:copy>
+    <fixr:datatypes>
             <xsl:apply-templates/>
-        </xsl:copy>
+    </fixr:datatypes>
     </xsl:template>
     <xsl:template match="datatype">
-        <xsl:copy>
-            <xsl:apply-templates select="@*"/>
-            <xsl:apply-templates/>
-        </xsl:copy>
+    <fixr:datatype>
+            <xsl:apply-templates select="@* except @textId"/>
+            <xsl:apply-templates select="XML"/>
+            <fixr:annotation>
+            <xsl:apply-templates select="@textId"/>
+            <xsl:apply-templates select="Example"/>
+            </fixr:annotation>
+    </fixr:datatype>
     </xsl:template>
     <xsl:template match="Example">
-        <phrase>
-            <text purpose="EXAMPLE">
-                <para>
-                    <xsl:value-of select="current()"/>
-                </para>
-            </text>
-        </phrase>
+		<fixr:documentation purpose="EXAMPLE"><xsl:value-of select="current()"/></fixr:documentation>
+    </xsl:template>
+    <xsl:template match="text">
+		<fixr:documentation>
+			<xsl:apply-templates select="@*"/>
+			<xsl:apply-templates/>
+		</fixr:documentation>
+    </xsl:template>
+    <xsl:template match="para">
+		<xsl:value-of select="current()"/>
     </xsl:template>
     <xsl:template match="XML">
         <mappedDatatype standard="XML">
@@ -78,40 +85,39 @@
         </mappedDatatype>
     </xsl:template>
     <xsl:template match="categories">
-        <xsl:copy>
-            <xsl:apply-templates/>
-        </xsl:copy>
+    <fixr:categories>
+           <xsl:apply-templates/>
+    </fixr:categories>
     </xsl:template>
     <xsl:template match="category">
-        <xsl:copy>
+    <fixr:category>
             <xsl:apply-templates select="@* except @textId"/>
-            <xsl:apply-templates/>
             <xsl:apply-templates select="@textId"/>
-        </xsl:copy>
+    </fixr:category>
     </xsl:template>
     <xsl:template match="sections">
-        <xsl:copy>
+    <fixr:sections>
             <xsl:apply-templates/>
-        </xsl:copy>
+    </fixr:sections>
     </xsl:template>
     <xsl:template match="section">
-        <xsl:copy>
+    <fixr:section>
             <xsl:apply-templates select="@* except @textId"/>
             <xsl:apply-templates/>
             <xsl:apply-templates select="@textId"/>
-        </xsl:copy>
+    </fixr:section>
     </xsl:template>
     <xsl:template match="fields">
-        <xsl:copy>
+    <fixr:fields>
             <xsl:apply-templates/>
-        </xsl:copy>
+    </fixr:fields>
     </xsl:template>
     <xsl:template match="field">
-        <xsl:copy>
+    <fixr:field>
             <xsl:apply-templates select="@* except @textId"/>
             <xsl:choose>
                 <xsl:when test="current()/enum">
-                    <xsl:attribute name="codeSet" select="concat(@name, 'CodeSet')"/>
+                    <xsl:attribute name="type" select="concat(@name, 'CodeSet')"/>
                 </xsl:when>
                 <xsl:when test="@type = 'data'">
                     <xsl:attribute name="lengthId"
@@ -121,7 +127,7 @@
                 </xsl:when>
             </xsl:choose>
             <xsl:apply-templates select="@textId"/>
-        </xsl:copy>
+    </fixr:field>
     </xsl:template>
     <xsl:template match="fix">
 		<fixr:protocol>
@@ -131,10 +137,10 @@
         </fixr:protocol>
     </xsl:template>
     <xsl:template match="components">
-        <xsl:copy>
+    <fixr:components>
             <xsl:apply-templates select="@*"/>
             <xsl:apply-templates/>
-        </xsl:copy>
+    </fixr:components>
     </xsl:template>
     <xsl:template match="component">
         <xsl:choose>
@@ -142,11 +148,11 @@
                 <xsl:apply-templates/>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:copy>
+                <fixr:component>
                     <xsl:apply-templates select="@* except @type except @textId"/>
                     <xsl:apply-templates/>
                     <xsl:apply-templates select="@textId"/>
-                </xsl:copy>
+                </fixr:component>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
@@ -165,31 +171,42 @@
         </group>
     </xsl:template>
     <xsl:template match="messages">
-        <xsl:copy>
+    <fixr:messages>
             <xsl:apply-templates select="@*"/>
             <xsl:apply-templates/>
-        </xsl:copy>
+    </fixr:messages>
     </xsl:template>
     <xsl:template match="message">
-        <xsl:copy>
+    <fixr:message>
             <xsl:apply-templates select="@* except @textId"/>
-            <xsl:apply-templates/>
+            <fixr:structure>
+				<xsl:apply-templates/>
+            </fixr:structure>
             <xsl:apply-templates select="@textId"/>
-        </xsl:copy>
+    </fixr:message>
     </xsl:template>
     <xsl:template match="componentRef">
-        <xsl:copy>
-            <xsl:apply-templates select="@*"/>
-        </xsl:copy>
+		<xsl:choose>
+			<xsl:when test="//component[@id=current()/@id]/repeatingGroup">
+			    <fixr:groupRef>
+				<xsl:apply-templates select="@*"/>
+				</fixr:groupRef>
+			</xsl:when>
+			<xsl:otherwise>
+				<fixr:componentRef>
+				<xsl:apply-templates select="@*"/>
+				</fixr:componentRef>
+			</xsl:otherwise>
+		</xsl:choose>
     </xsl:template>
     <xsl:template match="fieldRef">
-        <xsl:copy>
+    <fixr:fieldRef>
             <xsl:apply-templates select="@*"/>
-        </xsl:copy>
+    </fixr:fieldRef>
     </xsl:template>
     <xsl:template match="@enumDatatype">
         <xsl:variable name="fieldName" select="//field[@id = current()]/@name"/>
-        <xsl:attribute name="codeSet" select="concat($fieldName, 'CodeSet')"/>
+        <xsl:attribute name="type" select="concat($fieldName, 'CodeSet')"/>
     </xsl:template>
     <!-- name changes -->
     <xsl:template match="@components">
@@ -231,10 +248,7 @@
     <xsl:template match="@textId">
         <xsl:element name="fixr:annotation">
             <xsl:for-each select="fn:key('phrases-key', ../@textId, $phrases-doc)//text">
-                <xsl:element name="fixr:documentation">
-                    <xsl:apply-templates select="@purpose"/>
-                    <xsl:value-of select="."/>
-                </xsl:element>
+                <xsl:element name="fixr:documentation"><xsl:apply-templates select="@purpose"/><xsl:value-of select="."/></xsl:element>
             </xsl:for-each>
         </xsl:element>
     </xsl:template>
