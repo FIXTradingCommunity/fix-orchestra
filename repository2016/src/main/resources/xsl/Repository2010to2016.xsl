@@ -30,6 +30,7 @@
                                 <xsl:apply-templates select="@*"/>
                             </xsl:element>
                         </xsl:for-each>
+                        <xsl:apply-templates select="@textId"/>
                     </xsl:element>
                 </xsl:for-each>
             </codeSets>
