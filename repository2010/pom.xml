@@ -31,7 +31,7 @@
 				</executions>
 				<configuration>
 					<!-- The package of your generated sources -->
-					<packageName>org.fixtrading.orchestra.repository.jaxb</packageName>
+					<packageName>io.fixprotocol.orchestra.repository.jaxb</packageName>
 					<sources>
 						<source>src/main/resources/xsd/FixRepository.xsd</source>
 					</sources>
