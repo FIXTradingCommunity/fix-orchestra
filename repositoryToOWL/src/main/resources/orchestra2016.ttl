@@ -1,0 +1,339 @@
+@prefix : <http://fixprotocol.io/2016/orchestra#> .
+@prefix sm: <http://www.omg.org/techprocess/ab/SpecificationMetadata/> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+
+: a owl:Ontology ;
+	owl:versionIRI :1.0-RC1 ;
+	owl:imports <http://www.omg.org/techprocess/ab/SpecificationMetadata/> ;
+	sm:specificationAbstract """A
+			machine readable format
+			for specifying message attributes and
+			structures
+		"""^^xsd:string ;
+	sm:specificationVersionURL "http://fixprotocol.io/2016/orchestra/1.0-RC1"^^xsd:anyURI ;
+	sm:fileAbbreviation """orch-msg
+		"""^^xsd:string ;
+	sm:dependsOn """http://www.omg.org/techprocess/ab/SpecificationMetadata/
+		"""^^xsd:anyURI ;
+	sm:submitter """FIX Protocol Limited
+		"""^^xsd:string ;
+	rdfs:label "FIX Orchestra Message Ontology" ;
+	sm:thisVersion "1.0 RC1"^^xsd:string ;
+	sm:filename "FIX Orchestra Message Ontology"^^xsd:string ;
+	sm:specificationAbbreviation "ORCH-MSG"^^xsd:string ;
+	sm:contentLanguage """http://www.w3.org/standards/techs/owl#w3c_all
+		"""^^xsd:anyURI ;
+	sm:specificationTitle "FIX Orchestra Messages"^^xsd:string ;
+	sm:specificationURL "http://fixprotocol.io/2016/orchestra"^^xsd:anyURI ;
+	dct:license """http://www.apache.org/licenses/LICENSE-2.0
+		"""^^xsd:anyURI , """Licensed under the Apache
+			License, Version 2.0 (the \"License\");
+			you may not use this
+			file except
+			in compliance with the License.
+			You may obtain a copy of
+			the License
+			at
+
+			http://www.apache.org/licenses/LICENSE-2.0
+
+			Unless
+			required by
+			applicable law or agreed to in writing, software
+			distributed under the
+			License is distributed on an \"AS IS\"
+			BASIS,
+			WITHOUT WARRANTIES OR
+			CONDITIONS OF ANY KIND, either express or
+			implied.
+			See the License for
+			the specific language governing
+			permissions and
+			limitations under the
+			License.
+		"""^^xsd:string ;
+	sm:copyright """Copyright (c) 2016,
+			FIX
+			Protocol Limited
+		"""^^xsd:string ;
+	sm:contentLanguage """http://www.omg.org/spec/ODM/
+		"""^^xsd:anyURI .
+# 
+# 
+# #################################################################
+# #
+# #    Object Properties
+# #
+# #################################################################
+# 
+# 
+:hasDataType a owl:ObjectProperty , owl:FunctionalProperty ;
+	rdfs:comment "has a value space" ;
+	rdfs:label "has data type" .
+
+:hasSizeField a owl:ObjectProperty ;
+	owl:inverseOf :isSizeOf ;
+	a owl:FunctionalProperty ;
+	rdfs:domain :RepeatingGroup ;
+	rdfs:range :SizeField ;
+	rdfs:label "has size field" .
+
+:isSizeOf a owl:ObjectProperty , owl:FunctionalProperty ;
+	rdfs:label "is size of" .
+
+:requires a owl:ObjectProperty ;
+	rdfs:subPropertyOf :has .
+
+:has a owl:ObjectProperty .
+
+# 
+# 
+# 
+# #################################################################
+# #
+# #    Data properties
+# #
+# #################################################################
+# 
+
+:hasConstraint a owl:DatatypeProperty ;
+	rdfs:label "has constraint" .
+
+:hasExternalReference a owl:DatatypeProperty ;
+	rdfs:range xsd:anyURI ;
+	rdfs:comment "a finite number of distinguished but unordered values." ;
+	rdfs:label "has external reference" .
+
+:hasId a owl:DatatypeProperty , owl:FunctionalProperty ;
+	rdfs:range xsd:positiveInteger ;
+	rdfs:label "has ID" .
+
+:hasMaximumSize a owl:DatatypeProperty ;
+	rdfs:subPropertyOf :hasConstraint ;
+	a owl:FunctionalProperty ;
+	rdfs:range xsd:nonNegativeInteger ;
+	rdfs:label "has minimum size" .
+
+:hasMaximumValue a owl:DatatypeProperty ;
+	rdfs:subPropertyOf :hasConstraint ;
+	a owl:FunctionalProperty ;
+	rdfs:label "has maximum value" .
+
+:hasMinimumSize a owl:DatatypeProperty ;
+	rdfs:subPropertyOf :hasConstraint ;
+	a owl:FunctionalProperty ;
+	rdfs:range xsd:nonNegativeInteger ;
+	rdfs:label "has minimum size" .
+
+:hasMinimumValue a owl:DatatypeProperty ;
+	rdfs:subPropertyOf :hasConstraint ;
+	a owl:FunctionalProperty ;
+	rdfs:label "has minimum value" .
+
+:hasName a owl:DatatypeProperty , owl:FunctionalProperty ;
+	rdfs:range xsd:Name ;
+	rdfs:label "has name" .
+
+:hasShortName a owl:DatatypeProperty ;
+	rdfs:range xsd:Name ;
+	rdfs:label "has short name" .
+
+:hasSize a owl:DatatypeProperty ;
+	rdfs:subPropertyOf :hasConstraint ;
+	a owl:FunctionalProperty ;
+	rdfs:comment "has constant size" ;
+	rdfs:label "has size" .
+
+:hasValue a owl:DatatypeProperty ;
+	rdfs:subPropertyOf :hasConstraint ;
+	a owl:FunctionalProperty ;
+	rdfs:range xsd:string ;
+	rdfs:comment "has a constant value" ;
+	rdfs:label "has value" .
+# 
+# 
+# 
+# #################################################################
+# #
+# #    Classes
+# #
+# #################################################################
+# 
+
+:Code a owl:Class ;
+	rdfs:subClassOf _:genid1 .
+
+_:genid1 a owl:Restriction ;
+	owl:onProperty :hasName ;
+	owl:someValuesFrom xsd:Name .
+
+:Code rdfs:subClassOf _:genid2 .
+
+_:genid2 a owl:Restriction ;
+	owl:onProperty :hasValue ;
+	owl:someValuesFrom xsd:string .
+
+:Code rdfs:comment "a literal value in the value space of a field" .
+
+:CodeSet a owl:Class ;
+	rdfs:subClassOf :DataType , rdf:Alt , _:genid3 .
+
+_:genid3 a owl:Restriction ;
+	owl:onProperty :hasDataType ;
+	owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+	owl:onClass :DataType .
+
+:CodeSet rdfs:comment "the value space of field as an enumeration of valid values" ;
+	rdfs:label "Code Set" .
+
+:Component a owl:Class ;
+	rdfs:subClassOf :MessageEntity , _:genid4 .
+
+_:genid4 a owl:Restriction ;
+	owl:onProperty :has ;
+	owl:allValuesFrom _:genid5 .
+
+_:genid5 a owl:Class ;
+	owl:oneOf _:genid7 .
+
+_:genid7 a rdf:List ;
+	rdf:first :Component ;
+	rdf:rest _:genid6 .
+
+_:genid6 a rdf:List ;
+	rdf:first :Field ;
+	rdf:rest rdf:nil .
+
+:DataField a owl:Class ;
+	rdfs:subClassOf :Field , _:genid8 .
+
+_:genid8 a owl:Restriction ;
+	owl:onProperty :hasSizeField ;
+	owl:someValuesFrom :SizeField .
+
+:DataField rdfs:comment "a field containing opaque data, ususally variable-length" ;
+	rdfs:label "Data Field" .
+
+:DataType a owl:Class ;
+	rdfs:subClassOf _:genid9 .
+
+_:genid9 a owl:Restriction ;
+	owl:onProperty :hasName ;
+	owl:someValuesFrom xsd:Name .
+
+:DataType rdfs:comment "the value space of a field" ;
+	rdfs:label "Data Type" .
+
+:Field a owl:Class ;
+	rdfs:subClassOf :MessageEntity , _:genid10 .
+
+_:genid10 a owl:Restriction ;
+	owl:onProperty :hasDataType ;
+	owl:someValuesFrom :DataType .
+
+:Field rdfs:comment "a semantic unit of a message" .
+
+:Message a owl:Class ;
+	rdfs:subClassOf :Component ;
+	rdfs:comment "a complete message sent between counterparties" .
+
+:MessageEntity a owl:Class ;
+	rdfs:subClassOf _:genid11 .
+
+_:genid11 a owl:Restriction ;
+	owl:onProperty :hasId ;
+	owl:someValuesFrom xsd:positiveInteger .
+
+:MessageEntity rdfs:subClassOf _:genid12 .
+
+_:genid12 a owl:Restriction ;
+	owl:onProperty :hasName ;
+	owl:someValuesFrom xsd:Name .
+
+:MessageEntity rdfs:subClassOf _:genid13 .
+
+_:genid13 a owl:Restriction ;
+	owl:onProperty :hasShortName ;
+	owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+	owl:onDataRange xsd:Name .
+
+:MessageEntity owl:hasKey _:genid14 .
+
+_:genid14 a rdf:List ;
+	rdf:first :hasId ;
+	rdf:rest rdf:nil .
+
+:MessageEntity rdfs:comment "a structural element of a message" ;
+	rdfs:label "Message Entity" .
+
+:RepeatingGroup a owl:Class ;
+	rdfs:subClassOf :Component , _:genid15 .
+
+_:genid15 a owl:Restriction ;
+	owl:onProperty :hasSizeField ;
+	owl:someValuesFrom :SizeField .
+
+:RepeatingGroup rdfs:comment "a message component that contains a variable number of occurrences" ;
+	rdfs:label "Repeating Group" .
+
+:SizeField a owl:Class ;
+	rdfs:subClassOf :Field ;
+	rdfs:comment "a field that conveys the size of a variable-length element" ;
+	rdfs:label "Size Field" .
+
+rdf:Alt a owl:Class .
+# 
+# 
+# 
+# #################################################################
+# #
+# #    Individuals
+# #
+# #################################################################
+# 
+
+
+# 
+# 
+# #################################################################
+# #
+# #    Annotations
+# #
+# #################################################################
+# 
+# 
+
+:Component rdfs:comment "a message fragment consisting of a group of fields" .
+# 
+# 
+# 
+# #################################################################
+# #
+# #    General axioms
+# #
+# #################################################################
+# 
+# 
+
+_:genid16 a owl:AllDisjointClasses ;
+	owl:members _:genid19 .
+
+_:genid19 a rdf:List ;
+	rdf:first :Code ;
+	rdf:rest _:genid18 .
+
+_:genid18 a rdf:List ;
+	rdf:first :DataType ;
+	rdf:rest _:genid17 .
+
+_:genid17 a rdf:List ;
+	rdf:first :MessageEntity ;
+	rdf:rest rdf:nil .
+# 
+# Generated by the OWL API (version 4.1.3.20151118-2017) https://github.com/owlcs/owlapi

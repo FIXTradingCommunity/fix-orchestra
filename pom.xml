@@ -54,10 +54,11 @@
 	<modules>
 		<module>session</module>
 		<module>session-quickfix</module>
-		<module>messages</module>
+		
 		<module>repository2010</module>
 		<module>repository2016</module>
 		<module>dsl-antlr</module>
+		<module>repositoryToOWL</module>
 	</modules>
 
 	<properties>

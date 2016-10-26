@@ -45,11 +45,11 @@ This module allows counterparties to discover configurations of sessions between
 A demonstration of session configuration for QuickFIX/J open-source FIX engine. A module like
 this needs to be developed for each FIX engine that uses a proprietary configuration format.
 
-### Messages
-Exposes message structures to discovery via FIX Orchestra through the use of [semantic web](https://en.wikipedia.org/wiki/Semantic_Web) technologies.
-
 ### Repository2010
 Parses FIX Repository 2010 Edition to import its message structures.
+
+### repositoryToOWL
+Translates a FIX Repository or Orchestra file to Web Ontology Language (OWL), a semantic web notation.
 
 ## License
 © Copyright 2016 FIX Protocol Limited
