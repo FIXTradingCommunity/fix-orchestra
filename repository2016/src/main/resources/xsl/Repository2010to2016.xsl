@@ -3,7 +3,7 @@
                 xmlns:fn="http://www.w3.org/2005/xpath-functions" xmlns:fixr="http://fixprotocol.io/2016/fixrepository"
                 xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0"
                 exclude-result-prefixes="fn">
-    <xsl:variable name="phrases-doc" select="fn:document('FIX.5.0SP2_EP208_en_phrases.xml')"/>
+    <xsl:variable name="phrases-doc" select="fn:document('FIX.5.0SP2_EP216_en_phrases.xml')"/>
     <xsl:key name="phrases-key" match="phrase" use="@textId"/>
     <xsl:output method="xml" indent="yes"/>
     <xsl:namespace-alias stylesheet-prefix="#default" result-prefix="fixr"/>

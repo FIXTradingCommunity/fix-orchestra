@@ -70,6 +70,9 @@
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:complexType name="categoryType">
+		<xs:sequence>
+			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
+		</xs:sequence>
 		<xs:attribute name="id" type="fixr:CategoryID_t"/>
 		<xs:attribute name="FIXMLFileName" type="fixr:Name_t"/>
 		<xs:attribute name="componentType" type="fixr:CatComponentType_t"/>
@@ -581,6 +584,17 @@
 			<xs:enumeration value="Other"/>
 		</xs:restriction>
 	</xs:simpleType>
+	<xs:complexType name="sectionType">
+		<xs:sequence>
+			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="id" type="fixr:SectionID_t"/>
+		<xs:attribute name="name" type="fixr:Name_t"/>
+		<xs:attribute name="displayOrder" type="xs:int"/>
+		<xs:attribute name="volume" type="fixr:Volume_t"/>
+		<xs:attribute name="FIXMLFileName" type="fixr:Name_t"/>
+		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
+	</xs:complexType>
 	<xs:simpleType name="Sort_t">
 		<xs:restriction base="xs:nonNegativeInteger"/>
 	</xs:simpleType>

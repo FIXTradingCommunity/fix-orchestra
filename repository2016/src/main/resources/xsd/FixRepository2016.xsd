@@ -160,20 +160,10 @@
 			<xs:field xpath="@context"/>
 		</xs:unique>
 	</xs:element>
-	<xs:element name="section">
-		<xs:complexType>
-			<xs:attribute name="id" type="fixr:SectionID_t"/>
-			<xs:attribute name="name" type="fixr:Name_t"/>
-			<xs:attribute name="displayOrder" type="xs:int"/>
-			<xs:attribute name="volume" type="fixr:Volume_t"/>
-			<xs:attribute name="FIXMLFileName" type="fixr:Name_t"/>
-			<xs:attributeGroup ref="fixr:entityAttribGrp"/>
-		</xs:complexType>
-	</xs:element>
 	<xs:element name="sections">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="fixr:section" maxOccurs="unbounded"/>
+				<xs:element name="section" type="fixr:sectionType" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
 		</xs:complexType>
