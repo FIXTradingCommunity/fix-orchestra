@@ -84,7 +84,7 @@ public class RepositoryTool {
 	 * Prints application usage
 	 */
 	public static void usage() {
-		System.out.println("Usage: RepositoryTool <repository-file-name> [ontology-file-name]");
+		System.out.println("Usage: RepositoryTool <repository-file-name> <ontology-file-name>");
 	}
 
 	private Model model;
@@ -107,7 +107,7 @@ public class RepositoryTool {
 		} else if (entity instanceof ComponentRef) {
 			ontologyManager.addComponent(parent, entityId.intValue(), name, isRequired);
 		} else if (entity instanceof RepeatingGroup) {
-			ontologyManager.addNumInGroupField(parent, entityId.intValue(), name, isRequired);
+			ontologyManager.addNumInGroupField(parent, entityId.intValue(), name);
 			RepeatingGroup group = (RepeatingGroup) entity;
 			List<JAXBElement<? extends MessageEntityT>> entityList = group.getMessageEntity();
 			for (JAXBElement<? extends MessageEntityT> childElement : entityList) {

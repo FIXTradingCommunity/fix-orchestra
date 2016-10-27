@@ -547,8 +547,7 @@ public class MessageOntologyManager {
     getOntologyManager().addAxiom(model.getDerivedModel(), propertyAssertion);
   }
 
-  public void addNumInGroupField(MessageEntity parent, int entityId, String name,
-      boolean isRequired) {
+  public void addNumInGroupField(MessageEntity parent, int entityId, String name) {
     Objects.requireNonNull(parent, "Parent component cannot be null");
 
     MessageObject parentObject = (MessageObject) parent;
