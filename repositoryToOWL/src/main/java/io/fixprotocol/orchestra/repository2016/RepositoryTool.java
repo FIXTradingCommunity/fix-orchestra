@@ -58,18 +58,19 @@ public class RepositoryTool {
    * @param args command line arguments
    *        <ol>
    *        <li>repository-file-name</li>
-   *        <li>ontology-file-name</li>
+   *        <li>owl-file-name</li>
+   *        <li>uri of ontology</li>
    *        </ol>
    */
   public static void main(String[] args) {
-    if (args.length < 2) {
+    if (args.length < 3) {
       usage();
     } else {
       try {
         RepositoryTool tool = new RepositoryTool();
         FileInputStream inputStream = new FileInputStream(args[0]);
         FileOutputStream outputStream = new FileOutputStream(args[1]);
-        tool.init();
+        tool.init(args[2]);
         tool.parse(inputStream);
         tool.store(outputStream);
       } catch (Exception e) {
@@ -83,7 +84,7 @@ public class RepositoryTool {
    * Prints application usage
    */
   public static void usage() {
-    System.out.println("Usage: RepositoryTool <repository-file-name> <ontology-file-name>");
+    System.out.println("Usage: RepositoryTool <repository-file-name> <owl-file-name> <IRI>");
   }
 
   private Model model;
@@ -115,12 +116,18 @@ public class RepositoryTool {
   /**
    * Initializes resources
    * 
+   * @param uri
+   * 
    * @throws Exception if resources cannot be initialized
    */
-  public void init() throws Exception {
+  public void init(String uri) throws Exception {
+    String modelUri = uri;
+    if (!uri.endsWith("#")) {
+      modelUri += "#";
+    }
+
     ontologyManager.init();
-    model =
-        ontologyManager.createNewModel("fix", URI.create("http://fixtrading.io/2010/orchestra"));
+    model = ontologyManager.createNewModel(URI.create(modelUri));
   }
 
   /**
@@ -164,7 +171,7 @@ public class RepositoryTool {
     for (FieldType field : fieldList) {
       final BigInteger associatedDataTag = field.getLengthId();
       if (associatedDataTag != null) {
-        ontologyManager.associateFields(model, associatedDataTag.intValue(), 
+        ontologyManager.associateFields(model, associatedDataTag.intValue(),
             field.getId().intValue());
       }
     }
@@ -183,7 +190,7 @@ public class RepositoryTool {
         if (component instanceof GroupType) {
           GroupType groupType = (GroupType) component;
           parent = ontologyManager.createRepeatingGroup(model, id.intValue(), name);
-          ontologyManager.addNumInGroupField(parent, groupType.getNumInGroupId().intValue(), 
+          ontologyManager.addNumInGroupField(parent, groupType.getNumInGroupId().intValue(),
               groupType.getNumInGroupName());
 
         } else {

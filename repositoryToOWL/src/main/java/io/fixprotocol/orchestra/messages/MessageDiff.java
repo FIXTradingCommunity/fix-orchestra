@@ -67,7 +67,7 @@ public class MessageDiff {
 	 * Prints application usage
 	 */
 	public static void usage() {
-		System.out.println("Usage: MessageDiffTool <ontology-file1> <ontology-file2>");
+		System.out.println("Usage: MessageDiffTool <owl-file1> <owl-file2>");
 	}
 
 	private MessageDiffListener listener = new DefaultListener(System.out);

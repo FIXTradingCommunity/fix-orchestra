@@ -52,197 +52,187 @@ import io.fixprotocol.orchestra.repository.jaxb.RepeatingGroup;
  */
 public class RepositoryTool {
 
-	/**
-	 * Translates a FIX Repository file to an ontology file
-	 * 
-	 * @param args
-	 *            command line arguments
-	 *            <ol>
-	 *            <li>repository-file-name</li>
-	 *            <li>ontology-file-name</li>
-	 *            </ol>
-	 */
-	public static void main(String[] args) {
-		if (args.length < 2) {
-			usage();
-		} else {
-			try {
-				RepositoryTool tool = new RepositoryTool();
-				FileInputStream inputStream = new FileInputStream(args[0]);
-				FileOutputStream outputStream = new FileOutputStream(args[1]);
-				tool.init();
-				tool.parse(inputStream);
-				tool.store(outputStream);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
+  /**
+   * Translates a FIX Repository file to an ontology file
+   * 
+   * @param args command line arguments
+   *        <ol>
+   *        <li>repository-file-name</li>
+   *        <li>owl-file-name</li>
+   *        <li>uri of ontology</li>
+   *        </ol>
+   */
+  public static void main(String[] args) {
+    if (args.length < 3) {
+      usage();
+    } else {
+      try {
+        RepositoryTool tool = new RepositoryTool();
+        FileInputStream inputStream = new FileInputStream(args[0]);
+        FileOutputStream outputStream = new FileOutputStream(args[1]);
+        tool.init(args[2]);
+        tool.parse(inputStream);
+        tool.store(outputStream);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
+  }
 
-	}
+  /**
+   * Prints application usage
+   */
+  public static void usage() {
+    System.out.println("Usage: RepositoryTool <repository-file-name> <ontology-file-name>");
+  }
 
-	/**
-	 * Prints application usage
-	 */
-	public static void usage() {
-		System.out.println("Usage: RepositoryTool <repository-file-name> <ontology-file-name>");
-	}
+  private Model model;
+  private final MessageOntologyManager ontologyManager = new MessageOntologyManager();
 
-	private Model model;
-	private final MessageOntologyManager ontologyManager = new MessageOntologyManager();
+  /**
+   * Add a message element to the ontology
+   * 
+   * @param parent containing component
+   * @param entity an element to add
+   */
+  void addEntity(MessageEntity parent, MessageEntityT entity) {
+    BigInteger entityId = entity.getId();
+    String name = entity.getName();
+    boolean isRequired = entity.getRequired() != 0;
+    if (entity instanceof FieldRef) {
+      ontologyManager.addField(parent, entityId.intValue(), name, isRequired);
+    } else if (entity instanceof ComponentRef) {
+      ontologyManager.addComponent(parent, entityId.intValue(), name, isRequired);
+    } else if (entity instanceof RepeatingGroup) {
+      ontologyManager.addNumInGroupField(parent, entityId.intValue(), name);
+      RepeatingGroup group = (RepeatingGroup) entity;
+      List<JAXBElement<? extends MessageEntityT>> entityList = group.getMessageEntity();
+      for (JAXBElement<? extends MessageEntityT> childElement : entityList) {
+        MessageEntityT child = childElement.getValue();
+        addEntity(parent, child);
+      }
+    }
+  }
 
-	/**
-	 * Add a message element to the ontology
-	 * 
-	 * @param parent
-	 *            containing component
-	 * @param entity
-	 *            an element to add
-	 */
-	void addEntity(MessageEntity parent, MessageEntityT entity) {
-		BigInteger entityId = entity.getId();
-		String name = entity.getName();
-		boolean isRequired = entity.getRequired() != 0;
-		if (entity instanceof FieldRef) {
-			ontologyManager.addField(parent, entityId.intValue(), name, isRequired);
-		} else if (entity instanceof ComponentRef) {
-			ontologyManager.addComponent(parent, entityId.intValue(), name, isRequired);
-		} else if (entity instanceof RepeatingGroup) {
-			ontologyManager.addNumInGroupField(parent, entityId.intValue(), name);
-			RepeatingGroup group = (RepeatingGroup) entity;
-			List<JAXBElement<? extends MessageEntityT>> entityList = group.getMessageEntity();
-			for (JAXBElement<? extends MessageEntityT> childElement : entityList) {
-				MessageEntityT child = childElement.getValue();
-				addEntity(parent, child);
-			}
-		}
-	}
+  /**
+   * Initializes resources
+   * 
+   * @throws Exception if resources cannot be initialized
+   */
+  public void init(String uri) throws Exception {
+    String modelUri = uri;
+    if (!uri.endsWith("#")) {
+      modelUri += "#";
+    }
 
-	private Field findField(BigInteger referencedTag, List<Field> fieldList) {
-		for (Field field : fieldList) {
-			if (field.getId().equals(referencedTag)) {
-				return field;
-			}
-		}
-		return null;
-	}
+    ontologyManager.init();
+    model = ontologyManager.createNewModel(URI.create(modelUri));
+  }
 
-	/**
-	 * Initializes resources
-	 * 
-	 * @throws Exception
-	 *             if resources cannot be initialized
-	 */
-	public void init() throws Exception {
-		ontologyManager.init();
-		model = ontologyManager.createNewModel("fix",
-				URI.create("http://fixtrading.io/2010/orchestra"));
-	}
+  /**
+   * Parses a FIX repository
+   * 
+   * @param inputStream stream of the repository contents
+   * @throws JAXBException if a parsing failure occurs
+   */
+  public void parse(InputStream inputStream) throws JAXBException {
+    FixRepository fixRepository = Serializer.unmarshal(inputStream);
+    List<Fix> fixList = fixRepository.getFix();
+    for (Fix fix : fixList) {
+      Datatypes datatypes = fix.getDatatypes();
+      List<Datatype> datatypeList = datatypes.getDatatype();
+      for (Datatype datatype : datatypeList) {
+        ontologyManager.createDataType(model, datatype.getName());
+      }
 
-	/**
-	 * Parses a FIX repository
-	 * 
-	 * @param inputStream
-	 *            stream of the repository contents
-	 * @throws JAXBException
-	 *             if a parsing failure occurs
-	 */
-	public void parse(InputStream inputStream) throws JAXBException {
-		FixRepository fixRepository = Serializer.unmarshal(inputStream);
-		List<Fix> fixList = fixRepository.getFix();
-		for (Fix fix : fixList) {
-			Datatypes datatypes = fix.getDatatypes();
-			List<Datatype> datatypeList = datatypes.getDatatype();
-			for (Datatype datatype : datatypeList) {
-				ontologyManager.createDataType(model, datatype.getName());
-			}
+      Fields fields = fix.getFields();
+      List<Field> fieldList = fields.getField();
+      for (Field field : fieldList) {
+        List<Enum> enumList = field.getEnum();
+        if (!enumList.isEmpty()) {
+          ontologyManager.createCodeSet(model, field.getName(), field.getType());
 
-			Fields fields = fix.getFields();
-			List<Field> fieldList = fields.getField();
-			for (Field field : fieldList) {
-				List<Enum> enumList = field.getEnum();
-				if (!enumList.isEmpty()) {
-					ontologyManager.createCodeSet(model, field.getName(), field.getType());
+          for (Enum fixEnum : enumList) {
+            ontologyManager.createCode(model, field.getName(), fixEnum.getSymbolicName(),
+                fixEnum.getValue());
+          }
 
-					for (Enum fixEnum : enumList) {
-						ontologyManager.createCode(model, field.getName(), fixEnum.getSymbolicName(), fixEnum.getValue());
-					}
-					
-					ontologyManager.createField(model, field.getId().intValue(), field.getName(),
-							field.getName());
-				} else {
-					final BigInteger referencedTag = field.getEnumDatatype();
-					if (referencedTag == null) {
-						ontologyManager.createField(model, field.getId().intValue(), field.getName(),
-							field.getType());
-					} else {
-						ontologyManager.createField(model, field.getId().intValue(), field.getName());
-					}
-				}
-			}
+          ontologyManager.createField(model, field.getId().intValue(), field.getName(),
+              field.getName());
+        } else {
+          final BigInteger referencedTag = field.getEnumDatatype();
+          if (referencedTag == null) {
+            ontologyManager.createField(model, field.getId().intValue(), field.getName(),
+                field.getType());
+          } else {
+            ontologyManager.createField(model, field.getId().intValue(), field.getName());
+          }
+        }
+      }
 
-			// Make a second pass to associate fields after they are all created
-			for (Field field : fieldList) {
-				final BigInteger associatedDataTag = field.getAssociatedDataTag();
-				if (associatedDataTag != null) {
-					ontologyManager.associateFields(model, field.getId().intValue(), associatedDataTag.intValue());
-				}
-				
-				final BigInteger referencedTag = field.getEnumDatatype();
-				if (referencedTag != null) {
-					ontologyManager.associateCodeList(model, field.getName(), referencedTag.intValue());
-				}
-			}
+      // Make a second pass to associate fields after they are all created
+      for (Field field : fieldList) {
+        final BigInteger associatedDataTag = field.getAssociatedDataTag();
+        if (associatedDataTag != null) {
+          ontologyManager.associateFields(model, field.getId().intValue(),
+              associatedDataTag.intValue());
+        }
 
-			Components components = fix.getComponents();
-			List<Component> componentList = components.getComponent();
-			for (Component component : componentList) {
-				BigInteger id = component.getId();
-				String name = component.getName();
-				ComponentTypeT componentType = component.getType();
-				MessageEntity parent = null;
-				switch (componentType) {
-				case BLOCK:
-				case IMPLICIT_BLOCK:
-				case XML_DATA_BLOCK:
-					parent = ontologyManager.createComponent(model, id.intValue(), name);
-					break;
-				case BLOCK_REPEATING:
-				case IMPLICIT_BLOCK_REPEATING:
-				case OPTIMISED_IMPLICIT_BLOCK_REPEATING:
-					parent = ontologyManager.createRepeatingGroup(model, id.intValue(), name);
-					break;
-				}
-				List<JAXBElement<? extends MessageEntityT>> messageEntityList = component.getMessageEntity();
-				for (JAXBElement<? extends MessageEntityT> messageEntity : messageEntityList) {
-					MessageEntityT entity = messageEntity.getValue();
-					addEntity(parent, entity);
-				}
-			}
+        final BigInteger referencedTag = field.getEnumDatatype();
+        if (referencedTag != null) {
+          ontologyManager.associateCodeList(model, field.getName(), referencedTag.intValue());
+        }
+      }
 
-			Messages messages = fix.getMessages();
-			List<Message> messageList = messages.getMessage();
-			for (Message message : messageList) {
-				MessageEntity parent = ontologyManager.createMessage(model, message.getId().intValue(), message.getName(),
-						message.getMsgType());
-				List<JAXBElement<? extends MessageEntityT>> messageEntityList = message.getMessageEntity();
-				for (JAXBElement<? extends MessageEntityT> messageEntity : messageEntityList) {
-					MessageEntityT entity = messageEntity.getValue();
-					addEntity(parent, entity);
-				}
-			}
-		}
-	}
+      Components components = fix.getComponents();
+      List<Component> componentList = components.getComponent();
+      for (Component component : componentList) {
+        BigInteger id = component.getId();
+        String name = component.getName();
+        ComponentTypeT componentType = component.getType();
+        MessageEntity parent = null;
+        switch (componentType) {
+          case BLOCK:
+          case IMPLICIT_BLOCK:
+          case XML_DATA_BLOCK:
+            parent = ontologyManager.createComponent(model, id.intValue(), name);
+            break;
+          case BLOCK_REPEATING:
+          case IMPLICIT_BLOCK_REPEATING:
+          case OPTIMISED_IMPLICIT_BLOCK_REPEATING:
+            parent = ontologyManager.createRepeatingGroup(model, id.intValue(), name);
+            break;
+        }
+        List<JAXBElement<? extends MessageEntityT>> messageEntityList =
+            component.getMessageEntity();
+        for (JAXBElement<? extends MessageEntityT> messageEntity : messageEntityList) {
+          MessageEntityT entity = messageEntity.getValue();
+          addEntity(parent, entity);
+        }
+      }
 
-	/**
-	 * Stores a translated ontology
-	 * 
-	 * @param outputStream
-	 *            stream of the ontology contents
-	 * @throws Exception
-	 *             if the ontology cannot be written
-	 */
-	public void store(FileOutputStream outputStream) throws Exception {
-		ontologyManager.storeModel(model, outputStream);
-	}
+      Messages messages = fix.getMessages();
+      List<Message> messageList = messages.getMessage();
+      for (Message message : messageList) {
+        MessageEntity parent = ontologyManager.createMessage(model, message.getId().intValue(),
+            message.getName(), message.getMsgType());
+        List<JAXBElement<? extends MessageEntityT>> messageEntityList = message.getMessageEntity();
+        for (JAXBElement<? extends MessageEntityT> messageEntity : messageEntityList) {
+          MessageEntityT entity = messageEntity.getValue();
+          addEntity(parent, entity);
+        }
+      }
+    }
+  }
+
+  /**
+   * Stores a translated ontology
+   * 
+   * @param outputStream stream of the ontology contents
+   * @throws Exception if the ontology cannot be written
+   */
+  public void store(FileOutputStream outputStream) throws Exception {
+    ontologyManager.storeModel(model, outputStream);
+  }
 
 }
