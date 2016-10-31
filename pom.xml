@@ -59,6 +59,7 @@
 		<module>repository2016</module>
 		<module>dsl-antlr</module>
 		<module>repositoryToOWL</module>
+		<module>repository-quickfix</module>
 	</modules>
 
 	<properties>

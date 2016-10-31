@@ -61,7 +61,7 @@ abstract class AbstractSessionTool {
 
     OWLNamedIndividual getObject();
   }
-  class SessionObject implements Session, ObjectHolder {
+  public class SessionObject implements Session, ObjectHolder {
     private final OWLNamedIndividual sessionObject;
 
     SessionObject(OWLNamedIndividual sessionObject) {
@@ -182,7 +182,7 @@ abstract class AbstractSessionTool {
       return this;
     }
 
-    String getIpAddress() {
+    public String getIpAddress() {
       String ipAddresss = null;
       OWLNamedIndividual sessionInd = getObject();
       OWLClass tcpTransportClass = dataFactory.getOWLClass(":TcpTransport", getDefaultPrefixManager());
@@ -210,7 +210,7 @@ abstract class AbstractSessionTool {
       return ipAddresss;
     }
 
-    int getPort() {
+    public int getPort() {
       int port = 0;
       OWLNamedIndividual sessionInd = getObject();
       OWLClass tcpTransportClass = dataFactory.getOWLClass(":TcpTransport", getDefaultPrefixManager());

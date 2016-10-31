@@ -37,13 +37,13 @@ import org.semanticweb.owlapi.reasoner.NodeSet;
 public class FixSessionTool extends AbstractSessionTool {
 
 
-  class FixSessionObject extends AbstractSessionTool.SessionObject {
+  public class FixSessionObject extends AbstractSessionTool.SessionObject {
 
     FixSessionObject(OWLNamedIndividual sessionObject) {
       super(sessionObject);
     }
     
-    FixVersion getFixVersion() {
+    public FixVersion getFixVersion() {
       FixVersion version = null;
       OWLNamedIndividual sessionInd = getObject();
 
@@ -68,7 +68,7 @@ public class FixSessionTool extends AbstractSessionTool {
       return version;  
     }
     
-    FixtSessionRole getSessionRole() {
+    public FixtSessionRole getSessionRole() {
       FixtSessionRole role = null;
       OWLNamedIndividual sessionInd = getObject();
 
@@ -90,7 +90,7 @@ public class FixSessionTool extends AbstractSessionTool {
       return role;  
     }
  
-    String getSenderCompId() {
+    public String getSenderCompId() {
       String senderCompId = null;
       OWLNamedIndividual sessionInd = getObject();
 
@@ -114,7 +114,7 @@ public class FixSessionTool extends AbstractSessionTool {
       return senderCompId;
     }
 
-    String getTargetCompId() {
+    public String getTargetCompId() {
       String targetCompId = null;
       OWLNamedIndividual sessionInd = getObject();
 

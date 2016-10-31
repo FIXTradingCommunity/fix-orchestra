@@ -15,7 +15,7 @@ The **normative** part of FIX Orchestra RC1 is an XML schema, also known as FIX 
 components, as well as FIX application behaviors. Users may express workflow as responses to messages under different scenarios, as well as external
 state information that may influence behaviors.
 
-In addition to providing the XML schema as a resource, the module builds Java bindings for the schema.
+In addition to providing the XML schema as a resource, the module builds Java bindings for the schema. An XSLT is provided to translate existing Repository 2010 Edition files to the 2016 Edition schema
 
 The module may be included as a dependency in an application Maven project as follows:
 
@@ -27,29 +27,44 @@ The module may be included as a dependency in an application Maven project as fo
 </dependency>
 ```
 
-## Prototype Module
-The following module should be considered a **prototype**, and is expected to be finalized in Release Candidate 2.
+### Repository2010
+Repository 2010 Edition was the version of the FIX Repository prior to FIX Orchestra. This module provides a parser for its XML schema. It may be used to process existing Repository files and to convert their message structures to Orchestra format.
+
+```xml
+<dependency>
+  <groupId>io.fixprotocol.orchestra</groupId>
+  <artifactId>repository2010</artifactId>
+  <version>0.1.0-RC1</version>
+</dependency>
+```
+
+## Prototype Modules
+The following modules should be considered **prototypes**, and are expected to be finalized in Release Candidate 2.
 
 ### Domain Specific Language (DSL)
 An orchestra file may contain conditional expressions to describe conditionally required fields and tell when a certain
 response to a message applies. Also, the DSL may be used for assignment expressions to set external state variables.
-Module dsl-antlr contains a grammar using the notation of ANTLR4 and builds a lexer/parser for the grammar.
+Module `dsl-antlr` contains a grammar using the notation of ANTLR4 and builds a lexer/parser for the grammar.
+
+### Conversion to Semantic Web
+The `repositoryToOWL` module translates a FIX Repository or Orchestra XML file to Web Ontology Language (OWL), a semantic notation. As compared to XML, OWL is more expressive, can support web endpoints for programmatic queries and user interfaces, and can be used to express equivalencies between FIX and other protocols.
 
 ## Experimental Modules
 This following modules are **experimental**. Requirements are still being gathered and discussed by the FIX Orchestra working group. Participation in the working group is encouraged by FIX Trading Community members, and more broadly, feedback is welcome from interested GitHub users.
 
-### Session Configuration
+### FIX Engine Provisioning
+
+#### QuickFIX Data Dictionary and Code Generator
+
+This module generates a QuickFIX data dictionary from a FIX Repository 2016 or Orchestra file. The format can be consumed by the C++, Java and .NET versions. Additionally, the module generates message classes for QuickFIX/J directly from an Orchestra file. Although the QuickFIX data dictionary format is not as richly featured as Orchestra, it is hoped that this utility will help with Orchestra adoption. In future, message validation will be able to take advantage of conditional expressions in Orchestra.
+
+#### Session Configuration
 This module allows counterparties to discover configurations of sessions between them. Direct support is supplied for FIXT sessions (the traditional FIX session layer) as well as FIXP, the FIX performance session layer. The prototype also demonstrates how session definitions could be extended to cover non-FIX protocols.
 
 #### Session Configuration for QuickFIX
-A demonstration of session configuration for QuickFIX/J open-source FIX engine. A module like
+A demonstration of session configuration for QuickFIX open-source FIX engine. A module like
 this needs to be developed for each FIX engine that uses a proprietary configuration format.
 
-### Repository2010
-Parses FIX Repository 2010 Edition to import its message structures.
-
-### repositoryToOWL
-Translates a FIX Repository or Orchestra file to Web Ontology Language (OWL), a semantic web notation.
 
 ## License
 © Copyright 2016 FIX Protocol Limited
