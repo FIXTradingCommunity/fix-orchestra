@@ -1,12 +1,18 @@
-# FIX Orchestra Version 1.0 Release Candidate 1
+# FIX Orchestra Resources
 
-FIX Orchestra is intended to provide a standard and some reference implementation for *machine readable rules of engagement* between counterparties.
-The goal is to reduce the time to get counterparties trading, and improve accuracy of implementations.
+This project contains resources and sample code for FIX Orchestra and FIX Repository 2016 Edition. Technical specifications for FIX Orchestra are in project [fix-orchestra-spec](https://github.com/FIXTradingCommunity/fix-orchestra-spec).
+
+FIX Orchestra is intended to provide a standard and some reference implementation for *machine readable rules of engagement* between counterparties. The goal is to reduce the time to get counterparties trading, and improve accuracy of implementations.
 
 ## Status
-Release Candidate 1 is the first of several planned preliminary releases. It is being published to gather feedback from the community, and is subject to
-future corrections and enhancements. When the project is complete and publicly reviewed, the last Release Candidate will be promoted to Draft Standard
-version 1.0.
+
+### Planned Lifecycle
+
+The planned lifecycle of this project is to roll out new features in a series of release candidates. After each release candidate is approved, it will be exposed to public review. Issues may be entered here in GitHub or in a discussion forum on the [FIX Trading Community site](http://www.fixtradingcommunity.org/). When version 1.0 is considered complete, the last release candidate will be promoted to Draft Standard.
+
+### Version 1.0 Release Candidate 1
+
+The status each module is listed below for the current release candidate.
 
 ## Normative Module
 
@@ -80,6 +86,10 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
+
+### Technical Specifications License
+
+Note that the related Technical Specifications project has a different license than these resources. See [fix-orchestra-spec](https://github.com/FIXTradingCommunity/fix-orchestra-spec/blob/master/LICENSE)
 
 ## Prerequisites
 This project requires Java 8 or later. It should run on any platform for which the JVM is supported.
