@@ -322,8 +322,10 @@ public class MessageOntologyManager {
     private final OWLReasoner reasoner;
 
     /**
-     * @param derivedIRI2
-     * @param createOntology
+     * @param derivedIRI
+     * @param derivedModel
+     * @param reasoner
+     *
      */
     public MessageModel(IRI derivedIRI, OWLOntology derivedModel, OWLReasoner reasoner) {
       this.derivedIRI = derivedIRI;
@@ -929,9 +931,7 @@ public class MessageOntologyManager {
       }
     }
 
-    OWLNamedIndividual entity =
-        getDataFactory().getOWLNamedIndividual(":fields/" + fieldName, model.getPrefixManager());
-    return entity;
+    return getDataFactory().getOWLNamedIndividual(":fields/" + fieldName, model.getPrefixManager());
   }
 
   OWLNamedIndividual getInstance(String abbreviatedIRI) {

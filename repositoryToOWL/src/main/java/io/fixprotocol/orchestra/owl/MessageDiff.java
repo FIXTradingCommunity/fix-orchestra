@@ -47,19 +47,15 @@ public class MessageDiff {
 	 * @param args
 	 *            file names of two ontologies to compare
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		if (args.length < 2) {
 			usage();
 		} else {
-			try {
-				MessageDiff tool = new MessageDiff();
-				tool.init();
-				FileInputStream inputStream1 = new FileInputStream(args[0]);
-				FileInputStream inputStream2 = new FileInputStream(args[1]);
-				tool.diff(inputStream1, inputStream2);
-			} catch (Exception e) {
-
-			}
+			MessageDiff tool = new MessageDiff();
+			tool.init();
+			FileInputStream inputStream1 = new FileInputStream(args[0]);
+			FileInputStream inputStream2 = new FileInputStream(args[1]);
+			tool.diff(inputStream1, inputStream2);
 		}
 	}
 

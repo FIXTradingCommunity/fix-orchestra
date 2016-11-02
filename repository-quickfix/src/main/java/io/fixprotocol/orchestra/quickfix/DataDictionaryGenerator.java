@@ -39,8 +39,8 @@ import io.fixprotocol._2016.fixrepository.Repository;
 public class DataDictionaryGenerator {
 
   private class KeyValue<T> {
-    String key;
-    T value;
+    final String key;
+    final T value;
 
     public KeyValue(String key, T value) {
       this.key = key;

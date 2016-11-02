@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -158,11 +159,7 @@ public class CodeGeneratorJ {
 
       List<Integer> componentFields = new ArrayList<>();
       List<Object> members = componentType.getComponentRefOrGroupRefOrFieldRef();
-      for (Object member : members) {
-        if (member instanceof FieldRefType) {
-          componentFields.add(((FieldRefType) member).getId().intValue());
-        }
-      }
+      componentFields.addAll(members.stream().filter(member -> member instanceof FieldRefType).map(member -> ((FieldRefType) member).getId().intValue()).collect(Collectors.toList()));
       writeComponentFieldIds(writer, componentFields);
 
       List<Integer> componentGroupFields = new ArrayList<>();
@@ -450,16 +447,7 @@ public class CodeGeneratorJ {
   }
 
   private String getPackage(String... parts) {
-    // java 8
-    // return String.join(".", parts);
-    StringBuilder sb = new StringBuilder();
-    for (int i = 0; i < parts.length; i++) {
-      sb.append(parts[i]);
-      if (i < parts.length - 1) {
-        sb.append('.');
-      }
-    }
-    return sb.toString();
+    return String.join(".", parts);
   }
 
   private File getPackagePath(File outputDir, String packageName) {
