@@ -63,7 +63,9 @@
             <xsl:apply-templates select="@* except @textId"/>
             <xsl:apply-templates select="XML"/>
             <fixr:annotation>
-            <xsl:apply-templates select="@textId"/>
+            <xsl:for-each select="fn:key('phrases-key', @textId, $phrases-doc)//text">
+                <xsl:element name="fixr:documentation"><xsl:apply-templates select="@purpose"/><xsl:value-of select="."/></xsl:element>
+            </xsl:for-each>
             <xsl:apply-templates select="Example"/>
             </fixr:annotation>
     </fixr:datatype>
