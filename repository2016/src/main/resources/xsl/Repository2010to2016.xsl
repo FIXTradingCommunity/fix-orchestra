@@ -5,7 +5,7 @@
                 exclude-result-prefixes="fn">
     <xsl:variable name="phrases-doc" select="fn:document('FIX.5.0SP2_EP216_en_phrases.xml')"/>
     <xsl:key name="phrases-key" match="phrase" use="@textId"/>
-    <xsl:output method="xml" indent="yes"/>
+    <xsl:output method="xml" encoding="UTF-8" indent="yes"/>
     <xsl:namespace-alias stylesheet-prefix="#default" result-prefix="fixr"/>
     <xsl:template match="/">
         <xsl:apply-templates/>
