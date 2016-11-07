@@ -4,8 +4,6 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import io.fixprotocol.orchestra.owl.repository2010.RepositoryTool;
-
 public class RepositoryToolTest {
 
   @Test
