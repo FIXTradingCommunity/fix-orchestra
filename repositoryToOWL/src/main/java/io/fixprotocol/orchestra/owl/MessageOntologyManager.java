@@ -18,12 +18,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.formats.RDFXMLDocumentFormat;
 import org.semanticweb.owlapi.formats.TurtleDocumentFormat;
 import org.semanticweb.owlapi.model.AddImport;
 import org.semanticweb.owlapi.model.IRI;
@@ -62,9 +62,6 @@ import com.google.common.base.Optional;
  *
  */
 public class MessageOntologyManager {
-
-  private static final String ORCHESTRA_PREFIX = "orch";
-  private static final String ORCHESTRA_URI = "http://fixprotocol.io/2016/orchestra#";
 
   class CodeObject implements ObjectHolder {
 
@@ -159,7 +156,6 @@ public class MessageOntologyManager {
     }
 
   }
-
   class CodeSetObject extends DataTypeObject {
 
     CodeSetObject(MessageModel messageModel, OWLNamedIndividual messageObject) {
@@ -189,7 +185,6 @@ public class MessageOntologyManager {
       return this;
     }
   }
-
   class DataTypeObject implements MessageEntity, ObjectHolder {
     private final OWLNamedIndividual dataTypeObject;
     private final MessageModel model;
@@ -250,7 +245,6 @@ public class MessageOntologyManager {
       return this;
     }
   }
-
   class FieldObject extends MessageObject implements MessageEntity {
     /**
      * @param messageModel
@@ -316,29 +310,21 @@ public class MessageOntologyManager {
 
   private class MessageModel implements Model {
 
-    private final IRI derivedIRI;
     private final OWLOntology derivedModel;
     private final PrefixManager prefixManager;
     private final OWLReasoner reasoner;
 
     /**
-     * @param derivedIRI
      * @param derivedModel
+     * @param prefixManager
      * @param reasoner
      *
      */
-    public MessageModel(IRI derivedIRI, OWLOntology derivedModel, OWLReasoner reasoner) {
-      this.derivedIRI = derivedIRI;
+    public MessageModel(OWLOntology derivedModel, PrefixManager prefixManager,
+        OWLReasoner reasoner) {
       this.derivedModel = derivedModel;
       this.reasoner = reasoner;
-      this.prefixManager = new DefaultPrefixManager(null, null, derivedIRI.toString());
-    }
-
-    /**
-     * @return the derivedIRI
-     */
-    public IRI getDerivedIRI() {
-      return derivedIRI;
+      this.prefixManager = prefixManager;
     }
 
     /**
@@ -479,6 +465,14 @@ public class MessageOntologyManager {
 
   private static OWLClass codeSetClass;
 
+  private static final String DCTERMS_PREFIX = "dcterms";
+
+  private static final String DCTERMS_URI = "http://purl.org/dc/terms#";
+
+  private static final String ORCHESTRA_PREFIX = "orch";
+
+  private static final String ORCHESTRA_URI = "http://fixprotocol.io/2016/orchestra#";
+
   public static boolean isCodeSet(MessageModel model, OWLNamedIndividual dataTypeObject) {
     return model.getReasoner().getTypes(dataTypeObject, true).containsEntity(codeSetClass);
   }
@@ -499,7 +493,6 @@ public class MessageOntologyManager {
   private OWLObjectProperty memberProperty;
   private OWLClass messageClass;
   private OWLOntologyManager ontologyManager;
-  private PrefixManager prefixManager;
   private OWLClass repeatingGroupClass;
 
   private OWLObjectProperty requiresProperty;
@@ -792,58 +785,42 @@ public class MessageOntologyManager {
 
   /**
    * Create a new ontology model
+   * 
    * @param uri identifier of the model
    * 
    * @throws Exception if an ontology cannot be created
    */
   public Model createNewModel(URI uri) throws Exception {
     IRI derivedIRI = IRI.create(uri);
-    this.prefixManager.setDefaultPrefix(derivedIRI.toString());
+    DefaultPrefixManager prefixManager =
+        new DefaultPrefixManager(null, null, derivedIRI.toString());
+
     StructuralReasonerFactory reasonerFactory = new StructuralReasonerFactory();
     final OWLOntology derivedModel = ontologyManager.createOntology(derivedIRI);
     final OWLReasoner reasoner = reasonerFactory.createReasoner(derivedModel);
-    
+
     final IRI orchestraIRI = IRI.create(ORCHESTRA_URI);
-    OWLImportsDeclaration importDeclaration=this.ontologyManager.getOWLDataFactory().getOWLImportsDeclaration(orchestraIRI);
+    OWLImportsDeclaration importDeclaration =
+        this.ontologyManager.getOWLDataFactory().getOWLImportsDeclaration(orchestraIRI);
     this.ontologyManager.applyChange(new AddImport(derivedModel, importDeclaration));
-    this.prefixManager.setPrefix(ORCHESTRA_PREFIX, ORCHESTRA_URI);
-     
+    prefixManager.setPrefix(ORCHESTRA_PREFIX, ORCHESTRA_URI);
+
     URL document = ClassLoader.class.getResource("/orchestra2016.ttl");
     PriorityCollection<OWLOntologyIRIMapper> iriMappers = ontologyManager.getIRIMappers();
     iriMappers.add(new SimpleIRIMapper(orchestraIRI, IRI.create(document)));
-    
-    prepareBaseModel(derivedModel);
 
-    return new MessageModel(derivedIRI, derivedModel, reasoner);
-  }
+    final IRI dctermsIRI = IRI.create(DCTERMS_URI);
+    OWLImportsDeclaration importDeclaration2 =
+        this.ontologyManager.getOWLDataFactory().getOWLImportsDeclaration(dctermsIRI);
+    this.ontologyManager.applyChange(new AddImport(derivedModel, importDeclaration2));
+    prefixManager.setPrefix(DCTERMS_PREFIX, DCTERMS_URI);
 
-  private void prepareBaseModel(final OWLOntology derivedModel) {
-    messageClass = getDataFactory().getOWLClass("orch:Message", getDefaultPrefixManager());
-    fieldClass = getDataFactory().getOWLClass("orch:Field", getDefaultPrefixManager());
-    dataTypeClass = getDataFactory().getOWLClass("orch:DataType", getDefaultPrefixManager());
-    codeSetClass = getDataFactory().getOWLClass("orch:CodeSet", getDefaultPrefixManager());
-    codeLiteralClass = getDataFactory().getOWLClass("orch:Code", getDefaultPrefixManager());
-    componentClass = getDataFactory().getOWLClass("orch:Component", getDefaultPrefixManager());
-    repeatingGroupClass =
-        getDataFactory().getOWLClass("orch:RepeatingGroup", getDefaultPrefixManager());
+    URL document2 = ClassLoader.class.getResource("/dcterms.ttl");
+    iriMappers.add(new SimpleIRIMapper(dctermsIRI, IRI.create(document2)));
 
-    hasSizeFieldProperty =
-        getDataFactory().getOWLObjectProperty("orch:hasSizeField", getDefaultPrefixManager());
-    isSizeOfProperty =
-        getDataFactory().getOWLObjectProperty("orch:isSizeOf", getDefaultPrefixManager());
-    hasDataTypeProperty =
-        getDataFactory().getOWLObjectProperty("orch:hasDataType", getDefaultPrefixManager());
-    requiresProperty =
-        getDataFactory().getOWLObjectProperty("orch:requires", getDefaultPrefixManager());
-    hasProperty = getDataFactory().getOWLObjectProperty("orch:has", getDefaultPrefixManager());
-    memberProperty =
-        getDataFactory().getOWLObjectProperty("rdfs:member", getDefaultPrefixManager());
+    prepareBaseModel(derivedModel, prefixManager);
 
-    hasNameProperty = getDataFactory().getOWLDataProperty("orch:hasName", getDefaultPrefixManager());
-    hasValueProperty = getDataFactory().getOWLDataProperty("orch:hasValue", getDefaultPrefixManager());
-    hasIdProperty = dataFactory.getOWLDataProperty("orch:hasId", getDefaultPrefixManager());
-    hasShortNameProperty =
-        getDataFactory().getOWLDataProperty("orch:hasShortName", getDefaultPrefixManager());
+    return new MessageModel(derivedModel, prefixManager, reasoner);
   }
 
   /**
@@ -894,13 +871,6 @@ public class MessageOntologyManager {
   }
 
   /**
-   * @return the prefixManager
-   */
-  protected PrefixManager getDefaultPrefixManager() {
-    return prefixManager;
-  }
-
-  /**
    * Returns a named field
    * 
    * @param name name of a field
@@ -934,10 +904,6 @@ public class MessageOntologyManager {
     return getDataFactory().getOWLNamedIndividual(":fields/" + fieldName, model.getPrefixManager());
   }
 
-  OWLNamedIndividual getInstance(String abbreviatedIRI) {
-    return getDataFactory().getOWLNamedIndividual(abbreviatedIRI, prefixManager);
-  }
-
   /**
    * Returns a named message
    * 
@@ -952,10 +918,6 @@ public class MessageOntologyManager {
     OWLNamedIndividual message = getDataFactory().getOWLNamedIndividual(":messages/" + name,
         messageModel.getPrefixManager());
     return new MessageObject(messageModel, message);
-  }
-
-  protected OWLClass getMessageClass() {
-    return getDataFactory().getOWLClass(":Message", getDefaultPrefixManager());
   }
 
   /**
@@ -1001,7 +963,6 @@ public class MessageOntologyManager {
     }
   }
 
-
   public void getRequiredFields(MessageEntity parent, Set<FieldObject> fields) {
     Objects.requireNonNull(parent, "Message entity cannot be null");
 
@@ -1023,13 +984,13 @@ public class MessageOntologyManager {
     }
   }
 
+
   /**
    * Initialize resources and base ontology
    */
   public void init() throws Exception {
     this.ontologyManager = OWLManager.createOWLOntologyManager();
     this.dataFactory = OWLManager.getOWLDataFactory();
-    this.prefixManager = new DefaultPrefixManager();
   }
 
   /**
@@ -1044,18 +1005,19 @@ public class MessageOntologyManager {
     final IRI orchestraIRI = IRI.create(ORCHESTRA_URI);
     PriorityCollection<OWLOntologyIRIMapper> iriMappers = ontologyManager.getIRIMappers();
     iriMappers.add(new SimpleIRIMapper(orchestraIRI, IRI.create(document)));
-    this.prefixManager.setPrefix(ORCHESTRA_PREFIX, ORCHESTRA_URI);
-    
+    DefaultPrefixManager prefixManager = new DefaultPrefixManager();
+    prefixManager.setPrefix(ORCHESTRA_PREFIX, ORCHESTRA_URI);
+
     OWLOntology derivedModel = loadOntologyModel(in);
     Optional<IRI> optional = derivedModel.getOntologyID().getOntologyIRI();
-    if (optional.isPresent()) {    
-      this.prefixManager.setDefaultPrefix(optional.get().toString());
-      prepareBaseModel(derivedModel);
-      
+    if (optional.isPresent()) {
+      prefixManager.setDefaultPrefix(optional.get().toString());
+      prepareBaseModel(derivedModel, prefixManager);
+
       StructuralReasonerFactory reasonerFactory = new StructuralReasonerFactory();
       OWLReasoner reasoner = reasonerFactory.createReasoner(derivedModel);
       reasoner.precomputeInferences();
-      return new MessageModel(optional.get(), derivedModel, reasoner);
+      return new MessageModel(derivedModel, prefixManager, reasoner);
     } else {
       throw new RuntimeException("No ontology IRI found");
     }
@@ -1073,11 +1035,42 @@ public class MessageOntologyManager {
     return ontologyManager.loadOntologyFromOntologyDocument(in);
   }
 
+  private void prepareBaseModel(final OWLOntology derivedModel, PrefixManager prefixManager) {
+    messageClass = getDataFactory().getOWLClass("orch:Message", prefixManager);
+    fieldClass = getDataFactory().getOWLClass("orch:Field", prefixManager);
+    dataTypeClass = getDataFactory().getOWLClass("orch:DataType", prefixManager);
+    codeSetClass = getDataFactory().getOWLClass("orch:CodeSet", prefixManager);
+    codeLiteralClass = getDataFactory().getOWLClass("orch:Code", prefixManager);
+    componentClass = getDataFactory().getOWLClass("orch:Component", prefixManager);
+    repeatingGroupClass = getDataFactory().getOWLClass("orch:RepeatingGroup", prefixManager);
+
+    hasSizeFieldProperty =
+        getDataFactory().getOWLObjectProperty("orch:hasSizeField", prefixManager);
+    isSizeOfProperty = getDataFactory().getOWLObjectProperty("orch:isSizeOf", prefixManager);
+    hasDataTypeProperty = getDataFactory().getOWLObjectProperty("orch:hasDataType", prefixManager);
+    requiresProperty = getDataFactory().getOWLObjectProperty("orch:requires", prefixManager);
+    hasProperty = getDataFactory().getOWLObjectProperty("orch:has", prefixManager);
+    memberProperty = getDataFactory().getOWLObjectProperty("rdfs:member", prefixManager);
+
+    hasNameProperty = getDataFactory().getOWLDataProperty("orch:hasName", prefixManager);
+    hasValueProperty = getDataFactory().getOWLDataProperty("orch:hasValue", prefixManager);
+    hasIdProperty = dataFactory.getOWLDataProperty("orch:hasId", prefixManager);
+    hasShortNameProperty = getDataFactory().getOWLDataProperty("orch:hasShortName", prefixManager);
+  }
+
   void removeOntology(Model model) {
     MessageModel messageModel = (MessageModel) model;
 
     ontologyManager.removeOntology(messageModel.getDerivedModel());
     messageModel.getReasoner().dispose();
+
+  }
+
+  public void setMetadata(Model model, String namespace, String name, List<String> value) {
+    Objects.requireNonNull(model, "Model cannot be null");
+    MessageModel messageModel = (MessageModel) model;
+
+    // todo
 
   }
 
@@ -1090,21 +1083,7 @@ public class MessageOntologyManager {
    */
   public void storeModel(Model model, OutputStream out) throws Exception {
     MessageModel messageModel = (MessageModel) model;
-
-    // writeAsRdf(messageModel.getDerivedModel(), out);
-    writeAsTurtle(messageModel.getDerivedModel(), out);
-  }
-
-  /**
-   * Save an ontology to an output stream as RDF XML format
-   * 
-   * @param ontology a populated ontology
-   * @param out output stream
-   * @throws OWLOntologyStorageException If there was a problem saving this ontology to the
-   *         specified output stream
-   */
-  void writeAsRdf(OWLOntology ontology, OutputStream out) throws OWLOntologyStorageException {
-    ontologyManager.saveOntology(ontology, new RDFXMLDocumentFormat(), out);
+    writeAsTurtle(messageModel.getDerivedModel(), messageModel.getPrefixManager(), out);
   }
 
   /**
@@ -1115,7 +1094,10 @@ public class MessageOntologyManager {
    * @throws OWLOntologyStorageException If there was a problem saving this ontology to the
    *         specified output stream
    */
-  void writeAsTurtle(OWLOntology ontology, OutputStream out) throws OWLOntologyStorageException {
-    ontologyManager.saveOntology(ontology, new TurtleDocumentFormat(), out);
+  void writeAsTurtle(OWLOntology ontology, PrefixManager prefixManager, OutputStream out)
+      throws OWLOntologyStorageException {
+    TurtleDocumentFormat ontologyFormat = new TurtleDocumentFormat();
+    ontologyFormat.setPrefixManager(prefixManager);
+    ontologyManager.saveOntology(ontology, ontologyFormat, out);
   }
 }

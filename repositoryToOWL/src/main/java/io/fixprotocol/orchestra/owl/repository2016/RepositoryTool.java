@@ -21,7 +21,10 @@ import java.math.BigInteger;
 import java.net.URI;
 import java.util.List;
 
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
+
+import org.purl.dc.elements._1.SimpleLiteral;
 
 import io.fixprotocol._2016.fixrepository.CodeSetType;
 import io.fixprotocol._2016.fixrepository.CodeSets;
@@ -138,6 +141,14 @@ public class RepositoryTool {
    */
   public void parse(InputStream inputStream) throws JAXBException {
     Repository repository = Serializer.unmarshal(inputStream);
+    List<JAXBElement<SimpleLiteral>> metaDataList = repository.getMetadata().getAny();
+    for (JAXBElement<SimpleLiteral> metadataElement : metaDataList) {
+      String name = metadataElement.getName().getLocalPart();
+      String namespace = metadataElement.getName().getNamespaceURI();
+      List<String> value = metadataElement.getValue().getContent();
+      ontologyManager.setMetadata(model, namespace, name, value);
+    }
+    
     Datatypes datatypes = repository.getDatatypes();
     List<Datatype> datatypeList = datatypes.getDatatype();
     for (Datatype datatype : datatypeList) {
