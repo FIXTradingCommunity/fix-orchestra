@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.formats.TurtleDocumentFormat;
 import org.semanticweb.owlapi.model.AddImport;
+import org.semanticweb.owlapi.model.AddOntologyAnnotation;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
@@ -34,6 +35,7 @@ import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLDataPropertyAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLDatatype;
 import org.semanticweb.owlapi.model.OWLImportsDeclaration;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
@@ -51,6 +53,7 @@ import org.semanticweb.owlapi.reasoner.structural.StructuralReasonerFactory;
 import org.semanticweb.owlapi.util.DefaultPrefixManager;
 import org.semanticweb.owlapi.util.PriorityCollection;
 import org.semanticweb.owlapi.util.SimpleIRIMapper;
+import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 
 import com.google.common.base.Optional;
@@ -625,7 +628,7 @@ public class MessageOntologyManager {
 
 
     OWLNamedIndividual codeSetInd = getDataFactory()
-        .getOWLNamedIndividual("/datatypes/" + codeSetName, messageModel.getPrefixManager());
+        .getOWLNamedIndividual(":datatypes/" + codeSetName, messageModel.getPrefixManager());
 
     OWLObjectPropertyAssertionAxiom propertyAssertion =
         getDataFactory().getOWLObjectPropertyAssertionAxiom(memberProperty, codeSetInd, codeInd);
@@ -1070,8 +1073,21 @@ public class MessageOntologyManager {
     Objects.requireNonNull(model, "Model cannot be null");
     MessageModel messageModel = (MessageModel) model;
 
-    // todo
+    OWLLiteral dataLiteral;
+    switch (name) {
+      case "date":
+        OWLDatatype dateTime = getDataFactory().getOWLDatatype(OWL2Datatype.XSD_DATE_TIME.getIRI());
+        dataLiteral = getDataFactory().getOWLLiteral(value.get(0), dateTime);
+        break;
+      default:
+        dataLiteral = getDataFactory().getOWLLiteral(value.get(0));
+    }
 
+    OWLAnnotation annotation = getDataFactory().getOWLAnnotation(getDataFactory()
+        .getOWLAnnotationProperty("dcterms:" + name, messageModel.getPrefixManager()), dataLiteral);
+
+    ontologyManager
+        .applyChange(new AddOntologyAnnotation(messageModel.getDerivedModel(), annotation));
   }
 
   /**
