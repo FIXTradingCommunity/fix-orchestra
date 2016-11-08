@@ -8,7 +8,7 @@ public class RepositoryToolTest {
 
   @Test
   public void testMain() {
-    String[] args = {"FixRepository2016.xml", "FixRepository2016Owl.ttl", "http://test2016#"};
+    String[] args = {"FixRepository2016.xml", "FixRepository2016Owl.ttl", "http://io.fixprotocol/FixRepository2016Owl#"};
     RepositoryTool.main(args);
   }
 

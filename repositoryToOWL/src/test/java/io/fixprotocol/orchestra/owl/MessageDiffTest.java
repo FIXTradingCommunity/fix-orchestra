@@ -29,7 +29,7 @@ public class MessageDiffTest {
     private static void createModel1() throws Exception {
         MessageOntologyManager manager = new MessageOntologyManager();
         manager.init();
-        Model model = manager.createNewModel(new URI("http://test1#"));
+        Model model = manager.createNewModel(new URI("http://Model1#"));
         manager.createDataType(model, "int");
         manager.createDataType(model, "UTCTimestamp");
 
@@ -60,7 +60,7 @@ public class MessageDiffTest {
     private static void createModel2() throws Exception {
         MessageOntologyManager manager = new MessageOntologyManager();
         manager.init();
-        Model model = manager.createNewModel(new URI("http://test2#"));
+        Model model = manager.createNewModel(new URI("http://Model2#"));
 
         manager.createDataType(model, "int");
         manager.createDataType(model, "UTCTimestamp");

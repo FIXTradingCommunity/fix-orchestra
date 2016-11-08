@@ -178,12 +178,18 @@ public class MessageOntologyManager {
     }
 
     public CodeSetObject withDataType(String name) {
-      OWLNamedIndividual datatypeInd = getDataFactory().getOWLNamedIndividual(":datatypes/" + name,
+      OWLNamedIndividual datatypeInd = getDataFactory().getOWLNamedIndividual(":type-" + name,
           getModel().getPrefixManager());
 
       OWLObjectPropertyAssertionAxiom propertyAssertion = getDataFactory()
           .getOWLObjectPropertyAssertionAxiom(hasDataTypeProperty, getObject(), datatypeInd);
       getOntologyManager().addAxiom(getModel().getDerivedModel(), propertyAssertion);
+      OWLLiteral literal = getDataFactory().getOWLLiteral(name);
+      OWLAnnotation label = getDataFactory().getOWLAnnotation(
+          getDataFactory().getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_LABEL.getIRI()), literal);
+      OWLAnnotationAssertionAxiom annotationAxiom = getDataFactory()
+          .getOWLAnnotationAssertionAxiom(datatypeInd.asOWLNamedIndividual().getIRI(), label);
+      getOntologyManager().addAxiom(getModel().getDerivedModel(), annotationAxiom);
 
       return this;
     }
@@ -297,7 +303,7 @@ public class MessageOntologyManager {
      * @param name of data type
      */
     public FieldObject withDataType(String name) {
-      OWLNamedIndividual datatypeInd = getDataFactory().getOWLNamedIndividual(":datatypes/" + name,
+      OWLNamedIndividual datatypeInd = getDataFactory().getOWLNamedIndividual(":type-" + name,
           getModel().getPrefixManager());
       OWLClassAssertionAxiom classAssertion =
           getDataFactory().getOWLClassAssertionAxiom(dataTypeClass, datatypeInd);
@@ -518,12 +524,18 @@ public class MessageOntologyManager {
     MessageModel model = parentObject.getModel();
 
     OWLNamedIndividual entity =
-        getDataFactory().getOWLNamedIndividual(":components/" + name, model.getPrefixManager());
+        getDataFactory().getOWLNamedIndividual(":comp-" + name, model.getPrefixManager());
 
     OWLObjectPropertyAssertionAxiom propertyAssertion =
         getDataFactory().getOWLObjectPropertyAssertionAxiom(
             isRequired ? requiresProperty : hasProperty, parentInd, entity);
     getOntologyManager().addAxiom(model.getDerivedModel(), propertyAssertion);
+    OWLLiteral literal = getDataFactory().getOWLLiteral(name);
+    OWLAnnotation label = getDataFactory().getOWLAnnotation(
+        getDataFactory().getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_LABEL.getIRI()), literal);
+    OWLAnnotationAssertionAxiom annotationAxiom = getDataFactory()
+        .getOWLAnnotationAssertionAxiom(entity.asOWLNamedIndividual().getIRI(), label);
+    getOntologyManager().addAxiom(model.getDerivedModel(), annotationAxiom);
   }
 
   /**
@@ -545,12 +557,18 @@ public class MessageOntologyManager {
     MessageModel model = parentObject.getModel();
 
     OWLNamedIndividual entity =
-        getDataFactory().getOWLNamedIndividual(":fields/" + name, model.getPrefixManager());
+        getDataFactory().getOWLNamedIndividual(":fld-" + name, model.getPrefixManager());
 
     OWLObjectPropertyAssertionAxiom propertyAssertion =
         getDataFactory().getOWLObjectPropertyAssertionAxiom(
             isRequired ? requiresProperty : hasProperty, parentInd, entity);
     getOntologyManager().addAxiom(model.getDerivedModel(), propertyAssertion);
+    OWLLiteral literal = getDataFactory().getOWLLiteral(name);
+    OWLAnnotation label = getDataFactory().getOWLAnnotation(
+        getDataFactory().getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_LABEL.getIRI()), literal);
+    OWLAnnotationAssertionAxiom annotationAxiom = getDataFactory()
+        .getOWLAnnotationAssertionAxiom(entity.asOWLNamedIndividual().getIRI(), label);
+    getOntologyManager().addAxiom(model.getDerivedModel(), annotationAxiom);
   }
 
   public void addNumInGroupField(MessageEntity parent, int entityId, String name) {
@@ -614,7 +632,7 @@ public class MessageOntologyManager {
     MessageModel messageModel = (MessageModel) model;
 
     OWLNamedIndividual codeInd = getDataFactory().getOWLNamedIndividual(
-        ":datatypes/" + codeSetName + "/" + name, messageModel.getPrefixManager());
+        ":type-" + codeSetName + "-" + name, messageModel.getPrefixManager());
     OWLClassAssertionAxiom classAssertion =
         getDataFactory().getOWLClassAssertionAxiom(codeLiteralClass, codeInd);
     final OWLOntology derivedModel = messageModel.getDerivedModel();
@@ -628,7 +646,7 @@ public class MessageOntologyManager {
 
 
     OWLNamedIndividual codeSetInd = getDataFactory()
-        .getOWLNamedIndividual(":datatypes/" + codeSetName, messageModel.getPrefixManager());
+        .getOWLNamedIndividual(":type-" + codeSetName, messageModel.getPrefixManager());
 
     OWLObjectPropertyAssertionAxiom propertyAssertion =
         getDataFactory().getOWLObjectPropertyAssertionAxiom(memberProperty, codeSetInd, codeInd);
@@ -654,10 +672,17 @@ public class MessageOntologyManager {
 
     MessageModel messageModel = (MessageModel) model;
     OWLNamedIndividual datatype = getDataFactory()
-        .getOWLNamedIndividual(":datatypes/" + codeSetName, messageModel.getPrefixManager());
+        .getOWLNamedIndividual(":type-" + codeSetName, messageModel.getPrefixManager());
     OWLClassAssertionAxiom classAssertion =
         getDataFactory().getOWLClassAssertionAxiom(codeSetClass, datatype);
     getOntologyManager().addAxiom(messageModel.getDerivedModel(), classAssertion);
+    OWLLiteral literal = getDataFactory().getOWLLiteral(codeSetName);
+    OWLAnnotation label = getDataFactory().getOWLAnnotation(
+        getDataFactory().getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_LABEL.getIRI()), literal);
+    OWLAnnotationAssertionAxiom annotationAxiom = getDataFactory()
+        .getOWLAnnotationAssertionAxiom(datatype.asOWLNamedIndividual().getIRI(), label);
+    getOntologyManager().addAxiom(messageModel.getDerivedModel(), annotationAxiom);
+
 
     CodeSetObject dataTypeObject = new CodeSetObject(messageModel, datatype);
     dataTypeObject.withDataType(primitiveDatatypeName).withName(codeSetName);
@@ -679,11 +704,17 @@ public class MessageOntologyManager {
 
     MessageModel messageModel = (MessageModel) model;
 
-    OWLNamedIndividual component = getDataFactory().getOWLNamedIndividual(":components/" + name,
+    OWLNamedIndividual component = getDataFactory().getOWLNamedIndividual(":comp-" + name,
         messageModel.getPrefixManager());
     OWLClassAssertionAxiom classAssertion =
         getDataFactory().getOWLClassAssertionAxiom(componentClass, component);
     getOntologyManager().addAxiom(messageModel.getDerivedModel(), classAssertion);
+    OWLLiteral literal = getDataFactory().getOWLLiteral(name);
+    OWLAnnotation label = getDataFactory().getOWLAnnotation(
+        getDataFactory().getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_LABEL.getIRI()), literal);
+    OWLAnnotationAssertionAxiom annotationAxiom = getDataFactory()
+        .getOWLAnnotationAssertionAxiom(component.asOWLNamedIndividual().getIRI(), label);
+    getOntologyManager().addAxiom(messageModel.getDerivedModel(), annotationAxiom);
 
     MessageObject messageObject = new MessageObject(messageModel, component);
     messageObject.withId(id).withName(name);
@@ -702,11 +733,18 @@ public class MessageOntologyManager {
     Objects.requireNonNull(name, "Name cannot be null");
 
     MessageModel messageModel = (MessageModel) model;
-    OWLNamedIndividual datatype = getDataFactory().getOWLNamedIndividual(":datatypes/" + name,
+    OWLNamedIndividual datatype = getDataFactory().getOWLNamedIndividual(":type-" + name,
         messageModel.getPrefixManager());
     OWLClassAssertionAxiom classAssertion =
         getDataFactory().getOWLClassAssertionAxiom(dataTypeClass, datatype);
     getOntologyManager().addAxiom(messageModel.getDerivedModel(), classAssertion);
+    OWLLiteral literal = getDataFactory().getOWLLiteral(name);
+    OWLAnnotation label = getDataFactory().getOWLAnnotation(
+        getDataFactory().getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_LABEL.getIRI()), literal);
+    OWLAnnotationAssertionAxiom annotationAxiom = getDataFactory()
+        .getOWLAnnotationAssertionAxiom(datatype.asOWLNamedIndividual().getIRI(), label);
+    getOntologyManager().addAxiom(messageModel.getDerivedModel(), annotationAxiom);
+
 
     DataTypeObject dataTypeObject = new DataTypeObject(messageModel, datatype);
     dataTypeObject.withName(name);
@@ -721,10 +759,17 @@ public class MessageOntologyManager {
     MessageModel messageModel = (MessageModel) model;
 
     OWLNamedIndividual field =
-        getDataFactory().getOWLNamedIndividual(":fields/" + name, messageModel.getPrefixManager());
+        getDataFactory().getOWLNamedIndividual(":fld-" + name, messageModel.getPrefixManager());
     OWLClassAssertionAxiom classAssertion =
         getDataFactory().getOWLClassAssertionAxiom(fieldClass, field);
     getOntologyManager().addAxiom(messageModel.getDerivedModel(), classAssertion);
+    OWLLiteral literal = getDataFactory().getOWLLiteral(name);
+    OWLAnnotation label = getDataFactory().getOWLAnnotation(
+        getDataFactory().getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_LABEL.getIRI()), literal);
+    OWLAnnotationAssertionAxiom annotationAxiom = getDataFactory()
+        .getOWLAnnotationAssertionAxiom(field.asOWLNamedIndividual().getIRI(), label);
+    getOntologyManager().addAxiom(messageModel.getDerivedModel(), annotationAxiom);
+
 
     FieldObject messageObject = new FieldObject(messageModel, field);
     messageObject.withId(id).withName(name);
@@ -749,10 +794,16 @@ public class MessageOntologyManager {
     MessageModel messageModel = (MessageModel) model;
 
     OWLNamedIndividual field =
-        getDataFactory().getOWLNamedIndividual(":fields/" + name, messageModel.getPrefixManager());
+        getDataFactory().getOWLNamedIndividual(":fld-" + name, messageModel.getPrefixManager());
     OWLClassAssertionAxiom classAssertion =
         getDataFactory().getOWLClassAssertionAxiom(fieldClass, field);
     getOntologyManager().addAxiom(messageModel.getDerivedModel(), classAssertion);
+    OWLLiteral literal = getDataFactory().getOWLLiteral(name);
+    OWLAnnotation label = getDataFactory().getOWLAnnotation(
+        getDataFactory().getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_LABEL.getIRI()), literal);
+    OWLAnnotationAssertionAxiom annotationAxiom = getDataFactory()
+        .getOWLAnnotationAssertionAxiom(field.asOWLNamedIndividual().getIRI(), label);
+    getOntologyManager().addAxiom(messageModel.getDerivedModel(), annotationAxiom);
 
     FieldObject messageObject = new FieldObject(messageModel, field);
     messageObject.withDataType(dataType).withId(id).withName(name);
@@ -775,11 +826,18 @@ public class MessageOntologyManager {
 
     MessageModel messageModel = (MessageModel) model;
 
-    OWLNamedIndividual message = getDataFactory().getOWLNamedIndividual(":messages/" + name,
+    OWLNamedIndividual message = getDataFactory().getOWLNamedIndividual(":msg-" + name,
         messageModel.getPrefixManager());
     OWLClassAssertionAxiom classAssertion =
         getDataFactory().getOWLClassAssertionAxiom(messageClass, message);
     getOntologyManager().addAxiom(messageModel.getDerivedModel(), classAssertion);
+    OWLLiteral literal = getDataFactory().getOWLLiteral(name);
+    OWLAnnotation label = getDataFactory().getOWLAnnotation(
+        getDataFactory().getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_LABEL.getIRI()), literal);
+    OWLAnnotationAssertionAxiom annotationAxiom = getDataFactory()
+        .getOWLAnnotationAssertionAxiom(message.asOWLNamedIndividual().getIRI(), label);
+    getOntologyManager().addAxiom(messageModel.getDerivedModel(), annotationAxiom);
+
 
     MessageObject messageObject = new MessageObject(messageModel, message);
     messageObject.withId(id).withName(name).withShortName(shortName);
@@ -842,11 +900,18 @@ public class MessageOntologyManager {
 
     MessageModel messageModel = (MessageModel) model;
 
-    OWLNamedIndividual component = getDataFactory().getOWLNamedIndividual(":components/" + name,
+    OWLNamedIndividual component = getDataFactory().getOWLNamedIndividual(":comp-" + name,
         messageModel.getPrefixManager());
     OWLClassAssertionAxiom classAssertion =
         getDataFactory().getOWLClassAssertionAxiom(repeatingGroupClass, component);
     getOntologyManager().addAxiom(messageModel.getDerivedModel(), classAssertion);
+    OWLLiteral literal = getDataFactory().getOWLLiteral(name);
+    OWLAnnotation label = getDataFactory().getOWLAnnotation(
+        getDataFactory().getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_LABEL.getIRI()), literal);
+    OWLAnnotationAssertionAxiom annotationAxiom = getDataFactory()
+        .getOWLAnnotationAssertionAxiom(component.asOWLNamedIndividual().getIRI(), label);
+    getOntologyManager().addAxiom(messageModel.getDerivedModel(), annotationAxiom);
+
 
     MessageObject messageObject = new MessageObject(messageModel, component);
     messageObject.withId(id).withName(name);
@@ -859,7 +924,7 @@ public class MessageOntologyManager {
 
     MessageModel messageModel = (MessageModel) model;
     OWLNamedIndividual codeSetInd = getDataFactory()
-        .getOWLNamedIndividual(":datatypes/" + codeSetName, messageModel.getPrefixManager());
+        .getOWLNamedIndividual(":type-" + codeSetName, messageModel.getPrefixManager());
 
     Set<OWLNamedIndividual> members = messageModel.getReasoner()
         .getObjectPropertyValues(codeSetInd, memberProperty).getFlattened();
@@ -885,7 +950,7 @@ public class MessageOntologyManager {
 
     MessageModel messageModel = (MessageModel) model;
     OWLNamedIndividual field =
-        getDataFactory().getOWLNamedIndividual(":fields/" + name, messageModel.getPrefixManager());
+        getDataFactory().getOWLNamedIndividual(":fld-" + name, messageModel.getPrefixManager());
     return new FieldObject(messageModel, field);
   }
 
@@ -904,7 +969,7 @@ public class MessageOntologyManager {
       }
     }
 
-    return getDataFactory().getOWLNamedIndividual(":fields/" + fieldName, model.getPrefixManager());
+    return getDataFactory().getOWLNamedIndividual(":fld-" + fieldName, model.getPrefixManager());
   }
 
   /**
@@ -918,7 +983,7 @@ public class MessageOntologyManager {
     Objects.requireNonNull(name, "Name cannot be null");
 
     MessageModel messageModel = (MessageModel) model;
-    OWLNamedIndividual message = getDataFactory().getOWLNamedIndividual(":messages/" + name,
+    OWLNamedIndividual message = getDataFactory().getOWLNamedIndividual(":msg-" + name,
         messageModel.getPrefixManager());
     return new MessageObject(messageModel, message);
   }
