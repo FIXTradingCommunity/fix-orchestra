@@ -186,7 +186,7 @@
 	</xs:simpleType>
 	<xs:attributeGroup name="datatypeGrp">
 		<xs:attribute name="standard" type="fixr:datatypeStandard_t" use="required"/>
-		<xs:attribute name="builtin" type="xs:string" use="required"/>
+		<xs:attribute name="builtin" type="xs:boolean" use="required"/>
 		<xs:attribute name="base" type="xs:string" use="required"/>
 		<xs:attribute name="pattern" type="xs:string"/>
 		<xs:attribute name="element" type="xs:string"/>
