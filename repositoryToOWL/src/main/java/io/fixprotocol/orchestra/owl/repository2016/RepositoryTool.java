@@ -26,6 +26,7 @@ import javax.xml.bind.JAXBException;
 
 import org.purl.dc.elements._1.SimpleLiteral;
 
+import io.fixprotocol._2016.fixrepository.Annotation;
 import io.fixprotocol._2016.fixrepository.CodeSetType;
 import io.fixprotocol._2016.fixrepository.CodeSets;
 import io.fixprotocol._2016.fixrepository.CodeType;
@@ -34,6 +35,7 @@ import io.fixprotocol._2016.fixrepository.ComponentType;
 import io.fixprotocol._2016.fixrepository.Components;
 import io.fixprotocol._2016.fixrepository.Datatype;
 import io.fixprotocol._2016.fixrepository.Datatypes;
+import io.fixprotocol._2016.fixrepository.Documentation;
 import io.fixprotocol._2016.fixrepository.FieldRefType;
 import io.fixprotocol._2016.fixrepository.FieldType;
 import io.fixprotocol._2016.fixrepository.Fields;
@@ -152,7 +154,11 @@ public class RepositoryTool {
     Datatypes datatypes = repository.getDatatypes();
     List<Datatype> datatypeList = datatypes.getDatatype();
     for (Datatype datatype : datatypeList) {
-      ontologyManager.createDataType(model, datatype.getName());
+      MessageEntity messageEntity = ontologyManager.createDataType(model, datatype.getName());
+      Annotation annotation = datatype.getAnnotation();
+      if (annotation != null) {
+        addAnnotation(messageEntity, annotation);
+      }
     }
     final List<CodeSets> codeSetsList = repository.getCodeSets();
     for (CodeSets codeSetsCollection : codeSetsList) {
@@ -160,10 +166,19 @@ public class RepositoryTool {
       for (CodeSetType codeSet : codeSetList) {
         String codeSetName = codeSet.getName();
         String type = codeSet.getType();
-        ontologyManager.createCodeSet(model, codeSetName, type);
+        MessageEntity messageEntity = ontologyManager.createCodeSet(model, codeSetName, type);
+        Annotation annotation = codeSet.getAnnotation();
+        if (annotation != null) {
+          addAnnotation(messageEntity, annotation);
+        }
         List<CodeType> codeList = codeSet.getCode();
         for (CodeType code : codeList) {
-          ontologyManager.createCode(model, codeSetName, code.getSymbolicName(), code.getValue());
+          MessageEntity codeMessageEntity = ontologyManager.createCode(model, codeSetName, code.getSymbolicName(), code.getValue());
+          annotation = code.getAnnotation();
+          if (annotation != null) {
+            addAnnotation(codeMessageEntity, annotation);
+          }
+
         }
       }
     }
@@ -171,12 +186,13 @@ public class RepositoryTool {
     Fields fields = repository.getFields();
     List<FieldType> fieldList = fields.getField();
     for (FieldType field : fieldList) {
-      ontologyManager.createField(model, field.getId().intValue(), field.getName(),
+      MessageEntity messageEntity = ontologyManager.createField(model, field.getId().intValue(), field.getName(),
           field.getType());
+      Annotation annotation = field.getAnnotation();
+      if (annotation != null) {
+        addAnnotation(messageEntity, annotation);
+      }
 
-      // final BigInteger referencedTag = field.getEnumDatatype();
-      // if (referencedTag != null) {
-      // ontologyManager.associateCodeList(model, field.getName(), referencedTag.intValue());
     }
     // Make a second pass to associate fields after they are all created
     for (FieldType field : fieldList) {
@@ -207,6 +223,10 @@ public class RepositoryTool {
         } else {
           parent = ontologyManager.createComponent(model, id.intValue(), name);
         }
+        Annotation annotation = component.getAnnotation();
+        if (annotation != null) {
+          addAnnotation(parent, annotation);
+        }
 
         for (Object messageEntity : messageEntityList) {
           addEntity(parent, messageEntity);
@@ -218,10 +238,27 @@ public class RepositoryTool {
       for (MessageType message : messageList) {
         MessageEntity parent = ontologyManager.createMessage(model, message.getId().intValue(),
             message.getName(), message.getMsgType());
+        Annotation annotation = message.getAnnotation();
+        if (annotation != null) {
+          addAnnotation(parent, annotation);
+        }
         List<Object> messageEntityList = message.getStructure().getComponentOrComponentRefOrGroup();
         for (Object messageEntity : messageEntityList) {
           addEntity(parent, messageEntity);
         }
+      }
+    }
+  }
+
+  private void addAnnotation(MessageEntity messageEntity, Annotation annotation) {
+    List<Object> objList = annotation.getDocumentationOrAppinfo();
+    for (Object obj : objList) {
+      if (obj instanceof Documentation) {
+        Documentation documentation = (Documentation) obj;
+        String lang = documentation.getLangId();
+        String purpose = documentation.getPurpose();
+        List<Object> content = documentation.getContent();
+        ontologyManager.setDocumentation(messageEntity, lang, purpose, content);
       }
     }
   }

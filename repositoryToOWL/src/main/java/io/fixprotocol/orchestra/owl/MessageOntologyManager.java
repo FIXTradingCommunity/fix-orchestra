@@ -25,11 +25,14 @@ import java.util.stream.Collectors;
 
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.formats.TurtleDocumentFormat;
+import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.AddImport;
 import org.semanticweb.owlapi.model.AddOntologyAnnotation;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLAnnotationProperty;
+import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLDataFactory;
@@ -66,7 +69,7 @@ import com.google.common.base.Optional;
  */
 public class MessageOntologyManager {
 
-  class CodeObject implements ObjectHolder {
+  class CodeObject implements ObjectHolder, MessageEntity {
 
     private final OWLNamedIndividual codeInd;
     private final MessageModel model;
@@ -93,6 +96,11 @@ public class MessageOntologyManager {
       } else if (!getName().equals(other.getName()))
         return false;
       return true;
+    }
+
+    @Override
+    public MessageModel getModel() {
+      return model;
     }
 
     public String getName() {
@@ -358,7 +366,6 @@ public class MessageOntologyManager {
 
   class MessageObject implements MessageEntity, ObjectHolder {
     private final OWLNamedIndividual messageObject;
-
     private final MessageModel model;
 
     MessageObject(MessageModel model, OWLNamedIndividual messageObject) {
@@ -465,10 +472,11 @@ public class MessageOntologyManager {
   }
 
   interface ObjectHolder {
+    MessageModel getModel();
+
     default String getName() {
       return getObject().getIRI().getRemainder().get();
     }
-
     OWLNamedIndividual getObject();
   }
 
@@ -622,8 +630,9 @@ public class MessageOntologyManager {
    * @param name symbolic name of the new value
    * @param valueAsString the valid value in string format. It may need to be cast or converted to
    *        the true data type of the field.
+   * @return 
    */
-  public void createCode(Model model, String codeSetName, String name, String valueAsString) {
+  public CodeObject createCode(Model model, String codeSetName, String name, String valueAsString) {
     Objects.requireNonNull(model, "Model cannot be null");
     Objects.requireNonNull(codeSetName, "Code set name cannot be null");
     Objects.requireNonNull(name, "Symbolic name cannot be null");
@@ -663,6 +672,8 @@ public class MessageOntologyManager {
     OWLDataPropertyAssertionAxiom valuePropertyAssertion =
         getDataFactory().getOWLDataPropertyAssertionAxiom(hasValueProperty, codeInd, valueLiteral);
     getOntologyManager().addAxiom(derivedModel, valuePropertyAssertion);
+    
+    return new CodeObject(messageModel, codeInd);
   }
 
   public CodeSetObject createCodeSet(Model model, String codeSetName,
@@ -1132,6 +1143,21 @@ public class MessageOntologyManager {
     ontologyManager.removeOntology(messageModel.getDerivedModel());
     messageModel.getReasoner().dispose();
 
+  }
+
+  public void setDocumentation(MessageEntity messageEntity, String lang, String purpose,
+      List<Object> content) {
+    Objects.requireNonNull(messageEntity, "MessageEntity cannot be null");
+    ObjectHolder objectHolder = (ObjectHolder) messageEntity;
+    OWLAnnotationProperty commentProperty = getDataFactory().getRDFSComment();
+
+    for (Object item : content) {
+      OWLLiteral dataLiteral = getDataFactory().getOWLLiteral(item.toString(), lang);
+      OWLAnnotation commentAnno = getDataFactory().getOWLAnnotation(commentProperty, dataLiteral);
+      OWLAxiom axiom = getDataFactory()
+          .getOWLAnnotationAssertionAxiom(objectHolder.getObject().getIRI(), commentAnno);
+      ontologyManager.applyChange(new AddAxiom(objectHolder.getModel().getDerivedModel(), axiom));
+    }
   }
 
   public void setMetadata(Model model, String namespace, String name, List<String> value) {
