@@ -1,0 +1,15 @@
+# Select a Field by its tag
+
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX orch: <http://fixprotocol.io/2016/orchestra#> 
+
+SELECT ?name ?datatype ?description
+WHERE {
+	?field rdfs:label ?name;
+		rdf:type orch:Field;
+		orch:hasDataType ?type;
+		orch:hasId 60 .
+	OPTIONAL {?field rdfs:comment ?description .}
+	?type rdfs:label ?datatype .
+}
