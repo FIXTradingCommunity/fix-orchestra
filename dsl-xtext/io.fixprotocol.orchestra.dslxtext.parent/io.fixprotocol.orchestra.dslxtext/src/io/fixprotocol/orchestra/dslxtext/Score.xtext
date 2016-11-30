@@ -1,0 +1,9 @@
+grammar io.fixprotocol.orchestra.dslxtext.Score with org.eclipse.xtext.common.Terminals
+
+generate score "http://www.fixprotocol.io/orchestra/dslxtext/Score"
+
+Model:
+	greetings+=Greeting*;
+	
+Greeting:
+	'Hello' name=ID '!';
