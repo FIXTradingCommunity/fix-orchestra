@@ -13,7 +13,9 @@ Require-Bundle: org.eclipse.xtext,
  org.antlr.runtime,
  org.eclipse.xtext.util,
  org.eclipse.xtend.lib,
- org.eclipse.emf.common
+ org.eclipse.emf.common,
+ org.eclipse.xtext.common.types,
+ org.objectweb.asm;bundle-version="[5.0.1,6.0.0)";resolution:=optional
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: io.fixprotocol.orchestra.dslxtext.parser.antlr.internal,
  io.fixprotocol.orchestra.dslxtext.score.impl,
@@ -25,5 +27,6 @@ Export-Package: io.fixprotocol.orchestra.dslxtext.parser.antlr.internal,
  io.fixprotocol.orchestra.dslxtext.services,
  io.fixprotocol.orchestra.dslxtext.parser.antlr,
  io.fixprotocol.orchestra.dslxtext,
- io.fixprotocol.orchestra.dslxtext.generator
+ io.fixprotocol.orchestra.dslxtext.generator,
+ io.fixprotocol.orchestra.dslxtext.jvmmodel
 Import-Package: org.apache.log4j

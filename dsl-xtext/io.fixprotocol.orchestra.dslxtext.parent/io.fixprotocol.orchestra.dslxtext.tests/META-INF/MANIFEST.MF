@@ -9,7 +9,8 @@ Require-Bundle: io.fixprotocol.orchestra.dslxtext,
  org.junit;bundle-version="4.7.0",
  org.eclipse.xtext.junit4,
  org.eclipse.xtext.xbase.junit,
- org.eclipse.xtext.xbase.lib
+ org.eclipse.xtext.xbase.lib,
+ org.objectweb.asm;bundle-version="[5.0.1,6.0.0)";resolution:=optional
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: io.fixprotocol.orchestra.dslxtext.tests
 Import-Package: org.hamcrest.core,
