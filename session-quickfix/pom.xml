@@ -12,8 +12,8 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.apache.servicemix.bundles</groupId>
-			<artifactId>org.apache.servicemix.bundles.quickfix</artifactId>
+			<groupId>org.quickfixj</groupId>
+			<artifactId>quickfixj-core</artifactId>
 			<version>${quickfixj.version}</version>
 		</dependency>
 		<dependency>

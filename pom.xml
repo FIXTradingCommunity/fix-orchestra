@@ -60,6 +60,7 @@
 		<module>dsl-antlr</module>
 		<module>repositoryToOWL</module>
 		<module>repository-quickfix</module>
+		<module>model</module>
 	</modules>
 
 	<properties>
@@ -68,7 +69,7 @@
 		<java.version>1.8</java.version>
 		<owlapi.version>4.1.2</owlapi.version>
 		<slf4j.version>1.7.13</slf4j.version>
-		<quickfixj.version>1.6.1_1</quickfixj.version>
+		<quickfixj.version>1.6.2</quickfixj.version>
 		<saxon.version>9.7.0-8</saxon.version>
 	</properties>
 
