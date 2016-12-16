@@ -35,7 +35,7 @@ The module may be included as a dependency in an application Maven project as fo
 <dependency>
   <groupId>io.fixprotocol.orchestra</groupId>
   <artifactId>repository2016</artifactId>
-  <version>0.1.0-RC1</version>
+  <version>1.0.0-RC1</version>
 </dependency>
 ```
 
@@ -46,7 +46,7 @@ Repository 2010 Edition was the version of the FIX Repository prior to FIX Orche
 <dependency>
   <groupId>io.fixprotocol.orchestra</groupId>
   <artifactId>repository2010</artifactId>
-  <version>0.1.0-RC1</version>
+  <version>1.0.0-RC1</version>
 </dependency>
 ```
 
