@@ -10,9 +10,15 @@ FIX Orchestra is intended to provide a standard and some reference implementatio
 
 The planned lifecycle of this project is to roll out new features in a series of release candidates. After each release candidate is approved, it will be exposed to public review. Issues may be entered here in GitHub or in a discussion forum on the [FIX Trading Community site](http://www.fixtradingcommunity.org/). When version 1.0 is considered complete, the last release candidate will be promoted to Draft Standard.
 
-### Version 1.0 Release Candidate 1
+### Approved version: 1.0 Release Candidate 1
+Version 1.0 RC1 standardizes the XML schema for FIX Orchestra and FIX Repository 2016 Edition. Release Candidate 1 was approved by the Global Technical Committee on Dec. 15, 2016 for 90 day public review. The status of each module is listed below for the current release candidate.
 
-The status each module is listed below for the current release candidate.
+### Working version: 1.0 Release Candidate 2
+The FIX Orchestra working group will consider issues and pull requests for the next release candidate. The planned themes for Release Candidate 2 are:
+* Completion of a DSL grammar for conditional expressions
+* FIXatdl integration
+* Session configuration
+
 
 ## Normative Module
 
