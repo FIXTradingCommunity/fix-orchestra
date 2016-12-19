@@ -49,10 +49,10 @@ public class FixSessionTool extends AbstractSessionTool {
 
       Set<OWLNamedIndividual> objects = getReasoner().getObjectPropertyValues(
           sessionInd,
-          hasProperty).getFlattened();
+          hasProperty).entities().collect(Collectors.toSet());
       
       for (OWLNamedIndividual sessionChild : objects) {
-        Set<OWLClass> classes = getReasoner().getTypes(sessionChild, true).getFlattened();
+        Set<OWLClass> classes = getReasoner().getTypes(sessionChild, true).entities().collect(Collectors.toSet());
         if (classes.contains(fix42Class)) {
           version = FixVersion.FIX4_2;
           break;
@@ -74,10 +74,10 @@ public class FixSessionTool extends AbstractSessionTool {
 
       Set<OWLNamedIndividual> objects = getReasoner().getObjectPropertyValues(
           sessionInd,
-          hasProperty).getFlattened();
+          hasProperty).entities().collect(Collectors.toSet());
       
       for (OWLNamedIndividual sessionChild : objects) {
-        Set<OWLClass> classes = getReasoner().getTypes(sessionChild, true).getFlattened();
+        Set<OWLClass> classes = getReasoner().getTypes(sessionChild, true).entities().collect(Collectors.toSet());
         if (classes.contains(initiatorClass)) {
           role = FixtSessionRole.INITIATOR;
           break;
@@ -95,10 +95,10 @@ public class FixSessionTool extends AbstractSessionTool {
       OWLNamedIndividual sessionInd = getObject();
 
       Set<OWLNamedIndividual> objects =
-          getReasoner().getObjectPropertyValues(sessionInd, hasProperty).getFlattened();
+          getReasoner().getObjectPropertyValues(sessionInd, hasProperty).entities().collect(Collectors.toSet());
 
       for (OWLNamedIndividual sessionChild : objects) {
-        Set<OWLClass> classes = getReasoner().getTypes(sessionChild, true).getFlattened();
+        Set<OWLClass> classes = getReasoner().getTypes(sessionChild, true).entities().collect(Collectors.toSet());
         if (classes.contains(sessionIdClass)) {
           OWLDataProperty hasSenderCompIdProperty =
               getDataFactory().getOWLDataProperty(":hasSenderCompId", getDefaultPrefixManager());
@@ -119,10 +119,10 @@ public class FixSessionTool extends AbstractSessionTool {
       OWLNamedIndividual sessionInd = getObject();
 
       Set<OWLNamedIndividual> objects =
-          getReasoner().getObjectPropertyValues(sessionInd, hasProperty).getFlattened();
+          getReasoner().getObjectPropertyValues(sessionInd, hasProperty).entities().collect(Collectors.toSet());
 
       for (OWLNamedIndividual sessionChild : objects) {
-        Set<OWLClass> classes = getReasoner().getTypes(sessionChild, true).getFlattened();
+        Set<OWLClass> classes = getReasoner().getTypes(sessionChild, true).entities().collect(Collectors.toSet());
         if (classes.contains(sessionIdClass)) {
           OWLDataProperty hastargetCompIdProperty =
               getDataFactory().getOWLDataProperty(":hasTargetCompId", getDefaultPrefixManager());
@@ -302,7 +302,7 @@ private OWLObjectProperty hasProperty;
   public Set<Session> getSessions() {
     OWLClass sessionClass = getSessionClass();
     NodeSet<OWLNamedIndividual> instances = getReasoner().getInstances(sessionClass, true);
-    Set<OWLNamedIndividual> objects = instances.getFlattened();
+    Set<OWLNamedIndividual> objects = instances.entities().collect(Collectors.toSet());
     return objects.stream().map(FixSessionObject::new).collect(Collectors.toSet());
   }
 

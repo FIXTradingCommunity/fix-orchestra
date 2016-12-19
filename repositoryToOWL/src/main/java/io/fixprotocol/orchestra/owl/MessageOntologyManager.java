@@ -20,6 +20,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -58,8 +59,6 @@ import org.semanticweb.owlapi.util.PriorityCollection;
 import org.semanticweb.owlapi.util.SimpleIRIMapper;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
-
-import com.google.common.base.Optional;
 
 /**
  * Populates a message ontology
@@ -176,7 +175,7 @@ public class MessageOntologyManager {
     public CodeSetObject getDataType() {
       CodeSetObject datatype = null;
       Set<OWLNamedIndividual> values = getModel().getReasoner()
-          .getObjectPropertyValues(getObject(), hasDataTypeProperty).getFlattened();
+          .getObjectPropertyValues(getObject(), hasDataTypeProperty).entities().collect(Collectors.toSet());
       final OWLNamedIndividual first = values.iterator().next();
       if (first != null) {
         datatype = new CodeSetObject(getModel(), first);
@@ -286,7 +285,7 @@ public class MessageOntologyManager {
     public DataTypeObject getDataType() {
       DataTypeObject datatype = null;
       Set<OWLNamedIndividual> values = getModel().getReasoner()
-          .getObjectPropertyValues(getObject(), hasDataTypeProperty).getFlattened();
+          .getObjectPropertyValues(getObject(), hasDataTypeProperty).entities().collect(Collectors.toSet());
       final OWLNamedIndividual first = values.iterator().next();
       if (first != null) {
         if (isCodeSet(getModel(), first)) {
@@ -938,7 +937,7 @@ public class MessageOntologyManager {
         .getOWLNamedIndividual(":type-" + codeSetName, messageModel.getPrefixManager());
 
     Set<OWLNamedIndividual> members = messageModel.getReasoner()
-        .getObjectPropertyValues(codeSetInd, memberProperty).getFlattened();
+        .getObjectPropertyValues(codeSetInd, memberProperty).entities().collect(Collectors.toSet());
     return members.stream().map(m -> new CodeObject(messageModel, m)).collect(Collectors.toSet());
   }
 
@@ -968,7 +967,7 @@ public class MessageOntologyManager {
   private OWLNamedIndividual getFieldById(int entityId, MessageModel model) {
     String fieldName = null;
     Set<OWLNamedIndividual> fields =
-        model.getReasoner().getInstances(fieldClass, true).getFlattened();
+        model.getReasoner().getInstances(fieldClass, true).entities().collect(Collectors.toSet());
     for (OWLNamedIndividual fieldInd : fields) {
       Set<OWLLiteral> values = model.getReasoner().getDataPropertyValues(fieldInd, hasIdProperty);
       final OWLLiteral first = values.iterator().next();
@@ -1009,7 +1008,7 @@ public class MessageOntologyManager {
 
     NodeSet<OWLNamedIndividual> instances =
         messageModel.getReasoner().getInstances(messageClass, true);
-    Set<OWLNamedIndividual> objects = instances.getFlattened();
+    Set<OWLNamedIndividual> objects = instances.entities().collect(Collectors.toSet());
     return objects.stream().map(o -> new MessageObject(messageModel, o))
         .collect(Collectors.toSet());
   }
@@ -1029,10 +1028,10 @@ public class MessageOntologyManager {
     MessageModel messageModel = parentObject.getModel();
 
     Set<OWLNamedIndividual> hasSet =
-        messageModel.getReasoner().getObjectPropertyValues(parentInd, hasProperty).getFlattened();
+        messageModel.getReasoner().getObjectPropertyValues(parentInd, hasProperty).entities().collect(Collectors.toSet());
 
     for (OWLNamedIndividual ind : hasSet) {
-      Set<OWLClass> classes = messageModel.getReasoner().getTypes(ind, true).getFlattened();
+      Set<OWLClass> classes = messageModel.getReasoner().getTypes(ind, true).entities().collect(Collectors.toSet());
       if (classes.contains(fieldClass)) {
         fields.add(new FieldObject(messageModel, ind));
       } else if (classes.contains(componentClass)) {
@@ -1050,10 +1049,10 @@ public class MessageOntologyManager {
     MessageModel messageModel = parentObject.getModel();
 
     Set<OWLNamedIndividual> requiredSet = messageModel.getReasoner()
-        .getObjectPropertyValues(parentInd, requiresProperty).getFlattened();
+        .getObjectPropertyValues(parentInd, requiresProperty).entities().collect(Collectors.toSet());
 
     for (OWLNamedIndividual ind : requiredSet) {
-      Set<OWLClass> classes = messageModel.getReasoner().getTypes(ind, true).getFlattened();
+      Set<OWLClass> classes = messageModel.getReasoner().getTypes(ind, true).entities().collect(Collectors.toSet());
       if (classes.contains(fieldClass)) {
         fields.add(new FieldObject(messageModel, ind));
       } else if (classes.contains(componentClass)) {

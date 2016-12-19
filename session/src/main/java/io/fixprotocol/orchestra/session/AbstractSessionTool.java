@@ -22,7 +22,9 @@ import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -50,8 +52,6 @@ import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.structural.StructuralReasonerFactory;
 import org.semanticweb.owlapi.util.DefaultPrefixManager;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
-
-import com.google.common.base.Optional;
 
 abstract class AbstractSessionTool {
   interface ObjectHolder {
@@ -191,10 +191,10 @@ abstract class AbstractSessionTool {
           getDataFactory().getOWLObjectProperty(":has", getDefaultPrefixManager());
 
       Set<OWLNamedIndividual> objects =
-          getReasoner().getObjectPropertyValues(sessionInd, hasProperty).getFlattened();
+          getReasoner().getObjectPropertyValues(sessionInd, hasProperty).entities().collect(Collectors.toSet());
 
       for (OWLNamedIndividual sessionChild : objects) {
-        Set<OWLClass> classes = getReasoner().getTypes(sessionChild, true).getFlattened();
+        Set<OWLClass> classes = getReasoner().getTypes(sessionChild, true).entities().collect(Collectors.toSet());
         if (classes.contains(tcpTransportClass)) {
           OWLDataProperty hasAddressProperty =
               dataFactory.getOWLDataProperty(":hasAddress", getDefaultPrefixManager());
@@ -219,10 +219,10 @@ abstract class AbstractSessionTool {
           getDataFactory().getOWLObjectProperty(":has", getDefaultPrefixManager());
 
       Set<OWLNamedIndividual> objects =
-          getReasoner().getObjectPropertyValues(sessionInd, hasProperty).getFlattened();
+          getReasoner().getObjectPropertyValues(sessionInd, hasProperty).entities().collect(Collectors.toSet());
 
       for (OWLNamedIndividual sessionChild : objects) {
-        Set<OWLClass> classes = getReasoner().getTypes(sessionChild, true).getFlattened();
+        Set<OWLClass> classes = getReasoner().getTypes(sessionChild, true).entities().collect(Collectors.toSet());
         if (classes.contains(tcpTransportClass)) {
           OWLDataProperty hasPortProperty =
               dataFactory.getOWLDataProperty(":hasPort", getDefaultPrefixManager());

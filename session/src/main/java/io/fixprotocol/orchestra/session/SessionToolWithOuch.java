@@ -57,7 +57,7 @@ public class SessionToolWithOuch extends AbstractSessionTool {
     OWLReasoner reasoner = reasonerFactory.createReasoner(getDerivedModel());
     OWLClass sessionClass = getSessionClass();
     NodeSet<OWLNamedIndividual> instances = reasoner.getInstances(sessionClass, true);
-    Set<OWLNamedIndividual> objects = instances.getFlattened();
+    Set<OWLNamedIndividual> objects = instances.entities().collect(Collectors.toSet());
     return objects.stream().map(OuchSessionObject::new).collect(Collectors.toSet());
   }
 
