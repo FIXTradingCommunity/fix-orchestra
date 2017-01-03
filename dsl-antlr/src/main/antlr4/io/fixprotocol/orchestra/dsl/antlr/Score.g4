@@ -31,59 +31,48 @@ RBRACE : '}' ;
 BETWEEN : 'between' ;
 
 anyExpression
-    : assignment
-    | conditionalOrExpression
-    | conditionalAndExpression
-	| relationalExpression
+    : assignmentExp=assignment 
+    | orExp=conditionalOrExpression
     ;
 
 assignment
-	:	variable ('=' |'*=' | '/=' | '%=' | '+=' | '-=') simpleExpression
+	: var=variable assignmentOp=('=' |'*=' | '/=' | '%=' | '+=' | '-=') exp=simpleExpression
 	;
 
 conditionalOrExpression
-    : relationalExpression ('or' | '||') relationalExpression
+    : andExp+=conditionalAndExpression (orOp+=('or' | '||') andExp+=conditionalAndExpression)*
     ;
 
 conditionalAndExpression
-    : relationalExpression ('and' | '&&') relationalExpression
+    : condExp+=conditionalExpression (andOp+=('and' | '&&') condExp+=conditionalExpression)*
     ;
-
-relationalExpression
-   : simpleExpression (('==' | '!=' | '<' | '<=' | '>=' | '>') simpleExpression)*
-   | simpleExpression 'in' setExpression
-   | simpleExpression rangeExpression
-   ;
+	
+conditionalExpression
+	: left=simpleExpression relationalOp=('==' | '!=' | '<' | '<=' | '>=' | '>') right=factor # relationalExpression
+	| left=simpleExpression 'in' '{' fac+=factor (',' fac+=factor)* '}' # setExpression
+	| left=simpleExpression 'between' min=factor 'and' max=factor # rangeExpression
+	;
 
 simpleExpression
-   : term (('+' | '-') term)*
+   : t+=term (termOp+=('+' | '-') t+=term)*
    ;
 
 term
-   : factor (('*' | '/' | '%') factor)*
+   : fac+=factor (factorOp+=('*' | '/' | '%') fac+=factor)*
    ;
 
-setExpression
-     : '{' factor (',' factor)* '}'
-     ;
-
-rangeExpression
-     : 'between' factor 'and' factor
-     ;
-
 factor
-   : value
-   | variable
-   | '(' simpleExpression ')'
-   | IntegerLiteral
-   | DecimalLiteral
-   | StringLiteral
-   | CharacterLiteral
-   | '!' factor
+   : val=value
+   | var=variable
+   | integer=IntegerLiteral
+   | dec=DecimalLiteral
+   | str=StringLiteral
+   | chr=CharacterLiteral
+   | '!' fac=factor
    ;
 
 value // immutable
-    : THIS '.' qualifiedId
+    : 'this' '.' qualifiedId
     ;
 
 variable // mutable

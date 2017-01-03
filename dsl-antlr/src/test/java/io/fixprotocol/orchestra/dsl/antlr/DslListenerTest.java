@@ -43,11 +43,12 @@ public class DslListenerTest {
 
   @Parameterized.Parameters
   public static Collection<String[]> testFieldConditions() {
-    return Arrays.asList(new String[][] {{"this.OrdType"}, {"\"Stop\""},
-        {"this.OrdType == \"Stop\""}, {"this.OrdType in {\"Stop\", \"StopLimit\"}"},
-        {"this.OrdType == \"Stop\" or this.OrdType == \"StopLimit\""}, {"this.OrdQty > 0"},
-        {"this.OrdQty != 0"}, {"this.OrdQty > 0 and this.OrdQty <= 10"}, {"this.Price < 100.00"},
-        {"this.Price between 50.00 and 100.00"},});
+    return Arrays.asList(new String[][] {
+      {"$x = 55"}, {"$y = \"MyName\""}, {"$x = 50 + 5"}, {"$z = this.OrdType"},
+      {"this.OrdType == \"Stop\""}, {"this.OrdType in {\"Stop\", \"StopLimit\"}"},
+      {"this.OrdType == \"Stop\" or this.OrdType == \"StopLimit\""}, {"this.OrdQty > 0"},
+      {"this.OrdQty != 0"}, {"this.OrdQty > 0 and this.OrdQty <= 10"}, {"this.Price < 100.00"},
+      {"this.Price between 50.00 and 100.00"},});
   }
 
   @Test
@@ -134,7 +135,8 @@ public class DslListenerTest {
 
       @Override
       public void exitRelationalExpression(RelationalExpressionContext ctx) {
-        System.out.println("Exit RelationalExpression " + ctx.getText());       
+        System.out.format("Exit RelationalExpression left=%s op=%s right=%s%n", 
+            ctx.left.getText(), ctx.relationalOp.getText(), ctx.right.getText());       
       }
 
       @Override
@@ -174,7 +176,7 @@ public class DslListenerTest {
 
       @Override
       public void exitRangeExpression(RangeExpressionContext ctx) {
-        System.out.println("Exit RangeExpression; factors: " + ctx.factor().stream().map(FactorContext::getText).collect(Collectors.toList()));        
+        System.out.format("Exit RangeExpression; min=%s max=%s%n", ctx.min.getText(), ctx.max.getText());        
       }
 
       @Override
