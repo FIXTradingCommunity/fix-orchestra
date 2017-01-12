@@ -173,7 +173,7 @@ public class RepositoryTool {
         }
         List<CodeType> codeList = codeSet.getCode();
         for (CodeType code : codeList) {
-          MessageEntity codeMessageEntity = ontologyManager.createCode(model, codeSetName, code.getSymbolicName(), code.getValue());
+          MessageEntity codeMessageEntity = ontologyManager.createCode(model, codeSetName, code.getName(), code.getValue());
           annotation = code.getAnnotation();
           if (annotation != null) {
             addAnnotation(codeMessageEntity, annotation);

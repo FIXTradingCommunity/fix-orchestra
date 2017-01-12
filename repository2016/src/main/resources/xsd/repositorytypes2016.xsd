@@ -14,7 +14,8 @@
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
-		<xs:attribute name="abbrTerm" type="xs:string"/>
+		<!-- was abbrTerm -->
+		<xs:attribute name="name" type="xs:string"/>
 	</xs:complexType>
 	<xs:simpleType name="Abbreviation_t">
 		<xs:restriction base="xs:string"/>
@@ -128,7 +129,8 @@
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attribute name="value" type="xs:string" use="required"/>
-		<xs:attribute name="symbolicName" type="fixr:SymbolicName_t"/>
+		<!-- was symbolicName -->
+		<xs:attribute name="name" type="fixr:SymbolicName_t"/>
 		<xs:attribute name="sort" type="xs:string"/>
 		<xs:attribute name="group" type="xs:string"/>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>

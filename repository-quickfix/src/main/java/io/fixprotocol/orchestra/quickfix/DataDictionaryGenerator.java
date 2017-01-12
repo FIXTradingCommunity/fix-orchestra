@@ -196,7 +196,7 @@ public class DataDictionaryGenerator {
   
   private Writer writeCode(Writer writer, CodeType code) throws IOException {
     writeElement(writer, "value", 3, true, new KeyValue<String>("enum", code.getValue()),
-        new KeyValue<String>("description", toConstantName(code.getSymbolicName())));
+        new KeyValue<String>("description", toConstantName(code.getName())));
     return writer;
   }
   

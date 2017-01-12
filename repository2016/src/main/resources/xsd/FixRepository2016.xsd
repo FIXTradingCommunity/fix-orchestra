@@ -96,7 +96,13 @@
 				<xs:element ref="fixr:components"/>
 				<xs:element ref="fixr:messages"/>
 			</xs:all>
+			<xs:attribute name="name" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>Stable name that does not change with minor version updates</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
 			<xs:attribute name="version" type="fixr:Version_t" use="required"/>
+			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
 			<xs:attribute name="guid" type="xs:string"/>
 			<xs:attribute name="hasComponents" type="xs:boolean" use="required"/>
 			<xs:attribute name="specUrl" type="xs:anyURI">

@@ -17,6 +17,7 @@
                 <dc:date>
                     <xsl:value-of select="fn:current-dateTime()"/>
                 </dc:date>
+                <dc:format>Repository 2016 Edition</dc:format>
             </metadata>
             <codeSets>
                 <xsl:for-each select="/fixRepository/fix/fields/field[enum]">
@@ -27,7 +28,8 @@
 						<xsl:attribute name="type"><xsl:value-of select="$fieldType"/></xsl:attribute>
                         <xsl:for-each select="//field[@name = $fieldName]/enum">
                             <xsl:element name="fixr:code">
-                                <xsl:apply-templates select="@*"/>
+								<xsl:attribute name="name"><xsl:value-of select="current()/@symbolicName"/></xsl:attribute>
+                                <xsl:apply-templates select="@* except @symbolicName"/>
                             </xsl:element>
                         </xsl:for-each>
                         <xsl:apply-templates select="@textId"/>
@@ -49,7 +51,8 @@
     </xsl:template>
     <xsl:template match="abbreviation">
     <fixr:abbreviation>
-            <xsl:apply-templates select="@* except @textId"/>
+			<xsl:attribute name="name"><xsl:value-of select="current()/@abbrTerm"/></xsl:attribute>
+            <xsl:apply-templates select="@* except @textId except @abbrTerm"/>
             <xsl:apply-templates select="@textId"/>
     </fixr:abbreviation>
     </xsl:template>
@@ -134,6 +137,7 @@
     </xsl:template>
     <xsl:template match="fix">
 		<fixr:protocol>
+			<xsl:attribute name="name"><xsl:value-of select="substring-before(current()/@version, '_')"/></xsl:attribute>
             <xsl:apply-templates select="@*"/>
             <xsl:apply-templates select="components"/>
             <xsl:apply-templates select="messages"/>

@@ -849,19 +849,19 @@ public class CodeGeneratorJ {
       switch (type) {
         case "Boolean":
           writer.write(String.format("%n%spublic static final boolean %s = %s;%n", indent(1),
-              code.getSymbolicName(), code.getValue().equals("Y")));
+              code.getName(), code.getValue().equals("Y")));
           break;
         case "char":
           writer.write(String.format("%n%spublic static final char %s = \'%s\';%n", indent(1),
-              code.getSymbolicName(), code.getValue()));
+              code.getName(), code.getValue()));
           break;
         case "int":
           writer.write(String.format("%n%spublic static final int %s = %s;%n", indent(1),
-              code.getSymbolicName(), code.getValue()));
+              code.getName(), code.getValue()));
           break;
         default:
           writer.write(String.format("%n%spublic static final String %s = \"%s\";%n", indent(1),
-              code.getSymbolicName(), code.getValue()));
+              code.getName(), code.getValue()));
       }
 
     }
