@@ -17,6 +17,10 @@
 			</xs:sequence>
 			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
 		</xs:complexType>
+		<xs:key name="abbreviationKey">
+			<xs:selector xpath="fixr:abbreviation"/>
+			<xs:field xpath="@name"/>
+		</xs:key>
 	</xs:element>
 	<xs:element name="categories">
 		<xs:complexType>
@@ -29,10 +33,19 @@
 	<xs:element name="codeSets">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="codeSet" type="fixr:codeSetType" maxOccurs="unbounded"/>
+				<xs:element name="codeSet" type="fixr:codeSetType" maxOccurs="unbounded">
+					<xs:key name="codeKey">
+						<xs:selector xpath="fixr:code"/>
+						<xs:field xpath="@name"/>
+					</xs:key>
+				</xs:element>
 			</xs:sequence>
 			<xs:attribute name="name" type="fixr:Name_t"/>
 		</xs:complexType>
+		<xs:key name="codeSetKey">
+			<xs:selector xpath="fixr:codeSet"/>
+			<xs:field xpath="@name"/>
+		</xs:key>
 	</xs:element>
 	<xs:element name="components">
 		<xs:complexType>
@@ -42,6 +55,10 @@
 			</xs:choice>
 			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
 		</xs:complexType>
+		<xs:key name="componentKey">
+			<xs:selector xpath="fixr:component|fixr:group"/>
+			<xs:field xpath="@id"/>
+		</xs:key>
 	</xs:element>
 	<xs:element name="datatype">
 		<xs:complexType>
@@ -69,6 +86,10 @@
 			</xs:sequence>
 			<xs:attribute name="latestEP" type="fixr:EP_t"/>
 		</xs:complexType>
+		<xs:key name="fieldKey">
+			<xs:selector xpath="fixr:field"/>
+			<xs:field xpath="@id"/>
+		</xs:key>
 	</xs:element>
 	<xs:element name="actors">
 		<xs:complexType>
@@ -76,10 +97,6 @@
 				<xs:element name="actor" type="fixr:actorType" maxOccurs="unbounded"/>
 			</xs:sequence>
 		</xs:complexType>
-		<xs:unique name="actor">
-			<xs:selector xpath="fixr:actor"/>
-			<xs:field xpath="@name"/>
-		</xs:unique>
 		<xs:key name="actorKey">
 			<xs:selector xpath="fixr:actor"/>
 			<xs:field xpath="@name"/>
@@ -156,7 +173,7 @@
 			</xs:sequence>
 			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
 		</xs:complexType>
-		<xs:unique name="messageId">
+		<xs:key name="messageId">
 			<xs:annotation>
 				<xs:documentation>Combination of message name and context must be
 					unique</xs:documentation>
@@ -164,7 +181,7 @@
 			<xs:selector xpath="fixr:message"/>
 			<xs:field xpath="@name"/>
 			<xs:field xpath="@context"/>
-		</xs:unique>
+		</xs:key>
 	</xs:element>
 	<xs:element name="sections">
 		<xs:complexType>
