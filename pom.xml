@@ -60,6 +60,7 @@
 		<module>repositoryToOWL</module>
 		<module>repository-quickfix</module>
 		<module>model-quickfix</module>
+		<module>repositoryDiffMerge</module>
 	</modules>
 
 	<properties>
