@@ -19,6 +19,7 @@ import java.io.OutputStream;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import io.fixprotocol._2016.fixrepository.Repository;
@@ -46,6 +47,7 @@ public final class Serializer {
       throws JAXBException {
     JAXBContext jaxbContext = JAXBContext.newInstance(Repository.class);
     javax.xml.bind.Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+    jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
     jaxbMarshaller.marshal(jaxbElement, outputStream);
   }
 

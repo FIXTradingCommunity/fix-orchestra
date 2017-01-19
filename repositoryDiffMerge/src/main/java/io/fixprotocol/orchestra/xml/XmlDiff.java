@@ -1,10 +1,25 @@
+/**
+ * Copyright 2017 FIX Protocol Ltd
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package io.fixprotocol.orchestra.xml;
 
-import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Objects;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -24,7 +39,45 @@ import io.fixprotocol.orchestra.xml.XmlDiffListener.Event.Difference;
 
 import static io.fixprotocol.orchestra.xml.XmlDiffListener.Event.Difference.*;
 
+/**
+ * Utility to report differences between two XML files
+ * <p>
+ * It does not require XML schemas. Only one assumption is made: the key identifying attribute of an
+ * XML element is named either "id" or "name". This should work for the majority of XML files since
+ * that is common practice.
+ * 
+ * @author Don Mendelson
+ *
+ */
 public class XmlDiff {
+
+  public class DefaultListener implements XmlDiffListener {
+
+    private final PrintStream out;
+
+    public DefaultListener(PrintStream out) {
+      this.out = out;
+    }
+
+    @Override
+    public void accept(Event t) {
+      switch (t.getDifference()) {
+        case ADD:
+          out.format("+ %s%s%n", t.getName(),
+              t.getValue() != null && t.getValue().length() > 0 ? ":=" + t.getValue() : "");
+          break;
+        case CHANGE:
+          out.format("! %s:=%s(%s)%n", t.getName(), t.getValue(), t.getOldValue());
+          break;
+        case REMOVE:
+          out.format("- %s%s%n", t.getName(), t.getValue() != null ? "(" + t.getValue() + ")" : "");
+          break;
+        case EQUAL:
+          break;
+      }
+    }
+
+  }
 
   private static final class ElementComparator implements Comparator<Element> {
     @Override
@@ -48,45 +101,20 @@ public class XmlDiff {
     }
   }
 
-  public class DefaultListener implements XmlDiffListener {
-
-    private final PrintStream out;
-
-    public DefaultListener(PrintStream out) {
-      this.out = out;
-    }
-
-    @Override
-    public void accept(Event t) {
-      switch (t.getDifference()) {
-        case ADD:
-          out.format("+ %s%s%n", t.getName(), t.getValue() != null ? "="+t.getValue() : "");
-          break;
-        case CHANGE:
-          out.format("! %s=%s(%s)%n", t.getName(), t.getValue(), t.getOldValue());
-          break;
-        case REMOVE:
-          out.format("- %s%s%n", t.getName(), t.getValue() != null ? "("+t.getValue()+")" : "");
-          break;
-        case EQUAL:
-          break;
-      }
-    }
-
-  }
-
   /**
    * Compares two XML files. By default, report is sent to console.
    * 
    * @param args file names of two XML files to compare and optional name of difference file. If
-   * diff file is not provided, then output goes to console.
+   *        diff file is not provided, then output goes to console.
+   * @throws Exception if an IO or parsing error occurs
    */
   public static void main(String[] args) throws Exception {
     if (args.length < 2) {
       usage();
     } else {
       XmlDiff tool = new XmlDiff();
-      tool.diff(args[0], args[1], args.length > 2 ? args[2] : null);
+      tool.diff(new FileInputStream(args[0]), new FileInputStream(args[1]),
+          args.length > 2 ? new PrintStream(args[2]) : System.out);
     }
   }
 
@@ -102,25 +130,35 @@ public class XmlDiff {
   private final ElementComparator elementComparator = new ElementComparator();
   private XmlDiffListener listener;
 
-  public void diff(String xmlFileName1, String xmlFileName2, String diffFile) throws Exception {
+  /**
+   * Generates differences between two XML files
+   * 
+   * @param is1 first XML input stream
+   * @param is2 second XML input stream
+   * @param diffFile name of difference file to produce
+   * @throws Exception if an IO or parsing error occurs
+   */
+  public void diff(InputStream is1, InputStream is2, PrintStream diffStream) throws Exception {
+    Objects.requireNonNull(is1, "First input stream cannot be null");
+    Objects.requireNonNull(is2, "Second input stream cannot be null");
+    Objects.requireNonNull(diffStream, "Difference stream cannot be null");
+    try {
+      final Document doc1 = parse(is1);
+      final Element root1 = doc1.getDocumentElement();
+      final Document doc2 = parse(is2);
+      final Element root2 = doc2.getDocumentElement();
 
-    final Document doc1 = parse(xmlFileName1);
-    final Element root1 = doc1.getDocumentElement();
-    final Document doc2 = parse(xmlFileName2);
-    final Element root2 = doc2.getDocumentElement();
-    
-    final PrintStream diffStream;
-    if (diffFile != null) {
-      diffStream = new PrintStream(diffFile);
-    } else {
-      diffStream = System.out;
-    }
-    listener = new DefaultListener(diffStream);
-    
-    if (!compareElements(root1, root2)) {
-      System.err.format("Not comparing same root nodes; %s %s%n", XpathUtil.getFullXPath(root1),
-          XpathUtil.getFullXPath(root2));
-      System.exit(1);
+      listener = new DefaultListener(diffStream);
+
+      if (!compareElements(root1, root2)) {
+        System.err.format("Not comparing same root nodes; %s %s%n", XpathUtil.getFullXPath(root1),
+            XpathUtil.getFullXPath(root2));
+        System.exit(1);
+      }
+    } finally {
+      is1.close();
+      is2.close();
+      diffStream.close();
     }
 
   }
@@ -133,6 +171,26 @@ public class XmlDiff {
    */
   public void setListener(XmlDiffListener listener) {
     this.listener = listener;
+  }
+
+  private void addElement(Element element) throws DOMException {
+    String text = null;
+    Node child = element.getFirstChild();
+    if (child != null && Node.TEXT_NODE == child.getNodeType()) {
+      text = child.getNodeValue().trim();
+    }
+    listener.accept(new Event(ADD, XpathUtil.getFullXPath(element), text));
+    NamedNodeMap attributes = element.getAttributes();
+    for (int i = 0; i < attributes.getLength(); i++) {
+      listener.accept(new Event(ADD, XpathUtil.getFullXPath(attributes.item(i)),
+          attributes.item(i).getNodeValue()));
+    }
+    NodeList children = element.getChildNodes();
+    for (int i = 0; i < children.getLength(); i++) {
+      if (Node.ELEMENT_NODE == children.item(i).getNodeType()) {
+        addElement((Element) children.item(i));
+      }
+    }
   }
 
   private boolean compareAttributes(NamedNodeMap attributes1, NamedNodeMap attributes2) {
@@ -169,25 +227,25 @@ public class XmlDiff {
         case ADD:
           listener.accept(new Event(ADD, XpathUtil.getFullXPath(attributesArray2.get(index2)),
               attributesArray2.get(index2).getNodeValue()));
-          index2 = Math.min(index2+1, attributesArray2.size());
+          index2 = Math.min(index2 + 1, attributesArray2.size());
           isEqual = false;
           break;
         case CHANGE:
           listener.accept(new Event(CHANGE, XpathUtil.getFullXPath(attributesArray1.get(index1)),
               attributesArray2.get(index2).getNodeValue(),
               attributesArray1.get(index1).getNodeValue()));
-          index1 = Math.min(index1+1, attributesArray1.size());
-          index2 = Math.min(index2+1, attributesArray2.size());
+          index1 = Math.min(index1 + 1, attributesArray1.size());
+          index2 = Math.min(index2 + 1, attributesArray2.size());
           isEqual = false;
           break;
         case EQUAL:
-          index1 = Math.min(index1+1, attributesArray1.size());
-          index2 = Math.min(index2+1, attributesArray2.size());
+          index1 = Math.min(index1 + 1, attributesArray1.size());
+          index2 = Math.min(index2 + 1, attributesArray2.size());
           break;
         case REMOVE:
           listener.accept(new Event(REMOVE, XpathUtil.getFullXPath(attributesArray1.get(index1)),
               attributesArray1.get(index1).getNodeValue()));
-          index1 = Math.min(index1+1, attributesArray1.size());
+          index1 = Math.min(index1 + 1, attributesArray1.size());
           isEqual = false;
           break;
       }
@@ -215,63 +273,47 @@ public class XmlDiff {
       } else if (index2 == elementsArray2.size()) {
         difference = REMOVE;
       } else {
-      final Element child1 = elementsArray1.get(index1);
-      final Element child2 = elementsArray2.get(index2);
-      int elementCompare = elementComparator.compare(child1, child2);
-      if (elementCompare == 0) {
-        compareElements(child1, child2);
-        index1 = Math.min(elementsArray1.size() - 1, index1 + 1);
-        index2 = Math.min(elementsArray2.size() - 1, index2 + 1);
-      } else if (elementCompare > 0) {
-        difference = ADD;
-      } else {
-        difference = REMOVE;
+        final Element child1 = elementsArray1.get(index1);
+        final Element child2 = elementsArray2.get(index2);
+        int elementCompare = elementComparator.compare(child1, child2);
+        if (elementCompare == 0) {
+          compareElements(child1, child2);
+          index1 = Math.min(elementsArray1.size() - 1, index1 + 1);
+          index2 = Math.min(elementsArray2.size() - 1, index2 + 1);
+        } else if (elementCompare > 0) {
+          difference = ADD;
+        } else {
+          difference = REMOVE;
+        }
       }
-    }
       switch (difference) {
         case ADD:
           addElement(elementsArray2.get(index2));
-          index2 = Math.min(index2+1, elementsArray2.size());
+          index2 = Math.min(index2 + 1, elementsArray2.size());
           isEqual = false;
           break;
         case CHANGE:
           listener.accept(new Event(CHANGE, XpathUtil.getFullXPath(elementsArray1.get(index1)),
               elementsArray2.get(index2).getNodeValue(),
               elementsArray1.get(index1).getNodeValue()));
-          index1 = Math.min(index1+1, elementsArray1.size());
-          index2 = Math.min(index2+1, elementsArray2.size());
+          index1 = Math.min(index1 + 1, elementsArray1.size());
+          index2 = Math.min(index2 + 1, elementsArray2.size());
           isEqual = false;
           break;
         case EQUAL:
-          index1 = Math.min(index1+1, elementsArray1.size());
-          index2 = Math.min(index2+1, elementsArray2.size());
+          index1 = Math.min(index1 + 1, elementsArray1.size());
+          index2 = Math.min(index2 + 1, elementsArray2.size());
           break;
         case REMOVE:
           listener.accept(new Event(REMOVE, XpathUtil.getFullXPath(elementsArray1.get(index1)),
               elementsArray1.get(index1).getNodeValue()));
-          index1 = Math.min(index1+1, elementsArray1.size());
+          index1 = Math.min(index1 + 1, elementsArray1.size());
           isEqual = false;
           break;
       }
     }
- 
-    return isEqual;
-  }
 
-  private void addElement(Element element) throws DOMException {
-    listener.accept(new Event(ADD, XpathUtil.getFullXPath(element), 
-        element.getNodeValue()));
-    NamedNodeMap attributes = element.getAttributes();
-    for (int i=0; i < attributes.getLength(); i++) {
-      listener.accept(new Event(ADD, XpathUtil.getFullXPath(attributes.item(i)), 
-          attributes.item(i).getNodeValue()));
-    }
-    NodeList children = element.getChildNodes();
-    for (int i=0; i < children.getLength(); i++) {
-      if (Node.ELEMENT_NODE == children.item(i).getNodeType()) {
-        addElement((Element) children.item(i));
-      }
-    }
+    return isEqual;
   }
 
   private boolean compareElements(final Element child1, final Element child2) {
@@ -309,26 +351,26 @@ public class XmlDiff {
     return false;
   }
 
-  private Document parse(String fileName)
+  private Document parse(InputStream is)
       throws ParserConfigurationException, SAXException, IOException {
-    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-    DocumentBuilder db = dbf.newDocumentBuilder();
-    return db.parse(new File(fileName));
+    final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+    final DocumentBuilder db = dbf.newDocumentBuilder();
+    return db.parse(is);
   }
 
   private ArrayList<Attr> sortAttributes(NamedNodeMap attributes, ArrayList<Attr> nodeArray) {
     nodeArray.clear();
-  
+
     for (int i = 0; i < attributes.getLength(); i++) {
       nodeArray.add((Attr) attributes.item(i));
     }
     nodeArray.sort(new Comparator<Attr>() {
-  
+
       @Override
       public int compare(Attr n1, Attr n2) {
         return n1.getNodeName().compareTo(n2.getNodeName());
       }
-  
+
     });
     return nodeArray;
   }
