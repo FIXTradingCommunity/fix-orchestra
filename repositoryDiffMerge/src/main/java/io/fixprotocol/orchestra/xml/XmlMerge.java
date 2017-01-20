@@ -24,6 +24,7 @@ import java.io.Reader;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -143,6 +144,9 @@ public class XmlMerge {
    */
   public void merge(InputStream baseline, Reader diffReader, OutputStream xmlStream)
       throws Exception {
+    Objects.requireNonNull(baseline, "Baseline stream cannot be null");
+    Objects.requireNonNull(diffReader, "Difference file reader cannot be null");
+    Objects.requireNonNull(xmlStream, "Output stream cannot be null");
 
     try (BufferedReader in = new BufferedReader(diffReader)) {
       final Document doc = parse(baseline);

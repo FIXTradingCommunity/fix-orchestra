@@ -53,12 +53,6 @@ public class XmlDiff {
 
   public class DefaultListener implements XmlDiffListener {
 
-    private final PrintStream out;
-
-    public DefaultListener(PrintStream out) {
-      this.out = out;
-    }
-
     @Override
     public void accept(Event t) {
       switch (t.getDifference()) {
@@ -75,6 +69,12 @@ public class XmlDiff {
         case EQUAL:
           break;
       }
+    }
+
+
+    @Override
+    public void close() throws Exception {
+
     }
 
   }
@@ -129,6 +129,11 @@ public class XmlDiff {
   private final ArrayList<Attr> attributesArray2 = new ArrayList<>(64);
   private final ElementComparator elementComparator = new ElementComparator();
   private XmlDiffListener listener;
+  protected PrintStream out;
+
+  public XmlDiff() {
+    setListener(new DefaultListener());
+  }
 
   /**
    * Generates differences between two XML files
@@ -142,13 +147,13 @@ public class XmlDiff {
     Objects.requireNonNull(is1, "First input stream cannot be null");
     Objects.requireNonNull(is2, "Second input stream cannot be null");
     Objects.requireNonNull(diffStream, "Difference stream cannot be null");
+    
     try {
+      this.out = diffStream;
       final Document doc1 = parse(is1);
       final Element root1 = doc1.getDocumentElement();
       final Document doc2 = parse(is2);
       final Element root2 = doc2.getDocumentElement();
-
-      listener = new DefaultListener(diffStream);
 
       if (!compareElements(root1, root2)) {
         System.err.format("Not comparing same root nodes; %s %s%n", XpathUtil.getFullXPath(root1),
@@ -156,6 +161,7 @@ public class XmlDiff {
         System.exit(1);
       }
     } finally {
+      listener.close();
       is1.close();
       is2.close();
       diffStream.close();

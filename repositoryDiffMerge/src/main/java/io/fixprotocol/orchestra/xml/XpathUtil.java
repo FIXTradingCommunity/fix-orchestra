@@ -13,6 +13,7 @@
  */
 package io.fixprotocol.orchestra.xml;
 
+import java.util.Objects;
 import java.util.Stack;
 
 import org.w3c.dom.Attr;
@@ -23,15 +24,16 @@ public final class XpathUtil {
 
   /**
    * Utility to determine the XPATH of an XML node
+   * 
    * @param n an XML node
    * @return XPATH representation
    * @author Adapted from a post by Mikkel Flindt Heisterberg
-   * @see <a href=http://lekkimworld.com/2007/06/19/building_xpath_expression_from_xml_node.html>Building XPath expression from XML node</a>
+   * @see <a
+   *      href=http://lekkimworld.com/2007/06/19/building_xpath_expression_from_xml_node.html>Building
+   *      XPath expression from XML node</a>
    */
   public static String getFullXPath(Node n) {
-    // abort early
-    if (null == n)
-      return null;
+    Objects.requireNonNull(n, "Node cannot be null");
 
     // declarations
     Node parent = null;
@@ -82,14 +84,13 @@ public final class XpathUtil {
           buffer.append(node.getNodeName());
 
           if (node.hasAttributes()) {
-            // see if the element has a name or id attribute
-            if (e.hasAttribute("id")) {
-              // id attribute found - use that
-              buffer.append("[@id=\"" + e.getAttribute("id") + "\"]");
-              handled = true;
-            } else if (e.hasAttribute("name")) {
+            // prioritize name over id as predicate
+            if (e.hasAttribute("name")) {
               // name attribute found - use that
               buffer.append("[@name=\"" + e.getAttribute("name") + "\"]");
+              handled = true;
+            } else if (e.hasAttribute("id")) {
+              buffer.append("[@id=\"" + e.getAttribute("id") + "\"]");
               handled = true;
             }
           }
@@ -117,4 +118,112 @@ public final class XpathUtil {
     // return buffer
     return buffer.toString();
   }
+
+  public static boolean isAttribute(String xpath) {
+    Objects.requireNonNull(xpath, "Xpath cannot be null");
+    String[] fields = xpath.split("/");
+    if (fields == null || fields.length == 0) {
+      return false;
+    }
+    return fields[fields.length - 1].startsWith("@");
+  }
+  
+  public static String getAttribute(String xpath) {
+    Objects.requireNonNull(xpath, "Xpath cannot be null");
+    String[] fields = xpath.split("/");
+    if (fields == null || fields.length == 0) {
+      return "";
+    }
+    if (fields[fields.length - 1].startsWith("@")) {
+      return fields[fields.length - 1].substring(1);
+    } else {
+      return "";
+    }
+  }
+
+  public static String getElementLocalName(String xpath) {
+    Objects.requireNonNull(xpath, "Xpath cannot be null");
+    String[] fields = xpath.split("/");
+    if (fields == null || fields.length == 0) {
+      return "";
+    }
+    for (int i = fields.length - 1; i >= 0; i--) {
+      if (fields[i].startsWith("@")) {
+        continue;
+      }
+      int colon = fields[i].indexOf(":") + 1;
+      int bracket = fields[i].indexOf("[");
+      return fields[i].substring(colon, bracket == -1 ? fields[i].length() : bracket);
+    }
+    return "";
+  }
+
+  public static String getParentLocalName(String xpath) {
+    Objects.requireNonNull(xpath, "Xpath cannot be null");
+    String[] fields = xpath.split("/");
+    if (fields == null || fields.length == 0) {
+      return "";
+    }
+    boolean elementFound = false;
+    for (int i = fields.length - 1; i >= 0; i--) {
+      if (fields[i].startsWith("@")) {
+        continue;
+      }
+      if (!elementFound) {
+        elementFound = true;
+        continue;
+      }
+      int colon = fields[i].indexOf(":") + 1;
+      int bracket = fields[i].indexOf("[");
+      return fields[i].substring(colon, bracket == -1 ? fields[i].length() : bracket);
+    }
+    return "";
+  }
+  public static String getElementPredicate(String xpath) {
+    Objects.requireNonNull(xpath, "Xpath cannot be null");
+    String[] fields = xpath.split("/");
+    if (fields == null || fields.length == 0) {
+      return "";
+    }
+    for (int i = fields.length - 1; i >= 0; i--) {
+      if (fields[i].startsWith("@")) {
+        continue;
+      }
+      int open = fields[i].indexOf("=");
+      int close = fields[i].indexOf("]");
+      if (open == -1 || close == -1) {
+        return "";
+      }
+      // skip over quote
+      return fields[i].substring(open + 2, close - 1);
+    }
+    return "";
+  }
+
+  public static String getParentPredicate(String xpath) {
+    Objects.requireNonNull(xpath, "Xpath cannot be null");
+    String[] fields = xpath.split("/");
+    if (fields == null || fields.length == 0) {
+      return "";
+    }
+    boolean elementFound = false;
+    for (int i = fields.length - 1; i >= 0; i--) {
+      if (fields[i].startsWith("@")) {
+        continue;
+      }
+      int open = fields[i].indexOf("=");
+      int close = fields[i].indexOf("]");
+      if (open == -1 || close == -1) {
+        continue;
+      }
+      if (!elementFound) {
+        elementFound = true;
+        continue;
+      }
+      // skip over quote
+      return fields[i].substring(open + 2, close - 1);
+    }
+    return "";
+  }
+
 }

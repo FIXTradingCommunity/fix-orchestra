@@ -20,7 +20,7 @@ import java.util.function.Consumer;
  * @author Don Mendelson
  *
  */
-public interface XmlDiffListener extends Consumer<XmlDiffListener.Event> {
+public interface XmlDiffListener extends Consumer<XmlDiffListener.Event>, AutoCloseable {
 
   /**
    * XML difference event

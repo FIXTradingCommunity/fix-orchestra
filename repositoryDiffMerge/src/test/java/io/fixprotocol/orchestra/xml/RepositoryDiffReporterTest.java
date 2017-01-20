@@ -22,37 +22,32 @@ import java.io.PrintStream;
 import org.junit.Before;
 import org.junit.Test;
 
-public class XmlDiffTest {
+public class RepositoryDiffReporterTest {
 
   /**
    * 
    */
-  private static final String DIFF_FILENAME = "testdiff.txt";
-  private XmlDiff xmlDiff;
-  private XmlMerge xmlMerge;
+  private static final String DIFF_FILENAME = "testdiff.html";
+  private RepositoryDiffReporter xmlDiff;
+
 
   /**
    * @throws java.lang.Exception
    */
   @Before
   public void setUp() throws Exception {
-    xmlDiff = new XmlDiff();
-    xmlMerge = new XmlMerge();
+    xmlDiff = new RepositoryDiffReporter();
   }
 
 
   @Test
-  public void diffAndMerge() throws Exception {
+  public void report() throws Exception {
     xmlDiff.diff(
         new FileInputStream(Thread.currentThread().getContextClassLoader()
             .getResource("FixRepository2016EP215.xml").getFile()),
         new FileInputStream(Thread.currentThread().getContextClassLoader()
             .getResource("FixRepository2016EP216.xml").getFile()),
         new PrintStream(DIFF_FILENAME));
-    xmlMerge.merge(
-        new FileInputStream(Thread.currentThread().getContextClassLoader()
-            .getResource("FixRepository2016EP215.xml").getFile()),
-        new FileReader(DIFF_FILENAME), new FileOutputStream("testmerged.xml"));
-  }
+   }
 
 }
