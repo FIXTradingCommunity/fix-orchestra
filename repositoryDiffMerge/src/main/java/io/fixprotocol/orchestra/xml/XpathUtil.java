@@ -20,6 +20,13 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+/**
+ * @author Adapted from a post by Mikkel Flindt Heisterberg
+ * @see <a
+ *      href=http://lekkimworld.com/2007/06/19/building_xpath_expression_from_xml_node.html>Building
+ *      XPath expression from XML node</a>
+
+ */
 public final class XpathUtil {
 
   /**
@@ -27,18 +34,14 @@ public final class XpathUtil {
    * 
    * @param n an XML node
    * @return XPATH representation
-   * @author Adapted from a post by Mikkel Flindt Heisterberg
-   * @see <a
-   *      href=http://lekkimworld.com/2007/06/19/building_xpath_expression_from_xml_node.html>Building
-   *      XPath expression from XML node</a>
    */
   public static String getFullXPath(Node n) {
     Objects.requireNonNull(n, "Node cannot be null");
 
     // declarations
     Node parent = null;
-    Stack<Node> hierarchy = new Stack<Node>();
-    StringBuffer buffer = new StringBuffer();
+    Stack<Node> hierarchy = new Stack<>();
+    StringBuilder buffer = new StringBuilder();
 
     // push element on stack
     hierarchy.push(n);
@@ -87,10 +90,10 @@ public final class XpathUtil {
             // prioritize name over id as predicate
             if (e.hasAttribute("name")) {
               // name attribute found - use that
-              buffer.append("[@name=\"" + e.getAttribute("name") + "\"]");
+              buffer.append("[@name=\"").append(e.getAttribute("name")).append("\"]");
               handled = true;
             } else if (e.hasAttribute("id")) {
-              buffer.append("[@id=\"" + e.getAttribute("id") + "\"]");
+              buffer.append("[@id=\"").append(e.getAttribute("id")).append("\"]");
               handled = true;
             }
           }
@@ -107,7 +110,7 @@ public final class XpathUtil {
               }
               prev_sibling = prev_sibling.getPreviousSibling();
             }
-            buffer.append("[" + prev_siblings + "]");
+            buffer.append("[").append(prev_siblings).append("]");
           }
         }
       } else if (node.getNodeType() == Node.ATTRIBUTE_NODE) {
@@ -122,10 +125,7 @@ public final class XpathUtil {
   public static boolean isAttribute(String xpath) {
     Objects.requireNonNull(xpath, "Xpath cannot be null");
     String[] fields = xpath.split("/");
-    if (fields == null || fields.length == 0) {
-      return false;
-    }
-    return fields[fields.length - 1].startsWith("@");
+    return !(fields == null || fields.length == 0) && fields[fields.length - 1].startsWith("@");
   }
   
   public static String getAttribute(String xpath) {

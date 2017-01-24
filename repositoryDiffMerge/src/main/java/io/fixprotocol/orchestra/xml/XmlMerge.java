@@ -60,7 +60,7 @@ import org.xml.sax.SAXException;
  */
 public class XmlMerge {
   private class CustomNamespaceContext implements NamespaceContext {
-    private Map<String, String> namespaces = new HashMap<>();
+    private final Map<String, String> namespaces = new HashMap<>();
 
     public CustomNamespaceContext() {
       namespaces.put("xmlns", XMLConstants.XMLNS_ATTRIBUTE_NS_URI);

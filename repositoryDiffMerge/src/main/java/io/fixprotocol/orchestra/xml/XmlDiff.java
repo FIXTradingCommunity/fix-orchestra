@@ -140,7 +140,7 @@ public class XmlDiff {
    * 
    * @param is1 first XML input stream
    * @param is2 second XML input stream
-   * @param diffFile name of difference file to produce
+   * @param diffStream output stream for differences
    * @throws Exception if an IO or parsing error occurs
    */
   public void diff(InputStream is1, InputStream is2, PrintStream diffStream) throws Exception {
@@ -370,14 +370,7 @@ public class XmlDiff {
     for (int i = 0; i < attributes.getLength(); i++) {
       nodeArray.add((Attr) attributes.item(i));
     }
-    nodeArray.sort(new Comparator<Attr>() {
-
-      @Override
-      public int compare(Attr n1, Attr n2) {
-        return n1.getNodeName().compareTo(n2.getNodeName());
-      }
-
-    });
+    nodeArray.sort((n1, n2) -> n1.getNodeName().compareTo(n2.getNodeName()));
     return nodeArray;
   }
 

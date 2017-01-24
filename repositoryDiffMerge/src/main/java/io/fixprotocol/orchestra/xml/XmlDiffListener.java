@@ -26,7 +26,7 @@ public interface XmlDiffListener extends Consumer<XmlDiffListener.Event>, AutoCl
    * XML difference event
    *
    */
-  public class Event {
+  class Event {
     /**
      * Type of XML difference
      */
@@ -41,9 +41,9 @@ public interface XmlDiffListener extends Consumer<XmlDiffListener.Event>, AutoCl
 
     /**
      * Constructor for ADD, REMOVE, EQUAL event
-     * @param difference
-     * @param name node name
-     * @param value node value
+     * @param difference type of event
+     * @param name node name of element or attribute
+     * @param value node value of element or attribute
      */
     public Event(Difference difference, String name, String value) {
       this.difference = difference;
@@ -54,9 +54,9 @@ public interface XmlDiffListener extends Consumer<XmlDiffListener.Event>, AutoCl
 
     /**
      * Constructor for CHANGE event
-     * @param difference
-     * @param name node name
-     * @param value node value
+     * @param difference type of event
+     * @param name node name of element or attribute
+     * @param value node value of element or attribute
      * @param oldValue previous node value
      */
     public Event(Difference difference, String name, String value, String oldValue) {
