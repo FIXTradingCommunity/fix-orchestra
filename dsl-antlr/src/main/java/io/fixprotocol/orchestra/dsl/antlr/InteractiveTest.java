@@ -17,6 +17,17 @@ package io.fixprotocol.orchestra.dsl.antlr;
 import org.antlr.v4.gui.TestRig;
 
 /**
+ * Interactive tester for the Score DSL 
+ * <br/>To start a test session, enter this command line:
+ * 
+ * <pre>
+ * java -jar dsl-antlr-[version]-jar-with-dependencies.jar
+ * </pre>
+ * 
+ * The interactive tester evaluates expressions that you enter. It waits until the end of input to
+ * start evaluation. To end input, type Ctrl-D on Linux or Ctrl-Z on Windows. If an expression does
+ * not conform to the Score DSL, the tester will report "mismatched input".
+ * 
  * @author Don Mendelson
  *
  */
@@ -25,7 +36,9 @@ public class InteractiveTest implements Runnable {
   private TestRig testRig;
 
   /**
-   * @throws Exception 
+   * Instantiates the ANTLR4 test rig with parameters
+   * 
+   * @throws Exception if parameters are invalid
    * 
    */
   public InteractiveTest(String[] args) throws Exception {
@@ -33,19 +46,24 @@ public class InteractiveTest implements Runnable {
   }
 
   /**
-   * @param args
-   * @throws Exception 
+   * Runs an interactive test of the DSL
+   * 
+   * @param args parameters to the test rig. If empty, defaults are applied.
+   * @throws Exception if parameters are invalid
    */
   public static void main(String[] args) throws Exception {
     String[] testArgs = args;
     if (args.length < 2 || !args[0].contains("Score")) {
-      testArgs = new String[] {"io.fixprotocol.orchestra.dsl.antlr.Score", "anyExpression", "-gui","-tree"};
+      testArgs = new String[] {"io.fixprotocol.orchestra.dsl.antlr.Score", "anyExpression", "-gui",
+          "-tree"};
     }
     InteractiveTest test = new InteractiveTest(testArgs);
     test.run();
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see java.lang.Runnable#run()
    */
   @Override
@@ -53,7 +71,6 @@ public class InteractiveTest implements Runnable {
     try {
       testRig.process();
     } catch (Exception e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
   }
