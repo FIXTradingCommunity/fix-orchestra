@@ -55,7 +55,7 @@ public class InteractiveTest implements Runnable {
     String[] testArgs = args;
     if (args.length < 2 || !args[0].contains("Score")) {
       testArgs = new String[] {"io.fixprotocol.orchestra.dsl.antlr.Score", "anyExpression", "-gui",
-          "-tree"};
+          "-tree", "-tokens"};
     }
     InteractiveTest test = new InteractiveTest(testArgs);
     test.run();

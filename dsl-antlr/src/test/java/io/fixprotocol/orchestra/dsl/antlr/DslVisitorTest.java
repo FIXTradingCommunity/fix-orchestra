@@ -3,15 +3,12 @@ package io.fixprotocol.orchestra.dsl.antlr;
 import java.io.StringReader;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
-import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.RuleNode;
@@ -20,19 +17,25 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.AddSubContext;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.AnyExpressionContext;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.AssignmentContext;
-import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.ConditionalAndExpressionContext;
-import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.ConditionalExpressionContext;
-import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.ConditionalOrExpressionContext;
-import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.FactorContext;
-import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.QualifiedIdContext;
-import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.RangeExpressionContext;
-import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.RelationalExpressionContext;
-import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.SetExpressionContext;
-import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.SimpleExpressionContext;
-import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.TermContext;
-import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.ValueContext;
+import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.BooleanNotContext;
+import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.CharacterContext;
+import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.ContainsContext;
+import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.DecimalContext;
+import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.EqualityContext;
+import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.IndexContext;
+import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.IntegerContext;
+import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.LogicalAndContext;
+import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.LogicalOrContext;
+import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.MulDivContext;
+import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.ParensContext;
+import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.PredContext;
+import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.RangeContext;
+import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.RelationalContext;
+import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.StringContext;
+import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.VarContext;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.VariableContext;
 
 @RunWith(Parameterized.class)
@@ -51,178 +54,229 @@ public class DslVisitorTest {
       {"this.OrdType == \"Stop\""}, {"this.OrdType in {\"Stop\", \"StopLimit\"}"},
       {"this.OrdType == \"Stop\" or this.OrdType == \"StopLimit\""}, {"this.OrdQty > 0"},
       {"this.OrdQty != 0"}, {"this.OrdQty > 0 and this.OrdQty <= 10"}, {"this.Price < 100.00"},
-      {"this.Price between 50.00 and 100.00"},});
+      {"this.Price between 50.00 and 100.00"},
+      {"this.Parties[PartyRole=4].PartyID=\"690\""},{"this.Parties[1].PartyRole=4"}});
   }
 
   private class TestScoreVisitor implements ScoreVisitor<Object> {
 
+    /* (non-Javadoc)
+     * @see org.antlr.v4.runtime.tree.ParseTreeVisitor#visit(org.antlr.v4.runtime.tree.ParseTree)
+     */
     @Override
     public Object visit(ParseTree tree) {
       // TODO Auto-generated method stub
       return null;
     }
 
+    /* (non-Javadoc)
+     * @see org.antlr.v4.runtime.tree.ParseTreeVisitor#visitChildren(org.antlr.v4.runtime.tree.RuleNode)
+     */
     @Override
     public Object visitChildren(RuleNode node) {
       // TODO Auto-generated method stub
       return null;
     }
 
+    /* (non-Javadoc)
+     * @see org.antlr.v4.runtime.tree.ParseTreeVisitor#visitTerminal(org.antlr.v4.runtime.tree.TerminalNode)
+     */
     @Override
     public Object visitTerminal(TerminalNode node) {
       // TODO Auto-generated method stub
       return null;
     }
 
+    /* (non-Javadoc)
+     * @see org.antlr.v4.runtime.tree.ParseTreeVisitor#visitErrorNode(org.antlr.v4.runtime.tree.ErrorNode)
+     */
     @Override
     public Object visitErrorNode(ErrorNode node) {
       // TODO Auto-generated method stub
       return null;
     }
 
+    /* (non-Javadoc)
+     * @see io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitAnyExpression(io.fixprotocol.orchestra.dsl.antlr.ScoreParser.AnyExpressionContext)
+     */
     @Override
     public Object visitAnyExpression(AnyExpressionContext ctx) {
-      AssignmentContext assignment = ctx.assignment();
-      if (assignment != null) {
-        visitAssignment(assignment);
-        return assignment;
-      } else {
-        ConditionalOrExpressionContext orExpression = ctx.conditionalOrExpression();
-        if (orExpression != null) {
-          visitConditionalOrExpression(orExpression);
-          return orExpression;
-        }
-      }
+      // TODO Auto-generated method stub
       return null;
     }
 
+    /* (non-Javadoc)
+     * @see io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitAssignment(io.fixprotocol.orchestra.dsl.antlr.ScoreParser.AssignmentContext)
+     */
     @Override
     public Object visitAssignment(AssignmentContext ctx) {
-      System.out.format("Assignment: ");
-      visitVariable(ctx.variable());
-      System.out.format(" op[%s] ", ctx.assignmentOp.getText());   
-      visitSimpleExpression(ctx.simpleExpression());
-      System.out.format("%n");
-      return ctx;
+      // TODO Auto-generated method stub
+      return null;
     }
 
+    /* (non-Javadoc)
+     * @see io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitParens(io.fixprotocol.orchestra.dsl.antlr.ScoreParser.ParensContext)
+     */
     @Override
-    public Object visitConditionalOrExpression(ConditionalOrExpressionContext ctx) {
-      System.out.format("Expression: ");
-      Iterator<Token> opIter = ctx.orOp.iterator();
-      List<ConditionalAndExpressionContext> andExpressions = ctx.conditionalAndExpression();
-      for (ConditionalAndExpressionContext andExpression : andExpressions) {
-        visitConditionalAndExpression(andExpression);
-        if (opIter.hasNext()) {
-          System.out.format(" op[%s] ", opIter.next().getText());
-        }
-      }
-      System.out.format("%n");
-      return ctx;
+    public Object visitParens(ParensContext ctx) {
+      // TODO Auto-generated method stub
+      return null;
     }
 
+    /* (non-Javadoc)
+     * @see io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitString(io.fixprotocol.orchestra.dsl.antlr.ScoreParser.StringContext)
+     */
     @Override
-    public Object visitConditionalAndExpression(ConditionalAndExpressionContext ctx) {
-      List<ConditionalExpressionContext> conditionalExpressions = ctx.conditionalExpression();
-      Iterator<Token> opIter = ctx.andOp.iterator();
-      for (ConditionalExpressionContext conditionalExpression : conditionalExpressions) {
-        if (conditionalExpression instanceof RelationalExpressionContext) {
-          visitRelationalExpression((RelationalExpressionContext) conditionalExpression);
-        } else if (conditionalExpression instanceof SetExpressionContext) {
-          visitSetExpression((SetExpressionContext) conditionalExpression);
-        } else if (conditionalExpression instanceof RangeExpressionContext) {
-          visitRangeExpression((RangeExpressionContext) conditionalExpression);
-        }
-        
-        if (opIter.hasNext()) {
-          System.out.format(" op[%s] ", opIter.next().getText());
-        }
-      }
-      return ctx;
+    public Object visitString(StringContext ctx) {
+      // TODO Auto-generated method stub
+      return null;
     }
 
+    /* (non-Javadoc)
+     * @see io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitLogicalAnd(io.fixprotocol.orchestra.dsl.antlr.ScoreParser.LogicalAndContext)
+     */
     @Override
-    public Object visitRelationalExpression(RelationalExpressionContext ctx) {
-      visitSimpleExpression(ctx.left);
-      System.out.format(" op[%s] ", ctx.relationalOp.getText());
-      visitFactor(ctx.right);
-      return ctx;
+    public Object visitLogicalAnd(LogicalAndContext ctx) {
+      // TODO Auto-generated method stub
+      return null;
     }
 
+    /* (non-Javadoc)
+     * @see io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitAddSub(io.fixprotocol.orchestra.dsl.antlr.ScoreParser.AddSubContext)
+     */
     @Override
-    public Object visitSimpleExpression(SimpleExpressionContext ctx) {
-      List<TermContext> terms = ctx.term();
-      Iterator<Token> opIter = ctx.termOp.iterator();
-      for (TermContext term : terms) {
-        visitTerm(term);
-        if (opIter.hasNext()) {
-          System.out.format(" op[%s] ",opIter.next().getText());
-        }
-      }
-      return ctx;
+    public Object visitAddSub(AddSubContext ctx) {
+      // TODO Auto-generated method stub
+      return null;
     }
 
+    /* (non-Javadoc)
+     * @see io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitInteger(io.fixprotocol.orchestra.dsl.antlr.ScoreParser.IntegerContext)
+     */
     @Override
-    public Object visitTerm(TermContext ctx) {
-      List<FactorContext> factors = ctx.factor();
-      Iterator<Token> opIter = ctx.factorOp.iterator();
-      for (FactorContext factor : factors) {
-        visitFactor(factor);
-        if (opIter.hasNext()) {
-          System.out.format(" op[%s] ",opIter.next().getText());
-        }
-      }
-      return ctx;
+    public Object visitInteger(IntegerContext ctx) {
+      // TODO Auto-generated method stub
+      return null;
     }
 
+    /* (non-Javadoc)
+     * @see io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitMulDiv(io.fixprotocol.orchestra.dsl.antlr.ScoreParser.MulDivContext)
+     */
     @Override
-    public Object visitSetExpression(SetExpressionContext ctx) {
-      visitSimpleExpression(ctx.left);
-      List<FactorContext> factors = ctx.factor();
-      System.out.format("set[");
-      factors.forEach(f -> visitFactor(f));
-      System.out.format("]", ctx.factor);
-      return ctx;
+    public Object visitMulDiv(MulDivContext ctx) {
+      // TODO Auto-generated method stub
+      return null;
     }
 
+    /* (non-Javadoc)
+     * @see io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitCharacter(io.fixprotocol.orchestra.dsl.antlr.ScoreParser.CharacterContext)
+     */
     @Override
-    public Object visitRangeExpression(RangeExpressionContext ctx) {
-      visitSimpleExpression(ctx.left);
-      System.out.format("range[%s..%s]", ctx.min.getText(), ctx.max.getText());
-      return ctx;
+    public Object visitCharacter(CharacterContext ctx) {
+      // TODO Auto-generated method stub
+      return null;
     }
 
+    /* (non-Javadoc)
+     * @see io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitContains(io.fixprotocol.orchestra.dsl.antlr.ScoreParser.ContainsContext)
+     */
     @Override
-    public Object visitFactor(FactorContext ctx) {
-      if (ctx.val != null) {
-        visitValue(ctx.val);
-      } else if (ctx.var != null) {
-        visitVariable(ctx.var);
-      } else {
-        System.out.format("val[%s]", ctx.getText());
-      }
-      return ctx; 
+    public Object visitContains(ContainsContext ctx) {
+      // TODO Auto-generated method stub
+      return null;
     }
 
-    @Override
-    public Object visitValue(ValueContext ctx) {
-      System.out.format("val[%s]", ctx.getText());
-      return ctx;
-    }
-
+    /* (non-Javadoc)
+     * @see io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitVariable(io.fixprotocol.orchestra.dsl.antlr.ScoreParser.VariableContext)
+     */
     @Override
     public Object visitVariable(VariableContext ctx) {
-      System.out.format("var[%s]", ctx.getText());
-      return ctx;
+      // TODO Auto-generated method stub
+      return null;
     }
 
+    /* (non-Javadoc)
+     * @see io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitRelational(io.fixprotocol.orchestra.dsl.antlr.ScoreParser.RelationalContext)
+     */
     @Override
-    public Object visitQualifiedId(QualifiedIdContext ctx) {
-      List<TerminalNode> nodes = ctx.Identifier();
-      return ctx;
+    public Object visitRelational(RelationalContext ctx) {
+      // TODO Auto-generated method stub
+      return null;
     }
 
-  }
+    /* (non-Javadoc)
+     * @see io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitBooleanNot(io.fixprotocol.orchestra.dsl.antlr.ScoreParser.BooleanNotContext)
+     */
+    @Override
+    public Object visitBooleanNot(BooleanNotContext ctx) {
+      // TODO Auto-generated method stub
+      return null;
+    }
+
+    /* (non-Javadoc)
+     * @see io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitDecimal(io.fixprotocol.orchestra.dsl.antlr.ScoreParser.DecimalContext)
+     */
+    @Override
+    public Object visitDecimal(DecimalContext ctx) {
+      // TODO Auto-generated method stub
+      return null;
+    }
+
+    /* (non-Javadoc)
+     * @see io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitLogicalOr(io.fixprotocol.orchestra.dsl.antlr.ScoreParser.LogicalOrContext)
+     */
+    @Override
+    public Object visitLogicalOr(LogicalOrContext ctx) {
+      // TODO Auto-generated method stub
+      return null;
+    }
+
+    /* (non-Javadoc)
+     * @see io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitEquality(io.fixprotocol.orchestra.dsl.antlr.ScoreParser.EqualityContext)
+     */
+    @Override
+    public Object visitEquality(EqualityContext ctx) {
+      // TODO Auto-generated method stub
+      return null;
+    }
+
+    /* (non-Javadoc)
+     * @see io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitRange(io.fixprotocol.orchestra.dsl.antlr.ScoreParser.RangeContext)
+     */
+    @Override
+    public Object visitRange(RangeContext ctx) {
+      // TODO Auto-generated method stub
+      return null;
+    }
+
+    /* (non-Javadoc)
+     * @see io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitVar(io.fixprotocol.orchestra.dsl.antlr.ScoreParser.VarContext)
+     */
+    @Override
+    public Object visitVar(VarContext ctx) {
+      // TODO Auto-generated method stub
+      return null;
+    }
+
+    /* (non-Javadoc)
+     * @see io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitIndex(io.fixprotocol.orchestra.dsl.antlr.ScoreParser.IndexContext)
+     */
+    @Override
+    public Object visitIndex(IndexContext ctx) {
+      // TODO Auto-generated method stub
+      return null;
+    }
+
+    /* (non-Javadoc)
+     * @see io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitPred(io.fixprotocol.orchestra.dsl.antlr.ScoreParser.PredContext)
+     */
+    @Override
+    public Object visitPred(PredContext ctx) {
+      // TODO Auto-generated method stub
+      return null;
+    }
+
+   }
   
   @Test
   public void testExampleFieldCondition() throws Exception {
