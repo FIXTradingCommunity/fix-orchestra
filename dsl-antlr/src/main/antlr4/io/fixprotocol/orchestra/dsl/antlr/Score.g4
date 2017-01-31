@@ -37,8 +37,8 @@ expr:
         '!' expr                			# booleanNot
     |   expr op=('*'|'/'|'%'|'mod') expr  	# mulDiv
     |   expr op=('+'|'-') expr      		# addSub
-    |   expr 'in' '{' member+=expr (',' member+=expr)* '}'	# contains
-    |   expr 'between' min=expr 'and' max=expr    # range
+    |   val=expr 'in' '{' member+=expr (',' member+=expr)* '}'	# contains
+    |   val=expr 'between' min=expr 'and' max=expr    # range
     |   expr op=('<'|'<='|'>'|'>='|'lt'|'le'|'gt'|'ge') expr     # relational
     |   expr op=('=='|'!='|'eq'|'ne') expr  # equality
     |   expr op=('and'|'&&') expr   		# logicalAnd
@@ -56,7 +56,7 @@ index: '[' INT ']' ;
 
 pred: '[' ID '=' expr ']' ;
 
-var: ('$'|'this.'|'out.') ID (index | pred)? ('.' ID (index | pred)? )*;
+var: ('$'|'in.'|'out.') ID (index | pred)? ('.' ID (index | pred)? )*;
 
 DECIMAL: SIGN? DIGIT+ '.' DIGIT+ ;
 

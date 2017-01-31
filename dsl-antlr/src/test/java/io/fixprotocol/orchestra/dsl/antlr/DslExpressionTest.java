@@ -39,11 +39,11 @@ import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.VarContext;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.VariableContext;
 
 @RunWith(Parameterized.class)
-public class DslVisitorTest {
+public class DslExpressionTest {
 
   private String fieldCondition;
 
-  public DslVisitorTest(String fieldCondition) {
+  public DslExpressionTest(String fieldCondition) {
     this.fieldCondition = fieldCondition;
   }
 

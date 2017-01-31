@@ -36,7 +36,6 @@
 						</goals>
 						<configuration>
 							<visitor>true</visitor>
-							<listener>false</listener>
 						</configuration>
 					</execution>
 				</executions>
@@ -51,7 +50,7 @@
 					</descriptorRefs>
 					<archive>
 						<manifest>
-							<mainClass>io.fixprotocol.orchestra.dsl.antlr.InteractiveTest</mainClass>
+							<mainClass>io.fixprotocol.orchestra.dsl.antlr.test.InteractiveTest</mainClass>
 						</manifest>
 					</archive>
 				</configuration>

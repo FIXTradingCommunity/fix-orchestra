@@ -12,7 +12,7 @@
  * the License.
  *
  */
-package io.fixprotocol.orchestra.dsl.antlr;
+package io.fixprotocol.orchestra.dsl.antlr.test;
 
 import org.antlr.v4.gui.TestRig;
 
