@@ -17,16 +17,45 @@ package io.fixprotocol.orchestra.dsl.antlr;
 import java.math.BigDecimal;
 
 /**
- * Represents an immutable value of a DSL expression
+ * Represents an mutable value of a DSL expression <br/>
+ * If immutable symbols are desired, control of {@link #assign(FixValue)} must be guarded
+ * externally.
  * 
  * @author Don Mendelson
  *
  */
-public class FixValue<T> {
+public class FixValue<T> implements FixNode {
+
+  /**
+   * Creates a new object with the specified name and values of the operand
+   * 
+   * @param name identifier of the new object
+   * @param operand value to copy
+   * @return a new FixValue instance
+   * @throws FixException if the data type is not handled
+   */
+  public static FixValue<?> copy(String name, FixValue<?> operand) throws FixException {
+    String valueType = operand.getValue().getClass().getName();
+    switch (valueType) {
+      case "java.lang.Integer":
+        return new FixValue<Integer>(name, operand.getType(), (Integer) operand.getValue());
+      case "java.lang.Boolean":
+        return new FixValue<Boolean>(name, operand.getType(), (Boolean) operand.getValue());
+      case "java.lang.Character":
+        return new FixValue<Character>(name, operand.getType(), (Character) operand.getValue());
+      case "java.lang.String":
+        return new FixValue<String>(name, operand.getType(), (String) operand.getValue());
+      case "java.math.BigDecimal":
+        return new FixValue<BigDecimal>(name, operand.getType(), (BigDecimal) operand.getValue());
+      default:
+        throw new FixException("Unable to copy type " + valueType);
+    }
+  }
 
   private final String name;
   private final FixType type;
-  private final T value;
+
+  private T value;
 
   /**
    * Construct an unnamed expression value
@@ -37,6 +66,17 @@ public class FixValue<T> {
    */
   public FixValue(FixType type, T value) {
     this(null, type, value);
+  }
+
+  /**
+   * Construct with a name only for search
+   * 
+   * @param name message component name
+   */
+  public FixValue(String name) {
+    this.name = name;
+    this.type = null;
+    this.value = null;
   }
 
   /**
@@ -81,6 +121,7 @@ public class FixValue<T> {
     return null;
   }
 
+
   /**
    * Boolean and operation
    * 
@@ -95,6 +136,21 @@ public class FixValue<T> {
 
     return new FixValue<Boolean>(FixType.BooleanType,
         (Boolean) this.getValue() && (Boolean) operand.getValue());
+  }
+
+  /**
+   * Assigns a value to this FixValue
+   * 
+   * @param operand other FixValue
+   * @throws FixException if a type conflict occurs
+   */
+  @SuppressWarnings("unchecked")
+  public void assign(FixValue<?> operand) throws FixException {
+    if (this.type.getBaseType() != operand.getType().getBaseType()) {
+      throw new FixException(
+          String.format("Data type mismatch between %s and %s", this.type, operand.getType()));
+    }
+    this.value = (T) operand.getValue();
   }
 
   /**
@@ -157,6 +213,29 @@ public class FixValue<T> {
     }
     return null;
 
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#equals(java.lang.Object)
+   */
+  @SuppressWarnings("rawtypes")
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    FixValue other = (FixValue) obj;
+    if (name == null) {
+      if (other.name != null)
+        return false;
+    } else if (!name.equals(other.name))
+      return false;
+    return true;
   }
 
   /**
@@ -240,6 +319,19 @@ public class FixValue<T> {
     }
     return null;
 
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#hashCode()
+   */
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((name == null) ? 0 : name.hashCode());
+    return result;
   }
 
   /**
@@ -406,6 +498,7 @@ public class FixValue<T> {
     return new FixValue<Boolean>(FixType.BooleanType, !(Boolean) this.getValue());
   }
 
+
   /**
    * Boolean or operation
    * 
@@ -450,6 +543,18 @@ public class FixValue<T> {
             subtract((BigDecimal) operand1, (BigDecimal) operand2));
     }
     return null;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    return "FixValue [" + (name != null ? "name=" + name + ", " : "")
+        + (type != null ? "type=" + type + ", " : "") + (value != null ? "value=" + value : "")
+        + "]";
   }
 
   private BigDecimal add(BigDecimal operand1, BigDecimal operand2) {
@@ -564,4 +669,5 @@ public class FixValue<T> {
   private Integer subtract(Integer operand1, Integer operand2) {
     return operand1 - operand2;
   }
+
 }

@@ -56,7 +56,9 @@ index: '[' INT ']' ;
 
 pred: '[' ID '=' expr ']' ;
 
-var: ('$'|'in.'|'out.') ID (index | pred)? ('.' ID (index | pred)? )*;
+qual: ID (index | pred)? ;
+
+var: scope=('$'|'in.'|'out.') qual ('.' qual )*;
 
 DECIMAL: SIGN? DIGIT+ '.' DIGIT+ ;
 
