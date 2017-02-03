@@ -27,12 +27,30 @@ public class DslExpressionTest {
   @Parameterized.Parameters
   public static Collection<String[]> testFieldConditions() {
     return Arrays.asList(new String[][] {
-      {"$x = 55"}, {"$y = \"MyName\""}, {"$x = 50 + 5"}, {"$z = this.OrdType"},
-      {"this.OrdType == \"Stop\""}, {"this.OrdType in {\"Stop\", \"StopLimit\"}"},
-      {"this.OrdType == \"Stop\" or this.OrdType == \"StopLimit\""}, {"this.OrdQty > 0"},
-      {"this.OrdQty != 0"}, {"this.OrdQty > 0 and this.OrdQty <= 10"}, {"this.Price < 100.00"},
-      {"this.Price between 50.00 and 100.00"},
-      {"this.Parties[PartyRole=4].PartyID=\"690\""},{"this.Parties[1].PartyRole=4"}});
+      {"$x = 55"}, 
+      {"$x = -55"},
+      {"$y = \"MyName\""}, 
+      {"$x = 50 + 5"}, 
+      {"$z = in.OrdType"},
+      {"out.OrdQty = 55"}, 
+      {"in.OrdType == \"Stop\""}, 
+      {"in.OrdType in {\"Stop\", \"StopLimit\"}"},
+      {"in.OrdType == \"Stop\" or in.OrdType == \"StopLimit\""}, 
+      {"in.OrdQty > 0"},
+      {"in.OrdQty != 0"}, 
+      {"in.OrdQty > 0 and in.OrdQty <= 10"}, 
+      {"in.Price < 100.00"},
+      {"in.Price between 50.00 and 100.00"},
+      {"in.Parties[PartyRole=4].PartyID=\"690\""},
+      {"in.Parties[1].PartyRole=4"},
+      {"#2017-02-02T22:13:28Z#"},
+      {"#2017-02-02T22:13:28.678Z#"},
+      {"#T22:13:28Z#"},
+      {"#2017-02-02#"},
+      {"#2017-02-02T22:13:28-6:00#"},
+      {"#P30D#"},
+      {"#PT30S#"},
+      });
   }
 
   @Test

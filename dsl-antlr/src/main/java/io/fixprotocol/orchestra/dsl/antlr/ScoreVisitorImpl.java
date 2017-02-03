@@ -23,15 +23,17 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.AddSubContext;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.AnyExpressionContext;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.AssignmentContext;
-import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.BooleanNotContext;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.CharacterContext;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.ContainsContext;
+import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.DateonlyContext;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.DecimalContext;
+import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.DurationContext;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.EqualityContext;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.ExprContext;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.IndexContext;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.IntegerContext;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.LogicalAndContext;
+import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.LogicalNotContext;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.LogicalOrContext;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.MulDivContext;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.ParensContext;
@@ -40,6 +42,9 @@ import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.QualContext;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.RangeContext;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.RelationalContext;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.StringContext;
+import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.TimeonlyContext;
+import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.TimestampContext;
+import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.UnaryMinusContext;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.VarContext;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.VariableContext;
 
@@ -141,15 +146,8 @@ public class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
     }
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitBooleanNot(io.fixprotocol.orchestra.dsl.
-   * antlr.ScoreParser.BooleanNotContext)
-   */
   @Override
-  public FixValue<?> visitBooleanNot(BooleanNotContext ctx) {
+  public FixValue<?> visitLogicalNot(LogicalNotContext ctx) {
     FixValue<?> operand = visit(ctx.expr());
     try {
       return operand.not();
@@ -243,8 +241,8 @@ public class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
    */
   @Override
   public FixValue<?> visitIndex(IndexContext ctx) {
-    if (ctx.INT() != null) {
-      pathStep.setIndex(Integer.parseInt(ctx.INT().getText()));
+    if (ctx.UINT() != null) {
+      pathStep.setIndex(Integer.parseInt(ctx.UINT().getText()));
     }
     return null;
   }
@@ -258,7 +256,7 @@ public class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
    */
   @Override
   public FixValue<?> visitInteger(IntegerContext ctx) {
-    return new FixValue<Integer>(FixType.intType, Integer.parseInt(ctx.INT().getText()));
+    return new FixValue<Integer>(FixType.intType, Integer.parseInt(ctx.UINT().getText()));
   }
 
   /*
@@ -497,6 +495,62 @@ public class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
   @Override
   public FixValue<?> visitVariable(VariableContext ctx) {
     return visit(ctx.var());
+  }
+
+
+  
+  /* (non-Javadoc)
+   * @see io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitTimestamp(io.fixprotocol.orchestra.dsl.antlr.ScoreParser.TimestampContext)
+   */
+  @Override
+  public FixValue<?> visitTimestamp(TimestampContext ctx) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+  /* (non-Javadoc)
+   * @see io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitUnaryNeg(io.fixprotocol.orchestra.dsl.antlr.ScoreParser.UnaryNegContext)
+   */
+  @SuppressWarnings("unchecked")
+  @Override
+  public FixValue<?> visitUnaryMinus(UnaryMinusContext ctx) {
+    FixValue<?> unsigned = visit(ctx.expr());
+    Object val = unsigned.getValue();
+    if (val instanceof Integer) {
+      ((FixValue<Integer>)unsigned).setValue((Integer)val * -1);
+    } else if (val instanceof BigDecimal) {
+      ((FixValue<BigDecimal>)unsigned).setValue(((BigDecimal)val).multiply(BigDecimal.valueOf(-1)));
+    } else {
+      errorListener
+      .onError(String.format("Semantic error; cannot apply unary minus at '%s'", ctx.getText()));
+    }
+    return unsigned;
+  }
+
+  /* (non-Javadoc)
+   * @see io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitTimeonly(io.fixprotocol.orchestra.dsl.antlr.ScoreParser.TimeonlyContext)
+   */
+  @Override
+  public FixValue<?> visitTimeonly(TimeonlyContext ctx) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  /* (non-Javadoc)
+   * @see io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitDateonly(io.fixprotocol.orchestra.dsl.antlr.ScoreParser.DateonlyContext)
+   */
+  @Override
+  public FixValue<?> visitDateonly(DateonlyContext ctx) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  /* (non-Javadoc)
+   * @see io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitDuration(io.fixprotocol.orchestra.dsl.antlr.ScoreParser.DurationContext)
+   */
+  @Override
+  public FixValue<?> visitDuration(DurationContext ctx) {
+    // TODO Auto-generated method stub
+    return null;
   }
 
 }

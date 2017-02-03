@@ -375,6 +375,17 @@ public enum FixType {
     }
   };
 
+  /**
+   * The base FIXType according to the FIX specification
+   * <br/>
+   * Unfortunately, the FIX taxonomy of types is largely lexical, not semantic.
+   * @return base data type
+   */
   public abstract FixType getBaseType();
+  
+  /**
+   * The class used for storage of the FIX data type in this implementation
+   * @return a Java class
+   */
   public abstract Class<?> getValueClass();
 }

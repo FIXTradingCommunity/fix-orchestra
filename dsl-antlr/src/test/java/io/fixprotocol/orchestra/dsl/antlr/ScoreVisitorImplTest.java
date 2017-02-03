@@ -19,6 +19,7 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.io.StringReader;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.BaseErrorListener;
@@ -26,12 +27,13 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.AnyExpressionContext;
 
 /**
- * @author donme
+ * @author Don Mendelson
  *
  */
 public class ScoreVisitorImplTest {
@@ -460,4 +462,16 @@ public class ScoreVisitorImplTest {
     return p;
   }
 
+  @Test
+  @Ignore
+  public void testVisitDate() throws IOException {
+    final String value = "#2017-02-03#";
+    ScoreParser parser = parse(value);
+    AnyExpressionContext ctx = parser.anyExpression();
+    Object expression = visitor.visitAnyExpression(ctx);
+    assertTrue(expression instanceof FixValue<?>);
+    FixValue<?> fixValue = (FixValue<?>) expression;
+    assertEquals(FixType.UTCDateOnly, fixValue.getType());
+    assertEquals(LocalDate.parse(value), fixValue.getValue());
+  }
 }

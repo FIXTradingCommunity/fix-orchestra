@@ -1,5 +1,5 @@
-/** Simple statically-typed programming language with functions and variables
- *  taken from "Language Implementation Patterns" book.
+/** 
+ * DSL grammar for FIX Orchestra
  */
 grammar Score;
 
@@ -10,7 +10,7 @@ LE : ('<='|'le') ;
 GE : ('>='|'ge') ;
 GT : ('>'|'gt') ;
 ADD : '+' ;
-SUB : '-' ;
+HYPHEN : '-' ;
 MUL : '*' ;
 DIV : '/' ;
 MOD : ('%'|'mod') ;
@@ -26,6 +26,9 @@ LBRACK : '[' ;
 RBRACK : ']' ;
 VAR : '$' ;
 USCORE : '_';
+COLON: ':';
+DOT: '.';
+HASH: '#';
 
 anyExpression:
       assignment
@@ -34,7 +37,8 @@ anyExpression:
 assignment: var '=' expr ;
 
 expr:
-        '!' expr                			# booleanNot
+		'-' expr							# unaryMinus
+    |   '!' expr                			# logicalNot
     |   expr op=('*'|'/'|'%'|'mod') expr  	# mulDiv
     |   expr op=('+'|'-') expr      		# addSub
     |   val=expr 'in' '{' member+=expr (',' member+=expr)* '}'	# contains
@@ -44,15 +48,18 @@ expr:
     |   expr op=('and'|'&&') expr   		# logicalAnd
     |   expr op=('or'|'||') expr    		# logicalOr
     |   '(' expr ')'            # parens
-    |   INT                     # integer
+    |   '#' DATETIME '#'		# timestamp
+    |   '#' TIME '#'			# timeonly
+    |   '#' DATE '#'			# dateonly
+    |   '#' PERIOD '#'			# duration
+    |   UINT                    # integer
     |   DECIMAL                 # decimal
     |   CHAR                    # character
     |   STRING                  # string
     |   var                     # variable // lowest priority so variables do not shadow keywords
     ;
 
-
-index: '[' INT ']' ;
+index: '[' UINT ']' ;
 
 pred: '[' ID '=' expr ']' ;
 
@@ -60,9 +67,20 @@ qual: ID (index | pred)? ;
 
 var: scope=('$'|'in.'|'out.') qual ('.' qual )*;
 
-DECIMAL: SIGN? DIGIT+ '.' DIGIT+ ;
+DATETIME: DATE TIME ;
 
-INT: SIGN? DIGIT+;
+DATE: DIGIT DIGIT DIGIT DIGIT '-' DIGIT DIGIT '-' DIGIT DIGIT ;
+
+TIME: 'T' DIGIT DIGIT ':' DIGIT DIGIT (':' DIGIT DIGIT)? ('.' DIGIT+)? TZD ;
+
+fragment
+TZD: ('Z' | SIGN DIGIT DIGIT? ':' DIGIT DIGIT );
+
+PERIOD: 'P' (DIGIT+ 'Y')? (DIGIT+ 'M')? (DIGIT+ 'W')? (DIGIT+ 'D')? ('T' (DIGIT+ 'H')? (DIGIT+ 'M' )? (DIGIT+ 'S')?)? ;
+
+DECIMAL: DIGIT+ '.' DIGIT+ ;
+
+UINT: DIGIT+;
 
 STRING:	'"' STRINGCHAR+ '"' ;
 

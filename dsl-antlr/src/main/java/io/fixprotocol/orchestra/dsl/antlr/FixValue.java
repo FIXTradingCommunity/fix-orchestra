@@ -54,7 +54,6 @@ public class FixValue<T> implements FixNode {
 
   private final String name;
   private final FixType type;
-
   private T value;
 
   /**
@@ -121,7 +120,6 @@ public class FixValue<T> implements FixNode {
     return null;
   }
 
-
   /**
    * Boolean and operation
    * 
@@ -137,6 +135,7 @@ public class FixValue<T> implements FixNode {
     return new FixValue<Boolean>(FixType.BooleanType,
         (Boolean) this.getValue() && (Boolean) operand.getValue());
   }
+
 
   /**
    * Assigns a value to this FixValue
@@ -498,7 +497,6 @@ public class FixValue<T> implements FixNode {
     return new FixValue<Boolean>(FixType.BooleanType, !(Boolean) this.getValue());
   }
 
-
   /**
    * Boolean or operation
    * 
@@ -514,6 +512,14 @@ public class FixValue<T> implements FixNode {
 
     return new FixValue<Boolean>(FixType.BooleanType,
         (Boolean) this.getValue() || (Boolean) operand.getValue());
+  }
+
+
+  /**
+   * @param value the value to set
+   */
+  public void setValue(T value) {
+    this.value = value;
   }
 
   /**
