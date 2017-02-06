@@ -19,7 +19,10 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.io.StringReader;
 import java.math.BigDecimal;
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.BaseErrorListener;
@@ -380,8 +383,10 @@ public class ScoreVisitorImplTest {
    */
   @Test
   public void testVisitRange() throws IOException {
-    TestData[] data = new TestData[] {new TestData("33 between 4 and 7", Boolean.FALSE),
-        new TestData("33 between 4 and 37", Boolean.TRUE),};
+    TestData[] data = new TestData[] {
+        new TestData("33 between 4 and 7", Boolean.FALSE),
+        new TestData("33 between 4 and 37", Boolean.TRUE),
+        };
 
     for (int i = 0; i < data.length; i++) {
       ScoreParser parser = parse(data[i].getExpression());
@@ -463,7 +468,6 @@ public class ScoreVisitorImplTest {
   }
 
   @Test
-  @Ignore
   public void testVisitDate() throws IOException {
     final String value = "#2017-02-03#";
     ScoreParser parser = parse(value);
@@ -472,6 +476,42 @@ public class ScoreVisitorImplTest {
     assertTrue(expression instanceof FixValue<?>);
     FixValue<?> fixValue = (FixValue<?>) expression;
     assertEquals(FixType.UTCDateOnly, fixValue.getType());
-    assertEquals(LocalDate.parse(value), fixValue.getValue());
+    assertEquals(LocalDate.parse(value.substring(1, value.lastIndexOf('#'))), fixValue.getValue());
+  }
+  
+  @Test
+  public void testVisitTime() throws IOException {
+    final String value = "#2017-02-03T11:12:13.123456789Z#";
+    ScoreParser parser = parse(value);
+    AnyExpressionContext ctx = parser.anyExpression();
+    Object expression = visitor.visitAnyExpression(ctx);
+    assertTrue(expression instanceof FixValue<?>);
+    FixValue<?> fixValue = (FixValue<?>) expression;
+    assertEquals(FixType.UTCTimestamp, fixValue.getType());
+    assertTrue(fixValue.getValue() instanceof Instant);
+  }
+  
+  @Test
+  public void testVisitTimestamp() throws IOException {
+    final String value = "#T11:12:13.123456789Z#";
+    ScoreParser parser = parse(value);
+    AnyExpressionContext ctx = parser.anyExpression();
+    Object expression = visitor.visitAnyExpression(ctx);
+    assertTrue(expression instanceof FixValue<?>);
+    FixValue<?> fixValue = (FixValue<?>) expression;
+    assertEquals(FixType.UTCTimeOnly, fixValue.getType());
+    assertTrue(fixValue.getValue() instanceof LocalTime);
+  }
+  
+  @Test
+  public void testVisitDuration() throws IOException {
+    final String value = "#PT30S#";
+    ScoreParser parser = parse(value);
+    AnyExpressionContext ctx = parser.anyExpression();
+    Object expression = visitor.visitAnyExpression(ctx);
+    assertTrue(expression instanceof FixValue<?>);
+    FixValue<?> fixValue = (FixValue<?>) expression;
+    assertEquals(FixType.UTCTimeOnly, fixValue.getType());
+    assertTrue(fixValue.getValue() instanceof Duration);
   }
 }

@@ -14,7 +14,19 @@
  */
 package io.fixprotocol.orchestra.dsl.antlr;
 
+import static java.time.temporal.ChronoField.HOUR_OF_DAY;
+import static java.time.temporal.ChronoField.MINUTE_OF_HOUR;
+import static java.time.temporal.ChronoField.NANO_OF_SECOND;
+import static java.time.temporal.ChronoField.SECOND_OF_MINUTE;
+
 import java.math.BigDecimal;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.ResolverStyle;
 import java.util.List;
 
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
@@ -57,10 +69,29 @@ import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.VariableContext;
 public class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
     implements ScoreVisitor<FixValue<?>> {
 
-  private final SemanticErrorListener errorListener;
-  private final SymbolResolver symbolResolver;
-  private PathStep pathStep;
+  /**
+   * Formatter for ISO 8601 time of day only. Java has ISO_LOCAL_TIME, but it doesn't handle the leading 'T'
+   * or time zone.
+   */
+  private final DateTimeFormatter TIME_ONLY = new DateTimeFormatterBuilder()
+      .appendLiteral('T')
+      .appendValue(HOUR_OF_DAY, 2)
+      .appendLiteral(':')
+      .appendValue(MINUTE_OF_HOUR, 2)
+      .optionalStart()
+      .appendLiteral(':')
+      .appendValue(SECOND_OF_MINUTE, 2)
+      .optionalStart()
+      .appendFraction(NANO_OF_SECOND, 0, 9, true)
+      .optionalStart()
+      .appendZoneOrOffsetId()
+      .toFormatter();
+  
   private Scope currentScope;
+  private final SemanticErrorListener errorListener;
+  private PathStep pathStep;
+
+  private final SymbolResolver symbolResolver;
 
   /**
    * Constructor with default SemanticErrorListener
@@ -70,6 +101,7 @@ public class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
   public ScoreVisitorImpl(SymbolResolver symbolResolver) {
     this(symbolResolver, new BaseSemanticErrorListener());
   }
+
 
   /**
    * Constructor
@@ -81,7 +113,6 @@ public class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
     this.symbolResolver = symbolResolver;
     this.errorListener = errorListener;
   }
-
 
   /*
    * (non-Javadoc)
@@ -146,18 +177,6 @@ public class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
     }
   }
 
-  @Override
-  public FixValue<?> visitLogicalNot(LogicalNotContext ctx) {
-    FixValue<?> operand = visit(ctx.expr());
-    try {
-      return operand.not();
-    } catch (Exception ex) {
-      errorListener
-          .onError(String.format("Semantic error; %s at '%s'", ex.getMessage(), ctx.getText()));
-    }
-    return null;
-  }
-
   /*
    * (non-Javadoc)
    * 
@@ -195,12 +214,36 @@ public class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
    * (non-Javadoc)
    * 
    * @see
+   * io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitDateonly(io.fixprotocol.orchestra.dsl.
+   * antlr.ScoreParser.DateonlyContext)
+   */
+  @Override
+  public FixValue<?> visitDateonly(DateonlyContext ctx) {
+    return new FixValue<LocalDate>(FixType.UTCDateOnly, LocalDate.parse(ctx.DATE().getText()));
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
    * io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitDecimal(io.fixprotocol.orchestra.dsl.antlr
    * .ScoreParser.DecimalContext)
    */
   @Override
   public FixValue<?> visitDecimal(DecimalContext ctx) {
     return new FixValue<BigDecimal>(FixType.floatType, new BigDecimal(ctx.DECIMAL().getText()));
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitDuration(io.fixprotocol.orchestra.dsl.
+   * antlr.ScoreParser.DurationContext)
+   */
+  @Override
+  public FixValue<?> visitDuration(DurationContext ctx) {
+    return new FixValue<Duration>(FixType.UTCTimeOnly, Duration.parse(ctx.PERIOD().getText()));
   }
 
   /*
@@ -276,6 +319,18 @@ public class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
         case "and":
           return operand0.and(operand1);
       }
+    } catch (Exception ex) {
+      errorListener
+          .onError(String.format("Semantic error; %s at '%s'", ex.getMessage(), ctx.getText()));
+    }
+    return null;
+  }
+
+  @Override
+  public FixValue<?> visitLogicalNot(LogicalNotContext ctx) {
+    FixValue<?> operand = visit(ctx.expr());
+    try {
+      return operand.not();
     } catch (Exception ex) {
       errorListener
           .onError(String.format("Semantic error; %s at '%s'", ex.getMessage(), ctx.getText()));
@@ -446,6 +501,8 @@ public class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
     return null;
   }
 
+
+
   /*
    * (non-Javadoc)
    * 
@@ -457,6 +514,56 @@ public class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
   public FixValue<?> visitString(StringContext ctx) {
     final String text = ctx.STRING().getText();
     return new FixValue<String>(FixType.StringType, text.substring(1, text.length() - 1));
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitTimeonly(io.fixprotocol.orchestra.dsl.
+   * antlr.ScoreParser.TimeonlyContext)
+   */
+  @Override
+  public FixValue<?> visitTimeonly(TimeonlyContext ctx) {
+    // Remove initial T and timeztamp for Java, even though ISO require them
+    return new FixValue<LocalTime>(FixType.UTCTimeOnly,
+        LocalTime.parse(ctx.TIME().getText(), TIME_ONLY));
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitTimestamp(io.fixprotocol.orchestra.dsl.
+   * antlr.ScoreParser.TimestampContext)
+   */
+  @Override
+  public FixValue<?> visitTimestamp(TimestampContext ctx) {
+    return new FixValue<Instant>(FixType.UTCTimestamp, Instant.parse(ctx.DATETIME().getText()));
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitUnaryNeg(io.fixprotocol.orchestra.dsl.
+   * antlr.ScoreParser.UnaryNegContext)
+   */
+  @SuppressWarnings("unchecked")
+  @Override
+  public FixValue<?> visitUnaryMinus(UnaryMinusContext ctx) {
+    FixValue<?> unsigned = visit(ctx.expr());
+    Object val = unsigned.getValue();
+    if (val instanceof Integer) {
+      ((FixValue<Integer>) unsigned).setValue((Integer) val * -1);
+    } else if (val instanceof BigDecimal) {
+      ((FixValue<BigDecimal>) unsigned)
+          .setValue(((BigDecimal) val).multiply(BigDecimal.valueOf(-1)));
+    } else {
+      errorListener.onError(
+          String.format("Semantic error; cannot apply unary minus at '%s'", ctx.getText()));
+    }
+    return unsigned;
   }
 
   /*
@@ -495,62 +602,6 @@ public class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
   @Override
   public FixValue<?> visitVariable(VariableContext ctx) {
     return visit(ctx.var());
-  }
-
-
-  
-  /* (non-Javadoc)
-   * @see io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitTimestamp(io.fixprotocol.orchestra.dsl.antlr.ScoreParser.TimestampContext)
-   */
-  @Override
-  public FixValue<?> visitTimestamp(TimestampContext ctx) {
-    // TODO Auto-generated method stub
-    return null;
-  }
-  /* (non-Javadoc)
-   * @see io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitUnaryNeg(io.fixprotocol.orchestra.dsl.antlr.ScoreParser.UnaryNegContext)
-   */
-  @SuppressWarnings("unchecked")
-  @Override
-  public FixValue<?> visitUnaryMinus(UnaryMinusContext ctx) {
-    FixValue<?> unsigned = visit(ctx.expr());
-    Object val = unsigned.getValue();
-    if (val instanceof Integer) {
-      ((FixValue<Integer>)unsigned).setValue((Integer)val * -1);
-    } else if (val instanceof BigDecimal) {
-      ((FixValue<BigDecimal>)unsigned).setValue(((BigDecimal)val).multiply(BigDecimal.valueOf(-1)));
-    } else {
-      errorListener
-      .onError(String.format("Semantic error; cannot apply unary minus at '%s'", ctx.getText()));
-    }
-    return unsigned;
-  }
-
-  /* (non-Javadoc)
-   * @see io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitTimeonly(io.fixprotocol.orchestra.dsl.antlr.ScoreParser.TimeonlyContext)
-   */
-  @Override
-  public FixValue<?> visitTimeonly(TimeonlyContext ctx) {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  /* (non-Javadoc)
-   * @see io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitDateonly(io.fixprotocol.orchestra.dsl.antlr.ScoreParser.DateonlyContext)
-   */
-  @Override
-  public FixValue<?> visitDateonly(DateonlyContext ctx) {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  /* (non-Javadoc)
-   * @see io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitDuration(io.fixprotocol.orchestra.dsl.antlr.ScoreParser.DurationContext)
-   */
-  @Override
-  public FixValue<?> visitDuration(DurationContext ctx) {
-    // TODO Auto-generated method stub
-    return null;
   }
 
 }
