@@ -580,7 +580,7 @@ public class FixValue<T> implements FixNode {
   }
 
   private Boolean eq(BigDecimal operand1, BigDecimal operand2) {
-    return operand1.equals(operand2);
+    return operand1.compareTo(operand2) == 0;
   }
 
   private Boolean eq(Integer operand1, Integer operand2) {
@@ -661,6 +661,10 @@ public class FixValue<T> implements FixNode {
     if (this.type.getBaseType() == operandType
         || this.type.getBaseType() == operandType.getBaseType()) {
       resultType = this.type.getBaseType();
+    } else if ((this.type.getBaseType() == FixType.intType || this.type.getBaseType() == FixType.floatType)
+        && (operandType.getBaseType() == FixType.intType || operandType.getBaseType() == FixType.floatType)) {
+      // special case: integer promotes to float, not specified in FIX
+      resultType = FixType.floatType;
     } else {
       throw new IllegalArgumentException(
           String.format("Data type mismatch between %s and %s", this.type, operandType));

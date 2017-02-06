@@ -87,8 +87,7 @@ public class ScoreVisitorImplTest {
         new TestData("44 - 33", new Integer(11)),
         new TestData("7.12 + 2.34", new BigDecimal("9.46")),
         new TestData("65.55 - 2.34", new BigDecimal("63.21")),
-        new TestData("7.12 + 2.0", new BigDecimal("9.12")),
-        // TODO test conversion int + float
+        new TestData("7.12 + 2", new BigDecimal("9.12")),
         };
 
     for (int i = 0; i < data.length; i++) {
@@ -245,9 +244,13 @@ public class ScoreVisitorImplTest {
    */
   @Test
   public void testVisitEquality() throws IOException {
-    TestData[] data = new TestData[] {new TestData("33 == 4", Boolean.FALSE),
-        new TestData("33 != 4", Boolean.TRUE), new TestData("33.5 == 4.0", Boolean.FALSE),
-        new TestData("33.5 != 4.0", Boolean.TRUE),};
+    TestData[] data = new TestData[] {
+        new TestData("33 == 4", Boolean.FALSE),
+        new TestData("33 != 4", Boolean.TRUE), 
+        new TestData("33.5 == 4.0", Boolean.FALSE),
+        new TestData("33.5 != 4.0", Boolean.TRUE),
+        new TestData("4 == 4.0", Boolean.TRUE),
+        };
 
     for (int i = 0; i < data.length; i++) {
       ScoreParser parser = parse(data[i].getExpression());
@@ -329,7 +332,9 @@ public class ScoreVisitorImplTest {
         new TestData("44 / 3", new Integer(14)), 
         new TestData("44 % 3", new Integer(2)),
         new TestData("7.12 * 2.3", new BigDecimal("16.376")),
-        new TestData("65.55 / 2.3", new BigDecimal("28.5")),};
+        new TestData("65.55 / 2.3", new BigDecimal("28.5")),
+        new TestData("44.0 / 4", new BigDecimal("11.0")), 
+        };
 
     for (int i = 0; i < data.length; i++) {
       ScoreParser parser = parse(data[i].getExpression());
