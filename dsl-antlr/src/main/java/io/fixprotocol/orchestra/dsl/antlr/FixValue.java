@@ -15,6 +15,7 @@
 package io.fixprotocol.orchestra.dsl.antlr;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 /**
  * Represents an mutable value of a DSL expression <br/>
@@ -22,7 +23,8 @@ import java.math.BigDecimal;
  * externally.
  * 
  * @author Don Mendelson
- *
+ * 
+ * TODO: handling for missing or null value
  */
 public class FixValue<T> implements FixNode {
 
@@ -73,9 +75,17 @@ public class FixValue<T> implements FixNode {
    * @param name message component name
    */
   public FixValue(String name) {
-    this.name = name;
-    this.type = null;
-    this.value = null;
+    this(name, null, null);
+  }
+
+  /**
+   * Construct a named expression without value
+   * 
+   * @param name named value
+   * @param type a FIX data type
+   */
+  public FixValue(String name, FixType type) {
+    this(name, type, null);
   }
 
   /**
@@ -100,6 +110,7 @@ public class FixValue<T> implements FixNode {
    * @exception AritmeticException if an arithmetic error occurs
    */
   public FixValue<?> add(FixValue<?> operand) {
+    Objects.requireNonNull(operand, "Missing operand");
     FixType resultType = sameFixTypeOrWiden(operand.getType());
     Class<?> resultClass = resultType.getValueClass();
     Object operand1 = value;
@@ -128,6 +139,7 @@ public class FixValue<T> implements FixNode {
    * @exception IllegalArgumentException if operand types are not Boolean
    */
   public FixValue<?> and(FixValue<?> operand) {
+    Objects.requireNonNull(operand, "Missing operand");
     if (this.getType() != FixType.BooleanType || operand.getType() != FixType.BooleanType) {
       throw new IllegalArgumentException("Logical and operand not Boolean");
     }
@@ -145,6 +157,7 @@ public class FixValue<T> implements FixNode {
    */
   @SuppressWarnings("unchecked")
   public void assign(FixValue<?> operand) throws FixException {
+    Objects.requireNonNull(operand, "Missing operand");
     if (this.type.getBaseType() != operand.getType().getBaseType()) {
       throw new FixException(
           String.format("Data type mismatch between %s and %s", this.type, operand.getType()));
@@ -162,6 +175,7 @@ public class FixValue<T> implements FixNode {
    */
 
   public FixValue<?> divide(FixValue<?> divisor) {
+    Objects.requireNonNull(divisor, "Missing operand");
     FixType resultType = sameFixTypeOrWiden(divisor.getType());
     Class<?> resultClass = resultType.getValueClass();
     Object operand1 = value;
@@ -192,6 +206,7 @@ public class FixValue<T> implements FixNode {
    * @exception AritmeticException if an arithmetic error occurs
    */
   public FixValue<?> eq(FixValue<?> operand) {
+    Objects.requireNonNull(operand, "Missing operand");
     FixType resultType = sameFixTypeOrWiden(operand.getType());
     Class<?> resultClass = resultType.getValueClass();
     Object operand1 = value;
@@ -246,6 +261,7 @@ public class FixValue<T> implements FixNode {
    * @exception AritmeticException if an arithmetic error occurs
    */
   public FixValue<?> ge(FixValue<?> operand) {
+    Objects.requireNonNull(operand, "Missing operand");
     FixType resultType = sameFixTypeOrWiden(operand.getType());
     Class<?> resultClass = resultType.getValueClass();
     Object operand1 = value;
@@ -298,6 +314,7 @@ public class FixValue<T> implements FixNode {
    * @exception AritmeticException if an arithmetic error occurs
    */
   public FixValue<?> gt(FixValue<?> operand) {
+    Objects.requireNonNull(operand, "Missing operand");
     FixType resultType = sameFixTypeOrWiden(operand.getType());
     Class<?> resultClass = resultType.getValueClass();
     Object operand1 = value;
@@ -342,6 +359,7 @@ public class FixValue<T> implements FixNode {
    * @exception AritmeticException if an arithmetic error occurs
    */
   public FixValue<?> le(FixValue<?> operand) {
+    Objects.requireNonNull(operand, "Missing operand");
     FixType resultType = sameFixTypeOrWiden(operand.getType());
     Class<?> resultClass = resultType.getValueClass();
     Object operand1 = value;
@@ -373,6 +391,7 @@ public class FixValue<T> implements FixNode {
    * @exception AritmeticException if an arithmetic error occurs
    */
   public FixValue<?> lt(FixValue<?> operand) {
+    Objects.requireNonNull(operand, "Missing operand");
     FixType resultType = sameFixTypeOrWiden(operand.getType());
     Class<?> resultClass = resultType.getValueClass();
     Object operand1 = value;
@@ -403,6 +422,7 @@ public class FixValue<T> implements FixNode {
    * @exception AritmeticException if an arithmetic error occurs
    */
   public FixValue<?> mod(FixValue<?> divisor) {
+    Objects.requireNonNull(divisor, "Missing operand");
     FixType resultType = sameFixTypeOrWiden(divisor.getType());
     Class<?> resultClass = resultType.getValueClass();
     Object operand1 = value;
@@ -432,6 +452,7 @@ public class FixValue<T> implements FixNode {
    * @exception AritmeticException if an arithmetic error occurs
    */
   public FixValue<?> multiply(FixValue<?> operand) {
+    Objects.requireNonNull(operand, "Missing operand");
     FixType resultType = sameFixTypeOrWiden(operand.getType());
     Class<?> resultClass = resultType.getValueClass();
     Object operand1 = value;
@@ -461,6 +482,7 @@ public class FixValue<T> implements FixNode {
    * @exception AritmeticException if an arithmetic error occurs
    */
   public FixValue<?> ne(FixValue<?> operand) {
+    Objects.requireNonNull(operand, "Missing operand");
     FixType resultType = sameFixTypeOrWiden(operand.getType());
     Class<?> resultClass = resultType.getValueClass();
     Object operand1 = value;
@@ -506,6 +528,7 @@ public class FixValue<T> implements FixNode {
    * @exception AritmeticException if an arithmetic error occurs
    */
   public FixValue<?> or(FixValue<?> operand) {
+    Objects.requireNonNull(operand, "Missing operand");
     if (this.getType() != FixType.BooleanType || operand.getType() != FixType.BooleanType) {
       throw new IllegalArgumentException("Logical or operand not Boolean");
     }
@@ -531,6 +554,7 @@ public class FixValue<T> implements FixNode {
    * @exception AritmeticException if an arithmetic error occurs
    */
   public FixValue<?> subtract(FixValue<?> operand) {
+    Objects.requireNonNull(operand, "Missing operand");
     FixType resultType = sameFixTypeOrWiden(operand.getType());
     Class<?> resultClass = resultType.getValueClass();
     Object operand1 = value;
@@ -661,8 +685,10 @@ public class FixValue<T> implements FixNode {
     if (this.type.getBaseType() == operandType
         || this.type.getBaseType() == operandType.getBaseType()) {
       resultType = this.type.getBaseType();
-    } else if ((this.type.getBaseType() == FixType.intType || this.type.getBaseType() == FixType.floatType)
-        && (operandType.getBaseType() == FixType.intType || operandType.getBaseType() == FixType.floatType)) {
+    } else if ((this.type.getBaseType() == FixType.intType
+        || this.type.getBaseType() == FixType.floatType)
+        && (operandType.getBaseType() == FixType.intType
+            || operandType.getBaseType() == FixType.floatType)) {
       // special case: integer promotes to float, not specified in FIX
       resultType = FixType.floatType;
     } else {

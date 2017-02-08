@@ -14,8 +14,8 @@
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
-		<!-- was abbrTerm -->
 		<xs:attribute name="name" type="xs:string"/>
+		<!-- was abbrTerm -->
 	</xs:complexType>
 	<xs:simpleType name="Abbreviation_t">
 		<xs:restriction base="xs:string"/>
@@ -129,11 +129,11 @@
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attribute name="value" type="xs:string" use="required"/>
-		<!-- was symbolicName -->
 		<xs:attribute name="name" type="fixr:SymbolicName_t"/>
 		<xs:attribute name="sort" type="xs:string"/>
 		<xs:attribute name="group" type="xs:string"/>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
+		<!-- was symbolicName -->
 	</xs:complexType>
 	<xs:simpleType name="CompID_t">
 		<xs:restriction base="xs:positiveInteger">
@@ -456,7 +456,7 @@
 	<xs:complexType name="messageRefType">
 		<xs:attribute name="name" type="fixr:MessageName_t" use="required"/>
 		<xs:attribute name="msgType" type="fixr:MsgType_t"/>
-		<xs:attribute name="context" type="xs:string" default="base"/>
+		<xs:attribute name="scenario" type="xs:string" default="base"/>
 	</xs:complexType>
 	<xs:complexType name="messageType">
 		<xs:sequence>
@@ -484,10 +484,14 @@
 		</xs:sequence>
 		<xs:attributeGroup ref="fixr:messageAttribGrp"/>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
-		<xs:attribute name="context" type="xs:string" default="base"/>
+		<xs:attribute name="scenario" type="xs:string" default="base">
+			<xs:annotation>
+				<xs:documentation>The name of one use case of this message type. The default scenario name is 'base'.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 		<xs:attribute name="extends" type="xs:string">
 			<xs:annotation>
-				<xs:documentation>If present, refers to another context, assuming
+				<xs:documentation>If present, refers to another scenario, assuming
 					the same message name
 				</xs:documentation>
 			</xs:annotation>
@@ -660,6 +664,11 @@
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="START"/>
 			<xs:enumeration value="CANCEL"/>
+			<xs:enumeration value="RESET">
+				<xs:annotation>
+					<xs:documentation>Cancel and restart</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:complexType name="timerRefType">

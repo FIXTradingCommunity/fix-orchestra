@@ -245,9 +245,9 @@ public class CodeGeneratorJ {
   private void generateMessage(File outputDir, MessageType messageType, String messagePackage,
       String componentPackage) throws IOException {
     String messageClassname = messageType.getName();
-    String context = messageType.getContext();
-    if (!context.equals("base")) {
-      messageClassname = messageClassname + context;
+    String scenario = messageType.getScenario();
+    if (!scenario.equals("base")) {
+      messageClassname = messageClassname + scenario;
     }
     File file = getClassFilePath(outputDir, messagePackage, messageClassname);
     try (FileWriter writer = new FileWriter(file)) {
@@ -303,8 +303,8 @@ public class CodeGeneratorJ {
       
       for (MessageType messageType : messageList) {
         String name = messageType.getName();
-        String context = messageType.getContext();
-        if (!context.equals("base")) {
+        String scenario = messageType.getScenario();
+        if (!scenario.equals("base")) {
           continue;
         }
 
@@ -342,8 +342,8 @@ public class CodeGeneratorJ {
       writer.write(String.format("%sswitch (type) {%n", indent(2)));
       for (MessageType messageType : messageList) {
         String name = messageType.getName();
-        String context = messageType.getContext();
-        if (!context.equals("base")) {
+        String scenario = messageType.getScenario();
+        if (!scenario.equals("base")) {
           continue;
         }
         writer.write(String.format("%scase %s.MSGTYPE:%n", indent(2), name));
@@ -754,7 +754,7 @@ public class CodeGeneratorJ {
     }
   }
 
-  // In this method, only create messages with base context
+  // In this method, only create messages with base scenario
   private Writer writeMessageCreateMethod(Writer writer, List<MessageType> messageList,
       String packageName) throws IOException {
     writer.write(String.format("%n%spublic Message create(String beginString, String msgType) {%n",
@@ -762,8 +762,8 @@ public class CodeGeneratorJ {
     writer.write(String.format("%sswitch (msgType) {%n", indent(2)));
     for (MessageType messageType : messageList) {
       String name = messageType.getName();
-      String context = messageType.getContext();
-      if (!context.equals("base")) {
+      String scenario = messageType.getScenario();
+      if (!scenario.equals("base")) {
         continue;
       }
       writer.write(String.format("%scase %s.%s.MSGTYPE:%n", indent(2), packageName, name));

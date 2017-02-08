@@ -175,12 +175,12 @@
 		</xs:complexType>
 		<xs:key name="messageId">
 			<xs:annotation>
-				<xs:documentation>Combination of message name and context must be
+				<xs:documentation>Combination of message name and scenario name must be
 					unique</xs:documentation>
 			</xs:annotation>
 			<xs:selector xpath="fixr:message"/>
 			<xs:field xpath="@name"/>
-			<xs:field xpath="@context"/>
+			<xs:field xpath="@scenario"/>
 		</xs:key>
 	</xs:element>
 	<xs:element name="sections">

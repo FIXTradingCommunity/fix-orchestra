@@ -28,11 +28,7 @@ public class SymbolResolver extends TreeSymbolTable {
    */
   public SymbolResolver() {
     super("global");
-    try {
-      nest(variableRoot, new TreeSymbolTable("variables"));
-    } catch (FixException e) {
-      throw new RuntimeException("Internal error", e);
-    }
+    nest(variableRoot, new TreeSymbolTable("variables"));
   }
 
   @Override

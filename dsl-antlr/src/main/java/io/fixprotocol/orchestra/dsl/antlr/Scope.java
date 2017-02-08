@@ -37,12 +37,12 @@ public interface Scope extends FixNode {
 
   /**
    * Nest another Scope within this Scope
-   * 
+   * <br/>
+   * If a nested Scope already exists at the specified path, it is replaced.
    * @param pathStep location
    * @param nested another Scope
-   * @throws FixException if a name or type conflict occurs
    */
-  void nest(PathStep pathStep, Scope nested) throws FixException;
+  void nest(PathStep pathStep, Scope nested);
 
   /**
    * Search for a symbol in the table

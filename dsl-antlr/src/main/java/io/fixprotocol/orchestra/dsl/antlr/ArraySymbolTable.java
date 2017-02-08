@@ -61,7 +61,7 @@ public class ArraySymbolTable implements Scope {
   }
 
   @Override
-  public void nest(PathStep pathStep, Scope nested) throws FixException {
+  public void nest(PathStep pathStep, Scope nested) {
     int index = pathStep.getIndex();
     if (index != PathStep.NO_INDEX) {
       entries.add(index, nested);

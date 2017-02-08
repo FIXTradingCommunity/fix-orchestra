@@ -16,6 +16,11 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>io.fixprotocol.orchestra</groupId>
+			<artifactId>dsl-antlr</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.quickfixj</groupId>
 			<artifactId>quickfixj-core</artifactId>
 			<version>1.6.2</version>

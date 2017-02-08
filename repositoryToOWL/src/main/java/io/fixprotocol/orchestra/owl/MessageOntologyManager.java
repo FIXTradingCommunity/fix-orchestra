@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -875,8 +876,10 @@ public class MessageOntologyManager {
         this.ontologyManager.getOWLDataFactory().getOWLImportsDeclaration(orchestraIRI);
     this.ontologyManager.applyChange(new AddImport(derivedModel, importDeclaration));
     prefixManager.setPrefix(ORCHESTRA_PREFIX, ORCHESTRA_URI);
+    
+    URLClassLoader classLoader = new URLClassLoader(new URL [] {new URL("file://")});
+    final URL document = classLoader.getResource("orchestra2016.ttl");
 
-    URL document = ClassLoader.class.getResource("/orchestra2016.ttl");
     PriorityCollection<OWLOntologyIRIMapper> iriMappers = ontologyManager.getIRIMappers();
     iriMappers.add(new SimpleIRIMapper(orchestraIRI, IRI.create(document)));
 
@@ -1079,7 +1082,8 @@ public class MessageOntologyManager {
    * @throws Exception if an ontology cannot be read or parsed
    */
   public Model loadModel(InputStream in) throws Exception {
-    final URL document = ClassLoader.class.getResource("/orchestra2016.ttl");
+    URLClassLoader classLoader = new URLClassLoader(new URL [] {new URL("file://")});
+    final URL document = classLoader.getResource("orchestra2016.ttl");
     final IRI orchestraIRI = IRI.create(ORCHESTRA_URI);
     PriorityCollection<OWLOntologyIRIMapper> iriMappers = ontologyManager.getIRIMappers();
     iriMappers.add(new SimpleIRIMapper(orchestraIRI, IRI.create(document)));

@@ -58,14 +58,9 @@ public class TreeSymbolTable implements Scope {
   }
 
   @Override
-  public void nest(PathStep pathStep, Scope nested) throws FixException {
+  public void nest(PathStep pathStep, Scope nested) {
     FixNode node = symbols.get(pathStep.getName());
-    if (node == null) {
-      symbols.put(pathStep.getName(), nested);
-    } else {
-      throw new FixException("FixNode already exists named " + pathStep.getName());
-
-    }
+    symbols.put(pathStep.getName(), nested);
   }
 
   @Override
