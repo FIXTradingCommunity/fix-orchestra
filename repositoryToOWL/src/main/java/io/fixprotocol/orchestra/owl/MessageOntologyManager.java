@@ -16,6 +16,7 @@ package io.fixprotocol.orchestra.owl;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -511,8 +512,8 @@ public class MessageOntologyManager {
   private OWLClass messageClass;
   private OWLOntologyManager ontologyManager;
   private OWLClass repeatingGroupClass;
-
   private OWLObjectProperty requiresProperty;
+  private URLClassLoader jarClassLoader;
 
   /**
    * Adds a FIX message component to its parent component
@@ -544,6 +545,17 @@ public class MessageOntologyManager {
     OWLAnnotationAssertionAxiom annotationAxiom = getDataFactory()
         .getOWLAnnotationAssertionAxiom(entity.asOWLNamedIndividual().getIRI(), label);
     getOntologyManager().addAxiom(model.getDerivedModel(), annotationAxiom);
+  }
+
+  /**
+   * Constructor
+   */
+  public MessageOntologyManager() {
+    try {
+      this.jarClassLoader = new URLClassLoader(new URL [] {new URL("file://")});
+    } catch (MalformedURLException e) {
+      throw new RuntimeException("Internal error", e);
+    }
   }
 
   /**
@@ -877,11 +889,14 @@ public class MessageOntologyManager {
     this.ontologyManager.applyChange(new AddImport(derivedModel, importDeclaration));
     prefixManager.setPrefix(ORCHESTRA_PREFIX, ORCHESTRA_URI);
     
-    URLClassLoader classLoader = new URLClassLoader(new URL [] {new URL("file://")});
-    final URL document = classLoader.getResource("orchestra2016.ttl");
+    URL documentURL = this.getClass().getClassLoader().getResource("orchestra2016.ttl");
+    if (documentURL == null) {
+      // Retrieve from the jar
+      documentURL = jarClassLoader.getResource("orchestra2016.ttl");
+    }
 
     PriorityCollection<OWLOntologyIRIMapper> iriMappers = ontologyManager.getIRIMappers();
-    iriMappers.add(new SimpleIRIMapper(orchestraIRI, IRI.create(document)));
+    iriMappers.add(new SimpleIRIMapper(orchestraIRI, IRI.create(documentURL)));
 
     final IRI dctermsIRI = IRI.create(DCTERMS_URI);
     OWLImportsDeclaration importDeclaration2 =
@@ -889,8 +904,12 @@ public class MessageOntologyManager {
     this.ontologyManager.applyChange(new AddImport(derivedModel, importDeclaration2));
     prefixManager.setPrefix(DCTERMS_PREFIX, DCTERMS_URI);
 
-    URL document2 = ClassLoader.class.getResource("/dcterms.ttl");
-    iriMappers.add(new SimpleIRIMapper(dctermsIRI, IRI.create(document2)));
+    URL document2URL = this.getClass().getClassLoader().getResource("dcterms.ttl");
+    if (document2URL == null) {
+      // Retrieve from the jar
+      document2URL = jarClassLoader.getResource("orchestra2016.ttl");
+    }
+    iriMappers.add(new SimpleIRIMapper(dctermsIRI, IRI.create(document2URL)));
 
     prepareBaseModel(derivedModel, prefixManager);
 
@@ -1082,11 +1101,13 @@ public class MessageOntologyManager {
    * @throws Exception if an ontology cannot be read or parsed
    */
   public Model loadModel(InputStream in) throws Exception {
-    URLClassLoader classLoader = new URLClassLoader(new URL [] {new URL("file://")});
-    final URL document = classLoader.getResource("orchestra2016.ttl");
+    URL documentURL = this.getClass().getClassLoader().getResource("orchestra2016.ttl");
+    if (documentURL == null) {
+      documentURL = jarClassLoader.getResource("orchestra2016.ttl");
+    }
     final IRI orchestraIRI = IRI.create(ORCHESTRA_URI);
     PriorityCollection<OWLOntologyIRIMapper> iriMappers = ontologyManager.getIRIMappers();
-    iriMappers.add(new SimpleIRIMapper(orchestraIRI, IRI.create(document)));
+    iriMappers.add(new SimpleIRIMapper(orchestraIRI, IRI.create(documentURL)));
     DefaultPrefixManager prefixManager = new DefaultPrefixManager();
     prefixManager.setPrefix(ORCHESTRA_PREFIX, ORCHESTRA_URI);
 
