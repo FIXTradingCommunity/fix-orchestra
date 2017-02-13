@@ -576,7 +576,14 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
   public FixValue<?> visitVar(VarContext ctx) {
     FixValue<?> value = null;
     currentScope = symbolResolver;
-    pathStep = new PathStep(ctx.scope.getText());
+    String scopeText;
+    if (ctx.scope == null) {
+      //implicit scope
+      scopeText = "this.";
+    } else {
+      scopeText = ctx.scope.getText();
+    }
+    pathStep = new PathStep(scopeText);
     FixNode node = currentScope.resolve(pathStep);
     if (node instanceof Scope) {
       currentScope = (Scope) node;

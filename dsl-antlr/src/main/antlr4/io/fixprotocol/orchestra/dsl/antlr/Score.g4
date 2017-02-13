@@ -65,7 +65,7 @@ pred: '[' ID '=' expr ']' ;
 
 qual: ID (index | pred)? ;
 
-var: scope=('$'|'in.'|'out.'|'this.') qual ('.' qual )*;
+var: scope=('$'|'in.'|'out.'|'this.')? qual ('.' qual )*;
 
 DATETIME: DATE TIME ;
 

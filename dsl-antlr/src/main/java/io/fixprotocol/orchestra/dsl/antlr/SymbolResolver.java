@@ -15,7 +15,8 @@
  */
 
 /**
- * Confederated symbol space only supports other Scope instances, not FixValue
+ * Confederated symbol space
+ * 
  * @author Don Mendelson
  *
  */
@@ -41,4 +42,18 @@ public class SymbolResolver extends TreeSymbolTable {
     }
   }
 
+  /**
+   * Implicit top level scope is 'this.'
+   */
+  @Override
+  public FixNode resolve(PathStep pathStep) {
+    PathStep qualified = pathStep;
+    if (!pathStep.getName().contains(".") && !pathStep.getName().startsWith("$")) {
+      qualified = new PathStep("this." + pathStep.getName());
+      qualified.setIndex(pathStep.getIndex());
+      qualified.setPredicate(pathStep.getPredicate());
+    }
+    
+    return super.resolve(qualified);
+  }
 }

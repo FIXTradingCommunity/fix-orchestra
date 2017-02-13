@@ -126,10 +126,10 @@ public class MessageScopeTest {
     group.set(new MDEntrySize(200));
     md.addGroup(group);
     PathStep pathStep = new PathStep("MDIncGrp");
-    pathStep.setPredicate("this.MDEntryPx==12.31");
+    pathStep.setPredicate("MDEntryPx==12.31");
     Scope node = (Scope) messageScope.resolve(pathStep );
     assertNotNull(node);
-    PathStep pathStep2 = new PathStep("this.MDEntryPx");
+    PathStep pathStep2 = new PathStep("MDEntryPx");
     FixValue<?> node2 = (FixValue<?>) node.resolve(pathStep2);
     assertNotNull(node2);
     assertEquals(new BigDecimal("12.31"), node2.getValue());
