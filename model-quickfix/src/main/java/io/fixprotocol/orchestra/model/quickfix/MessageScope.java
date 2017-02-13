@@ -39,11 +39,11 @@ class MessageScope extends AbstractMessageScope implements Scope {
   /**
    * Constructor
    * 
-   * @param message
-   * @param messageType
-   * @param repository
-   * @param symbolResolver
-   * @param evaluator
+   * @param message FIX message to expose
+   * @param messageType metadata about the FIX message type
+   * @param repository FIX Repository contains metadata
+   * @param symbolResolver used by DSL to resolve symbols
+   * @param evaluator evalutes DSL expressions
    */
   public MessageScope(Message message, MessageType messageType, RepositoryAdapter repository,
       SymbolResolver symbolResolver, Evaluator evaluator) {

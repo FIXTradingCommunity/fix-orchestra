@@ -31,7 +31,7 @@ public class TestException extends Exception {
 
   private static final long serialVersionUID = 1017825737727657154L;
 
-  private List<Detail> details = new ArrayList<>();
+  private final List<Detail> details = new ArrayList<>();
       
   public TestException() {
   }

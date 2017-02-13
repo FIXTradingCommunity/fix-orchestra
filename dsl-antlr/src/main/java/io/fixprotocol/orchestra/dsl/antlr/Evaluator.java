@@ -41,7 +41,8 @@ public class Evaluator {
           "Failed to parse at line %d position %d due to %s", line, charPositionInLine, msg), e);
     }
   };
-  private final SemanticErrorListener semanticErrorListener = new SemanticErrorListener() {
+
+  private class DefaultSemanticErrorListener implements SemanticErrorListener {
 
     @Override
     public void onError(String msg) {
@@ -49,16 +50,26 @@ public class Evaluator {
     }
 
   };
+
   private final ScoreVisitorImpl visitor;
 
 
   /**
-   * Constructor
+   * Constructor with default SemanticErrorListener
    * 
    * @param symbolResolver resolves symbols
-   * @param semanticErrorListener reports semantic
    */
   public Evaluator(SymbolResolver symbolResolver) {
+    visitor = new ScoreVisitorImpl(symbolResolver, new DefaultSemanticErrorListener());
+  }
+
+  /**
+   * Constructor
+   *
+   * @param symbolResolver resolves symbols
+   * @param semanticErrorListener reports semantic errors
+   */
+  public Evaluator(SymbolResolver symbolResolver, SemanticErrorListener semanticErrorListener) {
     visitor = new ScoreVisitorImpl(symbolResolver, semanticErrorListener);
   }
 

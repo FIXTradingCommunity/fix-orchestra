@@ -61,7 +61,6 @@ public class FixValue<T> implements FixNode {
   /**
    * Construct an unnamed expression value
    * 
-   * @param name named value
    * @param type a FIX data type
    * @param value an immutable value
    */
@@ -608,7 +607,7 @@ public class FixValue<T> implements FixNode {
   }
 
   private Boolean eq(Integer operand1, Integer operand2) {
-    return operand1 == operand2;
+    return operand1.equals(operand2);
   }
 
   private Boolean ge(BigDecimal operand1, BigDecimal operand2) {
@@ -664,7 +663,7 @@ public class FixValue<T> implements FixNode {
   }
 
   private Boolean ne(Integer operand1, Integer operand2) {
-    return operand1 != operand2;
+    return !Objects.equals(operand1, operand2);
   }
 
   private Object promote(Object original, Class<?> resultClass) {

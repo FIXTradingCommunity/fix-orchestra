@@ -31,30 +31,30 @@ public class ScoreException extends Exception {
    }
 
   /**
-   * @param message
+   * @param message error text
    */
   public ScoreException(String message) {
     super(message);
   }
 
   /**
-   * @param cause
+   * @param cause nested exception
    */
   public ScoreException(Throwable cause) {
     super(cause);
   }
 
   /**
-   * @param message
-   * @param cause
+   * @param message error text
+   * @param cause nested exception
    */
   public ScoreException(String message, Throwable cause) {
     super(message, cause);
   }
 
   /**
-   * @param message
-   * @param cause
+   * @param message error text
+   * @param cause nested exception
    * @param enableSuppression
    * @param writableStackTrace
    */
