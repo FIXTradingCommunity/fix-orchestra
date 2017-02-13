@@ -7,15 +7,20 @@ public class TestException extends Exception {
   
   private class Detail {
     
-    private String actual;
-    private String detailMessage;
-    private String expected;
+    private final String actual;
+    private final String detailMessage;
+    private final String expected;
+    
+    public Detail(String detailMessage) {
+      this(detailMessage, null, null);
+    }
     
     public Detail(String detailMessage, String expected, String actual) {
       this.detailMessage = detailMessage;
       this.expected = expected;
       this.actual = actual;
     }
+    
     @Override
     public String toString() {
       return "Detail [" + (detailMessage != null ? "detailMessage=" + detailMessage + ", " : "")
@@ -46,6 +51,10 @@ public class TestException extends Exception {
 
   public TestException(Throwable cause) {
     super(cause);
+  }
+  
+  public void addDetail(String detailMessage) {
+    details.add(new Detail(detailMessage));
   }
   
   public void addDetail(String detailMessage, String expected, String actual) {

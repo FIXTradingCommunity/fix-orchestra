@@ -23,13 +23,18 @@ package io.fixprotocol.orchestra.dsl.antlr;
  */
 public class PathStep {
 
+  /**
+   * No index set
+   */
   public static final int NO_INDEX = -1;
 
   private int index = NO_INDEX;
   private final String name;
-
+  private String predicate;
+  
   /**
-   * 
+   * Constructor
+   * @param name a symbol
    */
   public PathStep(String name) {
     this.name = name;
@@ -41,6 +46,7 @@ public class PathStep {
   public int getIndex() {
     return index;
   }
+
   /**
    * @return the name
    */
@@ -49,10 +55,34 @@ public class PathStep {
   }
 
   /**
+   * @return the predicate
+   */
+  public String getPredicate() {
+    return predicate;
+  }
+
+  /**
+   * A one-based index into an array-like Scope
    * @param index the index to set
    */
   public void setIndex(int index) {
     this.index = index;
+  }
+  /**
+   * An expression to evaluate to select a symbol in an array-like Scope
+   * @param predicate the predicate to set
+   */
+  public void setPredicate(String predicate) {
+    this.predicate = predicate;
+  }
+
+  /* (non-Javadoc)
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    return "PathStep [" + (name != null ? "name=" + name + ", " : "") + "index=" + index + ", "
+        + (predicate != null ? "predicate=" + predicate : "") + "]";
   }
 
 }

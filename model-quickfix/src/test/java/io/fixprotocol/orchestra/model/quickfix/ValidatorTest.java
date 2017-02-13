@@ -15,6 +15,7 @@ import org.junit.Test;
 
 import io.fixprotocol._2016.fixrepository.MessageType;
 import io.fixprotocol._2016.fixrepository.Repository;
+import io.fixprotocol.orchestra.dsl.antlr.SymbolResolver;
 import io.fixprotocol.orchestra.model.TestException;
 import quickfix.field.TradSesStatus;
 import quickfix.field.TradingSessionID;
@@ -24,6 +25,7 @@ public class ValidatorTest {
 
   private Validator validator;
   private static Repository repository;
+  private RepositoryAdapter repositoryAdapter;
   
   @BeforeClass
   public static void setupOnce() throws Exception  {
@@ -32,7 +34,9 @@ public class ValidatorTest {
   
   @Before
   public void setUp() throws Exception {
-    validator = new Validator(repository);
+    repositoryAdapter = new RepositoryAdapter(repository);
+    final SymbolResolver symbolResolver = new SymbolResolver();
+    validator = new Validator(repositoryAdapter, symbolResolver );
   }
 
   private static Repository unmarshal(File inputFile) throws JAXBException {
@@ -47,7 +51,7 @@ public class ValidatorTest {
   @Test
   public void emptyMessage() {
     TradingSessionStatus message = new TradingSessionStatus();
-    MessageType messageType = validator.getMessage("TradingSessionStatus", "base");
+    MessageType messageType = repositoryAdapter.getMessage("TradingSessionStatus", "base");
     try {
       validator.validate(message, messageType);
       fail("TestException exptected");
@@ -62,7 +66,7 @@ public class ValidatorTest {
     TradingSessionStatus message = new TradingSessionStatus();
     message.set(new TradingSessionID(TradingSessionID.Day));
     message.set(new TradSesStatus(82));
-    MessageType messageType = validator.getMessage("TradingSessionStatus", "base");
+    MessageType messageType = repositoryAdapter.getMessage("TradingSessionStatus", "base");
     try {
       validator.validate(message, messageType);
       fail("TestException exptected");
@@ -77,7 +81,7 @@ public class ValidatorTest {
     TradingSessionStatus message = new TradingSessionStatus();
     message.set(new TradingSessionID(TradingSessionID.Day));
     message.set(new TradSesStatus(TradSesStatus.Open));
-    MessageType messageType = validator.getMessage("TradingSessionStatus", "base");
+    MessageType messageType = repositoryAdapter.getMessage("TradingSessionStatus", "base");
     validator.validate(message, messageType);
   }
 

@@ -34,9 +34,9 @@ public class FixValue<T> implements FixNode {
    * @param name identifier of the new object
    * @param operand value to copy
    * @return a new FixValue instance
-   * @throws FixException if the data type is not handled
+   * @throws ScoreException if the data type is not handled
    */
-  public static FixValue<?> copy(String name, FixValue<?> operand) throws FixException {
+  public static FixValue<?> copy(String name, FixValue<?> operand) throws ScoreException {
     String valueType = operand.getValue().getClass().getName();
     switch (valueType) {
       case "java.lang.Integer":
@@ -50,7 +50,7 @@ public class FixValue<T> implements FixNode {
       case "java.math.BigDecimal":
         return new FixValue<BigDecimal>(name, operand.getType(), (BigDecimal) operand.getValue());
       default:
-        throw new FixException("Unable to copy type " + valueType);
+        throw new ScoreException("Unable to copy type " + valueType);
     }
   }
 
@@ -153,13 +153,13 @@ public class FixValue<T> implements FixNode {
    * Assigns a value to this FixValue
    * 
    * @param operand other FixValue
-   * @throws FixException if a type conflict occurs
+   * @throws ScoreException if a type conflict occurs
    */
   @SuppressWarnings("unchecked")
-  public void assign(FixValue<?> operand) throws FixException {
+  public void assign(FixValue<?> operand) throws ScoreException {
     Objects.requireNonNull(operand, "Missing operand");
     if (this.type.getBaseType() != operand.getType().getBaseType()) {
-      throw new FixException(
+      throw new ScoreException(
           String.format("Data type mismatch between %s and %s", this.type, operand.getType()));
     }
     this.value = (T) operand.getValue();

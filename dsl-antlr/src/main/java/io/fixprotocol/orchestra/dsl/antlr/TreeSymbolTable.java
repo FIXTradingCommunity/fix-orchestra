@@ -38,7 +38,7 @@ public class TreeSymbolTable implements Scope {
   }
 
   @Override
-  public FixValue<?> assign(PathStep pathStep, FixValue<?> value) throws FixException {
+  public FixValue<?> assign(PathStep pathStep, FixValue<?> value) throws ScoreException {
     FixNode node = symbols.get(pathStep.getName());
     if (node instanceof FixValue) {
       FixValue<?> val = (FixValue<?>) node;
@@ -48,7 +48,7 @@ public class TreeSymbolTable implements Scope {
       symbols.put(pathStep.getName(), value);
       return value;
     } else {
-      throw new FixException("FixNode already exists named " + pathStep.getName());
+      throw new ScoreException("FixNode already exists named " + pathStep.getName());
     }
   }
 
@@ -59,7 +59,6 @@ public class TreeSymbolTable implements Scope {
 
   @Override
   public void nest(PathStep pathStep, Scope nested) {
-    FixNode node = symbols.get(pathStep.getName());
     symbols.put(pathStep.getName(), nested);
   }
 

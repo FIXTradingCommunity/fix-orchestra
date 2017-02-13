@@ -26,7 +26,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
-import java.time.format.ResolverStyle;
 import java.util.List;
 
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
@@ -66,7 +65,7 @@ import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.VariableContext;
  * @author Don Mendelson
  *
  */
-public class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
+class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
     implements ScoreVisitor<FixValue<?>> {
 
   /**
@@ -170,7 +169,7 @@ public class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
       } else {
         return currentScope.assign(pathStep, FixValue.copy(pathStep.getName(), val));
       }
-    } catch (FixException e) {
+    } catch (ScoreException e) {
       errorListener
           .onError(String.format("Semantic error; %s at '%s'", e.getMessage(), ctx.getText()));
       return null;

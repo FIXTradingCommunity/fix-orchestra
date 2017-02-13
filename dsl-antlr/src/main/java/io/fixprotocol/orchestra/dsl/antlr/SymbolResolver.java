@@ -32,7 +32,7 @@ public class SymbolResolver extends TreeSymbolTable {
   }
 
   @Override
-  public FixValue<?> assign(PathStep pathStep, FixValue<?> value) throws FixException {
+  public FixValue<?> assign(PathStep pathStep, FixValue<?> value) throws ScoreException {
     if (pathStep.getName().startsWith("$")) {
       Scope scope = (Scope) this.resolve(variableRoot);
       return scope.assign(pathStep, value);

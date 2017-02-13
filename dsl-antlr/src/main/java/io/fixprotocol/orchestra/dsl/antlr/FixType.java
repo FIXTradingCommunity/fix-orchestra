@@ -21,8 +21,7 @@ import java.time.LocalTime;
 import java.time.ZonedDateTime;
 
 /**
- * FIX data types 
- * <br/>
+ * FIX data types <br/>
  * Types are hard-coded for now. In the future, consider populating dynamically from datatypes in
  * Orchestra file.
  * 
@@ -30,139 +29,26 @@ import java.time.ZonedDateTime;
  *
  */
 public enum FixType {
-  intType {
-    @Override
-    public FixType getBaseType() {
-      return intType;
-    }
-
-    @Override
-    public Class<Integer> getValueClass() {
-      return Integer.class;
-    }
-  },
-  Length {
-    @Override
-    public FixType getBaseType() {
-      return intType;
-    }
-    
-
-    @Override
-    public Class<Integer> getValueClass() {
-      return Integer.class;
-    }
-  },
-  TagNum {
-    @Override
-    public FixType getBaseType() {
-      return intType;
-    }
-    
-
-    @Override
-    public Class<Integer> getValueClass() {
-      return Integer.class;
-    }
-  },
-  SeqNum {
-    @Override
-    public FixType getBaseType() {
-      return intType;
-    }
-    
-    @Override
-    public Class<Integer> getValueClass() {
-      return Integer.class;
-    }
-  },
-  NumInGroup {
-    @Override
-    public FixType getBaseType() {
-      return intType;
-    }
-    
-
-    @Override
-    public Class<Integer> getValueClass() {
-      return Integer.class;
-    }
-  },
-  DayOfMonth {
-    @Override
-    public FixType getBaseType() {
-      return intType;
-    }    
-
-    @Override
-    public Class<Integer> getValueClass() {
-      return Integer.class;
-    }
-  },
-  floatType {
-    @Override
-    public FixType getBaseType() {
-      return floatType;
-    } 
-
-    @Override
-    public Class<BigDecimal> getValueClass() {
-      return BigDecimal.class;
-    }
-  },
-  Qty {
-    @Override
-    public FixType getBaseType() {
-      return floatType;
-    }  
-
-    @Override
-    public Class<BigDecimal> getValueClass() {
-      return BigDecimal.class;
-    }
-  },
-  Price {
-    @Override
-    public FixType getBaseType() {
-      return floatType;
-    }   
-
-    @Override
-    public Class<BigDecimal> getValueClass() {
-      return BigDecimal.class;
-    }
-  },
-  PriceOffset {
-    @Override
-    public FixType getBaseType() {
-      return floatType;
-    }    
-
-    @Override
-    public Class<BigDecimal> getValueClass() {
-      return BigDecimal.class;
-    }
-  },
   Amt {
     @Override
     public FixType getBaseType() {
       return floatType;
-    }    
+    }
 
     @Override
     public Class<BigDecimal> getValueClass() {
       return BigDecimal.class;
     }
   },
-  Percentage {
+  BooleanType {
     @Override
     public FixType getBaseType() {
-      return floatType;
-    }  
+      return BooleanType;
+    }
 
     @Override
-    public Class<BigDecimal> getValueClass() {
-      return BigDecimal.class;
+    public Class<Boolean> getValueClass() {
+      return Boolean.class;
     }
   },
   charType {
@@ -176,18 +62,129 @@ public enum FixType {
       return Character.class;
     }
   },
-  BooleanType {
+  Country {
     @Override
     public FixType getBaseType() {
-      return BooleanType;
-    }  
+      return StringType;
+    }
 
     @Override
-    public Class<Boolean> getValueClass() {
-      return Boolean.class;
+    public Class<String> getValueClass() {
+      return String.class;
     }
   },
-  StringType {
+  Currency {
+    @Override
+    public FixType getBaseType() {
+      return StringType;
+    }
+
+    @Override
+    public Class<String> getValueClass() {
+      return String.class;
+    }
+  },
+  data {
+    @Override
+    public FixType getBaseType() {
+      return StringType;
+    }
+
+    @Override
+    public Class<byte[]> getValueClass() {
+      return byte[].class;
+    }
+  },
+  DayOfMonth {
+    @Override
+    public FixType getBaseType() {
+      return intType;
+    }
+
+    @Override
+    public Class<Integer> getValueClass() {
+      return Integer.class;
+    }
+  },
+  Exchange {
+    @Override
+    public FixType getBaseType() {
+      return StringType;
+    }
+
+    @Override
+    public Class<String> getValueClass() {
+      return String.class;
+    }
+  },
+  floatType {
+    @Override
+    public FixType getBaseType() {
+      return floatType;
+    }
+
+    @Override
+    public Class<BigDecimal> getValueClass() {
+      return BigDecimal.class;
+    }
+  },
+  intType {
+    @Override
+    public FixType getBaseType() {
+      return intType;
+    }
+
+    @Override
+    public Class<Integer> getValueClass() {
+      return Integer.class;
+    }
+  },
+  Language {
+    @Override
+    public FixType getBaseType() {
+      return StringType;
+    }
+
+    @Override
+    public Class<String> getValueClass() {
+      return String.class;
+    }
+  },
+  Length {
+    @Override
+    public FixType getBaseType() {
+      return intType;
+    }
+
+
+    @Override
+    public Class<Integer> getValueClass() {
+      return Integer.class;
+    }
+  },
+  LocalMktDate {
+    @Override
+    public FixType getBaseType() {
+      return StringType;
+    }
+
+    @Override
+    public Class<LocalDate> getValueClass() {
+      return LocalDate.class;
+    }
+  },
+  LocalMktTime {
+    @Override
+    public FixType getBaseType() {
+      return StringType;
+    }
+
+    @Override
+    public Class<LocalTime> getValueClass() {
+      return LocalTime.class;
+    }
+  },
+  MonthYear {
     @Override
     public FixType getBaseType() {
       return StringType;
@@ -213,17 +210,6 @@ public enum FixType {
     @Override
     public FixType getBaseType() {
       return StringType;
-    }   
-
-    @Override
-    public Class<String> getValueClass() {
-      return String.class;
-    }
-  },
-  Country {
-    @Override
-    public FixType getBaseType() {
-      return StringType;
     }
 
     @Override
@@ -231,7 +217,74 @@ public enum FixType {
       return String.class;
     }
   },
-  Currency {
+  NumInGroup {
+    @Override
+    public FixType getBaseType() {
+      return intType;
+    }
+
+
+    @Override
+    public Class<Integer> getValueClass() {
+      return Integer.class;
+    }
+  },
+  Percentage {
+    @Override
+    public FixType getBaseType() {
+      return floatType;
+    }
+
+    @Override
+    public Class<BigDecimal> getValueClass() {
+      return BigDecimal.class;
+    }
+  },
+  Price {
+    @Override
+    public FixType getBaseType() {
+      return floatType;
+    }
+
+    @Override
+    public Class<BigDecimal> getValueClass() {
+      return BigDecimal.class;
+    }
+  },
+  PriceOffset {
+    @Override
+    public FixType getBaseType() {
+      return floatType;
+    }
+
+    @Override
+    public Class<BigDecimal> getValueClass() {
+      return BigDecimal.class;
+    }
+  },
+  Qty {
+    @Override
+    public FixType getBaseType() {
+      return floatType;
+    }
+
+    @Override
+    public Class<BigDecimal> getValueClass() {
+      return BigDecimal.class;
+    }
+  },
+  SeqNum {
+    @Override
+    public FixType getBaseType() {
+      return intType;
+    }
+
+    @Override
+    public Class<Integer> getValueClass() {
+      return Integer.class;
+    }
+  },
+  StringType {
     @Override
     public FixType getBaseType() {
       return StringType;
@@ -242,70 +295,16 @@ public enum FixType {
       return String.class;
     }
   },
-  Exchange {
+  TagNum {
     @Override
     public FixType getBaseType() {
-      return StringType;
+      return intType;
     }
 
-    @Override
-    public Class<String> getValueClass() {
-      return String.class;
-    }
-  },
-  MonthYear {
-    @Override
-    public FixType getBaseType() {
-      return StringType;
-    }
 
     @Override
-    public Class<String> getValueClass() {
-      return String.class;
-    }
-  },
-  UTCTimestamp {
-    @Override
-    public FixType getBaseType() {
-      return StringType;
-    }
-
-    @Override
-    public Class<Instant> getValueClass() {
-      return Instant.class;
-    }
-  },
-  UTCTimeOnly {
-    @Override
-    public FixType getBaseType() {
-      return StringType;
-    }
-    
-    @Override
-    public Class<LocalTime> getValueClass() {
-      return LocalTime.class;
-    }
-  },
-  UTCDateOnly {
-    @Override
-    public FixType getBaseType() {
-      return StringType;
-    }
-       
-    @Override
-    public Class<LocalDate> getValueClass() {
-      return LocalDate.class;
-    }
-  },
-  LocalMktDate {
-    @Override
-    public FixType getBaseType() {
-      return StringType;
-    }
-    
-    @Override
-    public Class<LocalDate> getValueClass() {
-      return LocalDate.class;
+    public Class<Integer> getValueClass() {
+      return Integer.class;
     }
   },
   TZTimeOnly {
@@ -313,7 +312,7 @@ public enum FixType {
     public FixType getBaseType() {
       return StringType;
     }
-    
+
     @Override
     public Class<ZonedDateTime> getValueClass() {
       return ZonedDateTime.class;
@@ -330,15 +329,37 @@ public enum FixType {
       return ZonedDateTime.class;
     }
   },
-  data {
+  UTCDateOnly {
     @Override
     public FixType getBaseType() {
       return StringType;
     }
 
     @Override
-    public Class<byte []> getValueClass() {
-      return byte[].class;
+    public Class<LocalDate> getValueClass() {
+      return LocalDate.class;
+    }
+  },
+  UTCTimeOnly {
+    @Override
+    public FixType getBaseType() {
+      return StringType;
+    }
+
+    @Override
+    public Class<LocalTime> getValueClass() {
+      return LocalTime.class;
+    }
+  },
+  UTCTimestamp {
+    @Override
+    public FixType getBaseType() {
+      return StringType;
+    }
+
+    @Override
+    public Class<Instant> getValueClass() {
+      return Instant.class;
     }
   },
   XMLData {
@@ -346,45 +367,56 @@ public enum FixType {
     public FixType getBaseType() {
       return StringType;
     }
-    
+
     @Override
     public Class<String> getValueClass() {
       return String.class;
-    }
-  },
-  Language {
-    @Override
-    public FixType getBaseType() {
-      return StringType;
-    }
-    
-    @Override
-    public Class<String> getValueClass() {
-      return String.class;
-    }
-  },
-  LocalMktTime {
-    @Override
-    public FixType getBaseType() {
-      return StringType;
-    }
-    
-    @Override
-    public Class<LocalTime> getValueClass() {
-      return LocalTime.class;
     }
   };
 
   /**
-   * The base FIXType according to the FIX specification
+   * Returns the enum value for its name 
    * <br/>
+   * Semantically the same as {@code enum.valueOf()} but Java doesn't allow that method to be
+   * overridden. This method is necessary because some of the FIX data types are Java keywords.
+   * 
+   * @param name a FIX data type name
+   * @return an enum value
+   * @throws IllegalArgumentException - if there is no constant with the specified name
+   */
+  public static FixType forName(String name) {
+    String dataTypeString = name;
+    switch (dataTypeString) {
+      case "String":
+        dataTypeString = "StringType";
+        break;
+      case "Boolean":
+        dataTypeString = "BooleanType";
+        break;
+      case "char":
+        dataTypeString = "charType";
+        break;
+      case "int":
+        dataTypeString = "intType";
+        break;
+      case "float":
+        dataTypeString = "floatType";
+        break;
+    }
+    return FixType.valueOf(dataTypeString);
+  }
+
+  /**
+   * The base FIXType according to the FIX specification <br/>
    * Unfortunately, the FIX taxonomy of types is largely lexical, not semantic.
+   * 
    * @return base data type
    */
   public abstract FixType getBaseType();
-  
+
   /**
    * The class used for storage of the FIX data type in this implementation
+   * 
    * @return a Java class
    */
   public abstract Class<?> getValueClass();

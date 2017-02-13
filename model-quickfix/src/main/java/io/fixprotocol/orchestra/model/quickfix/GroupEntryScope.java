@@ -18,7 +18,7 @@ import java.util.List;
 
 import io.fixprotocol._2016.fixrepository.FieldRefType;
 import io.fixprotocol._2016.fixrepository.GroupRefType;
-import io.fixprotocol._2016.fixrepository.MessageType;
+import io.fixprotocol._2016.fixrepository.GroupType;
 import io.fixprotocol.orchestra.dsl.antlr.Evaluator;
 import io.fixprotocol.orchestra.dsl.antlr.FixNode;
 import io.fixprotocol.orchestra.dsl.antlr.FixValue;
@@ -26,39 +26,20 @@ import io.fixprotocol.orchestra.dsl.antlr.PathStep;
 import io.fixprotocol.orchestra.dsl.antlr.Scope;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreException;
 import io.fixprotocol.orchestra.dsl.antlr.SymbolResolver;
-import quickfix.Message;
+import quickfix.Group;
 
 /**
+ * Symbol Scope for an entry of a repeating group
  * @author Don Mendelson
  *
  */
-class MessageScope extends AbstractMessageScope implements Scope {
+class GroupEntryScope extends AbstractMessageScope implements Scope {
 
-  private final MessageType messageType;
+  private final GroupType groupType;
 
-  /**
-   * Constructor
-   * 
-   * @param message
-   * @param messageType
-   * @param repository
-   * @param symbolResolver
-   * @param evaluator
-   */
-  public MessageScope(Message message, MessageType messageType, RepositoryAdapter repository,
-      SymbolResolver symbolResolver, Evaluator evaluator) {
-    super(message, repository, symbolResolver, evaluator);
-    this.messageType = messageType;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see io.fixprotocol.orchestra.dsl.antlr.FixNode#getName()
-   */
-  @Override
-  public String getName() {
-    return messageType.getName();
+  public GroupEntryScope(Group group, GroupType groupType, RepositoryAdapter repository, SymbolResolver symbolResolver, Evaluator evaluator) {
+    super(group, repository, symbolResolver, evaluator);
+    this.groupType = groupType;
   }
 
   /*
@@ -72,6 +53,16 @@ class MessageScope extends AbstractMessageScope implements Scope {
   public FixValue<?> assign(PathStep arg0, FixValue<?> arg1) throws ScoreException {
     // TODO Auto-generated method stub
     return null;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see io.fixprotocol.orchestra.dsl.antlr.FixNode#getName()
+   */
+  @Override
+  public String getName() {
+    return groupType.getName();
   }
 
   /*
@@ -93,22 +84,28 @@ class MessageScope extends AbstractMessageScope implements Scope {
    */
   @Override
   public FixNode resolve(PathStep pathStep) {
-    String name = pathStep.getName();
-    List<Object> members = messageType.getStructure().getComponentOrComponentRefOrGroup();
+    String unqualified = pathStep.getName();
+    int index = unqualified.indexOf('.');
+    if (index > 0) {
+      unqualified = pathStep.getName().substring(index+1);
+    }
+
+    List<Object> members = groupType.getComponentRefOrGroupRefOrFieldRef();
     for (Object member : members) {
       if (member instanceof FieldRefType) {
         FieldRefType fieldRefType = (FieldRefType) member;
-        if (fieldRefType.getName().equals(name)) {
+        if (fieldRefType.getName().equals(unqualified)) {
           return resolveField(fieldRefType);
         }
       } else if (member instanceof GroupRefType) {
         GroupRefType groupRefType = (GroupRefType) member;
-        if (groupRefType.getName().equals(name)) {
+        if (groupRefType.getName().equals(unqualified)) {
           return resolveGroup(pathStep, groupRefType);
         }
       }
     }
     return null;
   }
-
+  
+ 
 }

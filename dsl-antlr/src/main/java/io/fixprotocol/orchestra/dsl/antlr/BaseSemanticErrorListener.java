@@ -15,7 +15,8 @@
 package io.fixprotocol.orchestra.dsl.antlr;
 
 /**
- * @author donme
+ * Prints semantic errors on console
+ * @author Don Mendelson
  *
  */
 public class BaseSemanticErrorListener implements SemanticErrorListener {

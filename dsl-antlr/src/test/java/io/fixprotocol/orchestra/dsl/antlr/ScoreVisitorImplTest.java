@@ -443,7 +443,7 @@ public class ScoreVisitorImplTest {
   }
 
   @Test
-  public void testVisitVariable() throws IOException, FixException {
+  public void testVisitVariable() throws IOException, ScoreException {
     final String varName = "$orderCount";
 
     Scope scope = (Scope) symbolResolver.resolve(new PathStep("$"));

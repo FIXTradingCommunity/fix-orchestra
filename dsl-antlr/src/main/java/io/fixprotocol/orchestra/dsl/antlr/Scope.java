@@ -31,9 +31,9 @@ public interface Scope extends FixNode {
    * @param pathStep search criteria
    * @param value new value to assign or insert
    * @return the assigned value
-   * @throws FixException if a name or type conflict occurs
+   * @throws ScoreException if a name or type conflict occurs
    */
-  FixValue<?> assign(PathStep pathStep, FixValue<?> value) throws FixException;
+  FixValue<?> assign(PathStep pathStep, FixValue<?> value) throws ScoreException;
 
   /**
    * Nest another Scope within this Scope
