@@ -372,7 +372,22 @@ public enum FixType {
     public Class<String> getValueClass() {
       return String.class;
     }
-  };
+  },
+  /**
+   * Not currently a FIX data type (but should be since there are fields with duration semantics)
+   */
+  Duration {
+    @Override
+    public FixType getBaseType() {
+      return null;
+    }
+
+    @Override
+    public Class<?> getValueClass() {
+      return java.time.Duration.class;
+    }
+  } 
+  ;
 
   /**
    * Returns the enum value for its name 

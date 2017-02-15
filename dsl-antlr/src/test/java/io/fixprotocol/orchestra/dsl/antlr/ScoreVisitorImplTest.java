@@ -516,7 +516,7 @@ public class ScoreVisitorImplTest {
     Object expression = visitor.visitAnyExpression(ctx);
     assertTrue(expression instanceof FixValue<?>);
     FixValue<?> fixValue = (FixValue<?>) expression;
-    assertEquals(FixType.UTCTimeOnly, fixValue.getType());
+    assertEquals(FixType.Duration, fixValue.getType());
     assertTrue(fixValue.getValue() instanceof Duration);
   }
 }
