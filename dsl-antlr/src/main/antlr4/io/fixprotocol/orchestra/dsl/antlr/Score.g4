@@ -29,6 +29,7 @@ USCORE : '_';
 COLON: ':';
 DOT: '.';
 HASH: '#';
+CODE: '^';
 
 anyExpression:
       assignment
@@ -65,7 +66,10 @@ pred: '[' ID '=' expr ']' ;
 
 qual: ID (index | pred)? ;
 
-var: scope=('$'|'in.'|'out.'|'this.')? qual ('.' qual )*;
+/** 
+ * $=variable, %=code symbolic name, in=incoming message, out=outgoing message, this=local scope
+ */
+var: scope=('$'|'^'|'in.'|'out.'|'this.')? qual ('.' qual )*;
 
 DATETIME: DATE TIME ;
 

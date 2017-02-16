@@ -29,7 +29,7 @@ import java.util.Objects;
  * @author Don Mendelson
  *
  */
-final class FixValueFactory {
+public final class FixValueFactory {
 
   /**
    * Create a new instance of {@link FixValue}
@@ -37,9 +37,10 @@ final class FixValueFactory {
    * @param type the FIX data type represented
    * @param valueClass the storage class for value
    * @return a new instance
+   * @throws ScoreException  if the type cannot be created
    */
   @SuppressWarnings("rawtypes")
-  public static FixValue create(String name, FixType type, Class<? extends Object> valueClass) {
+  public static FixValue create(String name, FixType type, Class<? extends Object> valueClass) throws ScoreException {
     Objects.requireNonNull(type, "FIX type missing");
     Objects.requireNonNull(valueClass, "Value class missing");
     
@@ -65,8 +66,46 @@ final class FixValueFactory {
       case "java.time.ZonedDateTime":
         return new FixValue<ZonedDateTime>(name, type);
       default:
-        return null;
+        throw new ScoreException("Unable to create type " + valueClass.getName());
     }
   }
+  
+  /**
+   * Creates a new object with the specified name and value of the operand
+   * 
+   * @param name identifier of the new object
+   * @param operand value to copy
+   * @return a new FixValue instance
+   * @throws ScoreException if the data type is not handled
+   */
+  public static FixValue<?> copy(String name, FixValue<?> operand) throws ScoreException {
+    String valueClassname = operand.getValue().getClass().getName();
+    FixType type = operand.getType();
+    switch (valueClassname) {
+      case "java.lang.Integer":
+        return new FixValue<Integer>(name, type, (Integer)operand.getValue());
+      case "java.lang.String":
+        return new FixValue<String>(name, type, (String)operand.getValue());
+      case "java.math.BigDecimal":
+        return new FixValue<BigDecimal>(name, type, (BigDecimal)operand.getValue());
+      case "java.lang.Boolean":
+        return new FixValue<Boolean>(name, type, (Boolean)operand.getValue());
+      case "java.lang.Character":
+        return new FixValue<Character>(name, type, (Character)operand.getValue());
+      case "[B":
+        return new FixValue<byte []>(name, type, (byte [])operand.getValue());
+      case "java.time.Instant":
+        return new FixValue<Instant>(name, type, (Instant)operand.getValue());
+      case "java.time.LocalDate":
+        return new FixValue<LocalDate>(name, type, (LocalDate)operand.getValue());
+      case "java.time.LocalTime":
+        return new FixValue<LocalTime>(name, type, (LocalTime)operand.getValue());
+      case "java.time.ZonedDateTime":
+        return new FixValue<ZonedDateTime>(name, type, (ZonedDateTime)operand.getValue());
+      default:
+        throw new ScoreException("Unable to copy type " + valueClassname);
+    }
+
+   }
 
 }

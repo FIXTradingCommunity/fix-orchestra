@@ -14,7 +14,6 @@
  */
 package io.fixprotocol.orchestra.dsl.antlr;
 
-import java.math.BigDecimal;
 import java.util.Objects;
 
 /**
@@ -28,32 +27,6 @@ import java.util.Objects;
  * @author Don Mendelson
  */
 public class FixValue<T> implements FixNode {
-
-  /**
-   * Creates a new object with the specified name and values of the operand
-   * 
-   * @param name identifier of the new object
-   * @param operand value to copy
-   * @return a new FixValue instance
-   * @throws ScoreException if the data type is not handled
-   */
-  public static FixValue<?> copy(String name, FixValue<?> operand) throws ScoreException {
-    String valueType = operand.getValue().getClass().getName();
-    switch (valueType) {
-      case "java.lang.Integer":
-        return new FixValue<Integer>(name, operand.getType(), (Integer) operand.getValue());
-      case "java.lang.Boolean":
-        return new FixValue<Boolean>(name, operand.getType(), (Boolean) operand.getValue());
-      case "java.lang.Character":
-        return new FixValue<Character>(name, operand.getType(), (Character) operand.getValue());
-      case "java.lang.String":
-        return new FixValue<String>(name, operand.getType(), (String) operand.getValue());
-      case "java.math.BigDecimal":
-        return new FixValue<BigDecimal>(name, operand.getType(), (BigDecimal) operand.getValue());
-      default:
-        throw new ScoreException("Unable to copy type " + valueType);
-    }
-  }
 
   private final String name;
   private final FixType type;

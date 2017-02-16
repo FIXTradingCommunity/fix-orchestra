@@ -103,6 +103,7 @@ class AbstractMessageScope {
     CodeSetType codeSet = repository.getCodeset(dataTypeString);
     if (codeSet != null) {
       dataTypeString = codeSet.getType();
+      symbolResolver.nest(new PathStep("^"), new CodeSetScope(codeSet) );
     }
 
     FixType dataType = FixType.forName(dataTypeString);

@@ -84,5 +84,14 @@ public class ValidatorTest {
     MessageType messageType = repositoryAdapter.getMessage("TradingSessionStatus", "base");
     validator.validate(message, messageType);
   }
+  
+  @Test(expected=TestException.class)
+  public void ruleViolation() throws TestException {
+    TradingSessionStatus message = new TradingSessionStatus();
+    message.set(new TradingSessionID(TradingSessionID.Day));
+    message.set(new TradSesStatus(TradSesStatus.RequestRejected));
+    MessageType messageType = repositoryAdapter.getMessage("TradingSessionStatus", "base");
+    validator.validate(message, messageType);
+  }
 
 }

@@ -27,7 +27,7 @@ import java.util.function.Function;
 /**
  * Operations on {@link FixValue} <br/>
  * This implementation has many workarounds for Java type erasure. If raw types are removed from
- * Java in the future as suggested, this code will break. The hope is that change will be
+ * Java in the future as suggested, this code will break. The expectation is that change will be
  * accompanied by reified types.
  * 
  * @author Don Mendelson
@@ -126,8 +126,6 @@ class FixValueOperations {
 
   static final BiFunction<Integer, BigDecimal, Integer> divideIntegerDecimal =
       (x, y) -> x / y.intValue();
-
-
 
   static final BiFunction<Character, Character, Boolean> eqCharacter = (x, y) -> x.equals(y);
 
@@ -295,10 +293,13 @@ class FixValueOperations {
       (x, y) -> BigDecimal.valueOf(x).subtract(y);
 
 
+  /**
+   * Add operator
+   */
   public final BiFunction<FixValue<?>, FixValue<?>, FixValue<?>> add =
       new BiFunction<FixValue<?>, FixValue<?>, FixValue<?>>() {
 
-        @SuppressWarnings({"rawtypes", "unchecked"})
+        @SuppressWarnings("unchecked")
         @Override
         public FixValue<?> apply(FixValue<?> operand1, FixValue<?> operand2) {
           Objects.requireNonNull(operand1, "Missing operand 1");
@@ -317,42 +318,58 @@ class FixValueOperations {
             return null;
           }
 
-          FixValue result =
-              FixValueFactory.create(null, operation.resultType, operation.resultValueType);
-          if (swapOperands) {
-            result.setValue(operation.resultValueType
-                .cast(operation.evaluate.apply(operation.valueType1.cast(operand2.getValue()),
-                    operation.valueType2.cast(operand1.getValue()))));
-          } else {
-            result.setValue(operation.resultValueType
-                .cast(operation.evaluate.apply(operation.valueType1.cast(operand1.getValue()),
-                    operation.valueType2.cast(operand2.getValue()))));
-          }
-          return result;
-        }
+          @SuppressWarnings("rawtypes")
+          FixValue result;
+          try {
+            result = FixValueFactory.create(null, operation.resultType, operation.resultValueType);
 
+            if (swapOperands) {
+              result.setValue(operation.resultValueType
+                  .cast(operation.evaluate.apply(operation.valueType1.cast(operand2.getValue()),
+                      operation.valueType2.cast(operand1.getValue()))));
+            } else {
+              result.setValue(operation.resultValueType
+                  .cast(operation.evaluate.apply(operation.valueType1.cast(operand1.getValue()),
+                      operation.valueType2.cast(operand2.getValue()))));
+            }
+            return result;
+          } catch (ScoreException e) {
+            return null;
+          }
+        }
       };
 
+  /**
+   * Logical and operator
+   */
   public final BiFunction<FixValue<Boolean>, FixValue<Boolean>, FixValue<Boolean>> and =
       new BiFunction<FixValue<Boolean>, FixValue<Boolean>, FixValue<Boolean>>() {
 
+        @SuppressWarnings("unchecked")
         @Override
         public FixValue<Boolean> apply(FixValue<Boolean> operand1, FixValue<Boolean> operand2) {
           Objects.requireNonNull(operand1, "Missing operand 1");
           Objects.requireNonNull(operand2, "Missing operand 2");
-          
-          FixValue<Boolean> result =
-              FixValueFactory.create(null, FixType.BooleanType, Boolean.class);
-          result.setValue(operand1.getValue() && operand2.getValue());
-          return result;
-        }
 
+          FixValue<Boolean> result;
+          try {
+            result = FixValueFactory.create(null, FixType.BooleanType, Boolean.class);
+
+            result.setValue(operand1.getValue() && operand2.getValue());
+            return result;
+          } catch (ScoreException e) {
+            return null;
+          }
+        }
       };
 
+  /**
+   * Divide operator
+   */
   public final BiFunction<FixValue<?>, FixValue<?>, FixValue<?>> divide =
       new BiFunction<FixValue<?>, FixValue<?>, FixValue<?>>() {
 
-        @SuppressWarnings({"rawtypes", "unchecked"})
+        @SuppressWarnings("unchecked")
         @Override
         public FixValue<?> apply(FixValue<?> operand1, FixValue<?> operand2) {
           Objects.requireNonNull(operand1, "Missing operand 1");
@@ -367,26 +384,34 @@ class FixValueOperations {
             return null;
           }
 
-          FixValue result =
-              FixValueFactory.create(null, operation.resultType, operation.resultValueType);
-          if (swapOperands) {
-            result.setValue(operation.resultValueType
-                .cast(operation.evaluate.apply(operation.valueType2.cast(operand2.getValue()),
-                    operation.valueType1.cast(operand1.getValue()))));
-          } else {
-            result.setValue(operation.resultValueType
-                .cast(operation.evaluate.apply(operation.valueType1.cast(operand1.getValue()),
-                    operation.valueType2.cast(operand2.getValue()))));
-          }
-          return result;
-        }
+          @SuppressWarnings("rawtypes")
+          FixValue result;
+          try {
+            result = FixValueFactory.create(null, operation.resultType, operation.resultValueType);
 
+            if (swapOperands) {
+              result.setValue(operation.resultValueType
+                  .cast(operation.evaluate.apply(operation.valueType2.cast(operand2.getValue()),
+                      operation.valueType1.cast(operand1.getValue()))));
+            } else {
+              result.setValue(operation.resultValueType
+                  .cast(operation.evaluate.apply(operation.valueType1.cast(operand1.getValue()),
+                      operation.valueType2.cast(operand2.getValue()))));
+            }
+            return result;
+          } catch (ScoreException e) {
+            return null;
+          }
+        }
       };
 
+  /**
+   * Equality operator
+   */
   public final BiFunction<FixValue<?>, FixValue<?>, FixValue<Boolean>> eq =
       new BiFunction<FixValue<?>, FixValue<?>, FixValue<Boolean>>() {
 
-        @SuppressWarnings({"rawtypes", "unchecked"})
+        @SuppressWarnings("unchecked")
         @Override
         public FixValue<Boolean> apply(FixValue<?> operand1, FixValue<?> operand2) {
           Objects.requireNonNull(operand1, "Missing operand 1");
@@ -405,26 +430,34 @@ class FixValueOperations {
             return null;
           }
 
-          FixValue result =
-              FixValueFactory.create(null, operation.resultType, operation.resultValueType);
-          if (swapOperands) {
-            result.setValue(operation.resultValueType
-                .cast(operation.evaluate.apply(operation.valueType2.cast(operand2.getValue()),
-                    operation.valueType1.cast(operand1.getValue()))));
-          } else {
-            result.setValue(operation.resultValueType
-                .cast(operation.evaluate.apply(operation.valueType1.cast(operand1.getValue()),
-                    operation.valueType2.cast(operand2.getValue()))));
-          }
-          return result;
-        }
+          @SuppressWarnings("rawtypes")
+          FixValue result;
+          try {
+            result = FixValueFactory.create(null, operation.resultType, operation.resultValueType);
 
+            if (swapOperands) {
+              result.setValue(operation.resultValueType
+                  .cast(operation.evaluate.apply(operation.valueType2.cast(operand2.getValue()),
+                      operation.valueType1.cast(operand1.getValue()))));
+            } else {
+              result.setValue(operation.resultValueType
+                  .cast(operation.evaluate.apply(operation.valueType1.cast(operand1.getValue()),
+                      operation.valueType2.cast(operand2.getValue()))));
+            }
+            return result;
+          } catch (ScoreException e) {
+            return null;
+          }
+        }
       };
 
+  /**
+   * Greater-than-or-equal operator
+   */
   public final BiFunction<FixValue<?>, FixValue<?>, FixValue<Boolean>> ge =
       new BiFunction<FixValue<?>, FixValue<?>, FixValue<Boolean>>() {
 
-        @SuppressWarnings({"rawtypes", "unchecked"})
+        @SuppressWarnings("unchecked")
         @Override
         public FixValue<Boolean> apply(FixValue<?> operand1, FixValue<?> operand2) {
           Objects.requireNonNull(operand1, "Missing operand 1");
@@ -439,25 +472,33 @@ class FixValueOperations {
             return null;
           }
 
-          FixValue result =
-              FixValueFactory.create(null, operation.resultType, operation.resultValueType);
-          if (swapOperands) {
-            result.setValue(operation.resultValueType
-                .cast(operation.evaluate.apply(operation.valueType2.cast(operand2.getValue()),
-                    operation.valueType1.cast(operand1.getValue()))));
-          } else {
-            result.setValue(operation.resultValueType
-                .cast(operation.evaluate.apply(operation.valueType1.cast(operand1.getValue()),
-                    operation.valueType2.cast(operand2.getValue()))));
-          }
-          return result;
-        }
+          @SuppressWarnings("rawtypes")
+          FixValue result;
+          try {
+            result = FixValueFactory.create(null, operation.resultType, operation.resultValueType);
 
+            if (swapOperands) {
+              result.setValue(operation.resultValueType
+                  .cast(operation.evaluate.apply(operation.valueType2.cast(operand2.getValue()),
+                      operation.valueType1.cast(operand1.getValue()))));
+            } else {
+              result.setValue(operation.resultValueType
+                  .cast(operation.evaluate.apply(operation.valueType1.cast(operand1.getValue()),
+                      operation.valueType2.cast(operand2.getValue()))));
+            }
+            return result;
+          } catch (ScoreException e) {
+            return null;
+          }
+        }
       };
 
+  /**
+   * Greater-than operator
+   */
   public final BiFunction<FixValue<?>, FixValue<?>, FixValue<Boolean>> gt =
       new BiFunction<FixValue<?>, FixValue<?>, FixValue<Boolean>>() {
-    
+
         @SuppressWarnings({"rawtypes", "unchecked"})
         @Override
         public FixValue<Boolean> apply(FixValue<?> operand1, FixValue<?> operand2) {
@@ -473,22 +514,29 @@ class FixValueOperations {
             return null;
           }
 
-          FixValue result =
-              FixValueFactory.create(null, operation.resultType, operation.resultValueType);
-          if (swapOperands) {
-            result.setValue(operation.resultValueType
-                .cast(operation.evaluate.apply(operation.valueType2.cast(operand2.getValue()),
-                    operation.valueType1.cast(operand1.getValue()))));
-          } else {
-            result.setValue(operation.resultValueType
-                .cast(operation.evaluate.apply(operation.valueType1.cast(operand1.getValue()),
-                    operation.valueType2.cast(operand2.getValue()))));
-          }
-          return result;
-        }
+          FixValue result;
+          try {
+            result = FixValueFactory.create(null, operation.resultType, operation.resultValueType);
 
+            if (swapOperands) {
+              result.setValue(operation.resultValueType
+                  .cast(operation.evaluate.apply(operation.valueType2.cast(operand2.getValue()),
+                      operation.valueType1.cast(operand1.getValue()))));
+            } else {
+              result.setValue(operation.resultValueType
+                  .cast(operation.evaluate.apply(operation.valueType1.cast(operand1.getValue()),
+                      operation.valueType2.cast(operand2.getValue()))));
+            }
+            return result;
+          } catch (ScoreException e) {
+            return null;
+          }
+        }
       };
 
+  /**
+   * Less-than-or-equal operator
+   */
   public final BiFunction<FixValue<?>, FixValue<?>, FixValue<Boolean>> le =
       new BiFunction<FixValue<?>, FixValue<?>, FixValue<Boolean>>() {
 
@@ -507,22 +555,29 @@ class FixValueOperations {
             return null;
           }
 
-          FixValue result =
-              FixValueFactory.create(null, operation.resultType, operation.resultValueType);
-          if (swapOperands) {
-            result.setValue(operation.resultValueType
-                .cast(operation.evaluate.apply(operation.valueType2.cast(operand2.getValue()),
-                    operation.valueType1.cast(operand1.getValue()))));
-          } else {
-            result.setValue(operation.resultValueType
-                .cast(operation.evaluate.apply(operation.valueType1.cast(operand1.getValue()),
-                    operation.valueType2.cast(operand2.getValue()))));
-          }
-          return result;
-        }
+          FixValue result;
+          try {
+            result = FixValueFactory.create(null, operation.resultType, operation.resultValueType);
 
+            if (swapOperands) {
+              result.setValue(operation.resultValueType
+                  .cast(operation.evaluate.apply(operation.valueType2.cast(operand2.getValue()),
+                      operation.valueType1.cast(operand1.getValue()))));
+            } else {
+              result.setValue(operation.resultValueType
+                  .cast(operation.evaluate.apply(operation.valueType1.cast(operand1.getValue()),
+                      operation.valueType2.cast(operand2.getValue()))));
+            }
+            return result;
+          } catch (ScoreException e) {
+            return null;
+          }
+        }
       };
 
+  /**
+   * Less-than operator
+   */
   public final BiFunction<FixValue<?>, FixValue<?>, FixValue<Boolean>> lt =
       new BiFunction<FixValue<?>, FixValue<?>, FixValue<Boolean>>() {
 
@@ -541,21 +596,29 @@ class FixValueOperations {
             return null;
           }
 
-          FixValue result =
-              FixValueFactory.create(null, operation.resultType, operation.resultValueType);
-          if (swapOperands) {
-            result.setValue(operation.resultValueType
-                .cast(operation.evaluate.apply(operation.valueType2.cast(operand2.getValue()),
-                    operation.valueType1.cast(operand1.getValue()))));
-          } else {
-            result.setValue(operation.resultValueType
-                .cast(operation.evaluate.apply(operation.valueType1.cast(operand1.getValue()),
-                    operation.valueType2.cast(operand2.getValue()))));
+          FixValue result;
+          try {
+            result = FixValueFactory.create(null, operation.resultType, operation.resultValueType);
+
+            if (swapOperands) {
+              result.setValue(operation.resultValueType
+                  .cast(operation.evaluate.apply(operation.valueType2.cast(operand2.getValue()),
+                      operation.valueType1.cast(operand1.getValue()))));
+            } else {
+              result.setValue(operation.resultValueType
+                  .cast(operation.evaluate.apply(operation.valueType1.cast(operand1.getValue()),
+                      operation.valueType2.cast(operand2.getValue()))));
+            }
+            return result;
+          } catch (ScoreException e) {
+            return null;
           }
-          return result;
         }
       };
 
+  /**
+   * Modulus operator
+   */
   public final BiFunction<FixValue<?>, FixValue<?>, FixValue<?>> mod =
       new BiFunction<FixValue<?>, FixValue<?>, FixValue<?>>() {
 
@@ -574,22 +637,29 @@ class FixValueOperations {
             return null;
           }
 
-          FixValue result =
-              FixValueFactory.create(null, operation.resultType, operation.resultValueType);
-          if (swapOperands) {
-            result.setValue(operation.resultValueType
-                .cast(operation.evaluate.apply(operation.valueType2.cast(operand2.getValue()),
-                    operation.valueType1.cast(operand1.getValue()))));
-          } else {
-            result.setValue(operation.resultValueType
-                .cast(operation.evaluate.apply(operation.valueType1.cast(operand1.getValue()),
-                    operation.valueType2.cast(operand2.getValue()))));
-          }
-          return result;
-        }
+          FixValue result;
+          try {
+            result = FixValueFactory.create(null, operation.resultType, operation.resultValueType);
 
+            if (swapOperands) {
+              result.setValue(operation.resultValueType
+                  .cast(operation.evaluate.apply(operation.valueType2.cast(operand2.getValue()),
+                      operation.valueType1.cast(operand1.getValue()))));
+            } else {
+              result.setValue(operation.resultValueType
+                  .cast(operation.evaluate.apply(operation.valueType1.cast(operand1.getValue()),
+                      operation.valueType2.cast(operand2.getValue()))));
+            }
+            return result;
+          } catch (ScoreException e) {
+            return null;
+          }
+        }
       };
 
+  /**
+   * Multiply operator
+   */
   public final BiFunction<FixValue<?>, FixValue<?>, FixValue<?>> multiply =
       new BiFunction<FixValue<?>, FixValue<?>, FixValue<?>>() {
 
@@ -612,21 +682,29 @@ class FixValueOperations {
             return null;
           }
 
-          FixValue result =
-              FixValueFactory.create(null, operation.resultType, operation.resultValueType);
-          if (swapOperands) {
-            result.setValue(operation.resultValueType
-                .cast(operation.evaluate.apply(operation.valueType1.cast(operand2.getValue()),
-                    operation.valueType2.cast(operand1.getValue()))));
-          } else {
-            result.setValue(operation.resultValueType
-                .cast(operation.evaluate.apply(operation.valueType1.cast(operand1.getValue()),
-                    operation.valueType2.cast(operand2.getValue()))));
+          FixValue result;
+          try {
+            result = FixValueFactory.create(null, operation.resultType, operation.resultValueType);
+
+            if (swapOperands) {
+              result.setValue(operation.resultValueType
+                  .cast(operation.evaluate.apply(operation.valueType1.cast(operand2.getValue()),
+                      operation.valueType2.cast(operand1.getValue()))));
+            } else {
+              result.setValue(operation.resultValueType
+                  .cast(operation.evaluate.apply(operation.valueType1.cast(operand1.getValue()),
+                      operation.valueType2.cast(operand2.getValue()))));
+            }
+            return result;
+          } catch (ScoreException e) {
+            return null;
           }
-          return result;
         }
       };
 
+  /**
+   * Not-equal operator
+   */
   public final BiFunction<FixValue<?>, FixValue<?>, FixValue<Boolean>> ne =
       new BiFunction<FixValue<?>, FixValue<?>, FixValue<Boolean>>() {
 
@@ -645,54 +723,75 @@ class FixValueOperations {
             return null;
           }
 
-          FixValue result =
-              FixValueFactory.create(null, operation.resultType, operation.resultValueType);
-          if (swapOperands) {
-            result.setValue(operation.resultValueType
-                .cast(operation.evaluate.apply(operation.valueType2.cast(operand2.getValue()),
-                    operation.valueType1.cast(operand1.getValue()))));
-          } else {
-            result.setValue(operation.resultValueType
-                .cast(operation.evaluate.apply(operation.valueType1.cast(operand1.getValue()),
-                    operation.valueType2.cast(operand2.getValue()))));
-          }
-          return result;
-        }
+          FixValue result;
+          try {
+            result = FixValueFactory.create(null, operation.resultType, operation.resultValueType);
 
+            if (swapOperands) {
+              result.setValue(operation.resultValueType
+                  .cast(operation.evaluate.apply(operation.valueType2.cast(operand2.getValue()),
+                      operation.valueType1.cast(operand1.getValue()))));
+            } else {
+              result.setValue(operation.resultValueType
+                  .cast(operation.evaluate.apply(operation.valueType1.cast(operand1.getValue()),
+                      operation.valueType2.cast(operand2.getValue()))));
+            }
+            return result;
+          } catch (ScoreException e) {
+            return null;
+          }
+        }
       };
 
+  /**
+   * Logical-not unary operator
+   */
   public final Function<FixValue<Boolean>, FixValue<Boolean>> not =
       new Function<FixValue<Boolean>, FixValue<Boolean>>() {
 
+        @SuppressWarnings("unchecked")
         @Override
         public FixValue<Boolean> apply(FixValue<Boolean> operand1) {
           Objects.requireNonNull(operand1, "Missing operand 1");
+          FixValue<Boolean> result;
+          try {
+            result = FixValueFactory.create(null, FixType.BooleanType, Boolean.class);
 
-
-          FixValue<Boolean> result =
-              FixValueFactory.create(null, FixType.BooleanType, Boolean.class);
-          result.setValue(!operand1.getValue());
-          return result;
+            result.setValue(!operand1.getValue());
+            return result;
+          } catch (ScoreException e) {
+            return null;
+          }
         }
-
       };
 
+  /**
+   * Logical or operator
+   */
   public final BiFunction<FixValue<Boolean>, FixValue<Boolean>, FixValue<Boolean>> or =
       new BiFunction<FixValue<Boolean>, FixValue<Boolean>, FixValue<Boolean>>() {
 
+        @SuppressWarnings("unchecked")
         @Override
         public FixValue<Boolean> apply(FixValue<Boolean> operand1, FixValue<Boolean> operand2) {
           Objects.requireNonNull(operand1, "Missing operand 1");
           Objects.requireNonNull(operand2, "Missing operand 2");
 
-          FixValue<Boolean> result =
-              FixValueFactory.create(null, FixType.BooleanType, Boolean.class);
-          result.setValue(operand1.getValue() || operand2.getValue());
-          return result;
-        }
+          FixValue<Boolean> result;
+          try {
+            result = FixValueFactory.create(null, FixType.BooleanType, Boolean.class);
 
+            result.setValue(operand1.getValue() || operand2.getValue());
+            return result;
+          } catch (ScoreException e) {
+            return null;
+          }
+        }
       };
 
+  /**
+   * Subtract operator
+   */
   public final BiFunction<FixValue<?>, FixValue<?>, FixValue<?>> subtract =
       new BiFunction<FixValue<?>, FixValue<?>, FixValue<?>>() {
 
@@ -711,22 +810,27 @@ class FixValueOperations {
             return null;
           }
 
-          FixValue result =
-              FixValueFactory.create(null, operation.resultType, operation.resultValueType);
-          if (swapOperands) {
-            result.setValue(operation.resultValueType
-                .cast(operation.evaluate.apply(operation.valueType2.cast(operand2.getValue()),
-                    operation.valueType1.cast(operand1.getValue()))));
-          } else {
-            result.setValue(operation.resultValueType
-                .cast(operation.evaluate.apply(operation.valueType1.cast(operand1.getValue()),
-                    operation.valueType2.cast(operand2.getValue()))));
-          }
-          return result;
-        }
+          FixValue result;
+          try {
+            result = FixValueFactory.create(null, operation.resultType, operation.resultValueType);
 
+            if (swapOperands) {
+              result.setValue(operation.resultValueType
+                  .cast(operation.evaluate.apply(operation.valueType2.cast(operand2.getValue()),
+                      operation.valueType1.cast(operand1.getValue()))));
+            } else {
+              result.setValue(operation.resultValueType
+                  .cast(operation.evaluate.apply(operation.valueType1.cast(operand1.getValue()),
+                      operation.valueType2.cast(operand2.getValue()))));
+            }
+            return result;
+          } catch (ScoreException e) {
+            return null;
+          }
+        }
       };
 
+  // By listing all combinations, the need for separate data type promotion or cast logic is avoided
   private final Operation[] addOperations = new Operation[] {
       new Operation(FixType.intType, FixType.intType, FixType.intType, Integer.class, Integer.class,
           Integer.class, addInteger),
@@ -937,6 +1041,5 @@ class FixValueOperations {
       new Operation(FixType.floatType, FixType.intType, FixType.floatType, BigDecimal.class,
           Integer.class, BigDecimal.class, subtractDecimalInteger),
       new Operation(FixType.UTCTimestamp, FixType.Duration, FixType.UTCTimestamp, Instant.class,
-          Duration.class, Instant.class, subtractDuration),
-      };
+          Duration.class, Instant.class, subtractDuration),};
 }

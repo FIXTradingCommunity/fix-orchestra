@@ -34,12 +34,14 @@ public class SymbolResolver extends TreeSymbolTable {
 
   @Override
   public FixValue<?> assign(PathStep pathStep, FixValue<?> value) throws ScoreException {
-    if (pathStep.getName().startsWith("$")) {
-      Scope scope = (Scope) this.resolve(variableRoot);
-      return scope.assign(pathStep, value);
-    } else {
-      return null;
-    }
+    PathStep qualified = pathStep;
+    if (!pathStep.getName().contains(".") && !pathStep.getName().startsWith("$") && !pathStep.getName().startsWith("^")) {
+      qualified = new PathStep("this." + pathStep.getName());
+      qualified.setIndex(pathStep.getIndex());
+      qualified.setPredicate(pathStep.getPredicate());
+    } 
+    
+    return super.assign(qualified, value);
   }
 
   /**
@@ -48,11 +50,11 @@ public class SymbolResolver extends TreeSymbolTable {
   @Override
   public FixNode resolve(PathStep pathStep) {
     PathStep qualified = pathStep;
-    if (!pathStep.getName().contains(".") && !pathStep.getName().startsWith("$")) {
+    if (!pathStep.getName().contains(".") && !pathStep.getName().startsWith("$") && !pathStep.getName().startsWith("^")) {
       qualified = new PathStep("this." + pathStep.getName());
       qualified.setIndex(pathStep.getIndex());
       qualified.setPredicate(pathStep.getPredicate());
-    }
+    } 
     
     return super.resolve(qualified);
   }

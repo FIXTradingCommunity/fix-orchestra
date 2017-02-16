@@ -170,7 +170,8 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
         var.assign(val);
         return var;
       } else {
-        return currentScope.assign(pathStep, FixValue.copy(pathStep.getName(), val));
+        FixValue<?> namedVal = FixValueFactory.copy(pathStep.getName(), val);
+        return currentScope.assign(pathStep, namedVal);
       }
     } catch (ScoreException e) {
       errorListener
