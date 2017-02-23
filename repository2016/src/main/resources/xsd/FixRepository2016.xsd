@@ -25,7 +25,11 @@
 	<xs:element name="categories">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="category" type="fixr:categoryType" maxOccurs="unbounded"/>
+				<xs:element name="category" type="fixr:categoryType" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>A business area category, usually a subcategory of a section</xs:documentation>
+					</xs:annotation>
+				</xs:element>
 			</xs:sequence>
 			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
 		</xs:complexType>
@@ -66,8 +70,8 @@
 				<xs:element ref="fixr:mappedDatatype" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
-			<xs:attribute name="name" type="fixr:Datatype_t" use="required"/>
-			<xs:attribute name="baseType" type="fixr:Datatype_t"/>
+			<xs:attribute name="name" type="fixr:Name_t" use="required"/>
+			<xs:attribute name="baseType" type="fixr:Name_t"/>
 			<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 		</xs:complexType>
 	</xs:element>
@@ -151,7 +155,7 @@
 				<xs:element ref="fixr:fields"/>
 				<xs:element ref="fixr:protocol" maxOccurs="unbounded">
 					<xs:annotation>
-						<xs:documentation>May have a section for each supported version of FIX or other protocol</xs:documentation>
+						<xs:documentation>Contains elements of a supported version of FIX or other protocol</xs:documentation>
 					</xs:annotation>
 				</xs:element>
 			</xs:sequence>
@@ -160,7 +164,9 @@
 	<xs:element name="mappedDatatype">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="fixr:mappedDatatype" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="fixr:mappedDatatype" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation><xs:documentation>Nesting supports composite types</xs:documentation></xs:annotation>
+				</xs:element>
 				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attributeGroup ref="fixr:datatypeGrp"/>
@@ -186,7 +192,11 @@
 	<xs:element name="sections">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="section" type="fixr:sectionType" maxOccurs="unbounded"/>
+				<xs:element name="section" type="fixr:sectionType" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>A large-grained business process category</xs:documentation>
+					</xs:annotation>
+				</xs:element>
 			</xs:sequence>
 			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
 		</xs:complexType>

@@ -22,13 +22,17 @@
             <codeSets>
                 <xsl:for-each select="/fixRepository/fix/fields/field[enum]">
                     <xsl:variable name="fieldName" select="@name"></xsl:variable>
+                    <xsl:variable name="fieldId" select="@id"></xsl:variable>
                     <xsl:variable name="fieldType" select="@type"></xsl:variable>
                     <xsl:element name="fixr:codeSet">
 						<xsl:attribute name="name"><xsl:value-of select="concat($fieldName, 'CodeSet')"/></xsl:attribute>
+						<xsl:attribute name="id"><xsl:value-of select="$fieldId"/></xsl:attribute>
 						<xsl:attribute name="type"><xsl:value-of select="$fieldType"/></xsl:attribute>
                         <xsl:for-each select="//field[@name = $fieldName]/enum">
                             <xsl:element name="fixr:code">
 								<xsl:attribute name="name"><xsl:value-of select="current()/@symbolicName"/></xsl:attribute>
+								<xsl:attribute name="id"><xsl:value-of select="concat($fieldId, 
+									substring(concat('000', fn:position()), string-length(concat('000', fn:position()))-2, 3))"/></xsl:attribute>
                                 <xsl:apply-templates select="@* except @symbolicName"/>
                             </xsl:element>
                         </xsl:for-each>
