@@ -15,8 +15,22 @@ import org.junit.Test;
 
 import io.fixprotocol._2016.fixrepository.MessageType;
 import io.fixprotocol._2016.fixrepository.Repository;
-import io.fixprotocol.orchestra.dsl.antlr.SymbolResolver;
+import io.fixprotocol.orchestra.model.SymbolResolver;
 import io.fixprotocol.orchestra.model.TestException;
+import quickfix.Message;
+import quickfix.SessionID;
+import quickfix.SystemTime;
+import quickfix.field.BeginString;
+import quickfix.field.CheckSum;
+import quickfix.field.MsgSeqNum;
+import quickfix.field.MsgType;
+import quickfix.field.SenderCompID;
+import quickfix.field.SenderLocationID;
+import quickfix.field.SenderSubID;
+import quickfix.field.SendingTime;
+import quickfix.field.TargetCompID;
+import quickfix.field.TargetLocationID;
+import quickfix.field.TargetSubID;
 import quickfix.field.TradSesStatus;
 import quickfix.field.TradingSessionID;
 import quickfix.fix50sp2.TradingSessionStatus;
@@ -26,17 +40,20 @@ public class ValidatorTest {
   private Validator validator;
   private static Repository repository;
   private RepositoryAdapter repositoryAdapter;
-  
+  private SessionID sessionID;
+
   @BeforeClass
-  public static void setupOnce() throws Exception  {
+  public static void setupOnce() throws Exception {
     repository = unmarshal(new File("FixRepository2016.xml"));
   }
-  
+
   @Before
   public void setUp() throws Exception {
+    sessionID = new SessionID("FIXT.1.1", "sender", "target");
     repositoryAdapter = new RepositoryAdapter(repository);
     final SymbolResolver symbolResolver = new SymbolResolver();
-    validator = new Validator(repositoryAdapter, symbolResolver );
+    symbolResolver.setTrace(true);
+    validator = new Validator(repositoryAdapter, symbolResolver);
   }
 
   private static Repository unmarshal(File inputFile) throws JAXBException {
@@ -44,7 +61,7 @@ public class ValidatorTest {
     Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
     return (Repository) jaxbUnmarshaller.unmarshal(inputFile);
   }
-  
+
   @After
   public void tearDown() throws Exception {}
 
@@ -54,13 +71,13 @@ public class ValidatorTest {
     MessageType messageType = repositoryAdapter.getMessage("TradingSessionStatus", "base");
     try {
       validator.validate(message, messageType);
-      fail("TestException exptected");
+      fail("TestException expected");
     } catch (TestException e) {
       assertTrue(e.hasDetails());
       System.out.println(e.getMessage());
     }
   }
-  
+
   @Test
   public void badCode() {
     TradingSessionStatus message = new TradingSessionStatus();
@@ -69,13 +86,13 @@ public class ValidatorTest {
     MessageType messageType = repositoryAdapter.getMessage("TradingSessionStatus", "base");
     try {
       validator.validate(message, messageType);
-      fail("TestException exptected");
+      fail("TestException expected");
     } catch (TestException e) {
       assertTrue(e.hasDetails());
       System.out.println(e.getMessage());
     }
   }
-  
+
   @Test
   public void validMessage() throws TestException {
     TradingSessionStatus message = new TradingSessionStatus();
@@ -84,8 +101,19 @@ public class ValidatorTest {
     MessageType messageType = repositoryAdapter.getMessage("TradingSessionStatus", "base");
     validator.validate(message, messageType);
   }
-  
-  @Test(expected=TestException.class)
+
+  /**
+   * Conditionally required field test
+   * @throws TestException expected
+   * 
+    <pre>
+    <fixr:fieldRef id="567" name="TradSesStatusRejReason" added="FIX.4.4" presence="conditional">
+                    <fixr:rule name="TradSesStatusRejReason" presence="required">
+                        <fixr:when>TradSesStatus=^RequestRejected</fixr:when>
+                    </fixr:rule>
+    </pre>
+   */
+  @Test(expected = TestException.class)
   public void ruleViolation() throws TestException {
     TradingSessionStatus message = new TradingSessionStatus();
     message.set(new TradingSessionID(TradingSessionID.Day));

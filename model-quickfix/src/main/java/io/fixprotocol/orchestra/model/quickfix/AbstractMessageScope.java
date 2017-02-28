@@ -27,13 +27,21 @@ import io.fixprotocol._2016.fixrepository.CodeSetType;
 import io.fixprotocol._2016.fixrepository.FieldRefType;
 import io.fixprotocol._2016.fixrepository.GroupRefType;
 import io.fixprotocol._2016.fixrepository.GroupType;
+
 import io.fixprotocol.orchestra.dsl.antlr.Evaluator;
-import io.fixprotocol.orchestra.dsl.antlr.FixNode;
-import io.fixprotocol.orchestra.dsl.antlr.FixType;
-import io.fixprotocol.orchestra.dsl.antlr.FixValue;
-import io.fixprotocol.orchestra.dsl.antlr.PathStep;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreException;
-import io.fixprotocol.orchestra.dsl.antlr.SymbolResolver;
+
+import io.fixprotocol.orchestra.model.AbstractScope;
+import io.fixprotocol.orchestra.model.FixNode;
+import io.fixprotocol.orchestra.model.FixType;
+import io.fixprotocol.orchestra.model.FixValue;
+import io.fixprotocol.orchestra.model.FixValueFactory;
+import io.fixprotocol.orchestra.model.ModelException;
+import io.fixprotocol.orchestra.model.PathStep;
+import io.fixprotocol.orchestra.model.Scope;
+
+import io.fixprotocol.orchestra.model.SymbolResolver;
+
 import quickfix.BytesField;
 import quickfix.FieldMap;
 import quickfix.FieldNotFound;
@@ -43,7 +51,7 @@ import quickfix.Group;
  * @author Don Mendelson
  *
  */
-class AbstractMessageScope {
+abstract class AbstractMessageScope {
 
   private final FieldMap fieldMap;
   private final RepositoryAdapter repository;
@@ -76,7 +84,8 @@ class AbstractMessageScope {
       for (Group group : groups) {
         GroupEntryScope scope =
             new GroupEntryScope(group, groupType, repository, symbolResolver, evaluator);
-        symbolResolver.nest(new PathStep("this."), scope);
+        Scope local = (Scope) symbolResolver.resolve(new PathStep("this."));
+        local.nest(new PathStep(groupType.getName()), scope);
         FixValue<?> fixValue;
         try {
           fixValue = evaluator.evaluate(predicate);
@@ -97,13 +106,14 @@ class AbstractMessageScope {
   @SuppressWarnings("unchecked")
   protected FixNode resolveField(FieldRefType fieldRefType) {
     String name = fieldRefType.getName();
-    FixValue<?> fixValue = null;
+    @SuppressWarnings("rawtypes")
+    FixValue fixValue = null;
     BigInteger id = fieldRefType.getId();
     String dataTypeString = repository.getFieldDatatype(id.intValue());
     CodeSetType codeSet = repository.getCodeset(dataTypeString);
     if (codeSet != null) {
       dataTypeString = codeSet.getType();
-      symbolResolver.nest(new PathStep("^"), new CodeSetScope(codeSet) );
+      symbolResolver.nest(new PathStep("^"), new CodeSetScope(codeSet));
     }
 
     FixType dataType = FixType.forName(dataTypeString);
@@ -172,9 +182,22 @@ class AbstractMessageScope {
           fieldMap.getField(bytesField);
           ((FixValue<byte[]>) fixValue).setValue(bytesField.getValue());
           break;
+        case Duration:
+          // todo
+          break;
       }
     } catch (FieldNotFound e) {
-      // value remains null
+      // Set default value if field is not present
+      String defaultValue = fieldRefType.getValue();
+      if (defaultValue != null) {
+        final Class<?> valueClass = dataType.getValueClass();
+        try {
+          fixValue = FixValueFactory.create(null, dataType, valueClass);
+          fixValue.setValue(valueClass.cast(dataType.fromString(defaultValue)));
+        } catch (ModelException e1) {
+
+        }
+      }
     }
     return fixValue;
   }

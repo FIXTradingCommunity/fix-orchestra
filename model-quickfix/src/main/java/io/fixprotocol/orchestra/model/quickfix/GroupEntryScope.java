@@ -19,13 +19,15 @@ import java.util.List;
 import io.fixprotocol._2016.fixrepository.FieldRefType;
 import io.fixprotocol._2016.fixrepository.GroupRefType;
 import io.fixprotocol._2016.fixrepository.GroupType;
+
 import io.fixprotocol.orchestra.dsl.antlr.Evaluator;
-import io.fixprotocol.orchestra.dsl.antlr.FixNode;
-import io.fixprotocol.orchestra.dsl.antlr.FixValue;
-import io.fixprotocol.orchestra.dsl.antlr.PathStep;
-import io.fixprotocol.orchestra.dsl.antlr.Scope;
-import io.fixprotocol.orchestra.dsl.antlr.ScoreException;
-import io.fixprotocol.orchestra.dsl.antlr.SymbolResolver;
+
+import io.fixprotocol.orchestra.model.FixNode;
+import io.fixprotocol.orchestra.model.FixValue;
+import io.fixprotocol.orchestra.model.ModelException;
+import io.fixprotocol.orchestra.model.PathStep;
+import io.fixprotocol.orchestra.model.Scope;
+import io.fixprotocol.orchestra.model.SymbolResolver;
 import quickfix.Group;
 
 /**
@@ -36,6 +38,7 @@ import quickfix.Group;
 class GroupEntryScope extends AbstractMessageScope implements Scope {
 
   private final GroupType groupType;
+  private Scope parent;
 
   public GroupEntryScope(Group group, GroupType groupType, RepositoryAdapter repository, SymbolResolver symbolResolver, Evaluator evaluator) {
     super(group, repository, symbolResolver, evaluator);
@@ -50,7 +53,7 @@ class GroupEntryScope extends AbstractMessageScope implements Scope {
    * io.fixprotocol.orchestra.dsl.antlr.FixValue)
    */
   @Override
-  public FixValue<?> assign(PathStep arg0, FixValue<?> arg1) throws ScoreException {
+  public FixValue<?> assign(PathStep arg0, FixValue<?> arg1) throws ModelException {
     // TODO Auto-generated method stub
     return null;
   }
@@ -105,6 +108,32 @@ class GroupEntryScope extends AbstractMessageScope implements Scope {
       }
     }
     return null;
+  }
+
+  /* (non-Javadoc)
+   * @see java.lang.AutoCloseable#close()
+   */
+  @Override
+  public void close() throws Exception {
+    if (parent != null) {
+      parent.remove(new PathStep(groupType.getName()));
+    }
+  }
+
+  /* (non-Javadoc)
+   * @see io.fixprotocol.orchestra.dsl.antlr.Scope#remove(io.fixprotocol.orchestra.dsl.antlr.PathStep)
+   */
+  @Override
+  public void remove(PathStep arg0) {
+    throw new UnsupportedOperationException("Message structure is immutable");
+  }
+
+  /* (non-Javadoc)
+   * @see io.fixprotocol.orchestra.dsl.antlr.Scope#setParent(io.fixprotocol.orchestra.dsl.antlr.Scope)
+   */
+  @Override
+  public void setParent(Scope parent) {
+    this.parent = parent;
   }
   
  

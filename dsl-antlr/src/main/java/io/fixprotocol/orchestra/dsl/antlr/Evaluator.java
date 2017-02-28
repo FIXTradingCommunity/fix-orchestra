@@ -24,6 +24,8 @@ import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
 
 import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.AnyExpressionContext;
+import io.fixprotocol.orchestra.model.FixValue;
+import io.fixprotocol.orchestra.model.SymbolResolver;
 
 /**
  * Evaluates a Score expression

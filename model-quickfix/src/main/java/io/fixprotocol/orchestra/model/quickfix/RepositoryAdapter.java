@@ -18,6 +18,7 @@ import java.util.List;
 
 import io.fixprotocol._2016.fixrepository.CodeSetType;
 import io.fixprotocol._2016.fixrepository.CodeSets;
+import io.fixprotocol._2016.fixrepository.ComponentRefType;
 import io.fixprotocol._2016.fixrepository.ComponentType;
 import io.fixprotocol._2016.fixrepository.Datatype;
 import io.fixprotocol._2016.fixrepository.Datatypes;
@@ -54,6 +55,17 @@ class RepositoryAdapter {
         if (name.equals(codeSet.getName())) {
           return codeSet;
         }
+      }
+    }
+    return null;
+  }
+
+  ComponentType getComponent(ComponentRefType componentRefType) {
+    List<ComponentType> components =
+        repository.getProtocol().get(0).getComponents().getComponentOrGroup();
+    for (ComponentType component : components) {
+      if (component.getId().equals(componentRefType.getId())) {
+        return component;
       }
     }
     return null;

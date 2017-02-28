@@ -19,13 +19,15 @@ import java.util.List;
 import io.fixprotocol._2016.fixrepository.FieldRefType;
 import io.fixprotocol._2016.fixrepository.GroupRefType;
 import io.fixprotocol._2016.fixrepository.MessageType;
+
 import io.fixprotocol.orchestra.dsl.antlr.Evaluator;
-import io.fixprotocol.orchestra.dsl.antlr.FixNode;
-import io.fixprotocol.orchestra.dsl.antlr.FixValue;
-import io.fixprotocol.orchestra.dsl.antlr.PathStep;
-import io.fixprotocol.orchestra.dsl.antlr.Scope;
-import io.fixprotocol.orchestra.dsl.antlr.ScoreException;
-import io.fixprotocol.orchestra.dsl.antlr.SymbolResolver;
+
+import io.fixprotocol.orchestra.model.FixNode;
+import io.fixprotocol.orchestra.model.FixValue;
+import io.fixprotocol.orchestra.model.ModelException;
+import io.fixprotocol.orchestra.model.PathStep;
+import io.fixprotocol.orchestra.model.Scope;
+import io.fixprotocol.orchestra.model.SymbolResolver;
 import quickfix.Message;
 
 /**
@@ -35,6 +37,7 @@ import quickfix.Message;
 class MessageScope extends AbstractMessageScope implements Scope {
 
   private final MessageType messageType;
+  private Scope parent;
 
   /**
    * Constructor
@@ -49,6 +52,31 @@ class MessageScope extends AbstractMessageScope implements Scope {
       SymbolResolver symbolResolver, Evaluator evaluator) {
     super(message, repository, symbolResolver, evaluator);
     this.messageType = messageType;
+   }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * io.fixprotocol.orchestra.dsl.antlr.Scope#assign(io.fixprotocol.orchestra.dsl.antlr.PathStep,
+   * io.fixprotocol.orchestra.dsl.antlr.FixValue)
+   */
+  @Override
+  public FixValue<?> assign(PathStep arg0, FixValue<?> arg1) throws ModelException {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.AutoCloseable#close()
+   */
+  @Override
+  public void close() throws Exception {
+    if (parent != null) {
+      parent.remove(new PathStep(messageType.getName()));
+    }
   }
 
   /*
@@ -64,24 +92,22 @@ class MessageScope extends AbstractMessageScope implements Scope {
   /*
    * (non-Javadoc)
    * 
-   * @see
-   * io.fixprotocol.orchestra.dsl.antlr.Scope#assign(io.fixprotocol.orchestra.dsl.antlr.PathStep,
-   * io.fixprotocol.orchestra.dsl.antlr.FixValue)
-   */
-  @Override
-  public FixValue<?> assign(PathStep arg0, FixValue<?> arg1) throws ScoreException {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
    * @see io.fixprotocol.orchestra.dsl.antlr.Scope#nest(io.fixprotocol.orchestra.dsl.antlr.PathStep,
    * io.fixprotocol.orchestra.dsl.antlr.Scope)
    */
   @Override
   public void nest(PathStep arg0, Scope arg1) {
+    throw new UnsupportedOperationException("Message structure is immutable");
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * io.fixprotocol.orchestra.dsl.antlr.Scope#remove(io.fixprotocol.orchestra.dsl.antlr.PathStep)
+   */
+  @Override
+  public void remove(PathStep arg0) {
     throw new UnsupportedOperationException("Message structure is immutable");
   }
 
@@ -109,6 +135,17 @@ class MessageScope extends AbstractMessageScope implements Scope {
       }
     }
     return null;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * io.fixprotocol.orchestra.dsl.antlr.Scope#setParent(io.fixprotocol.orchestra.dsl.antlr.Scope)
+   */
+  @Override
+  public void setParent(Scope parent) {
+    this.parent = parent;
   }
 
 }

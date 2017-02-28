@@ -30,10 +30,10 @@ import org.junit.Test;
 import io.fixprotocol._2016.fixrepository.MessageType;
 import io.fixprotocol._2016.fixrepository.Repository;
 import io.fixprotocol.orchestra.dsl.antlr.Evaluator;
-import io.fixprotocol.orchestra.dsl.antlr.FixValue;
-import io.fixprotocol.orchestra.dsl.antlr.PathStep;
-import io.fixprotocol.orchestra.dsl.antlr.Scope;
-import io.fixprotocol.orchestra.dsl.antlr.SymbolResolver;
+import io.fixprotocol.orchestra.model.FixValue;
+import io.fixprotocol.orchestra.model.PathStep;
+import io.fixprotocol.orchestra.model.Scope;
+import io.fixprotocol.orchestra.model.SymbolResolver;
 import quickfix.field.MDEntryPx;
 import quickfix.field.MDEntrySize;
 import quickfix.field.MDEntryType;
@@ -62,6 +62,7 @@ public class MessageScopeTest {
     final MessageType messageType =
         repositoryAdapter.getMessage("MarketDataIncrementalRefresh", "base");
     final SymbolResolver symbolResolver = new SymbolResolver();
+    symbolResolver.setTrace(true);
     final Evaluator evaluator = new Evaluator(symbolResolver);
     messageScope = new MessageScope(md, messageType, repositoryAdapter, symbolResolver, evaluator);
   }

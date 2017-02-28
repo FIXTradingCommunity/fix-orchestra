@@ -30,10 +30,14 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.AnyExpressionContext;
+import io.fixprotocol.orchestra.model.FixType;
+import io.fixprotocol.orchestra.model.FixValue;
+import io.fixprotocol.orchestra.model.ModelException;
+import io.fixprotocol.orchestra.model.PathStep;
+import io.fixprotocol.orchestra.model.SymbolResolver;
 
 /**
  * @author Don Mendelson
@@ -63,6 +67,20 @@ public class ScoreVisitorImplTest {
 
   private ScoreVisitorImpl visitor;
   private SymbolResolver symbolResolver;
+  private ErrorListener errorListener;
+  private class ErrorListener implements SemanticErrorListener {
+
+    private String msg = null;
+
+    @Override
+    public void onError(String msg) {
+      this.msg = msg;
+    }
+    
+    boolean hasError() {
+      return msg != null;
+    }
+  };
 
   /**
    * @throws java.lang.Exception
@@ -70,8 +88,10 @@ public class ScoreVisitorImplTest {
   @Before
   public void setUp() throws Exception {
     // Only resolve variables for now
-    symbolResolver = new SymbolResolver();
-    visitor = new ScoreVisitorImpl(symbolResolver);
+    this.symbolResolver = new SymbolResolver();
+    //this.symbolResolver.setTrace(true);
+    this.errorListener = new ErrorListener();
+    this.visitor = new ScoreVisitorImpl(symbolResolver, errorListener);
   }
 
   /**
@@ -139,6 +159,21 @@ public class ScoreVisitorImplTest {
       Object expression = visitor.visitAnyExpression(ctx);
       FixValue<?> fixValue = (FixValue<?>) expression;
       assertEquals(data[i].getExpected(), fixValue.getValue());
+     }
+  }
+  
+  @Test
+  public void testVisitMissingAssignment() throws IOException {
+    TestData[] data = new TestData[] {
+        new TestData("$x = $foo", 33), 
+    };
+
+    for (int i = 0; i < data.length; i++) {
+      ScoreParser parser = parse(data[i].getExpression());
+      AnyExpressionContext ctx = parser.anyExpression();
+      Object expression = visitor.visitAnyExpression(ctx);
+      assertNull(expression);
+      assertTrue(errorListener.hasError());
      }
   }
   
@@ -356,6 +391,7 @@ public class ScoreVisitorImplTest {
       AnyExpressionContext ctx = parser.anyExpression();
       Object expression = visitor.visitAnyExpression(ctx);
       assertNull(expression);
+      assertTrue(errorListener.hasError());
     }
   }
 
@@ -443,11 +479,9 @@ public class ScoreVisitorImplTest {
   }
 
   @Test
-  public void testVisitVariable() throws IOException, ScoreException {
+  public void testVisitVariable() throws IOException, ScoreException, ModelException {
     final String varName = "$orderCount";
-
-    Scope scope = (Scope) symbolResolver.resolve(new PathStep("$"));
-    scope.assign(new PathStep("orderCount"), new FixValue<Integer>(FixType.intType, 7));
+    symbolResolver.assign(new PathStep(varName), new FixValue<Integer>(FixType.intType, 7));
 
     ScoreParser parser = parse(varName);
     AnyExpressionContext ctx = parser.anyExpression();

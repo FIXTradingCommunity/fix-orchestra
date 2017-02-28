@@ -58,6 +58,15 @@ import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.TimestampContext;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.UnaryMinusContext;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.VarContext;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.VariableContext;
+import io.fixprotocol.orchestra.model.FixNode;
+import io.fixprotocol.orchestra.model.FixType;
+import io.fixprotocol.orchestra.model.FixValue;
+import io.fixprotocol.orchestra.model.FixValueFactory;
+import io.fixprotocol.orchestra.model.FixValueOperations;
+import io.fixprotocol.orchestra.model.ModelException;
+import io.fixprotocol.orchestra.model.PathStep;
+import io.fixprotocol.orchestra.model.Scope;
+import io.fixprotocol.orchestra.model.SymbolResolver;
 
 
 /**
@@ -70,7 +79,22 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
     implements ScoreVisitor<FixValue<?>> {
 
   private FixValueOperations fixValueOperations = new FixValueOperations();
+  private boolean trace = false;
 
+  /**
+   * @return the trace
+   */
+  public boolean isTrace() {
+    return trace;
+  }
+  
+  /**
+   * @param trace the trace to set
+   */
+  public void setTrace(boolean trace) {
+    this.trace = trace;
+  }
+  
   /**
    * Formatter for ISO 8601 time of day only. Java has ISO_LOCAL_TIME, but it doesn't handle the leading 'T'
    * or time zone.
@@ -164,6 +188,11 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
   @Override
   public FixValue<?> visitAssignment(AssignmentContext ctx) {
     FixValue<?> val = visit(ctx.expr());
+    if (val == null) {
+      errorListener.onError(
+          String.format("Semantic error; missing val for assignment at '%s'", ctx.getText()));
+      return null;
+    }
     FixValue<?> var = visitVar(ctx.var());
     try {
       if (var != null) {
@@ -173,7 +202,7 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
         FixValue<?> namedVal = FixValueFactory.copy(pathStep.getName(), val);
         return currentScope.assign(pathStep, namedVal);
       }
-    } catch (ScoreException e) {
+    } catch (ModelException e) {
       errorListener
           .onError(String.format("Semantic error; %s at '%s'", e.getMessage(), ctx.getText()));
       return null;
@@ -452,6 +481,9 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
     FixNode node = currentScope.resolve(pathStep);
     if (node instanceof Scope) {
       currentScope = (Scope) node;
+      if (isTrace()) {
+        System.out.format("Current scope %s%n", currentScope.getName());
+      }
       return null;
     } else if (node == null) {
       return null;
@@ -598,6 +630,9 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
     FixNode node = currentScope.resolve(pathStep);
     if (node instanceof Scope) {
       currentScope = (Scope) node;
+      if (isTrace()) {
+        System.out.format("Current scope %s%n", currentScope.getName());
+      }
       List<QualContext> qualifiers = ctx.qual();
       for (QualContext qualifier : qualifiers) {
         value = visitQual(qualifier);

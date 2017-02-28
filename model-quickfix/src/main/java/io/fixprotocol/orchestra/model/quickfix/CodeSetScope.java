@@ -19,12 +19,12 @@ import java.util.List;
 import io.fixprotocol._2016.fixrepository.CodeSetType;
 import io.fixprotocol._2016.fixrepository.CodeType;
 
-import io.fixprotocol.orchestra.dsl.antlr.FixType;
-import io.fixprotocol.orchestra.dsl.antlr.FixValue;
-import io.fixprotocol.orchestra.dsl.antlr.FixValueFactory;
-import io.fixprotocol.orchestra.dsl.antlr.PathStep;
-import io.fixprotocol.orchestra.dsl.antlr.Scope;
-import io.fixprotocol.orchestra.dsl.antlr.ScoreException;
+import io.fixprotocol.orchestra.model.FixType;
+import io.fixprotocol.orchestra.model.FixValue;
+import io.fixprotocol.orchestra.model.FixValueFactory;
+import io.fixprotocol.orchestra.model.ModelException;
+import io.fixprotocol.orchestra.model.PathStep;
+import io.fixprotocol.orchestra.model.Scope;
 
 /**
  * Scope for a code set
@@ -35,16 +35,44 @@ import io.fixprotocol.orchestra.dsl.antlr.ScoreException;
 public class CodeSetScope implements Scope {
 
   private CodeSetType codeSet;
+  private Scope parent;
 
   /**
    * Constructor
+   * 
    * @param codeSet from metadata
    */
   public CodeSetScope(CodeSetType codeSet) {
     this.codeSet = codeSet;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * io.fixprotocol.orchestra.dsl.antlr.Scope#assign(io.fixprotocol.orchestra.dsl.antlr.PathStep,
+   * io.fixprotocol.orchestra.dsl.antlr.FixValue)
+   */
+  @Override
+  public FixValue<?> assign(PathStep arg0, FixValue<?> arg1) throws ModelException {
+    throw new UnsupportedOperationException("Message structure is immutable");
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.AutoCloseable#close()
+   */
+  @Override
+  public void close() throws Exception {
+    if (parent != null) {
+      parent.remove(new PathStep(codeSet.getName()));
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
    * @see io.fixprotocol.orchestra.dsl.antlr.FixNode#getName()
    */
   @Override
@@ -52,24 +80,33 @@ public class CodeSetScope implements Scope {
     return codeSet.getName();
   }
 
-  /* (non-Javadoc)
-   * @see io.fixprotocol.orchestra.dsl.antlr.Scope#assign(io.fixprotocol.orchestra.dsl.antlr.PathStep, io.fixprotocol.orchestra.dsl.antlr.FixValue)
-   */
-  @Override
-  public FixValue<?> assign(PathStep arg0, FixValue<?> arg1) throws ScoreException {
-    throw new UnsupportedOperationException("Message structure is immutable");
-  }
-
-  /* (non-Javadoc)
-   * @see io.fixprotocol.orchestra.dsl.antlr.Scope#nest(io.fixprotocol.orchestra.dsl.antlr.PathStep, io.fixprotocol.orchestra.dsl.antlr.Scope)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see io.fixprotocol.orchestra.dsl.antlr.Scope#nest(io.fixprotocol.orchestra.dsl.antlr.PathStep,
+   * io.fixprotocol.orchestra.dsl.antlr.Scope)
    */
   @Override
   public void nest(PathStep arg0, Scope arg1) {
     throw new UnsupportedOperationException("Message structure is immutable");
   }
 
-  /* (non-Javadoc)
-   * @see io.fixprotocol.orchestra.dsl.antlr.Scope#resolve(io.fixprotocol.orchestra.dsl.antlr.PathStep)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * io.fixprotocol.orchestra.dsl.antlr.Scope#remove(io.fixprotocol.orchestra.dsl.antlr.PathStep)
+   */
+  @Override
+  public void remove(PathStep arg0) {
+    throw new UnsupportedOperationException("Message structure is immutable");
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * io.fixprotocol.orchestra.dsl.antlr.Scope#resolve(io.fixprotocol.orchestra.dsl.antlr.PathStep)
    */
   @SuppressWarnings("unchecked")
   @Override
@@ -86,12 +123,23 @@ public class CodeSetScope implements Scope {
           fixValue = FixValueFactory.create(name, dataType, dataType.getValueClass());
           fixValue.setValue(dataType.getValueClass().cast(dataType.fromString(code.getValue())));
           return fixValue;
-        } catch (ScoreException e) {
+        } catch (ModelException e) {
           return null;
-        } 
+        }
       }
     }
     return null;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * io.fixprotocol.orchestra.dsl.antlr.Scope#setParent(io.fixprotocol.orchestra.dsl.antlr.Scope)
+   */
+  @Override
+  public void setParent(Scope parent) {
+    this.parent = parent;
   }
 
 }
