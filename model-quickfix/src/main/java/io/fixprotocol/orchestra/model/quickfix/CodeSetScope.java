@@ -18,7 +18,7 @@ import java.util.List;
 
 import io.fixprotocol._2016.fixrepository.CodeSetType;
 import io.fixprotocol._2016.fixrepository.CodeType;
-
+import io.fixprotocol.orchestra.model.FixNode;
 import io.fixprotocol.orchestra.model.FixType;
 import io.fixprotocol.orchestra.model.FixValue;
 import io.fixprotocol.orchestra.model.FixValueFactory;
@@ -87,7 +87,7 @@ public class CodeSetScope implements Scope {
    * io.fixprotocol.orchestra.dsl.antlr.Scope)
    */
   @Override
-  public void nest(PathStep arg0, Scope arg1) {
+  public Scope nest(PathStep arg0, Scope arg1) {
     throw new UnsupportedOperationException("Message structure is immutable");
   }
 
@@ -98,7 +98,7 @@ public class CodeSetScope implements Scope {
    * io.fixprotocol.orchestra.dsl.antlr.Scope#remove(io.fixprotocol.orchestra.dsl.antlr.PathStep)
    */
   @Override
-  public void remove(PathStep arg0) {
+  public FixNode remove(PathStep arg0) {
     throw new UnsupportedOperationException("Message structure is immutable");
   }
 

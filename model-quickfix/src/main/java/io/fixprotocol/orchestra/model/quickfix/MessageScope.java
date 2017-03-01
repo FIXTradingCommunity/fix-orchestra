@@ -19,9 +19,7 @@ import java.util.List;
 import io.fixprotocol._2016.fixrepository.FieldRefType;
 import io.fixprotocol._2016.fixrepository.GroupRefType;
 import io.fixprotocol._2016.fixrepository.MessageType;
-
 import io.fixprotocol.orchestra.dsl.antlr.Evaluator;
-
 import io.fixprotocol.orchestra.model.FixNode;
 import io.fixprotocol.orchestra.model.FixValue;
 import io.fixprotocol.orchestra.model.ModelException;
@@ -54,18 +52,6 @@ class MessageScope extends AbstractMessageScope implements Scope {
     this.messageType = messageType;
    }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * io.fixprotocol.orchestra.dsl.antlr.Scope#assign(io.fixprotocol.orchestra.dsl.antlr.PathStep,
-   * io.fixprotocol.orchestra.dsl.antlr.FixValue)
-   */
-  @Override
-  public FixValue<?> assign(PathStep arg0, FixValue<?> arg1) throws ModelException {
-    // TODO Auto-generated method stub
-    return null;
-  }
 
   /*
    * (non-Javadoc)
@@ -96,7 +82,7 @@ class MessageScope extends AbstractMessageScope implements Scope {
    * io.fixprotocol.orchestra.dsl.antlr.Scope)
    */
   @Override
-  public void nest(PathStep arg0, Scope arg1) {
+  public Scope nest(PathStep arg0, Scope arg1) {
     throw new UnsupportedOperationException("Message structure is immutable");
   }
 
@@ -107,7 +93,7 @@ class MessageScope extends AbstractMessageScope implements Scope {
    * io.fixprotocol.orchestra.dsl.antlr.Scope#remove(io.fixprotocol.orchestra.dsl.antlr.PathStep)
    */
   @Override
-  public void remove(PathStep arg0) {
+  public FixNode remove(PathStep arg0) {
     throw new UnsupportedOperationException("Message structure is immutable");
   }
 
@@ -146,6 +132,26 @@ class MessageScope extends AbstractMessageScope implements Scope {
   @Override
   public void setParent(Scope parent) {
     this.parent = parent;
+  }
+
+
+  /* (non-Javadoc)
+   * @see io.fixprotocol.orchestra.model.Scope#assign(io.fixprotocol.orchestra.model.PathStep, io.fixprotocol.orchestra.model.FixValue)
+   */
+  @Override
+  public FixValue<?> assign(PathStep pathStep, FixValue<?> value) throws ModelException {
+    String name = pathStep.getName();
+    List<Object> members = messageType.getStructure().getComponentOrComponentRefOrGroup();
+    for (Object member : members) {
+      if (member instanceof FieldRefType) {
+        FieldRefType fieldRefType = (FieldRefType) member;
+        if (fieldRefType.getName().equals(name)) {
+          assignField(fieldRefType, value);
+          return value;
+        }
+      }
+    }
+    return null;
   }
 
 }

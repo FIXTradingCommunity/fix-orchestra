@@ -69,14 +69,16 @@ public class TreeSymbolTable extends AbstractScope {
   }
 
   @Override
-  public void nest(PathStep pathStep, Scope nested) {
+  public Scope nest(PathStep pathStep, Scope nested) {
     symbols.put(pathStep.getName(), nested);
     traceNest(pathStep, nested);
+    return nested;
   }
 
-  public void remove(PathStep pathStep) {
+  public FixNode remove(PathStep pathStep) {
     FixNode removed = symbols.remove(pathStep.getName());
     traceRemove(pathStep, removed);
+    return removed;
   }
 
   @Override

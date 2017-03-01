@@ -75,7 +75,7 @@ class GroupEntryScope extends AbstractMessageScope implements Scope {
    * io.fixprotocol.orchestra.dsl.antlr.Scope)
    */
   @Override
-  public void nest(PathStep arg0, Scope arg1) {
+  public Scope nest(PathStep arg0, Scope arg1) {
     throw new UnsupportedOperationException("Message structure is immutable");
   }
 
@@ -124,7 +124,7 @@ class GroupEntryScope extends AbstractMessageScope implements Scope {
    * @see io.fixprotocol.orchestra.dsl.antlr.Scope#remove(io.fixprotocol.orchestra.dsl.antlr.PathStep)
    */
   @Override
-  public void remove(PathStep arg0) {
+  public FixNode remove(PathStep arg0) {
     throw new UnsupportedOperationException("Message structure is immutable");
   }
 

@@ -39,8 +39,9 @@ public interface Scope extends FixNode, AutoCloseable  {
    * If a nested Scope already exists at the specified path, it is replaced.
    * @param pathStep location
    * @param nested another Scope
+   * @return the nested Scope
    */
-  void nest(PathStep pathStep, Scope nested);
+  Scope nest(PathStep pathStep, Scope nested);
 
   /**
    * Search for a symbol in the table
@@ -51,10 +52,11 @@ public interface Scope extends FixNode, AutoCloseable  {
   FixNode resolve(PathStep pathStep);
   
   /**
-   * Remove a nested Scope
+   * Remove a nested Scope or symbol
    * @param pathStep location
+   * @return a removed node
    */
-  void remove(PathStep pathStep);
+  FixNode remove(PathStep pathStep);
   
   /**
    * Set parent Scope

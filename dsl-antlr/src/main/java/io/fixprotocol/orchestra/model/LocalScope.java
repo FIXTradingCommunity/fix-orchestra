@@ -74,30 +74,19 @@ public class LocalScope extends AbstractScope {
     return name;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see io.fixprotocol.orchestra.dsl.antlr.Scope#nest(io.fixprotocol.orchestra.dsl.antlr.PathStep,
-   * io.fixprotocol.orchestra.dsl.antlr.Scope)
-   */
   @Override
-  public void nest(PathStep pathStep, Scope nested) {
+  public Scope nest(PathStep pathStep, Scope nested) {
     stack.addFirst(nested);
     nested.setParent(this);
     traceNest(pathStep, nested);
+    return nested;
   }
 
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * io.fixprotocol.orchestra.dsl.antlr.Scope#remove(io.fixprotocol.orchestra.dsl.antlr.PathStep)
-   */
   @Override
-  public void remove(PathStep pathStep) {
+  public FixNode remove(PathStep pathStep) {
     Scope removed = stack.pollFirst();
     traceRemove(pathStep, removed);
+    return removed;
   }
 
   /*

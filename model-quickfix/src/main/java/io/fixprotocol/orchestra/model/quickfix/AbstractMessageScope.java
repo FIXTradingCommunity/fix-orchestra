@@ -21,6 +21,7 @@ import java.math.BigInteger;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Date;
 import java.util.List;
 
 import io.fixprotocol._2016.fixrepository.CodeSetType;
@@ -31,7 +32,6 @@ import io.fixprotocol._2016.fixrepository.GroupType;
 import io.fixprotocol.orchestra.dsl.antlr.Evaluator;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreException;
 
-import io.fixprotocol.orchestra.model.AbstractScope;
 import io.fixprotocol.orchestra.model.FixNode;
 import io.fixprotocol.orchestra.model.FixType;
 import io.fixprotocol.orchestra.model.FixValue;
@@ -101,6 +101,71 @@ abstract class AbstractMessageScope {
       return null;
     } else
       return null;
+  }
+  
+  protected void assignField(FieldRefType fieldRefType, FixValue<?> fixValue) {
+    int id = fieldRefType.getId().intValue();
+    String dataTypeString = repository.getFieldDatatype(id);
+    CodeSetType codeSet = repository.getCodeset(dataTypeString);
+    if (codeSet != null) {
+      dataTypeString = codeSet.getType();
+    }
+    FixType dataType = FixType.forName(dataTypeString);
+    switch (dataType) {
+      case StringType:
+      case MultipleCharValue:
+      case MultipleStringValue:
+      case Country:
+      case Currency:
+      case Exchange:
+      case MonthYear:
+      case XMLData:
+      case Language:
+        fieldMap.setString(id, (String) fixValue.getValue());
+        break;
+      case BooleanType:
+        fieldMap.setBoolean(id, (boolean) fixValue.getValue());
+        break;
+      case charType:
+        fieldMap.setChar(id, (char) fixValue.getValue());
+        break;
+      case intType:
+      case Length:
+      case TagNum:
+      case SeqNum:
+      case NumInGroup:
+      case DayOfMonth:
+        fieldMap.setInt(id, (int) fixValue.getValue());
+        break;
+      case Amt:
+      case floatType:
+      case Qty:
+      case Price:
+      case PriceOffset:
+      case Percentage:
+        fieldMap.setDecimal(id, (BigDecimal) fixValue.getValue());
+        break;
+      case UTCTimestamp:
+      case TZTimestamp:
+        fieldMap.setUtcTimeStamp(id, Date.from((Instant)fixValue.getValue()));
+        break;
+      case UTCTimeOnly:
+      case TZTimeOnly:
+      case LocalMktTime:
+        fieldMap.setUtcTimeOnly(id, Date.from((Instant.from((LocalTime)fixValue.getValue()))));
+        break;
+      case UTCDateOnly:
+      case LocalMktDate:
+        fieldMap.setUtcDateOnly(id, Date.from((Instant.from((LocalDate)fixValue.getValue()))));
+        break;
+      case data:
+        BytesField bytesField = new BytesField(id, (byte[]) fixValue.getValue());
+        fieldMap.setField(bytesField);
+        break;
+      case Duration:
+        // todo
+        break;
+    }
   }
 
   @SuppressWarnings("unchecked")
