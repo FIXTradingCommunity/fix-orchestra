@@ -52,7 +52,7 @@ public class ValidatorTest {
     sessionID = new SessionID("FIXT.1.1", "sender", "target");
     repositoryAdapter = new RepositoryAdapter(repository);
     final SymbolResolver symbolResolver = new SymbolResolver();
-    symbolResolver.setTrace(true);
+    //symbolResolver.setTrace(true);
     validator = new Validator(repositoryAdapter, symbolResolver);
   }
 

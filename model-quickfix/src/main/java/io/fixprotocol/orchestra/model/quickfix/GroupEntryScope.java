@@ -53,8 +53,17 @@ class GroupEntryScope extends AbstractMessageScope implements Scope {
    * io.fixprotocol.orchestra.dsl.antlr.FixValue)
    */
   @Override
-  public FixValue<?> assign(PathStep arg0, FixValue<?> arg1) throws ModelException {
-    // TODO Auto-generated method stub
+  public FixValue<?> assign(PathStep pathStep, FixValue<?> fixValue) throws ModelException {
+    List<Object> members = groupType.getComponentRefOrGroupRefOrFieldRef();
+    for (Object member : members) {
+      if (member instanceof FieldRefType) {
+        FieldRefType fieldRefType = (FieldRefType) member;
+        if (fieldRefType.getName().equals(pathStep.getName())) {
+          assignField(fieldRefType, fixValue);
+          return fixValue;
+        }
+      }
+    }
     return null;
   }
 

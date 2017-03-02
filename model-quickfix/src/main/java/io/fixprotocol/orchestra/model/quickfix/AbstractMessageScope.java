@@ -84,13 +84,12 @@ abstract class AbstractMessageScope {
       for (Group group : groups) {
         GroupEntryScope scope =
             new GroupEntryScope(group, groupType, repository, symbolResolver, evaluator);
-        Scope local = (Scope) symbolResolver.resolve(new PathStep("this."));
+        Scope local = (Scope) symbolResolver.resolve(SymbolResolver.LOCAL_ROOT);
         local.nest(new PathStep(groupType.getName()), scope);
         FixValue<?> fixValue;
         try {
           fixValue = evaluator.evaluate(predicate);
           if (fixValue.getValue() == Boolean.TRUE) {
-
             return scope;
           }
         } catch (ScoreException e) {

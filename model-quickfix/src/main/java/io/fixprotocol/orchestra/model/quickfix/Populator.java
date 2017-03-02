@@ -15,8 +15,14 @@
 package io.fixprotocol.orchestra.model.quickfix;
 
 import java.util.List;
+import java.util.function.Function;
 
+import io.fixprotocol._2016.fixrepository.BlockAssignmentType;
+import io.fixprotocol._2016.fixrepository.CodeSetType;
+import io.fixprotocol._2016.fixrepository.ComponentRefType;
 import io.fixprotocol._2016.fixrepository.FieldRefType;
+import io.fixprotocol._2016.fixrepository.GroupRefType;
+import io.fixprotocol._2016.fixrepository.GroupType;
 import io.fixprotocol._2016.fixrepository.MessageType;
 import io.fixprotocol.orchestra.dsl.antlr.Evaluator;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreException;
@@ -25,6 +31,8 @@ import io.fixprotocol.orchestra.model.ModelException;
 import io.fixprotocol.orchestra.model.PathStep;
 import io.fixprotocol.orchestra.model.Scope;
 import io.fixprotocol.orchestra.model.SymbolResolver;
+import quickfix.FieldMap;
+import quickfix.Group;
 import quickfix.Message;
 
 /**
@@ -34,13 +42,23 @@ import quickfix.Message;
 public class Populator implements io.fixprotocol.orchestra.model.Populator<Message> {
 
   private final Evaluator evaluator;
-  private RepositoryAdapter repositoryAdapter;
-  private SymbolResolver symbolResolver;
+  private final RepositoryAdapter repositoryAdapter;
+  private final SymbolResolver symbolResolver;
+  private final Function<Integer, Group> groupFactory;
 
-  public Populator(RepositoryAdapter repositoryAdapter, SymbolResolver symbolResolver) {
+  /**
+   * Constructor
+   * 
+   * @param repositoryAdapter repository wrapper
+   * @param symbolResolver resolves symbols in expressions
+   * @param groupFactory creates instances of QuickFIX Group
+   */
+  public Populator(RepositoryAdapter repositoryAdapter, SymbolResolver symbolResolver,
+      Function<Integer, Group> groupFactory) {
     this.repositoryAdapter = repositoryAdapter;
     this.symbolResolver = symbolResolver;
     evaluator = new Evaluator(symbolResolver);
+    this.groupFactory = groupFactory;
   }
 
   @Override
@@ -55,26 +73,65 @@ public class Populator implements io.fixprotocol.orchestra.model.Populator<Messa
 
       List<Object> elements =
           outboundMessageType.getStructure().getComponentOrComponentRefOrGroup();
-      for (Object element : elements) {
-        if (element instanceof FieldRefType) {
-          FieldRefType fieldRefType = (FieldRefType) element;
-          String assignExpression = fieldRefType.getAssign();
-          if (assignExpression != null) {
-            try {
-              FixValue<?> fixValue = evaluator.evaluate(assignExpression);
-              if (fixValue != null) {
-                outScope.assign(new PathStep(fieldRefType.getName()), fixValue);
-              }
-            } catch (ScoreException e) {
-              throw new ModelException("Failed to assign field " + fieldRefType.getName(), e);
-            }
-          }
-        }
-      }
+
+      populateFieldMap(outboundMessage, elements, outScope);
+
     } catch (Exception e1) {
       // TODO Auto-generated catch block
       e1.printStackTrace();
     }
   }
 
+  private void populateFieldMap(FieldMap fieldMap, List<?> elements, Scope outScope)
+      throws ModelException {
+    for (Object element : elements) {
+      if (element instanceof FieldRefType) {
+        FieldRefType fieldRefType = (FieldRefType) element;
+        String assignExpression = fieldRefType.getAssign();
+        if (assignExpression != null) {
+          try {
+            String dataTypeString = repositoryAdapter.getFieldDatatype(fieldRefType.getId().intValue());
+            CodeSetType codeSet = repositoryAdapter.getCodeset(dataTypeString);
+            if (codeSet != null) {
+              symbolResolver.nest(new PathStep("^"), new CodeSetScope(codeSet) );
+            }
+            FixValue<?> fixValue = evaluator.evaluate(assignExpression);
+            if (fixValue != null) {
+              outScope.assign(new PathStep(fieldRefType.getName()), fixValue);
+            }
+          } catch (ScoreException e) {
+            throw new ModelException("Failed to assign field " + fieldRefType.getName(), e);
+          }
+        }
+      } else if (element instanceof GroupRefType) {
+        GroupRefType groupRefType = (GroupRefType) element;
+        List<BlockAssignmentType> blockAssignments = groupRefType.getBlockAssignment();
+        GroupType groupType = repositoryAdapter.getGroup(groupRefType);
+
+        for (int i = 0; i < blockAssignments.size(); i++) {
+          Group group = groupFactory.apply(groupType.getNumInGroupId().intValue());
+          try (GroupEntryScope groupScope =
+              new GroupEntryScope(group, groupType, repositoryAdapter, symbolResolver, evaluator)) {
+            try (Scope local = (Scope) symbolResolver.resolve(SymbolResolver.LOCAL_ROOT)) {
+              local.nest(new PathStep(groupType.getName()), groupScope);
+              populateFieldMap(group, blockAssignments.get(i).getFieldRef(), groupScope);
+              fieldMap.addGroup(group);
+            }
+          } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+          }
+        }
+      } else if (element instanceof ComponentRefType) {
+        ComponentRefType componentRefType = (ComponentRefType) element;
+        List<BlockAssignmentType> blockAssignments = componentRefType.getBlockAssignment();
+        if (blockAssignments.size() > 0) {
+          List<?> blockElements = blockAssignments.get(0).getFieldRef();
+          populateFieldMap(fieldMap, blockElements, outScope);
+        }
+      }
+    }
+  }
+
 }
+
