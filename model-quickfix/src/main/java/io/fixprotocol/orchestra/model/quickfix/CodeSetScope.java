@@ -34,7 +34,7 @@ import io.fixprotocol.orchestra.model.Scope;
  */
 public class CodeSetScope implements Scope {
 
-  private CodeSetType codeSet;
+  private final CodeSetType codeSet;
   private Scope parent;
 
   /**

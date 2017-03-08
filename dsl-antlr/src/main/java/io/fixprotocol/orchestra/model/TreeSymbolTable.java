@@ -101,7 +101,7 @@ public class TreeSymbolTable extends AbstractScope {
   public String toString() {
     return "TreeSymbolTable [" + (name != null ? "name=" + name + ", " : "")
         + (parent != null ? "parent=" + parent + ", " : "")
-        + (symbols != null ? "symbols=" + symbols : "") + "]";
+        +  "symbols=" + symbols  + "]";
   }
 
 }

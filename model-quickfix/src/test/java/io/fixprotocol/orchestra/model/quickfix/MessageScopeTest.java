@@ -62,7 +62,7 @@ public class MessageScopeTest {
     final MessageType messageType =
         repositoryAdapter.getMessage("MarketDataIncrementalRefresh", "base");
     final SymbolResolver symbolResolver = new SymbolResolver();
-    symbolResolver.setTrace(true);
+    //symbolResolver.setTrace(true);
     final Evaluator evaluator = new Evaluator(symbolResolver);
     messageScope = new MessageScope(md, messageType, repositoryAdapter, symbolResolver, evaluator);
   }

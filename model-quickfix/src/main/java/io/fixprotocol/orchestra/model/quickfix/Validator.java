@@ -51,7 +51,7 @@ public class Validator implements io.fixprotocol.orchestra.model.Validator<Messa
 
   private class ErrorListener implements SemanticErrorListener {
 
-    private BlockingQueue<String> messages = new LinkedBlockingQueue<>();
+    private final BlockingQueue<String> messages = new LinkedBlockingQueue<>();
 
     @Override
     public void onError(String msg) {
@@ -83,7 +83,7 @@ public class Validator implements io.fixprotocol.orchestra.model.Validator<Messa
             fixValue = evaluator.evaluate(expression);
             final ArrayList<String> toReceive = new ArrayList<>();
             errorListener.getErrors(toReceive);
-            toReceive.forEach(m -> testException.addDetail(m));
+            toReceive.forEach(testException::addDetail);
             
             if (fixValue.getValue() == Boolean.TRUE) {
               return true;

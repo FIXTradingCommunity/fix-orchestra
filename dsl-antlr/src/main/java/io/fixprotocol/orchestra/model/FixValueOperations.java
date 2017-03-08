@@ -20,6 +20,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
+import java.time.chrono.ChronoZonedDateTime;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -86,10 +87,10 @@ public class FixValueOperations {
   }
 
   private static class OperationKey {
-    FixType fixType1;
-    FixType fixType2;
-    Class<? extends Object> valueType1;
-    Class<? extends Object> valueType2;
+    final FixType fixType1;
+    final FixType fixType2;
+    final Class<? extends Object> valueType1;
+    final Class<? extends Object> valueType2;
 
     /**
      * @param fixType1
@@ -106,28 +107,28 @@ public class FixValueOperations {
     }
   }
 
-  static final BiFunction<BigDecimal, BigDecimal, BigDecimal> addDecimal = (x, y) -> x.add(y);
+  static final BiFunction<BigDecimal, BigDecimal, BigDecimal> addDecimal = BigDecimal::add;
 
-  static final BiFunction<Instant, Duration, Instant> addDuration = (x, y) -> x.plus(y);
+  static final BiFunction<Instant, Duration, Instant> addDuration = Instant::plus;
 
   static final BiFunction<Integer, Integer, Integer> addInteger = (x, y) -> x + y;
 
   static final BiFunction<Integer, BigDecimal, BigDecimal> addIntegerDecimal =
       (x, y) -> y.add(BigDecimal.valueOf(x));
 
-  static final BiFunction<BigDecimal, BigDecimal, BigDecimal> divideDecimal = (x, y) -> x.divide(y);
+  static final BiFunction<BigDecimal, BigDecimal, BigDecimal> divideDecimal = BigDecimal::divide;
 
   static final BiFunction<BigDecimal, Integer, BigDecimal> divideDecimalInteger =
       (x, y) -> x.divide(BigDecimal.valueOf(y));
 
-  static final BiFunction<Duration, Integer, Duration> divideDuration = (x, y) -> x.dividedBy(y);
+  static final BiFunction<Duration, Integer, Duration> divideDuration = Duration::dividedBy;
 
   static final BiFunction<Integer, Integer, Integer> divideInteger = (x, y) -> x / y;
 
   static final BiFunction<Integer, BigDecimal, Integer> divideIntegerDecimal =
       (x, y) -> x / y.intValue();
 
-  static final BiFunction<Character, Character, Boolean> eqCharacter = (x, y) -> x.equals(y);
+  static final BiFunction<Character, Character, Boolean> eqCharacter = Character::equals;
 
   static final BiFunction<BigDecimal, BigDecimal, Boolean> eqDecimal =
       (x, y) -> x.compareTo(y) == 0;
@@ -135,23 +136,23 @@ public class FixValueOperations {
   static final BiFunction<BigDecimal, Integer, Boolean> eqDecimalInteger =
       (x, y) -> x.compareTo(BigDecimal.valueOf(y)) == 0;
 
-  static final BiFunction<Duration, Duration, Boolean> eqDuration = (x, y) -> x.equals(y);
+  static final BiFunction<Duration, Duration, Boolean> eqDuration = Duration::equals;
 
-  static final BiFunction<Instant, Instant, Boolean> eqInstant = (x, y) -> x.equals(y);
+  static final BiFunction<Instant, Instant, Boolean> eqInstant = Instant::equals;
 
-  static final BiFunction<Integer, Integer, Boolean> eqInteger = (x, y) -> x == y;
+  static final BiFunction<Integer, Integer, Boolean> eqInteger = (x, y) -> Objects.equals(x, y);
 
   static final BiFunction<Integer, BigDecimal, Boolean> eqIntegerDecimal =
       (x, y) -> y.compareTo(BigDecimal.valueOf(x)) == 0;
 
-  static final BiFunction<LocalDate, LocalDate, Boolean> eqLocalDate = (x, y) -> x.equals(y);
+  static final BiFunction<LocalDate, LocalDate, Boolean> eqLocalDate = LocalDate::equals;
 
-  static final BiFunction<LocalTime, LocalTime, Boolean> eqLocalTime = (x, y) -> x.equals(y);
+  static final BiFunction<LocalTime, LocalTime, Boolean> eqLocalTime = LocalTime::equals;
 
-  static final BiFunction<String, String, Boolean> eqString = (x, y) -> x.equals(y);
+  static final BiFunction<String, String, Boolean> eqString = String::equals;
 
   static final BiFunction<ZonedDateTime, ZonedDateTime, Boolean> eqZonedDateTime =
-      (x, y) -> x.equals(y);
+          ZonedDateTime::equals;
 
   static final BiFunction<BigDecimal, BigDecimal, Boolean> geDecimal =
       (x, y) -> x.compareTo(y) >= 0;
@@ -182,19 +183,19 @@ public class FixValueOperations {
 
   static final BiFunction<Duration, Duration, Boolean> gtDuration = (x, y) -> x.compareTo(y) > 0;
 
-  static final BiFunction<Instant, Instant, Boolean> gtInstant = (x, y) -> x.isAfter(y);
+  static final BiFunction<Instant, Instant, Boolean> gtInstant = Instant::isAfter;
 
   static final BiFunction<Integer, Integer, Boolean> gtInteger = (x, y) -> x > y;
 
   static final BiFunction<Integer, BigDecimal, Boolean> gtIntegerDecimal =
       (x, y) -> BigDecimal.valueOf(x).compareTo(y) > 0;
 
-  static final BiFunction<LocalDate, LocalDate, Boolean> gtLocalDate = (x, y) -> x.isAfter(y);
+  static final BiFunction<LocalDate, LocalDate, Boolean> gtLocalDate = LocalDate::isAfter;
 
-  static final BiFunction<LocalTime, LocalTime, Boolean> gtLocalTime = (x, y) -> x.isAfter(y);
+  static final BiFunction<LocalTime, LocalTime, Boolean> gtLocalTime = LocalTime::isAfter;
 
   static final BiFunction<ZonedDateTime, ZonedDateTime, Boolean> gtZonedDateTime =
-      (x, y) -> x.isAfter(y);
+          ChronoZonedDateTime::isAfter;
 
 
   static final BiFunction<BigDecimal, BigDecimal, Boolean> leDecimal =
@@ -226,19 +227,19 @@ public class FixValueOperations {
 
   static final BiFunction<Duration, Duration, Boolean> ltDuration = (x, y) -> x.compareTo(y) < 0;
 
-  static final BiFunction<Instant, Instant, Boolean> ltInstant = (x, y) -> x.isBefore(y);
+  static final BiFunction<Instant, Instant, Boolean> ltInstant = Instant::isBefore;
 
   static final BiFunction<Integer, Integer, Boolean> ltInteger = (x, y) -> x < y;
 
   static final BiFunction<Integer, BigDecimal, Boolean> ltIntegerDecimal =
       (x, y) -> BigDecimal.valueOf(x).compareTo(y) < 0;
 
-  static final BiFunction<LocalDate, LocalDate, Boolean> ltLocalDate = (x, y) -> x.isBefore(y);
+  static final BiFunction<LocalDate, LocalDate, Boolean> ltLocalDate = LocalDate::isBefore;
 
-  static final BiFunction<LocalTime, LocalTime, Boolean> ltLocalTime = (x, y) -> x.isBefore(y);
+  static final BiFunction<LocalTime, LocalTime, Boolean> ltLocalTime = LocalTime::isBefore;
 
   static final BiFunction<ZonedDateTime, ZonedDateTime, Boolean> ltZonedDateTime =
-      (x, y) -> x.isBefore(y);
+          ChronoZonedDateTime::isBefore;
 
   static final BiFunction<BigDecimal, BigDecimal, Integer> modDecimal =
       (x, y) -> x.intValue() % y.intValue();
@@ -246,7 +247,7 @@ public class FixValueOperations {
   static final BiFunction<Integer, Integer, Integer> modInteger = (x, y) -> x % y;
 
   static final BiFunction<BigDecimal, BigDecimal, BigDecimal> multiplyDecimal =
-      (x, y) -> x.multiply(y);
+          BigDecimal::multiply;
 
   static final BiFunction<Integer, Integer, Integer> multiplyInteger = (x, y) -> x * y;
 
@@ -265,7 +266,7 @@ public class FixValueOperations {
 
   static final BiFunction<Instant, Instant, Boolean> neInstant = (x, y) -> !x.equals(y);
 
-  static final BiFunction<Integer, Integer, Boolean> neInteger = (x, y) -> x != y;
+  static final BiFunction<Integer, Integer, Boolean> neInteger = (x, y) -> !Objects.equals(x, y);
 
   static final BiFunction<Integer, BigDecimal, Boolean> neIntegerDecimal =
       (x, y) -> y.compareTo(BigDecimal.valueOf(x)) != 0;
@@ -280,12 +281,12 @@ public class FixValueOperations {
       (x, y) -> !x.equals(y);
 
   static final BiFunction<BigDecimal, BigDecimal, BigDecimal> subtractDecimal =
-      (x, y) -> x.subtract(y);
+          BigDecimal::subtract;
 
   static final BiFunction<BigDecimal, Integer, BigDecimal> subtractDecimalInteger =
       (x, y) -> x.subtract(BigDecimal.valueOf(y));
 
-  static final BiFunction<Instant, Duration, Instant> subtractDuration = (x, y) -> x.minus(y);
+  static final BiFunction<Instant, Duration, Instant> subtractDuration = Instant::minus;
 
   static final BiFunction<Integer, Integer, Integer> subtractInteger = (x, y) -> x - y;
 
@@ -343,25 +344,20 @@ public class FixValueOperations {
    * Logical and operator
    */
   public final BiFunction<FixValue<Boolean>, FixValue<Boolean>, FixValue<Boolean>> and =
-      new BiFunction<FixValue<Boolean>, FixValue<Boolean>, FixValue<Boolean>>() {
+          (operand1, operand2) -> {
+            Objects.requireNonNull(operand1, "Missing operand 1");
+            Objects.requireNonNull(operand2, "Missing operand 2");
 
-        @SuppressWarnings("unchecked")
-        @Override
-        public FixValue<Boolean> apply(FixValue<Boolean> operand1, FixValue<Boolean> operand2) {
-          Objects.requireNonNull(operand1, "Missing operand 1");
-          Objects.requireNonNull(operand2, "Missing operand 2");
+            FixValue<Boolean> result;
+            try {
+              result = FixValueFactory.create(null, FixType.BooleanType, Boolean.class);
 
-          FixValue<Boolean> result;
-          try {
-            result = FixValueFactory.create(null, FixType.BooleanType, Boolean.class);
-
-            result.setValue(operand1.getValue() && operand2.getValue());
-            return result;
-          } catch (ModelException e) {
-            return null;
-          }
-        }
-      };
+              result.setValue(operand1.getValue() && operand2.getValue());
+              return result;
+            } catch (ModelException e) {
+              return null;
+            }
+          };
 
   /**
    * Divide operator
@@ -747,47 +743,37 @@ public class FixValueOperations {
    * Logical-not unary operator
    */
   public final Function<FixValue<Boolean>, FixValue<Boolean>> not =
-      new Function<FixValue<Boolean>, FixValue<Boolean>>() {
+          operand1 -> {
+            Objects.requireNonNull(operand1, "Missing operand 1");
+            FixValue<Boolean> result;
+            try {
+              result = FixValueFactory.create(null, FixType.BooleanType, Boolean.class);
 
-        @SuppressWarnings("unchecked")
-        @Override
-        public FixValue<Boolean> apply(FixValue<Boolean> operand1) {
-          Objects.requireNonNull(operand1, "Missing operand 1");
-          FixValue<Boolean> result;
-          try {
-            result = FixValueFactory.create(null, FixType.BooleanType, Boolean.class);
-
-            result.setValue(!operand1.getValue());
-            return result;
-          } catch (ModelException e) {
-            return null;
-          }
-        }
-      };
+              result.setValue(!operand1.getValue());
+              return result;
+            } catch (ModelException e) {
+              return null;
+            }
+          };
 
   /**
    * Logical or operator
    */
   public final BiFunction<FixValue<Boolean>, FixValue<Boolean>, FixValue<Boolean>> or =
-      new BiFunction<FixValue<Boolean>, FixValue<Boolean>, FixValue<Boolean>>() {
+          (operand1, operand2) -> {
+            Objects.requireNonNull(operand1, "Missing operand 1");
+            Objects.requireNonNull(operand2, "Missing operand 2");
 
-        @SuppressWarnings("unchecked")
-        @Override
-        public FixValue<Boolean> apply(FixValue<Boolean> operand1, FixValue<Boolean> operand2) {
-          Objects.requireNonNull(operand1, "Missing operand 1");
-          Objects.requireNonNull(operand2, "Missing operand 2");
+            FixValue<Boolean> result;
+            try {
+              result = FixValueFactory.create(null, FixType.BooleanType, Boolean.class);
 
-          FixValue<Boolean> result;
-          try {
-            result = FixValueFactory.create(null, FixType.BooleanType, Boolean.class);
-
-            result.setValue(operand1.getValue() || operand2.getValue());
-            return result;
-          } catch (ModelException e) {
-            return null;
-          }
-        }
-      };
+              result.setValue(operand1.getValue() || operand2.getValue());
+              return result;
+            } catch (ModelException e) {
+              return null;
+            }
+          };
 
   /**
    * Subtract operator

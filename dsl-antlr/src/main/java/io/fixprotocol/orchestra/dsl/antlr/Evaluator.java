@@ -51,7 +51,7 @@ public class Evaluator {
       throw new IllegalStateException(msg);
     }
 
-  };
+  }
 
   private final ScoreVisitorImpl visitor;
 

@@ -102,7 +102,7 @@ abstract class AbstractMessageScope {
       return null;
   }
   
-  protected void assignField(FieldRefType fieldRefType, FixValue<?> fixValue) {
+  protected void assignField(FieldRefType fieldRefType, FixValue fixValue) {
     int id = fieldRefType.getId().intValue();
     String dataTypeString = repository.getFieldDatatype(id);
     CodeSetType codeSet = repository.getCodeset(dataTypeString);

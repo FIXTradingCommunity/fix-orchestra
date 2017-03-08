@@ -72,7 +72,7 @@ public class TestException extends Exception {
 
   @Override
   public String toString() {
-    return "TestException [" + (details != null ? "details=" + details + ", " : "")
+    return "TestException [" + "details=" + details + ", "
         + (super.toString() != null ? "toString()=" + super.toString() : "") + "]";
   }
 

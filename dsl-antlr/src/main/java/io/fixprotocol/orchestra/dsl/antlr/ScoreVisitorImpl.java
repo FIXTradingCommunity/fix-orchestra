@@ -78,7 +78,7 @@ import io.fixprotocol.orchestra.model.SymbolResolver;
 class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
     implements ScoreVisitor<FixValue<?>> {
 
-  private FixValueOperations fixValueOperations = new FixValueOperations();
+  private final FixValueOperations fixValueOperations = new FixValueOperations();
   private boolean trace = false;
 
   /**
@@ -219,7 +219,7 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
   @Override
   public FixValue<?> visitCharacter(CharacterContext ctx) {
     return new FixValue<Character>(FixType.charType,
-        Character.valueOf(ctx.CHAR().getText().charAt(1)));
+            ctx.CHAR().getText().charAt(1));
   }
 
   /*

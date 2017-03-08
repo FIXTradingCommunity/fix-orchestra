@@ -145,7 +145,7 @@ public class CodeGeneratorJ {
 
   private void generateComponent(File outputDir, ComponentType componentType, String packageName)
       throws IOException {
-    String name = componentType.getName();
+    String name = toTitleCase(componentType.getName());
     File file = getClassFilePath(outputDir, packageName, name);
     try (FileWriter writer = new FileWriter(file)) {
       writeFileHeader(writer);
@@ -175,7 +175,7 @@ public class CodeGeneratorJ {
 
   private void generateField(File outputDir, FieldType fieldType, String packageName)
       throws IOException {
-    String name = fieldType.getName();
+    String name = toTitleCase(fieldType.getName());
     File file = getClassFilePath(outputDir, packageName, name);
     try (FileWriter writer = new FileWriter(file)) {
       writeFileHeader(writer);
@@ -208,7 +208,7 @@ public class CodeGeneratorJ {
 
   private void generateGroup(File outputDir, GroupType groupType, String packageName)
       throws IOException {
-    String name = groupType.getName();
+    String name = toTitleCase(groupType.getName());
     File file = getClassFilePath(outputDir, packageName, name);
     try (FileWriter writer = new FileWriter(file)) {
       writeFileHeader(writer);
@@ -244,10 +244,10 @@ public class CodeGeneratorJ {
 
   private void generateMessage(File outputDir, MessageType messageType, String messagePackage,
       String componentPackage) throws IOException {
-    String messageClassname = messageType.getName();
+    String messageClassname = toTitleCase(messageType.getName());
     String scenario = messageType.getScenario();
     if (!scenario.equals("base")) {
-      messageClassname = messageClassname + scenario;
+      messageClassname = messageClassname + toTitleCase(scenario);
     }
     File file = getClassFilePath(outputDir, messagePackage, messageClassname);
     try (FileWriter writer = new FileWriter(file)) {
@@ -657,6 +657,10 @@ public class CodeGeneratorJ {
     writer.write(String.format("%sswitch (msgType) {%n", indent(2)));
     for (MessageType messageType : messageList) {
       String messageName = messageType.getName();
+      String scenario = messageType.getScenario();
+      if (!scenario.equals("base")) {
+        continue;
+      }
       writer
           .write(String.format("%scase %s.%s.MSGTYPE:%n", indent(1), messagePackage, messageName));
       writer.write(String.format("%sswitch (correspondingFieldID) {%n", indent(2)));
@@ -868,5 +872,12 @@ public class CodeGeneratorJ {
     return writer;
   }
 
+  // Capitalize first char and any after underscore or space. Leave other caps as-is.
+  private String toTitleCase(String text) {
+    String[] parts = text.split("_ ");
+    return Arrays.stream(parts)
+        .map(part -> part.substring(0, 1).toUpperCase() + part.substring(1))
+        .collect(Collectors.joining());
+  }
 
 }
