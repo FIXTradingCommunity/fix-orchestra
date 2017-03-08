@@ -34,8 +34,8 @@
 				<xs:element name="groupRef" type="fixr:groupRefType"/>
 			</xs:choice>
 			<xs:choice minOccurs="0" maxOccurs="unbounded">
-				<xs:element name="states" type="fixr:stateMachineType" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element name="timer" type="fixr:timerType" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="states" type="fixr:stateMachineType"/>
+				<xs:element name="timer" type="fixr:timerType"/>
 			</xs:choice>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
@@ -172,7 +172,7 @@
 	</xs:complexType>
 	<xs:complexType name="componentType">
 		<xs:sequence>
-			<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:choice maxOccurs="unbounded">
 				<xs:element name="componentRef" type="fixr:componentRefType"/>
 				<xs:element name="groupRef" type="fixr:groupRefType"/>
 				<xs:element name="fieldRef" type="fixr:fieldRefType"/>
@@ -462,6 +462,12 @@
 		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
 		<xs:attribute name="msgType" type="fixr:MsgType_t"/>
 		<xs:attribute name="scenario" type="xs:string" default="base"/>
+		<xs:attribute name="implMinOccurs" type="xs:positiveInteger" default="1"/>
+		<xs:attribute name="implMaxOccurs" type="fixr:unboundedIntType" default="1">
+			<xs:annotation>
+				<xs:documentation>The same message type may be sent one or more times</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 	</xs:complexType>
 	<xs:complexType name="messageType">
 		<xs:sequence>
@@ -481,7 +487,11 @@
 			<xs:element name="responses" minOccurs="0">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="response" type="fixr:responseType" maxOccurs="unbounded"/>
+						<xs:element name="response" type="fixr:responseType" maxOccurs="unbounded">
+							<xs:annotation>
+								<xs:documentation>Responses are evaluated and triggered in the order listed</xs:documentation>
+							</xs:annotation>
+						</xs:element>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
@@ -577,10 +587,15 @@
 	</xs:simpleType>
 	<xs:complexType name="responseType">
 		<xs:sequence>
-			<xs:element name="messageRef" type="fixr:messageRefType" minOccurs="0" maxOccurs="unbounded"/>
-			<xs:element name="stateRef" type="fixr:stateRefType" minOccurs="0" maxOccurs="unbounded"/>
-			<xs:element name="transitionRef" type="fixr:transitionRefType" minOccurs="0" maxOccurs="unbounded"/>
-			<xs:element name="timerRef" type="fixr:timerRefType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:choice maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Any number of response actions can be triggered by the same 'when' condition</xs:documentation>
+				</xs:annotation>
+				<xs:element name="messageRef" type="fixr:messageRefType"/>
+				<xs:element name="stateRef" type="fixr:stateRefType"/>
+				<xs:element name="transitionRef" type="fixr:transitionRefType"/>
+				<xs:element name="timerRef" type="fixr:timerRefType"/>
+			</xs:choice>
 			<xs:element name="when" type="fixr:expressionType" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>A common condition for all of the actions. If it
@@ -591,6 +606,7 @@
 			</xs:element>
 		</xs:sequence>
 		<xs:attribute name="name" type="fixr:Name_t"/>
+		<xs:attribute name="sync" type="fixr:synchronization" use="optional"/>
 	</xs:complexType>
 	<xs:simpleType name="SectionID_t">
 		<xs:restriction base="fixr:Name_t">
@@ -657,6 +673,25 @@
 			<xs:enumeration value="supported"/>
 			<xs:enumeration value="forbidden"/>
 			<xs:enumeration value="ignored"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="synchronization">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="asynchronous">
+				<xs:annotation>
+					<xs:documentation>Event timing is completely independent</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="synchronous">
+				<xs:annotation>
+					<xs:documentation>Requests in-progress block subsequent requests</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="pipelined">
+				<xs:annotation>
+					<xs:documentation>Response timing is dependent on a request, but multiple requests can be in-flight</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="Term_t">
@@ -743,6 +778,14 @@
 			</xs:annotation>
 		</xs:attribute>
 	</xs:complexType>
+	<xs:simpleType name="unbounded">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="unbounded"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="unboundedIntType">
+		<xs:union memberTypes="xs:nonNegativeInteger fixr:unbounded"/>
+	</xs:simpleType>
 	<xs:simpleType name="UnionDataType_t">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="Qty"/>
