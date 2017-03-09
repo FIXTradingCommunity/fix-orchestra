@@ -3,7 +3,7 @@
 	<xs:annotation>
 		<xs:documentation>
 			FIX Repository standard structure of messages
-			© Copyright 2016 FIX Protocol Limited
+			© Copyright 2016-2017 FIX Protocol Limited
 			Creative Commons Attribution-NoDerivatives 4.0
 			International Public License
 		</xs:documentation>
@@ -165,7 +165,9 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="fixr:mappedDatatype" minOccurs="0" maxOccurs="unbounded">
-					<xs:annotation><xs:documentation>Nesting supports composite types</xs:documentation></xs:annotation>
+					<xs:annotation>
+						<xs:documentation>Nesting supports composite types</xs:documentation>
+					</xs:annotation>
 				</xs:element>
 				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
