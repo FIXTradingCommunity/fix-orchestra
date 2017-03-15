@@ -17,10 +17,13 @@ package io.fixprotocol.orchestra.xml;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.InputStream;
 import java.io.PrintStream;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import io.fixprotocol.orchestra.xml.RepositoryDiffReporter.HtmlDiffListener;
 
 public class RepositoryDiffReporterTest {
 
@@ -28,7 +31,7 @@ public class RepositoryDiffReporterTest {
    * 
    */
   private static final String DIFF_FILENAME = "testdiff.html";
-  private RepositoryDiffReporter xmlDiff;
+  private RepositoryDiffReporter tool;
 
 
   /**
@@ -36,18 +39,19 @@ public class RepositoryDiffReporterTest {
    */
   @Before
   public void setUp() throws Exception {
-    xmlDiff = new RepositoryDiffReporter();
+    tool = new RepositoryDiffReporter();
+    RepositoryDiffReporter.HtmlDiffListener aListener = tool.new HtmlDiffListener(new FileOutputStream(DIFF_FILENAME));
+    tool.setListener(aListener);
   }
 
 
   @Test
   public void report() throws Exception {
-    xmlDiff.diff(
+    tool.diff(
         new FileInputStream(Thread.currentThread().getContextClassLoader()
             .getResource("FixRepository2016EP215.xml").getFile()),
         new FileInputStream(Thread.currentThread().getContextClassLoader()
-            .getResource("FixRepository2016EP216.xml").getFile()),
-        new PrintStream(DIFF_FILENAME));
+            .getResource("FixRepository2016EP216.xml").getFile()));
    }
 
 }

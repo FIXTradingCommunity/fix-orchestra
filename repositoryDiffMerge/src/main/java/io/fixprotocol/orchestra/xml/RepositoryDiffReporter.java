@@ -15,7 +15,13 @@
 package io.fixprotocol.orchestra.xml;
 
 import java.io.FileInputStream;
-import java.io.PrintStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+
+import javax.xml.transform.TransformerConfigurationException;
 
 /**
  * Generates an HTML report of FIX Repository differences
@@ -24,87 +30,104 @@ import java.io.PrintStream;
  *
  */
 public class RepositoryDiffReporter extends XmlDiff {
-  private class HtmlDiffListener implements XmlDiffListener {
+  /**
+   * @throws TransformerConfigurationException
+   */
+  public RepositoryDiffReporter() throws TransformerConfigurationException {
+    super();
+  }
+
+  class HtmlDiffListener implements XmlDiffListener {
 
     private boolean headerGenerated = false;
     private boolean firstRow = true;
+    private final OutputStreamWriter out;
+
+    /**
+     * @param out
+     */
+    public HtmlDiffListener(OutputStream out) {
+      this.out = new OutputStreamWriter(out);
+    }
 
     @Override
     public void accept(Event t) {
+      try {
       if (!headerGenerated) {
         generateHeader();
       }
 
-      String type = XpathUtil.getElementLocalName(t.getName());
+      String type = XpathUtil.getElementLocalName(t.getXpath());
       // Skip an element that is just a container
       if (type.equals("annotation")) {
         return;
       }
-      boolean isAttribute = XpathUtil.isAttribute(t.getName());
+      boolean isAttribute = XpathUtil.isAttribute(t.getXpath());
 
       if (isAttribute) {
-        String attribute = XpathUtil.getAttribute(t.getName());
+        String attribute = XpathUtil.getAttribute(t.getXpath());
         // Name already shown
         if (attribute.equals("name")) {
           return;
         }
-        out.format("<br/>%s=%s", attribute, t.getValue());
+
+          out.write(String.format("<br/>%s=%s", attribute, t.getValue()));
+
       } else if (type.equals("documentation")) {
-        out.format("<br/>%s", t.getValue());
+        out.write(String.format("<br/>%s", t.getValue()));
       } else {
         if (!firstRow) {
-          out.format("</td></tr>%n");
+          out.write(String.format("</td></tr>%n"));
         } else {
           firstRow = false;
         }
-        out.format("<tr>");
-        String name = XpathUtil.getElementPredicate(t.getName());
-        String parent = XpathUtil.getParentPredicate(t.getName());
-        String parentType = XpathUtil.getParentLocalName(t.getName());
+        out.write(String.format("<tr>"));
+        String name = XpathUtil.getElementPredicate(t.getXpath());
+        String parent = XpathUtil.getParentPredicate(t.getXpath());
+        String parentType = XpathUtil.getParentLocalName(t.getXpath());
 
         switch (t.getDifference()) {
           case ADD:
-            out.format("<td>%s</td><td>%s</td><td>Add</td><td>%s</td><td>%s</td><td>%s", parentType,
+            out.write(String.format("<td>%s</td><td>%s</td><td>Add</td><td>%s</td><td>%s</td><td>%s", parentType,
                 parent, type, name,
-                t.getValue() != null && t.getValue().length() > 0 ? t.getValue() : "");
+                t.getValue() != null && t.getValue().length() > 0 ? t.getValue() : ""));
             break;
-          case CHANGE:
-            out.format("<td>%s</td><td>%s</td><td>Change</td><td>%s</td><td>%s</td><td>%s",
-                parentType, parent, type, name, t.getValue());
+          case REPLACE:
+            out.write(String.format("<td>%s</td><td>%s</td><td>Change</td><td>%s</td><td>%s</td><td>%s",
+                parentType, parent, type, name, t.getValue()));
             break;
           case REMOVE:
-            out.format("<td>%s</td><td>%s</td><td>Remove</td><td>%s</td><td>%s</td><td>%s",
-                parentType, parent, type, name, t.getValue() != null ? t.getValue() : "");
-            break;
-          case EQUAL:
+            out.write(String.format("<td>%s</td><td>%s</td><td>Remove</td><td>%s</td><td>%s</td><td>%s",
+                parentType, parent, type, name, t.getValue() != null ? t.getValue() : ""));
             break;
         }
 
+      }
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
       }
     }
 
     @Override
     public void close() throws Exception {
       // generate footer
-      out.format("</table>%n");
-      out.format("</body>%n");
-      out.format("</html>%n");
+      out.write(String.format("</table>%n"));
+      out.write(String.format("</body>%n"));
+      out.write(String.format("</html>%n"));
     }
 
 
-    /**
-     * 
-     */
-    private void generateHeader() {
-      out.format("<!DOCTYPE html>%n");
-      out.format("<html>%n");
-      out.format("<head>%n");
-      out.format("<title>Repository Differences</title>%n");
-      out.format("</head>%n");
-      out.format("<body>%n");
-      out.format("<table border=\"1\">%n");
-      out.format(
-          "<tr><th>Parent Type</th><th>Parent Element</th><th>Event</th><th>Type</th><th>Name</th><th>Value</th></tr>%n");
+    private void generateHeader() throws IOException {
+      out.write(String.format("<!DOCTYPE html>%n"));
+      out.write(String.format("<html>%n"));
+      out.write(String.format("<head>%n"));
+      out.write(String.format("<title>Repository Differences</title>%n"));
+      out.write(String.format("</head>%n"));
+      out.write(String.format("<body>%n"));
+      out.write(String.format("<table border=\"1\">%n"));
+      out.write(String.format(
+          "<tr><th>Parent Type</th><th>Parent Element</th><th>Event</th><th>Type</th><th>Name</th><th>Value</th></tr>%n"));
       headerGenerated = true;
     }
   }
@@ -121,8 +144,12 @@ public class RepositoryDiffReporter extends XmlDiff {
       usage();
     } else {
       RepositoryDiffReporter tool = new RepositoryDiffReporter();
-      tool.diff(new FileInputStream(args[0]), new FileInputStream(args[1]),
-          args.length > 2 ? new PrintStream(args[2]) : System.out);
+      try (HtmlDiffListener aListener = tool.new HtmlDiffListener(args.length > 2 ? new FileOutputStream(args[2]) : System.out);
+          InputStream is1 = new FileInputStream(args[0]);
+          InputStream is2 = new FileInputStream(args[1])) {
+        tool.setListener(aListener);
+        tool.diff(is1, is2);
+      }
     }
   }
 
@@ -133,9 +160,4 @@ public class RepositoryDiffReporter extends XmlDiff {
     System.out.println("Usage: RepositoryDiffReporter <xml-file1> <xml-file2> [html-file]");
   }
 
-
-
-  public RepositoryDiffReporter() {
-    setListener(new HtmlDiffListener());
-  }
 }

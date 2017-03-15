@@ -16,8 +16,6 @@ package io.fixprotocol.orchestra.xml;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.PrintStream;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -27,7 +25,7 @@ public class XmlDiffTest {
   /**
    * 
    */
-  private static final String DIFF_FILENAME = "testdiff.txt";
+  private static final String DIFF_FILENAME = "testdiff.xml";
   private XmlDiff xmlDiff;
   private XmlMerge xmlMerge;
 
@@ -37,6 +35,8 @@ public class XmlDiffTest {
   @Before
   public void setUp() throws Exception {
     xmlDiff = new XmlDiff();
+    xmlDiff.setListener(new PatchOpsListener(
+        new FileOutputStream(DIFF_FILENAME)));
     xmlMerge = new XmlMerge();
   }
 
@@ -47,12 +47,11 @@ public class XmlDiffTest {
         new FileInputStream(Thread.currentThread().getContextClassLoader()
             .getResource("FixRepository2016EP215.xml").getFile()),
         new FileInputStream(Thread.currentThread().getContextClassLoader()
-            .getResource("FixRepository2016EP216.xml").getFile()),
-        new PrintStream(DIFF_FILENAME));
+            .getResource("FixRepository2016EP216.xml").getFile()));
     xmlMerge.merge(
         new FileInputStream(Thread.currentThread().getContextClassLoader()
             .getResource("FixRepository2016EP215.xml").getFile()),
-        new FileReader(DIFF_FILENAME), new FileOutputStream("testmerged.xml"));
+        new FileInputStream(DIFF_FILENAME), new FileOutputStream("testmerged.xml"));
   }
 
 }

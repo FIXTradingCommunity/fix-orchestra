@@ -17,6 +17,7 @@ import java.util.function.Consumer;
 
 /**
  * Event handler for {@link XmlDiff}
+ * 
  * @author Don Mendelson
  *
  */
@@ -31,37 +32,47 @@ public interface XmlDiffListener extends Consumer<XmlDiffListener.Event>, AutoCl
      * Type of XML difference
      */
     enum Difference {
-      ADD, CHANGE, REMOVE, EQUAL
+      ADD, EQUAL, REMOVE, REPLACE
     }
 
     private final Difference difference;
-    private final String name;
     private final String oldValue;
     private final String value;
+    private final String xpath;
 
     /**
-     * Constructor for ADD, REMOVE, EQUAL event
+     * Constructor for REMOVE event
+     * 
      * @param difference type of event
      * @param name node name of element or attribute
      * @param value node value of element or attribute
      */
-    public Event(Difference difference, String name, String value) {
-      this.difference = difference;
-      this.name = name;
-      this.value = value;
-      this.oldValue = null;
+    public Event(Difference difference, String xpath) {
+      this(difference, xpath, null, null);
     }
 
     /**
-     * Constructor for CHANGE event
+     * Constructor for ADD event
+     * 
      * @param difference type of event
      * @param name node name of element or attribute
      * @param value node value of element or attribute
+     */
+    public Event(Difference difference, String xpath, String value) {
+      this(difference, xpath, value, null);
+    }
+
+    /**
+     * Constructor for REPLACE event
+     * 
+     * @param difference type of event
+     * @param xpath node name of element or attribute
+     * @param value node value of element or attribute
      * @param oldValue previous node value
      */
-    public Event(Difference difference, String name, String value, String oldValue) {
+    public Event(Difference difference, String xpath, String value, String oldValue) {
       this.difference = difference;
-      this.name = name;
+      this.xpath = xpath;
       this.value = value;
       this.oldValue = oldValue;
     }
@@ -70,16 +81,16 @@ public interface XmlDiffListener extends Consumer<XmlDiffListener.Event>, AutoCl
       return difference;
     }
 
-    String getName() {
-      return name;
-    }
-
     String getOldValue() {
       return oldValue;
     }
 
     String getValue() {
       return value;
+    }
+
+    String getXpath() {
+      return xpath;
     }
 
   }
