@@ -188,9 +188,8 @@ public class XmlMerge {
     String xpathExpression = patchOpElement.getAttribute("sel");
     String attribute = patchOpElement.getAttribute("type");
 
-    String parentExpression = xpathExpression.substring(0, xpathExpression.lastIndexOf('/'));
     Node parent =
-        (Node) xpathEvaluator.compile(parentExpression).evaluate(doc, XPathConstants.NODE);
+        (Node) xpathEvaluator.compile(xpathExpression).evaluate(doc, XPathConstants.NODE);
 
     if (attribute.length() > 0) {
       String value = null;
@@ -218,6 +217,8 @@ public class XmlMerge {
     }
 
   }
+
+
 
   private Document parse(InputStream is)
       throws ParserConfigurationException, SAXException, IOException {

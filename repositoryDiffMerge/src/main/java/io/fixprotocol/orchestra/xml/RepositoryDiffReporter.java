@@ -23,6 +23,11 @@ import java.io.OutputStreamWriter;
 
 import javax.xml.transform.TransformerConfigurationException;
 
+import org.w3c.dom.Attr;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 /**
  * Generates an HTML report of FIX Repository differences
  * 
@@ -53,56 +58,84 @@ public class RepositoryDiffReporter extends XmlDiff {
     @Override
     public void accept(Event t) {
       try {
-      if (!headerGenerated) {
-        generateHeader();
-      }
-
-      String type = XpathUtil.getElementLocalName(t.getXpath());
-      // Skip an element that is just a container
-      if (type.equals("annotation")) {
-        return;
-      }
-      boolean isAttribute = XpathUtil.isAttribute(t.getXpath());
-
-      if (isAttribute) {
-        String attribute = XpathUtil.getAttribute(t.getXpath());
-        // Name already shown
-        if (attribute.equals("name")) {
-          return;
+        if (!headerGenerated) {
+          generateHeader();
         }
 
-          out.write(String.format("<br/>%s=%s", attribute, t.getValue()));
-
-      } else if (type.equals("documentation")) {
-        out.write(String.format("<br/>%s", t.getValue()));
-      } else {
         if (!firstRow) {
           out.write(String.format("</td></tr>%n"));
         } else {
           firstRow = false;
         }
         out.write(String.format("<tr>"));
-        String name = XpathUtil.getElementPredicate(t.getXpath());
-        String parent = XpathUtil.getParentPredicate(t.getXpath());
-        String parentType = XpathUtil.getParentLocalName(t.getXpath());
+
 
         switch (t.getDifference()) {
           case ADD:
-            out.write(String.format("<td>%s</td><td>%s</td><td>Add</td><td>%s</td><td>%s</td><td>%s", parentType,
-                parent, type, name,
-                t.getValue() != null && t.getValue().length() > 0 ? t.getValue() : ""));
+            if (t.getValue() instanceof Attr) {
+              out.write(
+                  String.format("<td>%s</td><td>%s</td><td>Add</td><td></td><td>%s</td><td>%s",
+                      XpathUtil.getParentLocalName(t.getXpath()),
+                      XpathUtil.getParentPredicate(t.getXpath()), 
+                      t.getValue().getNodeName(),
+                      t.getValue().getNodeValue()));
+            } else {
+              Element element = (Element) t.getValue();
+              String text = null;
+              NodeList children = element.getChildNodes();
+              for (int i = 0; i < children.getLength(); i++) {
+                Node child = children.item(i);
+                if (Node.TEXT_NODE == child.getNodeType()) {
+                  text = child.getNodeValue();
+                  break;
+                }
+              }
+
+              out.write(
+                  String.format("<td>%s</td><td>%s</td><td>Add</td><td>%s</td><td>%s</td><td>%s",
+                      XpathUtil.getElementLocalName(t.getXpath()),
+                      XpathUtil.getElementPredicate(t.getXpath()), 
+                      t.getValue().getNodeName(),
+                      element.getAttribute("name"),
+                      text != null ? text : ""));
+
+            }
             break;
           case REPLACE:
-            out.write(String.format("<td>%s</td><td>%s</td><td>Change</td><td>%s</td><td>%s</td><td>%s",
-                parentType, parent, type, name, t.getValue()));
+            if (t.getValue() instanceof Attr) {
+              out.write(
+                  String.format("<td>%s</td><td>%s</td><td>Add</td><td></td><td>%s</td><td>%s",
+                      XpathUtil.getParentLocalName(t.getXpath()),
+                      XpathUtil.getParentPredicate(t.getXpath()), t.getValue().getNodeName(),
+                      t.getValue().getNodeValue()));
+            } else {
+              Element element = (Element) t.getValue();
+              String text = null;
+              NodeList children = element.getChildNodes();
+              for (int i = 0; i < children.getLength(); i++) {
+                Node child = children.item(i);
+                if (Node.TEXT_NODE == child.getNodeType()) {
+                  text = child.getNodeValue();
+                  break;
+                }
+              }
+              out.write(
+                  String.format("<td>%s</td><td>%s</td><td>Add</td><td>%s</td><td>%s</td><td>%s",
+                      XpathUtil.getParentLocalName(t.getXpath()),
+                      XpathUtil.getParentPredicate(t.getXpath()), t.getValue().getNodeName(),
+                      text != null ? text : ""));
+            }
             break;
           case REMOVE:
-            out.write(String.format("<td>%s</td><td>%s</td><td>Remove</td><td>%s</td><td>%s</td><td>%s",
-                parentType, parent, type, name, t.getValue() != null ? t.getValue() : ""));
+            out.write(
+                String.format("<td>%s</td><td>%s</td><td>Remove</td><td>%s</td><td>%s</td><td>",
+                    XpathUtil.getParentLocalName(t.getXpath()),
+                    XpathUtil.getParentPredicate(t.getXpath()), 
+                    XpathUtil.getElementLocalName(t.getXpath()),
+                    XpathUtil.getElementPredicate(t.getXpath())));
             break;
         }
 
-      }
       } catch (IOException e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
@@ -144,7 +177,9 @@ public class RepositoryDiffReporter extends XmlDiff {
       usage();
     } else {
       RepositoryDiffReporter tool = new RepositoryDiffReporter();
-      try (HtmlDiffListener aListener = tool.new HtmlDiffListener(args.length > 2 ? new FileOutputStream(args[2]) : System.out);
+      try (
+          HtmlDiffListener aListener = tool.new HtmlDiffListener(
+              args.length > 2 ? new FileOutputStream(args[2]) : System.out);
           InputStream is1 = new FileInputStream(args[0]);
           InputStream is2 = new FileInputStream(args[1])) {
         tool.setListener(aListener);

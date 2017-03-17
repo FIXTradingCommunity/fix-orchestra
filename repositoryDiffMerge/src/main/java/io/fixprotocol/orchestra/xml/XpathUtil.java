@@ -29,6 +29,57 @@ import org.w3c.dom.Node;
  */
 public final class XpathUtil {
 
+  public static String getAttribute(String xpath) {
+    Objects.requireNonNull(xpath, "Xpath cannot be null");
+    String[] fields = xpath.split("/");
+    if (fields == null || fields.length == 0) {
+      return "";
+    }
+    if (fields[fields.length - 1].startsWith("@")) {
+      return fields[fields.length - 1].substring(1);
+    } else {
+      return "";
+    }
+  }
+
+  public static String getElementLocalName(String xpath) {
+    Objects.requireNonNull(xpath, "Xpath cannot be null");
+    String[] fields = xpath.split("/");
+    if (fields == null || fields.length == 0) {
+      return "";
+    }
+    for (int i = fields.length - 1; i >= 0; i--) {
+      if (fields[i].startsWith("@")) {
+        continue;
+      }
+      int colon = fields[i].indexOf(":") + 1;
+      int bracket = fields[i].indexOf("[");
+      return fields[i].substring(colon, bracket == -1 ? fields[i].length() : bracket);
+    }
+    return "";
+  }
+  
+  public static String getElementPredicate(String xpath) {
+    Objects.requireNonNull(xpath, "Xpath cannot be null");
+    String[] fields = xpath.split("/");
+    if (fields == null || fields.length == 0) {
+      return "";
+    }
+    for (int i = fields.length - 1; i >= 0; i--) {
+      if (fields[i].startsWith("@")) {
+        continue;
+      }
+      int open = fields[i].indexOf("=");
+      int close = fields[i].indexOf("]");
+      if (open == -1 || close == -1) {
+        return "";
+      }
+      // skip over quote
+      return fields[i].substring(open + 2, close - 1);
+    }
+    return "";
+  }
+
   /**
    * Utility to determine the XPATH of an XML node
    * 
@@ -122,42 +173,6 @@ public final class XpathUtil {
     return buffer.toString();
   }
 
-  public static boolean isAttribute(String xpath) {
-    Objects.requireNonNull(xpath, "Xpath cannot be null");
-    String[] fields = xpath.split("/");
-    return !(fields == null || fields.length == 0) && fields[fields.length - 1].startsWith("@");
-  }
-  
-  public static String getAttribute(String xpath) {
-    Objects.requireNonNull(xpath, "Xpath cannot be null");
-    String[] fields = xpath.split("/");
-    if (fields == null || fields.length == 0) {
-      return "";
-    }
-    if (fields[fields.length - 1].startsWith("@")) {
-      return fields[fields.length - 1].substring(1);
-    } else {
-      return "";
-    }
-  }
-
-  public static String getElementLocalName(String xpath) {
-    Objects.requireNonNull(xpath, "Xpath cannot be null");
-    String[] fields = xpath.split("/");
-    if (fields == null || fields.length == 0) {
-      return "";
-    }
-    for (int i = fields.length - 1; i >= 0; i--) {
-      if (fields[i].startsWith("@")) {
-        continue;
-      }
-      int colon = fields[i].indexOf(":") + 1;
-      int bracket = fields[i].indexOf("[");
-      return fields[i].substring(colon, bracket == -1 ? fields[i].length() : bracket);
-    }
-    return "";
-  }
-
   public static String getParentLocalName(String xpath) {
     Objects.requireNonNull(xpath, "Xpath cannot be null");
     String[] fields = xpath.split("/");
@@ -179,25 +194,14 @@ public final class XpathUtil {
     }
     return "";
   }
-  public static String getElementPredicate(String xpath) {
+  /**
+   * Returns the XPath of the parent node
+   * @param xpath an XPath expression
+   * @return an XPath expression of the parent
+   */
+  public static String getParentPath(String xpath) {
     Objects.requireNonNull(xpath, "Xpath cannot be null");
-    String[] fields = xpath.split("/");
-    if (fields == null || fields.length == 0) {
-      return "";
-    }
-    for (int i = fields.length - 1; i >= 0; i--) {
-      if (fields[i].startsWith("@")) {
-        continue;
-      }
-      int open = fields[i].indexOf("=");
-      int close = fields[i].indexOf("]");
-      if (open == -1 || close == -1) {
-        return "";
-      }
-      // skip over quote
-      return fields[i].substring(open + 2, close - 1);
-    }
-    return "";
+    return xpath.substring(0, xpath.lastIndexOf('/'));
   }
 
   public static String getParentPredicate(String xpath) {
@@ -224,6 +228,12 @@ public final class XpathUtil {
       return fields[i].substring(open + 2, close - 1);
     }
     return "";
+  }
+  
+  public static boolean isAttribute(String xpath) {
+    Objects.requireNonNull(xpath, "Xpath cannot be null");
+    String[] fields = xpath.split("/");
+    return !(fields == null || fields.length == 0) && fields[fields.length - 1].startsWith("@");
   }
 
 }

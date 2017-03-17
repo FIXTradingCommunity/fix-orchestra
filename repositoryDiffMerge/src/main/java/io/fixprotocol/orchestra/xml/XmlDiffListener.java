@@ -15,6 +15,8 @@ package io.fixprotocol.orchestra.xml;
 
 import java.util.function.Consumer;
 
+import org.w3c.dom.Node;
+
 /**
  * Event handler for {@link XmlDiff}
  * 
@@ -36,18 +38,17 @@ public interface XmlDiffListener extends Consumer<XmlDiffListener.Event>, AutoCl
     }
 
     private final Difference difference;
-    private final String oldValue;
-    private final String value;
+    private final Node oldValue;
+    private final Node value;
     private final String xpath;
 
     /**
      * Constructor for REMOVE event
      * 
      * @param difference type of event
-     * @param name node name of element or attribute
-     * @param value node value of element or attribute
+     * @param xpath node to remove
      */
-    public Event(Difference difference, String xpath) {
+    Event(Difference difference, String xpath) {
       this(difference, xpath, null, null);
     }
 
@@ -55,10 +56,10 @@ public interface XmlDiffListener extends Consumer<XmlDiffListener.Event>, AutoCl
      * Constructor for ADD event
      * 
      * @param difference type of event
-     * @param name node name of element or attribute
+     * @param xpath parent of the added node
      * @param value node value of element or attribute
      */
-    public Event(Difference difference, String xpath, String value) {
+    Event(Difference difference, String xpath, Node value) {
       this(difference, xpath, value, null);
     }
 
@@ -66,26 +67,26 @@ public interface XmlDiffListener extends Consumer<XmlDiffListener.Event>, AutoCl
      * Constructor for REPLACE event
      * 
      * @param difference type of event
-     * @param xpath node name of element or attribute
-     * @param value node value of element or attribute
+     * @param xpath node to replace
+     * @param value node new value of element or attribute
      * @param oldValue previous node value
      */
-    public Event(Difference difference, String xpath, String value, String oldValue) {
+    Event(Difference difference, String xpath, Node value, Node oldValue) {
       this.difference = difference;
       this.xpath = xpath;
       this.value = value;
       this.oldValue = oldValue;
     }
 
-    public Difference getDifference() {
+    Difference getDifference() {
       return difference;
     }
 
-    String getOldValue() {
+    Node getOldValue() {
       return oldValue;
     }
 
-    String getValue() {
+    Node getValue() {
       return value;
     }
 

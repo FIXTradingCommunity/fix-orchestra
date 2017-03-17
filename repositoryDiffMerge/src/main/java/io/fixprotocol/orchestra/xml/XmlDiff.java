@@ -17,7 +17,6 @@ import static io.fixprotocol.orchestra.xml.XmlDiffListener.Event.Difference.ADD;
 import static io.fixprotocol.orchestra.xml.XmlDiffListener.Event.Difference.REMOVE;
 import static io.fixprotocol.orchestra.xml.XmlDiffListener.Event.Difference.REPLACE;
 
-import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -30,13 +29,7 @@ import java.util.Objects;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.DOMException;
@@ -118,13 +111,6 @@ public class XmlDiff {
   private final ArrayList<Attr> attributesArray2 = new ArrayList<>(64);
   private final ElementComparator elementComparator = new ElementComparator();
   private XmlDiffListener listener;
-  private final Transformer transformer;
-
-  public XmlDiff() throws TransformerConfigurationException {
-    TransformerFactory transformerFactory = TransformerFactory.newInstance();
-    transformer = transformerFactory.newTransformer();
-    transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-  }
 
   /**
    * Generates differences between two XML files
@@ -170,7 +156,7 @@ public class XmlDiff {
   private void addElement(Element element)
       throws DOMException, UnsupportedEncodingException, TransformerException {
     final String xpath = XpathUtil.getFullXPath(element);
-    String text = null;
+
     // Copies an element with its attributes but not child text node or elements
     Node elementCopy = element.cloneNode(false);
 
@@ -180,8 +166,7 @@ public class XmlDiff {
       elementCopy.appendChild(child.cloneNode(false));
     }
 
-    text = nodeToText(elementCopy);
-    listener.accept(new Event(ADD, xpath, text));
+    listener.accept(new Event(ADD, XpathUtil.getParentPath(xpath), elementCopy));
 
     NodeList children = element.getChildNodes();
     for (int i = 0; i < children.getLength(); i++) {
@@ -223,15 +208,15 @@ public class XmlDiff {
 
       switch (difference) {
         case ADD:
-          listener.accept(new Event(ADD, XpathUtil.getFullXPath(attributesArray2.get(index2)),
-              attributesArray2.get(index2).getNodeValue()));
+          listener.accept(new Event(ADD, XpathUtil.getParentPath(XpathUtil.getFullXPath(attributesArray2.get(index2))),
+              attributesArray2.get(index2)));
           index2 = Math.min(index2 + 1, attributesArray2.size());
           isEqual = false;
           break;
         case REPLACE:
           listener.accept(new Event(REPLACE, XpathUtil.getFullXPath(attributesArray1.get(index1)),
-              attributesArray2.get(index2).getNodeValue(),
-              attributesArray1.get(index1).getNodeValue()));
+              attributesArray2.get(index2),
+              attributesArray1.get(index1)));
           index1 = Math.min(index1 + 1, attributesArray1.size());
           index2 = Math.min(index2 + 1, attributesArray2.size());
           isEqual = false;
@@ -292,8 +277,8 @@ public class XmlDiff {
           break;
         case REPLACE:
           listener.accept(new Event(REPLACE, XpathUtil.getFullXPath(elementsArray1.get(index1)),
-              elementsArray2.get(index2).getNodeValue(),
-              elementsArray1.get(index1).getNodeValue()));
+              elementsArray2.get(index2),
+              elementsArray1.get(index1)));
           index1 = Math.min(index1 + 1, elementsArray1.size());
           index2 = Math.min(index2 + 1, elementsArray2.size());
           isEqual = false;
@@ -304,7 +289,7 @@ public class XmlDiff {
           break;
         case REMOVE:
           listener.accept(new Event(REMOVE, XpathUtil.getFullXPath(elementsArray1.get(index1)),
-              elementsArray1.get(index1).getNodeValue()));
+              elementsArray1.get(index1)));
           index1 = Math.min(index1 + 1, elementsArray1.size());
           isEqual = false;
           break;
@@ -333,19 +318,19 @@ public class XmlDiff {
 
     if (child1 != null && Node.TEXT_NODE == child1.getNodeType()) {
       if (child2 == null || Node.TEXT_NODE != child2.getNodeType()) {
-        listener.accept(new Event(REMOVE, XpathUtil.getFullXPath(element1), child1.getNodeValue()));
+        listener.accept(new Event(REMOVE, XpathUtil.getFullXPath(element1), child1));
       } else {
         int valueCompare = child1.getNodeValue().trim().compareTo(child2.getNodeValue().trim());
 
         if (valueCompare != 0) {
           listener.accept(new Event(REPLACE, XpathUtil.getFullXPath(element1),
-              child2.getNodeValue(), child1.getNodeValue()));
+              child2, child1));
         } else {
           return true;
         }
       }
     } else if (child2 != null && Node.TEXT_NODE == child2.getNodeType()) {
-      listener.accept(new Event(ADD, XpathUtil.getFullXPath(element2), child2.getNodeValue()));
+      listener.accept(new Event(ADD, XpathUtil.getFullXPath(element2), child2));
     }
     return false;
   }
@@ -381,11 +366,5 @@ public class XmlDiff {
     return nodeArray;
   }
 
-  private String nodeToText(Node node) throws TransformerException, UnsupportedEncodingException {
-    DOMSource source = new DOMSource(node);
-    ByteArrayOutputStream stringStream = new ByteArrayOutputStream();
-    StreamResult result = new StreamResult(stringStream);
-    transformer.transform(source, result);
-    return stringStream.toString("UTF-8");
-  }
+
 }

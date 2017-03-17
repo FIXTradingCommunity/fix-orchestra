@@ -19,6 +19,22 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.Text;
+
 /**
  * Writes XML diffs as patch operations specified by IETF RFC 5261
  * 
@@ -29,15 +45,25 @@ import java.nio.charset.Charset;
 public class PatchOpsListener implements XmlDiffListener {
 
   private final OutputStreamWriter writer;
+  private final Document document;
+  private final Element rootElement;
 
   /**
    * @throws IOException
+   * @throws ParserConfigurationException
+   * @throws TransformerConfigurationException
    * 
    */
-  public PatchOpsListener(OutputStream out) throws IOException {
+  public PatchOpsListener(OutputStream out)
+      throws IOException, ParserConfigurationException, TransformerConfigurationException {
     writer = new OutputStreamWriter(out, Charset.forName("UTF-8"));
-    writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-    writer.write("<diff>\n");
+
+    DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+    dbFactory.setNamespaceAware(true);
+    DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+    document = dBuilder.newDocument();
+    rootElement = document.createElement("diff");
+    document.appendChild(rootElement);
   }
 
   /*
@@ -47,33 +73,51 @@ public class PatchOpsListener implements XmlDiffListener {
    */
   @Override
   public void accept(Event t) {
-    try {
-      switch (t.getDifference()) {
-        case ADD:
-          int lastSlash = t.getXpath().lastIndexOf('/');
-          if (lastSlash != -1 && t.getXpath().charAt(lastSlash + 1) == '@') {
-            // add attribute
-            writer.write(String.format("<add sel='%s' type='%s'>%s</add>%n",
-                t.getXpath().substring(0, lastSlash), t.getXpath().substring(lastSlash + 1),
-                t.getValue()));
-          } else {
-            // add element
-            writer.write(String.format("<add sel='%s'>%s</add>%n", t.getXpath(), t.getValue()));
-          }
-          break;
-        case REPLACE:
-          writer
-              .write(String.format("<replace sel='%s'>%s</replace>%n", t.getXpath(), t.getValue()));
-          break;
-        case REMOVE:
-          writer.write(String.format("<remove sel='%s'/>%n", t.getXpath()));
-          break;
-        default:
-          break;
-      }
-    } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+
+    switch (t.getDifference()) {
+      case ADD:
+        Element addElement = document.createElement("add");
+        rootElement.appendChild(addElement);
+
+        if (t.getValue() instanceof Attr) {
+          // add attribute
+          addElement.setAttribute("sel", t.getXpath());
+          addElement.setAttribute("type", t.getValue().getNodeName());
+          Text textNode = document.createTextNode(t.getValue().getNodeValue());
+          addElement.appendChild(textNode);
+        } else {
+          // add element
+          addElement.setAttribute("sel", t.getXpath());
+          // will import child text node if it exists
+          Element newValue = (Element) document.importNode(t.getValue(), true);
+          addElement.appendChild(newValue);
+        }
+
+        break;
+      case REPLACE:
+        Element replaceElement = document.createElement("replace");
+        rootElement.appendChild(replaceElement);
+
+        if (t.getValue() instanceof Attr) {
+          // replace attribute
+          replaceElement.setAttribute("sel", t.getXpath());
+          Text textNode = document.createTextNode(t.getValue().getNodeValue());
+          replaceElement.appendChild(textNode);
+        } else {
+          // replace element
+          replaceElement.setAttribute("sel", t.getXpath());
+          // will import child text node if it exists
+          Node newValue = document.importNode(t.getValue(), true);
+          replaceElement.appendChild(newValue);
+        }
+        break;
+      case REMOVE:
+        Element removeElement = document.createElement("remove");
+        rootElement.appendChild(removeElement);
+        removeElement.setAttribute("sel", t.getXpath());
+        break;
+      default:
+        break;
     }
   }
 
@@ -84,11 +128,12 @@ public class PatchOpsListener implements XmlDiffListener {
    */
   @Override
   public void close() throws Exception {
-    try {
-      writer.write("</diff>\n");
-    } catch (IOException e) {
-      // already closed
-    }
+    TransformerFactory transformerFactory = TransformerFactory.newInstance();
+    Transformer transformer = transformerFactory.newTransformer();
+    transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+    DOMSource source = new DOMSource(document);
+    StreamResult result = new StreamResult(writer);
+    transformer.transform(source, result);
     writer.close();
   }
 
