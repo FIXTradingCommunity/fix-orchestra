@@ -41,7 +41,7 @@ public class DslExpressionTest {
       {"in.OrdQty > 0 and in.OrdQty <= 10"}, 
       {"in.Price < 100.00"},
       {"in.Price between 50.00 and 100.00"},
-      {"in.Parties[PartyRole=4].PartyID=\"690\""},
+      {"in.Parties[PartyRole==4].PartyID=\"690\""},
       {"out.Parties[1].PartyRole=4"},
       {"out.Parties[1].PartyRole=^ClearingFirm"},
       {"#2017-02-02T22:13:28Z#"},

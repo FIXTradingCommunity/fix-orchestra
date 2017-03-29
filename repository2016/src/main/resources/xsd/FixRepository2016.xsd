@@ -96,9 +96,15 @@
 		</xs:key>
 	</xs:element>
 	<xs:element name="actors">
+		<xs:annotation>
+			<xs:documentation>Participants and the message flows between them</xs:documentation>
+		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="actor" type="fixr:actorType" maxOccurs="unbounded"/>
+				<xs:choice maxOccurs="unbounded">
+					<xs:element name="actor" type="fixr:actorType"/>
+					<xs:element name="flow" type="fixr:flowType"/>
+				</xs:choice>
 			</xs:sequence>
 		</xs:complexType>
 		<xs:key name="actorKey">
@@ -108,6 +114,14 @@
 		<xs:keyref name="actorKeyRef" refer="fixr:actorKey">
 			<xs:selector xpath="fixr:actor"/>
 			<xs:field xpath="@extends"/>
+		</xs:keyref>
+		<xs:keyref name="producerKeyRef" refer="fixr:actorKey">
+			<xs:selector xpath="fixr:flow"/>
+			<xs:field xpath="@source"/>
+		</xs:keyref>
+		<xs:keyref name="consumerKeyRef" refer="fixr:actorKey">
+			<xs:selector xpath="fixr:flow"/>
+			<xs:field xpath="@destination"/>
 		</xs:keyref>
 	</xs:element>
 	<xs:element name="protocol">

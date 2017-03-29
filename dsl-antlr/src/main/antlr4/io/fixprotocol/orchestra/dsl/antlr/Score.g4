@@ -62,7 +62,7 @@ expr:
 
 index: '[' UINT ']' ;
 
-pred: '[' ID '=' expr ']' ;
+pred: '[' ID '==' expr ']' ;
 
 qual: ID (index | pred)? ;
 

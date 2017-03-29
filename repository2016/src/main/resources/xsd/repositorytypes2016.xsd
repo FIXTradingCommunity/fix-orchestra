@@ -21,6 +21,9 @@
 		<!-- was abbrTerm -->
 	</xs:complexType>
 	<xs:complexType name="actorType">
+		<xs:annotation>
+			<xs:documentation>Represents a class of participants</xs:documentation>
+		</xs:annotation>
 		<xs:sequence>
 			<xs:choice minOccurs="0" maxOccurs="unbounded">
 				<xs:annotation>
@@ -32,8 +35,6 @@
 				<xs:element name="componentRef" type="fixr:componentRefType"/>
 				<xs:element name="group" type="fixr:groupType"/>
 				<xs:element name="groupRef" type="fixr:groupRefType"/>
-			</xs:choice>
-			<xs:choice minOccurs="0" maxOccurs="unbounded">
 				<xs:element name="states" type="fixr:stateMachineType"/>
 				<xs:element name="timer" type="fixr:timerType"/>
 			</xs:choice>
@@ -353,7 +354,7 @@
 							<xs:element name="fieldRef" type="fixr:fieldRefType" minOccurs="0" maxOccurs="unbounded">
 								<xs:annotation>
 									<xs:documentation>Other field or fields that scope uniqueness. 
-									If none provided, then the field value must be unique forever.</xs:documentation>
+									If none provided, then the field value must be globally unique.</xs:documentation>
 								</xs:annotation>
 							</xs:element>
 						</xs:sequence>
@@ -433,6 +434,26 @@
 		<xs:attribute name="baseCategoryAbbrName" type="fixr:Name_t"/>
 		<xs:attribute name="unionDataType" type="fixr:UnionDataType_t"/>
 	</xs:complexType>
+	<xs:complexType name="flowType">
+		<xs:annotation>
+			<xs:documentation>A stream of messages in one direction</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
+		<xs:attribute name="source" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation>Name of the actor that originates messages
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="destination" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation>Name of the actor that receives messages.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="messageCast" type="fixr:messageCast_t" default="unicast"/>
+		<xs:attribute name="reliability" type="fixr:reliability_t"/>
+	</xs:complexType>
 	<xs:simpleType name="GroupName_t">
 		<xs:restriction base="xs:string"/>
 	</xs:simpleType>
@@ -472,6 +493,13 @@
 		<xs:attribute name="section" type="fixr:SectionID_t"/>
 		<xs:attribute name="abbrName" type="fixr:Abbreviation_t"/>
 	</xs:attributeGroup>
+	<xs:simpleType name="messageCast_t">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="unicast"/>
+			<xs:enumeration value="multicast"/>
+			<xs:enumeration value="broadcast"/>
+		</xs:restriction>
+	</xs:simpleType>
 	<xs:complexType name="messageRefType">
 		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
 		<xs:attribute name="msgType" type="fixr:MsgType_t"/>
@@ -526,18 +554,7 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="originator" type="xs:string">
-			<xs:annotation>
-				<xs:documentation>If present, refers to an actor name
-				</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
-		<xs:attribute name="destination" type="xs:string">
-			<xs:annotation>
-				<xs:documentation>If present, refers to an actor name
-				</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
+		<xs:attribute name="flow" type="fixr:Name_t"/>
 	</xs:complexType>
 	<xs:simpleType name="MsgType_t">
 		<xs:restriction base="xs:string">
@@ -599,6 +616,13 @@
 		</xs:annotation>
 		<xs:union memberTypes="fixr:purpose_enum xs:string"/>
 	</xs:simpleType>
+	<xs:simpleType name="reliability_t">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="bestEffort"/>
+			<xs:enumeration value="idempotent"/>
+			<xs:enumeration value="recoverable"/>
+		</xs:restriction>
+	</xs:simpleType>
 	<xs:complexType name="responseType">
 		<xs:sequence>
 			<xs:choice maxOccurs="unbounded">
@@ -649,8 +673,11 @@
 	</xs:simpleType>
 	<xs:complexType name="stateMachineType">
 		<xs:sequence>
-			<xs:element name="initial" type="fixr:stateType"/>
+			<xs:element name="initial" type="fixr:stateType">
+				<xs:annotation><xs:documentation>Initial state of a state machine</xs:documentation></xs:annotation>
+			</xs:element>
 			<xs:element name="state" type="fixr:stateType" maxOccurs="unbounded"/>
+			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
 	</xs:complexType>
@@ -677,6 +704,7 @@
 		</xs:annotation>
 		<xs:sequence>
 			<xs:element name="transition" type="fixr:transitionType" maxOccurs="unbounded"/>
+			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
 	</xs:complexType>
@@ -850,4 +878,7 @@
 			<xs:maxInclusive value="5"/>
 		</xs:restriction>
 	</xs:simpleType>
+	<xs:annotation>
+		<xs:documentation>Message delivery gurantee</xs:documentation>
+	</xs:annotation>
 </xs:schema>
