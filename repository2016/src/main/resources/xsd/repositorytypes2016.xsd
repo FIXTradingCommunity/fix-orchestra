@@ -347,8 +347,8 @@
 	</xs:complexType>
 	<xs:complexType name="fieldRuleType">
 		<xs:sequence>
-			<xs:choice>
-				<xs:element name="unique">
+			<xs:sequence>
+				<xs:element name="unique" minOccurs="0">
 					<xs:complexType>
 						<xs:sequence>
 							<xs:element name="fieldRef" type="fixr:fieldRefType" minOccurs="0" maxOccurs="unbounded">
@@ -360,14 +360,15 @@
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
-				<xs:element name="stateRef" type="fixr:stateRefType" minOccurs="0">
+				<xs:element name="assign" type="fixr:expressionType" minOccurs="0" maxOccurs="unbounded">
 					<xs:annotation>
-						<xs:documentation>Set a state variable when rule evaluates true.
-						This can be used for field validation.
-					</xs:documentation>
+						<xs:documentation>Content of element holds an assignment expression
+							for a message field or state variable.
+							This can be used for field validation.
+						</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-			</xs:choice>
+			</xs:sequence>
 			<xs:element name="when" type="fixr:expressionType"/>
 		</xs:sequence>
 		<xs:attribute name="name" type="fixr:Name_t">
@@ -416,8 +417,7 @@
 		<xs:attribute name="type" type="xs:string" use="required">
 			<xs:annotation>
 				<xs:documentation>Attribute type refers to either a datatype or a
-					codeSet,
-					which carries an underlying datatype.
+					codeSet, which carries an underlying datatype.
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
@@ -630,7 +630,13 @@
 					<xs:documentation>Any number of response actions can be triggered by the same 'when' condition</xs:documentation>
 				</xs:annotation>
 				<xs:element name="messageRef" type="fixr:messageRefType"/>
-				<xs:element name="stateRef" type="fixr:stateRefType"/>
+				<xs:element name="assign" type="fixr:expressionType">
+					<xs:annotation>
+						<xs:documentation>Content of element holds an assignment expression
+							for a state variable in the form '$actor.variable=value'
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
 				<xs:element name="transitionRef" type="fixr:transitionRefType"/>
 				<xs:element name="timerRef" type="fixr:timerRefType"/>
 			</xs:choice>
@@ -674,29 +680,14 @@
 	<xs:complexType name="stateMachineType">
 		<xs:sequence>
 			<xs:element name="initial" type="fixr:stateType">
-				<xs:annotation><xs:documentation>Initial state of a state machine</xs:documentation></xs:annotation>
+				<xs:annotation>
+					<xs:documentation>Initial state of a state machine</xs:documentation>
+				</xs:annotation>
 			</xs:element>
 			<xs:element name="state" type="fixr:stateType" maxOccurs="unbounded"/>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
-	</xs:complexType>
-	<xs:complexType name="stateRefType">
-		<xs:sequence>
-			<xs:element name="assign" type="fixr:expressionType" maxOccurs="unbounded">
-				<xs:annotation>
-					<xs:documentation>Content of element holds assignment expression
-						for a state variable
-					</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-		</xs:sequence>
-		<xs:attribute name="actor" type="fixr:Name_t" use="required">
-			<xs:annotation>
-				<xs:documentation>Name of the actor that holds the state
-				</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
 	</xs:complexType>
 	<xs:complexType name="stateType">
 		<xs:annotation>

@@ -46,10 +46,6 @@
 			</xs:sequence>
 			<xs:attribute name="name" type="fixr:Name_t"/>
 		</xs:complexType>
-		<xs:key name="codeSetKey">
-			<xs:selector xpath="fixr:codeSet"/>
-			<xs:field xpath="@name"/>
-		</xs:key>
 	</xs:element>
 	<xs:element name="components">
 		<xs:complexType>
@@ -174,6 +170,10 @@
 				</xs:element>
 			</xs:sequence>
 		</xs:complexType>
+		<xs:key name="typeKey">
+			<xs:selector xpath="fixr:codeSets/fixr:codeSet|fixr:datatypes/fixr:datatype"/>
+			<xs:field xpath="@name"/>
+		</xs:key>
 	</xs:element>
 	<xs:element name="mappedDatatype">
 		<xs:complexType>
