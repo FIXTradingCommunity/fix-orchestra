@@ -6,9 +6,9 @@
 		<artifactId>parent</artifactId>
 		<version>1.1.0-RC2-SNAPSHOT</version>
 	</parent>
-	<artifactId>session</artifactId>
+	<artifactId>session-owl</artifactId>
 	<name>${project.groupId}:${project.artifactId}</name>
-	<description>FIX Orchestra session deployment</description>
+	<description>FIX Orchestra session deployment using semantic notation</description>
 
 	<dependencies>
 		<dependency>
