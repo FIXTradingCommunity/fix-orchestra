@@ -10,9 +10,35 @@
 		</xs:documentation>
 	</xs:annotation>
 	<xs:import namespace="http://purl.org/dc/terms/" schemaLocation="dcterms.xsd"/>
+	<xs:complexType name="annotation">
+		<xs:choice maxOccurs="unbounded">
+			<xs:element name="documentation" type="fixs:documentation"/>
+			<xs:element name="appinfo" type="fixs:appinfo"/>
+		</xs:choice>
+	</xs:complexType>
+	<xs:complexType name="appinfo" mixed="true">
+		<xs:annotation>
+			<xs:documentation>Usage specific annotation, optionally with link to
+				an external reference or standard
+			</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="specUrl" type="xs:anyURI">
+			<xs:annotation>
+				<xs:documentation>Reference documentation</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="langId" type="xs:language"/>
+	</xs:complexType>
+	<xs:complexType name="documentation" mixed="true">
+		<xs:sequence>
+			<xs:any processContents="skip" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="langId" type="xs:language"/>
+	</xs:complexType>
 	<xs:complexType name="identifierType">
 		<xs:sequence>
 			<xs:element name="value" type="xs:anyType"/>
+			<xs:element name="annotation" type="fixs:annotation" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string"/>
 	</xs:complexType>
@@ -25,6 +51,9 @@
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:complexType name="protocolType">
+		<xs:sequence>
+			<xs:element name="annotation" type="fixs:annotation" minOccurs="0"/>
+		</xs:sequence>
 		<xs:attribute name="name" type="xs:string">
 			<xs:annotation>
 				<xs:documentation>
@@ -34,6 +63,22 @@
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attribute name="layer" type="fixs:layer_t"/>
+		<xs:anyAttribute processContents="lax"/>
+	</xs:complexType>
+	<xs:complexType name="serviceType">
+		<xs:sequence>
+			<xs:element name="annotation" type="fixs:annotation" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation>Name of a service offering</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="file" type="xs:anyURI" use="required">
+			<xs:annotation>
+				<xs:documentation>URI of a FIX Orchestra file</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 		<xs:anyAttribute processContents="lax"/>
 	</xs:complexType>
 	<xs:element name="sessions">
@@ -58,15 +103,34 @@
 		<xs:sequence>
 			<xs:element name="identifier" type="fixs:identifierType" maxOccurs="unbounded"/>
 			<xs:element name="protocol" type="fixs:protocolType" maxOccurs="unbounded"/>
-			<xs:element name="transport" type="fixs:transportType"/>
+			<xs:element name="service" type="fixs:serviceType" maxOccurs="unbounded"/>
+			<xs:element name="transport" type="fixs:transportType" maxOccurs="unbounded"/>
 			<xs:element name="startTime" type="xs:dateTime" minOccurs="0"/>
 			<xs:element name="endTime" type="xs:dateTime" minOccurs="0"/>
+			<xs:element name="annotation" type="fixs:annotation" minOccurs="0"/>
 		</xs:sequence>
-		<xs:attribute name="name" type="xs:string"/>
+		<xs:attribute name="name" type="xs:string" use="required"/>
 		<xs:anyAttribute processContents="lax"/>
 	</xs:complexType>
 	<xs:complexType name="transportType">
-		<xs:attribute name="address" type="xs:string"/>
+		<xs:sequence>
+			<xs:element name="annotation" type="fixs:annotation" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="address" type="xs:string" use="required"/>
+		<xs:attribute name="use" type="fixs:transportUse_t"/>
 		<xs:anyAttribute processContents="lax"/>
 	</xs:complexType>
+	<xs:simpleType name="transportUse_enum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="primary"/>
+			<xs:enumeration value="secondary"/>
+			<xs:enumeration value="alternate"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="transportUse_t">
+		<xs:annotation>
+			<xs:documentation>Extensible transport use</xs:documentation>
+		</xs:annotation>
+		<xs:union memberTypes="fixs:transportUse_enum xs:string"/>
+	</xs:simpleType>
 </xs:schema>
