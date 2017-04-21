@@ -52,7 +52,6 @@
 	</distributionManagement>
 
 	<modules>
-		
 		<module>session-quickfix</module>
 		<module>repository2010</module>
 		<module>repository2016</module>
@@ -62,7 +61,7 @@
 		<module>model-quickfix</module>
 		<module>repositoryDiffMerge</module>
 		<module>session-owl</module>
-		<module>session2016</module>
+		<module>interfaces2016</module>
 	</modules>
 
 	<properties>

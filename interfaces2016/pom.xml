@@ -6,7 +6,7 @@
 		<artifactId>parent</artifactId>
 		<version>1.1.0-RC2-SNAPSHOT</version>
 	</parent>
-	<artifactId>session2016</artifactId>
+	<artifactId>interfaces2016</artifactId>
 	<name>${project.groupId}:${project.artifactId}</name>
 	<description>XML schema for FIX Orchestra session configuration</description>
 
