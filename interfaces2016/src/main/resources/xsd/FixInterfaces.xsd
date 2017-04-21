@@ -31,12 +31,12 @@
 	</xs:complexType>
 	<xs:complexType name="baseInterfaceType" abstract="true">
 		<xs:sequence>
-			<xs:element name="service" type="fixi:protocolType" minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="service" type="fixi:serviceType" minOccurs="0" maxOccurs="unbounded">
 				<xs:annotation>
 					<xs:documentation>An application layer protocol with orchestration</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="userInterface" type="fixi:protocolType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="userInterface" type="fixi:userIntefaceType" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="encoding" type="fixi:encodingType" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="sessionProtocol" type="fixi:sessionProtocolType" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="protocol" type="fixi:protocolType" minOccurs="0" maxOccurs="unbounded"/>
@@ -81,7 +81,7 @@
 			<xs:annotation>
 				<xs:documentation>Enforces unique session names</xs:documentation>
 			</xs:annotation>
-			<xs:selector xpath="fixi:interface/fixi:session"/>
+			<xs:selector xpath="fixi:interface/fixi:sessions/fixi:session"/>
 			<xs:field xpath="@name"/>
 		</xs:key>
 	</xs:element>
@@ -136,6 +136,11 @@
 			<xs:enumeration value="recoverable"/>
 		</xs:restriction>
 	</xs:simpleType>
+	<xs:complexType name="serviceType">
+		<xs:complexContent>
+			<xs:extension base="fixi:protocolType"/>
+		</xs:complexContent>
+	</xs:complexType>
 	<xs:complexType name="sessionProtocolType">
 		<xs:complexContent>
 			<xs:extension base="fixi:protocolType"/>
@@ -175,4 +180,9 @@
 		</xs:annotation>
 		<xs:union memberTypes="fixi:transportUse_enum xs:string"/>
 	</xs:simpleType>
+	<xs:complexType name="userIntefaceType">
+		<xs:complexContent>
+			<xs:extension base="fixi:protocolType"/>
+		</xs:complexContent>
+	</xs:complexType>
 </xs:schema>
