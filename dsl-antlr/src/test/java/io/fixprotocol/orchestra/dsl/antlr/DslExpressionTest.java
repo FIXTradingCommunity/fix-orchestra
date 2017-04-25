@@ -53,6 +53,7 @@ public class DslExpressionTest {
       {"#PT30S#"},
       {"out.ExpireDate=#2017-02-03#"},
       {"out.ExpireTime=#2017-02-02T22:15Z#"},
+      {"exists in.StopPx"},
       });
   }
 

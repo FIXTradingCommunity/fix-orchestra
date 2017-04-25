@@ -491,6 +491,38 @@ public class ScoreVisitorImplTest {
     assertEquals(FixType.intType, fixValue.getType());
     assertEquals(7, fixValue.getValue());
   }
+  
+  @Test
+  public void testVisitExist() throws IOException, ScoreException, ModelException {
+    final String varName = "$orderCount";
+    final String dslExpression = "exists " + varName;
+    symbolResolver.assign(new PathStep(varName), new FixValue<Integer>(FixType.intType, 7));
+
+    ScoreParser parser = parse(dslExpression);
+    AnyExpressionContext ctx = parser.anyExpression();
+    Object expression = visitor.visitAnyExpression(ctx);
+    assertTrue(expression instanceof FixValue<?>);
+    @SuppressWarnings("unchecked")
+    FixValue<Boolean> fixValue = (FixValue<Boolean>) expression;
+    assertEquals(FixType.BooleanType, fixValue.getType());
+    assertTrue(fixValue.getValue());
+  }
+  
+  @Test
+  public void testVisitExistNotFound() throws IOException, ScoreException, ModelException {
+    final String varName = "$orderCount";
+    final String dslExpression = "exists " + varName;
+
+    ScoreParser parser = parse(dslExpression);
+    AnyExpressionContext ctx = parser.anyExpression();
+    Object expression = visitor.visitAnyExpression(ctx);
+    assertTrue(expression instanceof FixValue<?>);
+    @SuppressWarnings("unchecked")
+    FixValue<Boolean> fixValue = (FixValue<Boolean>) expression;
+    assertEquals(FixType.BooleanType, fixValue.getType());
+    assertFalse(fixValue.getValue());
+  }
+
 
   private ScoreParser parse(String expression) throws IOException {
     ScoreLexer l = new ScoreLexer(new ANTLRInputStream(new StringReader(expression)));

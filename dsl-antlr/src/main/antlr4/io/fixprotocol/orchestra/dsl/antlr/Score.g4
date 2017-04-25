@@ -30,6 +30,7 @@ COLON: ':';
 DOT: '.';
 HASH: '#';
 CODE: '^';
+EXISTS: 'exists';
 
 anyExpression:
       assignment
@@ -57,6 +58,7 @@ expr:
     |   DECIMAL                 # decimal
     |   CHAR                    # character
     |   STRING                  # string
+    |   'exists' var			# exist
     |   var                     # variable // lowest priority so variables do not shadow keywords
     ;
 

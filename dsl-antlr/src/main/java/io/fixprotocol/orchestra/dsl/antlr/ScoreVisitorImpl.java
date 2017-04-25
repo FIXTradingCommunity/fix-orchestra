@@ -40,6 +40,7 @@ import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.DateonlyContext;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.DecimalContext;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.DurationContext;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.EqualityContext;
+import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.ExistContext;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.ExprContext;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.IndexContext;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.IntegerContext;
@@ -78,22 +79,14 @@ import io.fixprotocol.orchestra.model.SymbolResolver;
 class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
     implements ScoreVisitor<FixValue<?>> {
 
-  private final FixValueOperations fixValueOperations = new FixValueOperations();
-  private boolean trace = false;
+  private Scope currentScope;
+  private final SemanticErrorListener errorListener;
 
-  /**
-   * @return the trace
-   */
-  public boolean isTrace() {
-    return trace;
-  }
+  private final FixValueOperations fixValueOperations = new FixValueOperations();
   
-  /**
-   * @param trace the trace to set
-   */
-  public void setTrace(boolean trace) {
-    this.trace = trace;
-  }
+  private PathStep pathStep;
+  
+  private final SymbolResolver symbolResolver;
   
   /**
    * Formatter for ISO 8601 time of day only. Java has ISO_LOCAL_TIME, but it doesn't handle the leading 'T'
@@ -112,13 +105,7 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
       .optionalStart()
       .appendZoneOrOffsetId()
       .toFormatter();
-  
-  private Scope currentScope;
-  private final SemanticErrorListener errorListener;
-  private PathStep pathStep;
-
-  private final SymbolResolver symbolResolver;
-
+  private boolean trace = false;
   /**
    * Constructor with default SemanticErrorListener
    * 
@@ -127,7 +114,6 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
   public ScoreVisitorImpl(SymbolResolver symbolResolver) {
     this(symbolResolver, new BaseSemanticErrorListener());
   }
-
 
   /**
    * Constructor
@@ -138,6 +124,21 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
   public ScoreVisitorImpl(SymbolResolver symbolResolver, SemanticErrorListener errorListener) {
     this.symbolResolver = symbolResolver;
     this.errorListener = errorListener;
+  }
+
+  /**
+   * @return the trace
+   */
+  public boolean isTrace() {
+    return trace;
+  }
+
+
+  /**
+   * @param trace the trace to set
+   */
+  public void setTrace(boolean trace) {
+    this.trace = trace;
   }
 
   /*
@@ -306,6 +307,14 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
     }
     return null;
 
+  }
+
+  @Override
+  public FixValue<?> visitExist(ExistContext ctx) {
+    FixValue<Boolean> result = new FixValue<Boolean>("", FixType.BooleanType);
+    FixValue<?> var = visit(ctx.var());
+    result.setValue(var != null);
+    return result;
   }
 
   /*
@@ -509,6 +518,8 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
         fixValueOperations.le.apply(val, max));
   }
 
+
+
   /*
    * (non-Javadoc)
    * 
@@ -542,8 +553,6 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
     }
     return null;
   }
-
-
 
   /*
    * (non-Javadoc)
