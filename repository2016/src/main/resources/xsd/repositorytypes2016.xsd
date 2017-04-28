@@ -451,8 +451,6 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="messageCast" type="fixr:messageCast_t" default="unicast"/>
-		<xs:attribute name="reliability" type="fixr:reliability_t"/>
 	</xs:complexType>
 	<xs:simpleType name="GroupName_t">
 		<xs:restriction base="xs:string"/>
@@ -493,13 +491,6 @@
 		<xs:attribute name="section" type="fixr:SectionID_t"/>
 		<xs:attribute name="abbrName" type="fixr:Abbreviation_t"/>
 	</xs:attributeGroup>
-	<xs:simpleType name="messageCast_t">
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="unicast"/>
-			<xs:enumeration value="multicast"/>
-			<xs:enumeration value="broadcast"/>
-		</xs:restriction>
-	</xs:simpleType>
 	<xs:complexType name="messageRefType">
 		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
 		<xs:attribute name="msgType" type="fixr:MsgType_t"/>
@@ -615,13 +606,6 @@
 			<xs:documentation>Extensible annotation purposes</xs:documentation>
 		</xs:annotation>
 		<xs:union memberTypes="fixr:purpose_enum xs:string"/>
-	</xs:simpleType>
-	<xs:simpleType name="reliability_t">
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="bestEffort"/>
-			<xs:enumeration value="idempotent"/>
-			<xs:enumeration value="recoverable"/>
-		</xs:restriction>
 	</xs:simpleType>
 	<xs:complexType name="responseType">
 		<xs:sequence>
