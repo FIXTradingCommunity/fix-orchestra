@@ -26,7 +26,8 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
- * Operations on {@link FixValue} <br/>
+ * Operations on {@link FixValue} 
+ * <p>
  * This implementation has many workarounds for Java type erasure. If raw types are removed from
  * Java in the future as suggested, this code will break. The expectation is that change will be
  * accompanied by reified types.

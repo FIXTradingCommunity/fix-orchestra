@@ -29,7 +29,8 @@ public class LocalScope extends AbstractScope {
   private final ArrayDeque<Scope> stack = new ArrayDeque<>();
 
   /**
-   * 
+   * Construct a LocalScope by name
+   * @param name name of the LocalScope
    */
   public LocalScope(String name) {
     this.name = name;

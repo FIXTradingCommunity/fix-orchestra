@@ -126,7 +126,7 @@ public class XmlMerge {
    * Merges differences into an XML file to produce a new XML file
    * 
    * @param baseline XML input stream
-   * @param diffReader reads difference file produced by {@link XmlDiff}
+   * @param diff reads difference stream produced by {@link XmlDiff}
    * @param out XML output
    * @throws Exception if an IO or parser error occurs
    */

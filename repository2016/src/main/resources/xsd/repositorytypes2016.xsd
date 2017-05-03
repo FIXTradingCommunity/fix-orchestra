@@ -177,6 +177,9 @@
 				<xs:element name="componentRef" type="fixr:componentRefType"/>
 				<xs:element name="groupRef" type="fixr:groupRefType"/>
 				<xs:element name="fieldRef" type="fixr:fieldRefType"/>
+				<xs:element name="component" type="fixr:componentType"/>
+				<xs:element name="group" type="fixr:groupType"/>
+				<xs:element name="field" type="fixr:fieldType"/>
 			</xs:choice>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
@@ -438,6 +441,9 @@
 		<xs:annotation>
 			<xs:documentation>A stream of messages in one direction</xs:documentation>
 		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
+		</xs:sequence>
 		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
 		<xs:attribute name="source" type="xs:string" use="required">
 			<xs:annotation>

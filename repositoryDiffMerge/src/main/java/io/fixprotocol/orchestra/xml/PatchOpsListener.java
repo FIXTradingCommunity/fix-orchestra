@@ -49,9 +49,10 @@ public class PatchOpsListener implements XmlDiffListener {
   private final Element rootElement;
 
   /**
-   * @throws IOException
-   * @throws ParserConfigurationException
-   * @throws TransformerConfigurationException
+   * Constructs a listener with an output stream
+   * @throws IOException if an IO error occurs
+   * @throws ParserConfigurationException if a configuration error occurs
+   * @throws TransformerConfigurationException if a configuration error occurs
    * 
    */
   public PatchOpsListener(OutputStream out)

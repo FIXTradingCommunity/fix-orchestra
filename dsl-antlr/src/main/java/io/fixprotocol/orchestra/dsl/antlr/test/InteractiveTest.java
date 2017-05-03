@@ -18,7 +18,8 @@ import org.antlr.v4.gui.TestRig;
 
 /**
  * Interactive tester for the Score DSL 
- * <br/>To start a test session, enter this command line:
+ * <p>
+ * To start a test session, enter this command line:
  * 
  * <pre>
  * java -jar dsl-antlr-[version]-jar-with-dependencies.jar
@@ -38,6 +39,7 @@ public class InteractiveTest implements Runnable {
   /**
    * Instantiates the ANTLR4 test rig with parameters
    * 
+   * @param args arguments to {@code TestRig}
    * @throws Exception if parameters are invalid
    * 
    */
@@ -48,7 +50,7 @@ public class InteractiveTest implements Runnable {
   /**
    * Runs an interactive test of the DSL
    * 
-   * @param args parameters to the test rig. If empty, defaults are applied.
+   * @param args parameters to {@code TestRig}. If empty, defaults are applied.
    * @throws Exception if parameters are invalid
    */
   public static void main(String[] args) throws Exception {

@@ -117,7 +117,6 @@ public class XmlDiff {
    * 
    * @param is1 first XML input stream
    * @param is2 second XML input stream
-   * @param diffStream output stream for differences
    * @throws Exception if an IO or parsing error occurs
    */
   public void diff(InputStream is1, InputStream is2) throws Exception {

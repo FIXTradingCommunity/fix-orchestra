@@ -33,14 +33,12 @@ import quickfix.Message;
 
 /**
  * Validates a FIX message against an Orchestra file
- * <br/>
+ * <p>
  * Features:
  * <ul>
  * <li>Checks field presence including conditionally required field rule</li>
  * <li>Checks code membership in a codeSet</li>
- * <li>
  * </ul>
- * <br/>
  * Only validates the message body, not session level header and trailer.
  * This implementation is a demonstration of capabilities. There is no claim to high performance.
  * 

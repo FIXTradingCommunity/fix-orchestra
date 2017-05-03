@@ -23,7 +23,7 @@ import java.util.Objects;
 
 /**
  * Creates new instances of {@link FixValue} 
- * <br/>
+ * <p>
  * Workaround for Java erasure. Class of a generic must be literal.
  * 
  * @author Don Mendelson

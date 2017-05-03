@@ -35,7 +35,7 @@ public interface Scope extends FixNode, AutoCloseable  {
 
   /**
    * Nest another Scope within this Scope
-   * <br/>
+   * <p>
    * If a nested Scope already exists at the specified path, it is replaced.
    * @param pathStep location
    * @param nested another Scope

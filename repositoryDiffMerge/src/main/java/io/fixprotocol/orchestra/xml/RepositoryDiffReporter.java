@@ -36,7 +36,7 @@ import org.w3c.dom.NodeList;
  */
 public class RepositoryDiffReporter extends XmlDiff {
   /**
-   * @throws TransformerConfigurationException
+   * @throws TransformerConfigurationException if a configuration error occurs
    */
   public RepositoryDiffReporter() throws TransformerConfigurationException {
     super();

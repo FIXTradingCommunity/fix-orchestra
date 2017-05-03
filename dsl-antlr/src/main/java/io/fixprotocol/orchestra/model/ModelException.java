@@ -55,8 +55,10 @@ public class ModelException extends Exception {
   /**
    * @param message error text
    * @param cause nested exception
-   * @param enableSuppression
-   * @param writableStackTrace
+   * @param enableSuppression whether or not suppression is enabled
+   *                          or disabled
+   * @param writableStackTrace whether or not the stack trace should
+   *                           be writable
    */
   public ModelException(String message, Throwable cause, boolean enableSuppression,
       boolean writableStackTrace) {

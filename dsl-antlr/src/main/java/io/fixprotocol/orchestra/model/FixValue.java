@@ -18,7 +18,7 @@ import java.util.Objects;
 
 /**
  * Represents an mutable value of a DSL expression 
- * <br/>
+ * <p>
  * Access control, immutable usage and synchronization of {@link #assign(FixValue)}
  * must be guarded externally.
  * 

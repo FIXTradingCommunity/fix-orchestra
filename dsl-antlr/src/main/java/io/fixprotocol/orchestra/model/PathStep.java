@@ -16,7 +16,7 @@ package io.fixprotocol.orchestra.model;
 
 /**
  * Used to search a Scope
- * <br/>
+ * <p>
  * Analogous to an XPath path step
  * @author Don Mendelson
  *

@@ -21,7 +21,8 @@ import java.time.LocalTime;
 import java.time.ZonedDateTime;
 
 /**
- * FIX data types <br/>
+ * FIX data types 
+ * <p>
  * Types are hard-coded for now. In the future, consider populating dynamically from datatypes in
  * Orchestra file.
  * 
@@ -554,7 +555,7 @@ public enum FixType {
 
   /**
    * Returns the enum value for its name 
-   * <br/>
+   * <p>
    * Semantically the same as {@code enum.valueOf()} but Java doesn't allow that method to be
    * overridden. This method is necessary because some of the FIX data types are Java keywords.
    * 
@@ -585,7 +586,8 @@ public enum FixType {
   }
 
   /**
-   * The base FIXType according to the FIX specification <br/>
+   * The base FIXType according to the FIX specification 
+   * <p>
    * Unfortunately, the FIX taxonomy of types is largely lexical, not semantic.
    * 
    * @return base data type
