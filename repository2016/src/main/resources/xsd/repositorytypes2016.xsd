@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- edited with XMLSpy v2016 rel. 2 sp1 (x64) (http://www.altova.com) by 
-	Don Mendelson (FIX Protocol Ltd. (FPL)) -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:fixr="http://fixprotocol.io/2016/fixrepository" targetNamespace="http://fixprotocol.io/2016/fixrepository" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0-rc1">
 	<xs:annotation>
 		<xs:documentation>
@@ -457,6 +455,7 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
+		<xs:attribute name="reliability" type="fixr:reliability_t"/>
 	</xs:complexType>
 	<xs:simpleType name="GroupName_t">
 		<xs:restriction base="xs:string"/>
@@ -612,6 +611,16 @@
 			<xs:documentation>Extensible annotation purposes</xs:documentation>
 		</xs:annotation>
 		<xs:union memberTypes="fixr:purpose_enum xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="reliability_t">
+		<xs:annotation>
+			<xs:documentation>Message delivery gurantee</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="bestEffort"/>
+			<xs:enumeration value="idempotent"/>
+			<xs:enumeration value="recoverable"/>
+		</xs:restriction>
 	</xs:simpleType>
 	<xs:complexType name="responseType">
 		<xs:sequence>
@@ -859,7 +868,4 @@
 			<xs:maxInclusive value="5"/>
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:annotation>
-		<xs:documentation>Message delivery gurantee</xs:documentation>
-	</xs:annotation>
 </xs:schema>
