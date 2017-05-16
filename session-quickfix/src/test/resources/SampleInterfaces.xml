@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<fixi:interfaces xmlns:dcterms="http://purl.org/dc/terms/" xmlns:fixi="http://fixprotocol.io/2016/fixinterfaces" 
+<fixi:interfaces xmlns:dcterms="http://purl.org/dc/terms/" 
+xmlns:fixi="http://fixprotocol.io/2016/fixinterfaces" 
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-xsi:schemaLocation="http://fixprotocol.io/2016/fixinterfaces ../../main/resources/xsd/FixInterfaces.xsd">
+xsi:schemaLocation="http://fixprotocol.io/2016/fixinterfaces ../../../../interfaces2016/src/main/resources/xsd/FixInterfaces.xsd">
 	<fixi:metadata>
 		<dcterms:subject>Service offerings and sessions example file</dcterms:subject>
 		<dcterms:description>Mock-up presentation for concepts</dcterms:description>
@@ -13,7 +14,7 @@ xsi:schemaLocation="http://fixprotocol.io/2016/fixinterfaces ../../main/resource
 		<!-- the protcol stack -->
 		<fixi:userInterface name="ATDL" orchestration="https://mydomain.com/orchestra/algo.xml"/>
 		<fixi:encoding name="TagValue"/>
-		<fixi:sessionProtocol name="FIXT.1.1" reliability="recoverable" orchestration="https://mydomain.com/orchestra/session.xml">
+		<fixi:sessionProtocol name="FIXT.1.1" version="FIX.5.0SP2" reliability="recoverable" orchestration="https://mydomain.com/orchestra/session.xml">
 			<fixi:annotation>
 				<fixi:documentation langId="en-us">FIX session protocol</fixi:documentation>
 			</fixi:annotation>
@@ -32,8 +33,8 @@ xsi:schemaLocation="http://fixprotocol.io/2016/fixinterfaces ../../main/resource
 				<fixi:identifier name="TargetCompID">
 					<fixi:value>ABC</fixi:value>
 				</fixi:identifier>
-				<!-- tells when session becomes effective so it can be configured in advance -->
-				<fixi:startTime>2017-05-17T09:30:00Z</fixi:startTime>
+				<fixi:activationTime>2017-05-16T09:30:00Z</fixi:activationTime>
+				<fixi:role>initiator</fixi:role>
 			</fixi:session>
 		</fixi:sessions>
 	</fixi:interface>

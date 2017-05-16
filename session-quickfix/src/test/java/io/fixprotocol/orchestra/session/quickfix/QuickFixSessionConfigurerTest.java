@@ -25,9 +25,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import io.fixprotocol.orchestra.session.FixVersion;
-import io.fixprotocol.orchestra.session.FixtSessionRole;
-import io.fixprotocol.orchestra.session.Session;
 import io.fixprotocol.orchestra.session.quickfix.QuickFixSessionConfigurer;
 
 /**
@@ -41,7 +38,6 @@ public class QuickFixSessionConfigurerTest {
   @Before
   public void setUp() throws Exception {
     tool = new QuickFixSessionConfigurer();
-    tool.init();
   }
 
   @After
@@ -50,30 +46,9 @@ public class QuickFixSessionConfigurerTest {
 
   @Test
   public void testCreateFixSession() throws Exception {
-    tool.createNewModel("quickfix", URI.create("http://www.fixtrading.org/session-test/quickfix/"));
-    final ZonedDateTime activateTime = ZonedDateTime.now().minusDays(7);
-    final ZonedDateTime deactivateTime = ZonedDateTime.now().plusDays(30);
-    Session session1 = tool
-        .createFixtSession(FixVersion.FIX4_4,  FixtSessionRole.INITIATOR, 
-            "session1", "sender1", "senderSub1", null, "target1",
-            "targetSub1", null)
-        .withTcpTransport("192.168.2.3", 6543)
-        .withActivationTime(activateTime).withDeactivationTime(deactivateTime);
-    assertNotNull(session1);
-  
-    Session session2 = tool
-        .createFixtSession(FixVersion.FIX5_0_SP2,  FixtSessionRole.INITIATOR, 
-            "session2", "sender2", "senderSub2", null, "target1",
-            "targetSub1", null)
-        .withTcpTransport("192.168.2.3", 6544)
-        .withActivationTime(activateTime).withDeactivationTime(deactivateTime);
-    assertNotNull(session2);
-    
-    OutputStream out = new FileOutputStream("QuickFixTestModel.rdf");
-    tool.storeModel(out);
-    out.close();
 
-    tool.configure(new FileOutputStream("QuickFixConfiguration.ini"));
+    tool.configure(Thread.currentThread().getContextClassLoader().getResourceAsStream("SampleInterfaces.xml"), 
+        new FileOutputStream("QuickFixConfiguration.ini"));
   }
 
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2015-2016 FIX Protocol Ltd
+ * Copyright 2017 FIX Protocol Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -14,14 +14,34 @@
  */
 package io.fixprotocol.orchestra.session.quickfix;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.time.ZonedDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import io.fixprotocol.orchestra.session.FixSessionTool;
-import io.fixprotocol.orchestra.session.FixVersion;
-import io.fixprotocol.orchestra.session.FixtSessionRole;
-import io.fixprotocol.orchestra.session.Session;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.datatype.XMLGregorianCalendar;
+
+import org.w3c.dom.Node;
+
+import io.fixprotocol._2016.fixinterfaces.IdentifierType;
+import io.fixprotocol._2016.fixinterfaces.InterfaceType;
+import io.fixprotocol._2016.fixinterfaces.InterfaceType.Sessions;
+import io.fixprotocol._2016.fixinterfaces.Interfaces;
+import io.fixprotocol._2016.fixinterfaces.RoleT;
+import io.fixprotocol._2016.fixinterfaces.SessionProtocolType;
+import io.fixprotocol._2016.fixinterfaces.SessionType;
+import io.fixprotocol._2016.fixinterfaces.TransportProtocolType;
+import io.fixprotocol._2016.fixinterfaces.TransportUseEnum;
 import quickfix.Acceptor;
+import quickfix.ConfigError;
 import quickfix.Dictionary;
 import quickfix.FixVersions;
 import quickfix.Initiator;
@@ -33,83 +53,201 @@ import quickfix.SessionSettings;
  * @author Don Mendelson
  *
  */
-public class QuickFixSessionConfigurer extends FixSessionTool {
+public class QuickFixSessionConfigurer {
+
+  private ZonedDateTime effectiveTime = ZonedDateTime.now();
+
+  public static void main(String[] args) throws JAXBException, ConfigError, IOException {
+    if (args.length < 2) {
+      useage();
+    } else {
+      QuickFixSessionConfigurer configurer = new QuickFixSessionConfigurer();
+      try (FileOutputStream out = new FileOutputStream(args[1]);
+          FileInputStream in = new FileInputStream(args[0])) {
+        configurer.configure(in, out);
+      }
+    }
+  }
 
 
-  public void configure(OutputStream out) throws Exception {
+  public static void useage() {
+    System.err.println(
+        "Usage: java io.fixprotocol.orchestra.session.quickfix.QuickFixConfigurer <interfaces-file> <quickfix-file>");
+  }
+
+  /**
+   * @return the effectiveTime
+   */
+  public ZonedDateTime getEffectiveTime() {
+    return effectiveTime;
+  }
+
+  /**
+   * @param effectiveTime the effectiveTime to set
+   */
+  public void setEffectiveTime(ZonedDateTime effectiveTime) {
+    this.effectiveTime = effectiveTime;
+  }
+
+  public void configure(InputStream in, OutputStream out) throws JAXBException, ConfigError {
     SessionSettings quickFixSettings = new SessionSettings();
 
-    for (Session session : getSessions()) {
-
-      FixSessionObject fixSession = (FixSessionObject) session;
-      
-      ZonedDateTime activationTime = fixSession.getAcivationTime();
-      ZonedDateTime deativationTime = fixSession.getDeactivationTime();
-      ZonedDateTime now = ZonedDateTime.now();     
-      if (activationTime.isAfter(now) || deativationTime.isBefore(now)) {
-        continue;
+    Interfaces interfaces = unmarshal(in);
+    List<InterfaceType> interfaceList = interfaces.getInterface();
+    for (InterfaceType interfaceType : interfaceList) {
+      boolean isFixSession = false;
+      String interfaceVersion = null;
+      List<SessionProtocolType> sessionProtocols = interfaceType.getSessionProtocol();
+      for (SessionProtocolType sessionProtocolType : sessionProtocols) {
+        String protocolName = sessionProtocolType.getName();
+        if (protocolName.contains("FIX4") || protocolName.contains("FIXT")) {
+          interfaceVersion = sessionProtocolType.getVersion();
+          isFixSession = true;
+          break;
+        }
       }
 
-      FixVersion fixVersion = fixSession.getFixVersion();
-      String beginString = null;
-      String applVersion = null;
-      switch (fixVersion) {
-        case FIX4_2:
-          beginString = FixVersions.BEGINSTRING_FIX42;
+      Sessions sessions = interfaceType.getSessions();
+      List<SessionType> sessionList = sessions.getSession();
+      for (SessionType sessionType : sessionList) {
+
+        String version = null;
+        sessionProtocols = sessionType.getSessionProtocol();
+        for (SessionProtocolType sessionProtocolType : sessionProtocols) {
+          String protocolName = sessionProtocolType.getName();
+          if (protocolName.contains("FIX4") || protocolName.contains("FIXT")) {
+            version = sessionProtocolType.getVersion();
+            isFixSession = true;
+            break;
+          }
+        }
+
+        if (!isFixSession) {
+          continue;
+        }
+        
+        if (version == null) {
+          version = interfaceVersion;
+        }
+        if (version == null) {
+          System.err.println("FIX version unknown; skipping session");
           break;
-        case FIX4_4:
-          beginString = FixVersions.BEGINSTRING_FIX44;
-          break;
-        case FIX5_0_SP2:
-          beginString = FixVersions.BEGINSTRING_FIXT11;
-          applVersion = FixVersions.FIX50SP2;
-          break;
+        }
+
+        final XMLGregorianCalendar activationTimeXml = sessionType.getActivationTime();
+        if (activationTimeXml != null) {
+          ZonedDateTime activationTime = activationTimeXml.toGregorianCalendar().toZonedDateTime();
+          if (activationTime.isAfter(effectiveTime)) {
+            continue;
+          }
+        }
+
+        final XMLGregorianCalendar deactivationTimeXml = sessionType.getDeactivationTime();
+        if (deactivationTimeXml != null) {
+          ZonedDateTime deativationTime =
+              deactivationTimeXml.toGregorianCalendar().toZonedDateTime();
+          if (deativationTime.isBefore(effectiveTime)) {
+            continue;
+          }
+        }
+
+        String beginString = null;
+        String applVersion = null;
+        switch (version) {
+          case FixVersions.BEGINSTRING_FIX42:
+            beginString = FixVersions.BEGINSTRING_FIX42;
+            break;
+          case FixVersions.BEGINSTRING_FIX44:
+            beginString = FixVersions.BEGINSTRING_FIX44;
+            break;
+          case FixVersions.FIX50SP2:
+            beginString = FixVersions.BEGINSTRING_FIXT11;
+            applVersion = FixVersions.FIX50SP2;
+            break;
+        }
+
+        Map<String, String> identifierMap = new HashMap<>();
+        List<IdentifierType> identifierList = sessionType.getIdentifier();
+        for (IdentifierType identifierType : identifierList) {
+          String name = identifierType.getName();
+          Node value = (Node) identifierType.getValue();
+          String text = value.getFirstChild().getTextContent();
+          identifierMap.put(name, text);
+        }
+
+        Dictionary dictionary = new Dictionary();
+        dictionary.setString(SessionSettings.BEGINSTRING, beginString);
+        dictionary.setString(SessionSettings.SENDERCOMPID,
+            identifierMap.getOrDefault(SessionSettings.SENDERCOMPID, SessionID.NOT_SET));
+        dictionary.setString(SessionSettings.SENDERSUBID,
+            identifierMap.getOrDefault(SessionSettings.SENDERSUBID, SessionID.NOT_SET));
+        dictionary.setString(SessionSettings.SENDERLOCID,
+            identifierMap.getOrDefault(SessionSettings.SENDERLOCID, SessionID.NOT_SET));
+        dictionary.setString(SessionSettings.TARGETCOMPID,
+            identifierMap.getOrDefault(SessionSettings.TARGETCOMPID, SessionID.NOT_SET));
+        dictionary.setString(SessionSettings.TARGETSUBID,
+            identifierMap.getOrDefault(SessionSettings.TARGETSUBID, SessionID.NOT_SET));
+        dictionary.setString(SessionSettings.TARGETLOCID,
+            identifierMap.getOrDefault(SessionSettings.TARGETLOCID, SessionID.NOT_SET));
+
+        if (FixVersions.FIX50SP2 == version) {
+          dictionary.setString(quickfix.Session.SETTING_DEFAULT_APPL_VER_ID, applVersion);
+        }
+
+        RoleT role = sessionType.getRole();
+        List<TransportProtocolType> transportList = sessionType.getTransport();
+        TransportProtocolType transport = null;
+        int transportCount = transportList.size();
+        if (transportCount == 1) {
+          transport = transportList.get(0);
+        } else {
+          for (TransportProtocolType aTransport : transportList) {
+            if (aTransport.getUse().equalsIgnoreCase(TransportUseEnum.PRIMARY.toString())) {
+              transport = aTransport;
+            }
+          }
+          if (transport == null) {
+            System.err.println("Transport not configured; skipping session");
+            continue;
+          }
+
+          String address = transport.getAddress();
+          String[] addressParts = address.split(":");
+
+          switch (role) {
+            case INITIATOR:
+              dictionary.setString(SessionFactory.SETTING_CONNECTION_TYPE,
+                  SessionFactory.INITIATOR_CONNECTION_TYPE);
+              dictionary.setString(Initiator.SETTING_SOCKET_CONNECT_HOST, addressParts[0]);
+              dictionary.setString(Initiator.SETTING_SOCKET_CONNECT_PORT, addressParts[1]);
+              break;
+            case ACCEPTOR:
+              dictionary.setString(SessionFactory.SETTING_CONNECTION_TYPE,
+                  SessionFactory.ACCEPTOR_CONNECTION_TYPE);
+              dictionary.setString(Acceptor.SETTING_SOCKET_ACCEPT_ADDRESS, addressParts[0]);
+              dictionary.setString(Acceptor.SETTING_SOCKET_ACCEPT_PORT, addressParts[1]);
+              break;
+          }
+
+          SessionID sessionId =
+              new SessionID(beginString, identifierMap.get(SessionSettings.SENDERCOMPID),
+                  identifierMap.get(SessionSettings.SENDERSUBID),
+                  identifierMap.get(SessionSettings.SENDERLOCID),
+                  identifierMap.get(SessionSettings.TARGETCOMPID),
+                  identifierMap.get(SessionSettings.TARGETSUBID),
+                  identifierMap.get(SessionSettings.TARGETLOCID), SessionID.NOT_SET);
+          quickFixSettings.set(sessionId, dictionary);
+        }
+
+        quickFixSettings.toStream(out);
+
       }
-
-      String senderCompId = fixSession.getSenderCompId();
-      String senderSubId = SessionID.NOT_SET;
-      String senderLocationId = SessionID.NOT_SET;
-      String targetCompId = fixSession.getTargetCompId();
-      String targetSubId = SessionID.NOT_SET;
-      String targetLocationId = SessionID.NOT_SET;
-
-      SessionID sessionId = new SessionID(beginString, senderCompId, senderSubId, senderLocationId,
-          targetCompId, targetSubId, targetLocationId, SessionID.NOT_SET);
-
-      Dictionary dictionary = new Dictionary();
-      dictionary.setString(SessionSettings.BEGINSTRING, beginString);
-      dictionary.setString(SessionSettings.SENDERCOMPID, senderCompId);
-      dictionary.setString(SessionSettings.SENDERSUBID, senderLocationId);
-      dictionary.setString(SessionSettings.SENDERLOCID, senderSubId);
-      dictionary.setString(SessionSettings.TARGETCOMPID, targetCompId);
-      dictionary.setString(SessionSettings.TARGETSUBID, targetSubId);
-      dictionary.setString(SessionSettings.TARGETLOCID, targetLocationId);
-
-      if (FixVersion.FIX5_0_SP2 == fixVersion) {
-        dictionary.setString(quickfix.Session.SETTING_DEFAULT_APPL_VER_ID, applVersion);
-      }
-      
-      FixtSessionRole role = fixSession.getSessionRole();
-      switch (role) {
-        case INITIATOR:
-          dictionary.setString(SessionFactory.SETTING_CONNECTION_TYPE,
-              SessionFactory.INITIATOR_CONNECTION_TYPE);
-          dictionary.setString(Initiator.SETTING_SOCKET_CONNECT_HOST, fixSession.getIpAddress());
-          dictionary.setString(Initiator.SETTING_SOCKET_CONNECT_PORT,
-              Integer.toString(fixSession.getPort()));
-          break;
-        case ACCEPTOR:
-          dictionary.setString(SessionFactory.SETTING_CONNECTION_TYPE,
-              SessionFactory.ACCEPTOR_CONNECTION_TYPE);
-          dictionary.setString(Acceptor.SETTING_SOCKET_ACCEPT_ADDRESS, fixSession.getIpAddress());
-          dictionary.setString(Acceptor.SETTING_SOCKET_ACCEPT_PORT,
-              Integer.toString(fixSession.getPort()));
-          break;
-      }
-
-      quickFixSettings.set(sessionId, dictionary);
     }
+  }
 
-    quickFixSettings.toStream(out);
+  private Interfaces unmarshal(InputStream in) throws JAXBException {
+    JAXBContext jaxbContext = JAXBContext.newInstance(Interfaces.class);
+    Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+    return (Interfaces) jaxbUnmarshaller.unmarshal(in);
   }
 }

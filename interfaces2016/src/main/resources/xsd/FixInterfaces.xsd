@@ -136,6 +136,14 @@
 			<xs:enumeration value="recoverable"/>
 		</xs:restriction>
 	</xs:simpleType>
+	<xs:simpleType name="role_t">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="initiator"/>
+			<xs:enumeration value="acceptor"/>
+			<xs:enumeration value="client"/>
+			<xs:enumeration value="server"/>
+		</xs:restriction>
+	</xs:simpleType>
 	<xs:complexType name="serviceType">
 		<xs:complexContent>
 			<xs:extension base="fixi:protocolType"/>
@@ -151,9 +159,10 @@
 			<xs:extension base="fixi:baseInterfaceType">
 				<xs:sequence>
 					<xs:element name="identifier" type="fixi:identifierType" minOccurs="0" maxOccurs="unbounded"/>
-					<xs:element name="startTime" type="xs:dateTime" minOccurs="0"/>
-					<xs:element name="endTime" type="xs:dateTime" minOccurs="0"/>
-				</xs:sequence>
+					<xs:element name="activationTime" type="xs:dateTime" minOccurs="0"/>
+					<xs:element name="deactivationTime" type="xs:dateTime" minOccurs="0"/>
+					<xs:element name="role" type="fixi:role_t" minOccurs="0"/>
+				</xs:sequence>		
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
