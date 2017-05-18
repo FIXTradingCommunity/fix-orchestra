@@ -23,12 +23,18 @@ Public Orchestra files for service offerings
 
 ## Versions
 
-### Current version: Release Candidate 2
+### Working version: Release Candidate 3
+Planned themes:
+* Reference data
+* Build process and tools
+* Semantic representation
+* Refinement of previous deliverables
+
+### Current approved version: Release Candidate 2
 Release Candidate 2 was approved by the Global Technical Committee on May 18, 2017 for 90 day public review. The themes for Release Candidate 2 were:
 * Completion of a DSL grammar for conditional expressions
 * FIXatdl integration
 * Session configuration
-
 
 ### Release Candidate 1
 Version 1.0 RC1 standardized the XML schema for FIX Orchestra and FIX Repository 2016 Edition. Release Candidate 1 was approved by the Global Technical Committee on Dec. 15, 2016 for 90 day public review. 
