@@ -10,11 +10,11 @@ xsi:schemaLocation="http://fixprotocol.io/2016/fixinterfaces ../../../../interfa
 	</fixi:metadata>
 	<fixi:interface name="Private">
 		<!-- one or more service offerings, with local orchestration file or internet address -->
-		<fixi:service name="orderEntry" orchestration="https://mydomain.com/orchestra/orderEntry.xml"/>
+		<fixi:service name="orderEntry" version="FIX.5.0SP2" orchestration="https://mydomain.com/orchestra/orderEntry.xml"/>
 		<!-- the protcol stack -->
 		<fixi:userInterface name="ATDL" orchestration="https://mydomain.com/orchestra/algo.xml"/>
 		<fixi:encoding name="TagValue"/>
-		<fixi:sessionProtocol name="FIXT.1.1" version="FIX.5.0SP2" reliability="recoverable" orchestration="https://mydomain.com/orchestra/session.xml">
+		<fixi:sessionProtocol name="FIXT.1.1" reliability="recoverable" orchestration="https://mydomain.com/orchestra/session.xml">
 			<fixi:annotation>
 				<fixi:documentation langId="en-us">FIX session protocol</fixi:documentation>
 			</fixi:annotation>
