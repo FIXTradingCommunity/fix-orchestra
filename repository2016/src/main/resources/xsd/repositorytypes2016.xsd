@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:fixr="http://fixprotocol.io/2016/fixrepository" targetNamespace="http://fixprotocol.io/2016/fixrepository" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0-rc1">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:fixr="http://fixprotocol.io/2016/fixrepository" targetNamespace="http://fixprotocol.io/2016/fixrepository" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0-rc3">
 	<xs:annotation>
 		<xs:documentation>
 			© Copyright 2016-2017 FIX Protocol Limited Creative
@@ -64,10 +64,11 @@
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 	</xs:complexType>
 	<xs:complexType name="blockAssignmentType">
-		<xs:sequence>
-			<xs:element name="fieldRef" type="fixr:fieldRefType" maxOccurs="unbounded"/>
-			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
-		</xs:sequence>
+		<xs:choice maxOccurs="unbounded">
+			<xs:element name="componentRef" type="fixr:componentRefType"/>
+			<xs:element name="groupRef" type="fixr:groupRefType"/>
+			<xs:element name="fieldRef" type="fixr:fieldRefType"/>
+		</xs:choice>
 	</xs:complexType>
 	<xs:simpleType name="CatComponentType_t">
 		<xs:restriction base="xs:string">
@@ -185,6 +186,11 @@
 		<xs:attributeGroup ref="fixr:oidGrp"/>
 		<xs:attribute name="category" type="fixr:CategoryID_t"/>
 		<xs:attribute name="abbrName" type="fixr:Abbreviation_t"/>
+		<xs:attribute name="rendering" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>A hint to processes about how to interpret the element. Not validated.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 	</xs:complexType>
 	<xs:attributeGroup name="containerAttribGrp">
 		<xs:attribute name="latestEP" type="fixr:EP_t"/>
@@ -307,6 +313,11 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
+		<xs:attribute name="rendering" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>A hint to processes about how to interpret the element. Not validated.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 	</xs:attributeGroup>
 	<xs:complexType name="fieldRefType">
 		<xs:sequence>
@@ -345,6 +356,14 @@
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attributeGroup ref="fixr:fieldAttribGrp"/>
+		<xs:attribute name="instanceName" type="fixr:Name_t">
+			<xs:annotation>
+				<xs:documentation>Override the field name for this instance, for
+					code generation and the like. Allows more than one instance of a
+					field in a message or component.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 	</xs:complexType>
 	<xs:complexType name="fieldRuleType">
 		<xs:sequence>
@@ -495,6 +514,11 @@
 		<xs:attribute name="category" type="fixr:CategoryID_t"/>
 		<xs:attribute name="section" type="fixr:SectionID_t"/>
 		<xs:attribute name="abbrName" type="fixr:Abbreviation_t"/>
+		<xs:attribute name="rendering" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>A hint to processes about how to interpret the element. Not validated.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 	</xs:attributeGroup>
 	<xs:complexType name="messageRefType">
 		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
