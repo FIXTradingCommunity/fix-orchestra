@@ -102,7 +102,8 @@
 		<xsl:param name="id"/>
 		<xsl:variable name="type" select="/fixr:repository/fixr:fields/fixr:field[@id=$id]/@type"/>
 		<xsl:choose>
-			<xsl:when test="$type='int' or $type='float'">number</xsl:when>
+			<xsl:when test="$type='int'">integer</xsl:when>
+			<xsl:when test="$type='float'">number</xsl:when>
 			<xsl:otherwise>string</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
