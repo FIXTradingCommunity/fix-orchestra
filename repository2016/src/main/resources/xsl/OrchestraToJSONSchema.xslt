@@ -15,7 +15,7 @@
 		<xsl:apply-templates/>
 	</xsl:template>
 	<xsl:template match="fixr:components">
-		<xsl:apply-templates/>	
+		<!-- xsl:apply-templates -->	
 	</xsl:template>
 	<xsl:template match="fixr:component">
 		<xsl:variable name="filename" select="fn:concat('definitions/', @name, '.json')"/>
@@ -33,8 +33,7 @@
 }
 		</xsl:result-document>
 	</xsl:template>
-		<xsl:template match="fixr:group">
-		<xsl:variable name="filename" select="fn:concat('definitions/', @name, '.json')"/>
+	<xsl:template match="fixr:group">		<xsl:variable name="filename" select="fn:concat('definitions/', @name, '.json')"/>
 		<xsl:result-document method="text" href="{$filename}">
 { 
 	"title"                : "<xsl:value-of select="@name"/>",
@@ -42,6 +41,7 @@
 	"type"                 : "array",
 	"items"                : {
 		"type": "object",
+		<xsl:apply-templates select="@*"/>
 		"properties": {
 			<xsl:apply-templates select="fixr:fieldRef|fixr:groupRef|fixr:componentRef" mode="properties"/>
 		},
@@ -59,7 +59,7 @@
 		<xsl:variable name="filename" select="fn:concat('definitions/', @name, @scenario, '.json')"/>
 		<xsl:result-document method="text" href="{$filename}">
 { 
-	"$schema"              : "http://json-schema.org/draft-06/schema#",
+	"$schema"              : "http://json-schema.org/draft-04/schema#",
 	"title"                : "<xsl:value-of select="@name"/>",
 	"description"          : "JSON Schema for message <xsl:value-of select="@name"/>",
 	"type"                 : "object",
@@ -72,11 +72,12 @@
 }
 		</xsl:result-document>
 	</xsl:template>
-	<xsl:template match="fixr:structure">
+	<xsl:template match="fixr:structure" mode="#all">
 		<xsl:apply-templates select="fixr:fieldRef|fixr:groupRef|fixr:componentRef" mode="#current"/>
 	</xsl:template>
 	<xsl:template match="fixr:fieldRef" mode="properties">
-		"<xsl:value-of select="@name"/>": { <xsl:call-template name="datatype"><xsl:with-param name="id" select="@id"/></xsl:call-template>
+		"<xsl:value-of select="@name"/>": { 
+		<xsl:call-template name="datatype"><xsl:with-param name="id" select="@id"/></xsl:call-template><xsl:apply-templates select="@*"/>
 		<xsl:call-template name="enum"><xsl:with-param name="id" select="@id"/></xsl:call-template>
 		}<xsl:if test="fn:position() != fn:last()">, </xsl:if>
 	</xsl:template>
@@ -84,7 +85,7 @@
 		"<xsl:value-of select="@name"/>"<xsl:if test="fn:position() != fn:last()">, </xsl:if>
 	</xsl:template>
 	<xsl:template match="fixr:componentRef|fixr:groupRef" mode="properties">
-		"$ref": "#/definitions/<xsl:value-of select="@name"/>"<xsl:if test="fn:position() != fn:last()">, </xsl:if>
+		"<xsl:value-of select="@name"/>" : {"$ref": "#/definitions/<xsl:value-of select="@name"/>"}<xsl:if test="fn:position() != fn:last()">, </xsl:if>
 	</xsl:template>
 	<xsl:template name="datatype">
 		<xsl:param name="id"/>
@@ -101,13 +102,31 @@
 			<xsl:when test="$type='PriceOffset'">"type": "number"</xsl:when>
 			<xsl:when test="$type='Amt'">"type": "number"</xsl:when>
 			<xsl:when test="$type='Percentage'">"type": "number"</xsl:when>
-			<xsl:when test="$type='Boolean'">"type": "boolean"</xsl:when>
+			<xsl:when test="$type='Boolean'">"type": "string"</xsl:when>
 			<xsl:when test="$type='UTCTimestamp'">"type": "string",
 			"format" : "date-time"</xsl:when>
 			<xsl:otherwise>"type" : "string"</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
-		<xsl:template name="enum">
+	<xsl:template match="@minInclusive">,
+			"minimum": <xsl:value-of select="fn:current()"/>
+	</xsl:template>
+	<xsl:template match="@maxInclusive">,
+			"maximum": <xsl:value-of select="fn:current()"/>
+	</xsl:template>
+	<xsl:template match="@implMinLength">,
+			"minLength": <xsl:value-of select="fn:current()"/>
+	</xsl:template>
+	<xsl:template match="@implMaxLength">,
+			"maxLength": <xsl:value-of select="fn:current()"/>
+	</xsl:template>
+	<xsl:template match="@implMinOccurs">
+			"minItems": <xsl:value-of select="fn:current()"/>,
+	</xsl:template>
+	<xsl:template match="@implMaxOccurs">
+			"maxItems": <xsl:value-of select="fn:current()"/>,
+	</xsl:template>
+	<xsl:template name="enum">
 		<xsl:param name="id"/>
 		<xsl:variable name="fieldType" select="/fixr:repository/fixr:fields/fixr:field[@id=$id]/@type"/>
 		<xsl:variable name="codesetType" select="/fixr:repository/fixr:codeSets/fixr:codeSet[@name=$fieldType]/@type"/>
@@ -131,6 +150,7 @@
 	<xsl:template match="fixr:sections"/>
 	<xsl:template match="fixr:fields"/>
 	<xsl:template match="fixr:actors"/>
-	<xsl:template match="fixr:annotation"/>
+	<xsl:template match="fixr:annotation" mode="#all"/>
 	<xsl:template match="fixr:responses"/>
+	<xsl:template match="@*" mode="#all"/>
 </xsl:stylesheet>
