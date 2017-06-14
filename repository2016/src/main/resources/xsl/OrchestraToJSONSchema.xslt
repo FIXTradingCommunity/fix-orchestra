@@ -15,7 +15,7 @@
 		<xsl:apply-templates/>
 	</xsl:template>
 	<xsl:template match="fixr:components">
-		<!-- xsl:apply-templates -->	
+		<xsl:apply-templates/>	
 	</xsl:template>
 	<xsl:template match="fixr:component">
 		<xsl:variable name="filename" select="fn:concat('definitions/', @name, '.json')"/>
@@ -28,7 +28,7 @@
 		<xsl:apply-templates select="fixr:fieldRef|fixr:groupRef|fixr:componentRef" mode="properties"/>
 	},
 	"required"             : [ 
-		<xsl:apply-templates select="fixr:fieldRef|fixr:groupRef|fixr:componentRef" mode="required"/>
+		<xsl:apply-templates select="fixr:fieldRef[@presence='required']|fixr:groupRef[@presence='required']|fixr:componentRef[@presence='required']" mode="required"/>
 	]
 }
 		</xsl:result-document>
@@ -46,7 +46,7 @@
 			<xsl:apply-templates select="fixr:fieldRef|fixr:groupRef|fixr:componentRef" mode="properties"/>
 		},
 		"required"             : [ 
-			<xsl:apply-templates select="fixr:fieldRef|fixr:groupRef|fixr:componentRef" mode="required"/>
+		<xsl:apply-templates select="fixr:fieldRef[@presence='required']|fixr:groupRef[@presence='required']|fixr:componentRef[@presence='required']" mode="required"/>
 		]
 	}
 }
@@ -64,16 +64,13 @@
 	"description"          : "JSON Schema for message <xsl:value-of select="@name"/>",
 	"type"                 : "object",
 	"properties"           : {
-		<xsl:apply-templates mode="properties"/>
+			<xsl:apply-templates select="fixr:structure/fixr:fieldRef|fixr:structure/fixr:groupRef|fixr:structure/fixr:componentRef" mode="properties"/>
 	},
 	"required"             : [ 
-		<xsl:apply-templates mode="required"/>
+			<xsl:apply-templates select="fixr:structure/fixr:fieldRef[@presence='required']|fixr:structure/fixr:groupRef[@presence='required']|fixr:structure/fixr:componentRef[@presence='required']" mode="required"/>
 	]
 }
 		</xsl:result-document>
-	</xsl:template>
-	<xsl:template match="fixr:structure" mode="#all">
-		<xsl:apply-templates select="fixr:fieldRef|fixr:groupRef|fixr:componentRef" mode="#current"/>
 	</xsl:template>
 	<xsl:template match="fixr:fieldRef" mode="properties">
 		"<xsl:value-of select="@name"/>": { 
@@ -92,21 +89,13 @@
 		<xsl:variable name="fieldType" select="/fixr:repository/fixr:fields/fixr:field[@id=$id]/@type"/>
 		<xsl:variable name="codesetType" select="/fixr:repository/fixr:codeSets/fixr:codeSet[@name=$fieldType]/@type"/>
 		<xsl:variable name="type" select="$codesetType|$fieldType"/>
-		<xsl:choose>
-			<xsl:when test="$type='int'">"type": "integer"</xsl:when>
-			<xsl:when test="$type='DayOfMonth'">"type": "integer"</xsl:when>
-			<xsl:when test="$type='Length'">"type": "integer"</xsl:when>
-			<xsl:when test="$type='float'">"type": "number"</xsl:when>
-			<xsl:when test="$type='Qty'">"type": "number"</xsl:when>
-			<xsl:when test="$type='Price'">"type": "number"</xsl:when>
-			<xsl:when test="$type='PriceOffset'">"type": "number"</xsl:when>
-			<xsl:when test="$type='Amt'">"type": "number"</xsl:when>
-			<xsl:when test="$type='Percentage'">"type": "number"</xsl:when>
-			<xsl:when test="$type='Boolean'">"type": "string"</xsl:when>
-			<xsl:when test="$type='UTCTimestamp'">"type": "string",
-			"format" : "date-time"</xsl:when>
-			<xsl:otherwise>"type" : "string"</xsl:otherwise>
-		</xsl:choose>
+		<xsl:apply-templates select="/fixr:repository/fixr:datatypes/fixr:datatype[@name=$type]/fixr:mappedDatatype[@standard='JSON']/@*"/> 
+	</xsl:template>
+	<xsl:template match="@base">
+			"type": "<xsl:value-of select="fn:current()"/>"
+	</xsl:template>
+	<xsl:template match="@parameter">,
+			<xsl:value-of select="fn:current()"/>
 	</xsl:template>
 	<xsl:template match="@minInclusive">,
 			"minimum": <xsl:value-of select="fn:current()"/>
@@ -149,8 +138,9 @@
 	<xsl:template match="fixr:categories"/>
 	<xsl:template match="fixr:sections"/>
 	<xsl:template match="fixr:fields"/>
-	<xsl:template match="fixr:actors"/>
+	<xsl:template match="fixr:actors" mode="#all"/>
 	<xsl:template match="fixr:annotation" mode="#all"/>
-	<xsl:template match="fixr:responses"/>
+	<xsl:template match="fixr:responses" mode="#all"/>
+	<xsl:template match="fixr:when" mode="#all"/>
 	<xsl:template match="@*" mode="#all"/>
 </xsl:stylesheet>

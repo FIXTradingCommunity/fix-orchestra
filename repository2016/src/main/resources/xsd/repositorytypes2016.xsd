@@ -220,12 +220,24 @@
 					<xs:documentation>General Purpose Datatypes</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="GPB"/>
-			<xs:enumeration value="JSON"/>
-			<xs:enumeration value="SBE"/>
+			<xs:enumeration value="GPB">
+				<xs:annotation>
+					<xs:documentation>Google Protocol Buffers</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="JSON">
+				<xs:annotation>
+					<xs:documentation>JSON Schema</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SBE">
+				<xs:annotation>
+					<xs:documentation>Simple Binary Encoding</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
 			<xs:enumeration value="XML">
 				<xs:annotation>
-					<xs:documentation>XML Schema types</xs:documentation>
+					<xs:documentation>XML Schema and FIXML</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
 		</xs:restriction>
