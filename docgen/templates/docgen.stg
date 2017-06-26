@@ -1,0 +1,211 @@
+protocols(protocols) ::= <<
+<!DOCTYPE html>
+<html>
+<body>
+Protocol <select id="protocolSelect" onchange="protocolChange(this)" onload="protocolChange(this)">
+    $protocols:{protocol |<option value="$protocol.name$">$protocol.name$</option>}$
+ </select>
+ <div id="message"></div>
+</body>
+</html>
+>>
+
+sections(sections) ::= <<
+<!DOCTYPE html>
+<html>
+<body>
+Section <select id="sectionSelect" onchange="sectionChange(this)" onload="sectionChange(this)">
+    $sections:{section |<option value="$section.name$">$section.name$</option>}$
+ </select>
+ <div id="message"></div>
+</body>
+</html>
+
+<script type="text/javascript">
+function protocolChange(control) {
+	document.getElementById("message").innerHTML = control.value;
+}
+</script>
+>>
+
+categories(categories) ::= <<
+<!DOCTYPE html>
+<html>
+<body>
+$categories:{category|<a href="$category.id$Messages.html">$category.id$</a><br>}$
+</body>
+</html>
+>>
+
+
+messages(protocol, messages) ::= <<
+<!DOCTYPE html>
+<html>
+<body>
+$messages:{message|<a href="$protocol.name$$message.name$-$message.scenario$.html">$message.name$-$message.scenario$</a><br>}$
+</body>
+</html>
+>>
+
+fields(fields) ::= <<
+<!DOCTYPE html>
+<html>
+<body>
+$fields:{field|<a href="$field.name$.html">$field.name$</a><br>}$
+</body>
+</html>
+>>
+
+message(protocol, message) ::= <<
+<!DOCTYPE html>
+<html>
+<body>
+<h2>Message $message.name$ Scenario $message.scenario$</h2>
+$if(message.extends)$extends scenario <a href="$protocol.name$$message.name$-$message.extends$.html">$message.extends$</a><br>$endif$
+$documentation(object=message)$
+<br>
+<table>
+<tr>
+<th>ID</th>
+<th>MsgType</th>
+<th>Flow</th>
+</tr>
+<tr><td>$message.id$</td><td>$message.msgType$</td><td>$message.flow$</td></tr>
+</table>
+$pedigree(object=message)$
+<h3>Members</h3>
+$members(component=message.structure.ComponentOrComponentRefOrGroup)$
+<h3>Responses</h3>
+$responses(responses=message.responses.response)$
+</body>
+</html>
+>>
+
+component(protocol, component) ::= <<
+<!DOCTYPE html>
+<html>
+<body>
+<h2>Component $component.name$</h2>
+$documentation(object=component)$
+<br>
+<table>
+<tr>
+<th>ID</th>
+</tr>
+<tr><td>$component.id$</td></td></tr>
+</table>
+$pedigree(object=component)$
+<h3>Members</h3>
+$members(component=component.componentRefOrGroupRefOrFieldRef)$
+</body>
+</html>
+>>
+
+field(field) ::= <<
+<!DOCTYPE html>
+<html>
+<body>
+<h2>Field $field.name$</h2>
+$documentation(object=field)$
+<br>
+<table>
+<tr>
+<th>ID</th>
+<th>Datatype</th>
+</tr>
+<tr><td>$field.id$</td><td><a href="$field.type$.html">$field.type$</a></td></tr>
+</table>
+$pedigree(object=field)$
+</body>
+</html>
+>>
+
+datatype(datatype) ::= <<
+<!DOCTYPE html>
+<html>
+<body>
+<h2>Datatype $datatype.name$</h2>
+$documentation(object=datatype)$
+<br>
+$pedigree(object=datatype)$
+</body>
+</html>
+>>
+
+codeSet(codeSet) ::= <<
+<!DOCTYPE html>
+<html>
+<body>
+<h2>Code Set $codeSet.name$</h2>
+$documentation(object=codeSet)$
+<br>
+<table>
+<tr>
+<th>ID</th>
+<th>Datatype</th>
+</tr>
+<tr><td>$codeSet.id$</td><td>$codeSet.type$</td></tr>
+</table>
+<h3>Codes</h3>
+$codes(codeSet.code)$
+</body>
+</html>
+>>
+
+codes(codes) ::= <<
+<table>
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Value</th>
+<th>Description</th>
+<th>Added</th>
+<th>EP</th>
+<th>Updated</th>
+<th>EP</th>
+<th>Deprecated</th>
+<th>EP</th>
+</tr>
+$codes:{code|<tr><td>$code.id$</td><td>$code.name$</td><td>$code.value$</td><td>$documentation(object=code)$</td><td>$code.added$</td><td>$code.addedEP$</td><td>$code.updated$</td><td>$code.updatedEP$</td><td>$code.deprecated$</td><td>$code.deprecatedEP$</td></tr>}$
+</table>
+>>
+
+pedigree(object) ::= <<
+<table>
+<tr>
+<th>Added</th>
+<th>EP</th>
+<th>Updated</th>
+<th>EP</th>
+<th>Deprecated</th>
+<th>EP</th>
+</tr>
+<tr><td>$object.added$</td><td>$object.addedEP$</td><td>$object.updated$</td><td>$object.updatedEP$</td><td>$object.deprecated$</td><td>$object.deprecatedEP$</td></tr>
+</table>
+>>
+
+documentation(object) ::= <<
+$object.annotation.DocumentationOrAppinfo:{doc|$doc.content$<br>}$
+>>
+
+members(component) ::= <<
+<table>
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Presence</th>
+</tr>
+$component:{member|<tr><td>$member.id$</td><td><a href="$member.name$.html">$member.name$</a></td><td>$member.presence$</td></tr>}$
+</table>
+>>
+
+responses(responses) ::= <<
+<table>
+<tr>
+<th>Message</th>
+<th>Scenario</th>
+<th>When</th>
+</tr>
+$responses:{response|<tr></td><td></td><td>$response.when$</td></tr>}$
+</table>
+>>

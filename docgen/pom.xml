@@ -1,0 +1,25 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>io.fixprotocol.orchestra</groupId>
+		<artifactId>parent</artifactId>
+		<version>1.2.0-RC3-SNAPSHOT</version>
+	</parent>
+	<artifactId>docgen</artifactId>
+	<description>Generates humanly readable documentation</description>
+	<name>${project.groupId}:${project.artifactId}</name>
+
+	<dependencies>
+		<dependency>
+			<groupId>io.fixprotocol.orchestra</groupId>
+			<artifactId>repository2016</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.antlr</groupId>
+			<artifactId>stringtemplate</artifactId>
+			<version>${stringtemplate.version}</version>
+		</dependency>
+	</dependencies>
+</project>
