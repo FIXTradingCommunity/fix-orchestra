@@ -37,12 +37,20 @@ $categories:{category|<a href="$category.id$Messages.html">$category.id$</a><br>
 </html>
 >>
 
-
-messages(protocol, messages) ::= <<
+datatypes(datatypes) ::= <<
 <!DOCTYPE html>
 <html>
 <body>
-$messages:{message|<a href="$protocol.name$$message.name$-$message.scenario$.html">$message.name$-$message.scenario$</a><br>}$
+$datatypes:{datatype|<a href="$datatype.name$.html">$datatype.name$</a><br>}$
+</body>
+</html>
+>>
+
+messages(messages) ::= <<
+<!DOCTYPE html>
+<html>
+<body>
+$messages:{message|<a href="$message.name$-$message.scenario$.html">$message.name$-$message.scenario$</a><br>}$
 </body>
 </html>
 >>
@@ -56,12 +64,16 @@ $fields:{field|<a href="$field.name$.html">$field.name$</a><br>}$
 </html>
 >>
 
-message(protocol, message) ::= <<
+messageStart(message) ::= <<
 <!DOCTYPE html>
 <html>
+<title>Message $message.name$ Scenario $message.scenario$</title>
+<head>
+  <link rel="stylesheet" href="../fixstyle.css">
+</head>
 <body>
 <h2>Message $message.name$ Scenario $message.scenario$</h2>
-$if(message.extends)$extends scenario <a href="$protocol.name$$message.name$-$message.extends$.html">$message.extends$</a><br>$endif$
+$if(message.extends)$extends scenario <a href="$message.name$-$message.extends$.html">$message.extends$</a><br>$endif$
 $documentation(object=message)$
 <br>
 <table>
@@ -73,15 +85,47 @@ $documentation(object=message)$
 <tr><td>$message.id$</td><td>$message.msgType$</td><td>$message.flow$</td></tr>
 </table>
 $pedigree(object=message)$
-<h3>Members</h3>
-$members(component=message.structure.ComponentOrComponentRefOrGroup)$
 <h3>Responses</h3>
-$responses(responses=message.responses.response)$
+<table>
+<tr>
+<th>Message</th>
+<th>Scenario</th>
+<th>When</th>
+</tr>
+>>
+
+messageResponse(message, scenario, when) ::= <<
+<tr><td>$message$</td><td>$scenario$</td><td>$when$</td></tr>
+>>
+
+messagePart2(message) ::= <<
+</table>
+<h3>Members</h3>
+<table>
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Presence</th>
+</tr>
+>>
+
+
+
+messageEnd(message) ::= <<
+</table>
 </body>
 </html>
 >>
 
-component(protocol, component) ::= <<
+fieldMember(fieldRef, presence) ::= <<
+<tr><td>$fieldRef.id$</td><td><a href="../fields/$fieldRef.name$.html">$fieldRef.name$</a></td><td>$presence$</td></tr>
+>>
+
+componentMember(componentRef, presence) ::= <<
+<tr><td>$componentRef.id$</td><td><a href="$componentRef.name$.html">$componentRef.name$</a></td><td>$presence$</td></tr>
+>>
+
+componentStart(component) ::= <<
 <!DOCTYPE html>
 <html>
 <body>
@@ -96,7 +140,16 @@ $documentation(object=component)$
 </table>
 $pedigree(object=component)$
 <h3>Members</h3>
-$members(component=component.componentRefOrGroupRefOrFieldRef)$
+<table>
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Presence</th>
+</tr>
+>>
+
+componentEnd(component) ::= <<
+</table>
 </body>
 </html>
 >>
@@ -113,7 +166,7 @@ $documentation(object=field)$
 <th>ID</th>
 <th>Datatype</th>
 </tr>
-<tr><td>$field.id$</td><td><a href="$field.type$.html">$field.type$</a></td></tr>
+<tr><td>$field.id$</td><td><a href="../datatypes/$field.type$.html">$field.type$</a></td></tr>
 </table>
 $pedigree(object=field)$
 </body>
@@ -128,8 +181,22 @@ datatype(datatype) ::= <<
 $documentation(object=datatype)$
 <br>
 $pedigree(object=datatype)$
+<h3>Mappings</h3>
+$mappings(datatype.mappedDatatype)$
 </body>
 </html>
+>>
+
+mappings(mappings) ::= <<
+<table>
+<tr>
+<th>Standard</th>
+<th>Base type</th>
+<th>Parameter</th>
+<th>Pattern</th>
+</tr>
+$mappings:{mapping|<tr><td>$mapping.standard$</td><td>$mapping.base$</td><td>$mapping.parameter$</td><td>$mapping.pattern$</td></tr>}$
+</table>
 >>
 
 codeSet(codeSet) ::= <<
@@ -144,7 +211,7 @@ $documentation(object=codeSet)$
 <th>ID</th>
 <th>Datatype</th>
 </tr>
-<tr><td>$codeSet.id$</td><td>$codeSet.type$</td></tr>
+<tr><td>$codeSet.id$</td><td><a href="$codeSet.type$.html">$codeSet.type$</a></td></tr>
 </table>
 <h3>Codes</h3>
 $codes(codeSet.code)$
@@ -188,24 +255,3 @@ documentation(object) ::= <<
 $object.annotation.DocumentationOrAppinfo:{doc|$doc.content$<br>}$
 >>
 
-members(component) ::= <<
-<table>
-<tr>
-<th>ID</th>
-<th>Name</th>
-<th>Presence</th>
-</tr>
-$component:{member|<tr><td>$member.id$</td><td><a href="$member.name$.html">$member.name$</a></td><td>$member.presence$</td></tr>}$
-</table>
->>
-
-responses(responses) ::= <<
-<table>
-<tr>
-<th>Message</th>
-<th>Scenario</th>
-<th>When</th>
-</tr>
-$responses:{response|<tr></td><td></td><td>$response.when$</td></tr>}$
-</table>
->>
