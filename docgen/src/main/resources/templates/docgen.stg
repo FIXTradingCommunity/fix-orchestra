@@ -1,0 +1,390 @@
+main(title, protocols) ::= <<
+<!DOCTYPE html>
+<html>
+<title>$title$</title>
+<head>
+<link rel="stylesheet" href="orchestra.css">
+</head>
+<body>
+<div>
+$fixedMenu(title)$
+</div>
+<div>
+$protocols(protocols)$
+</div>
+<iframe id="leftFrame" width="200px" height="100%"></iframe>
+</body>
+</html>
+<script type="text/javascript">
+function protocolChange(select) {
+	document.getElementById("leftFrame").src = select.value+"/AllMessages.html";
+}
+</script>
+>>
+
+protocols(protocols) ::= <<
+Protocol <select id="protocolSelect" onchange="protocolChange(this)">
+    $protocols:{protocol |<option value="$protocol.name$">$protocol.name$</option>}$
+ </select>
+>>
+
+fixedMenu(title) ::= <<
+<ul>
+<li class="title">$title$</li>
+<li><a href="datatypes/AllCodeSets.html" target="leftFrame">Code sets</a></li>
+<li><a href="datatypes/AllDatatypes.html" target="leftFrame">Datatypes</a></li>
+<li><a href="fields/AllFields.html" target="leftFrame">Fields</a></li>
+</ul>
+>>
+
+sections(sections) ::= <<
+<!DOCTYPE html>
+<html>
+<body>
+Section <select id="sectionSelect" onchange="sectionChange(this)" onload="sectionChange(this)">
+    $sections:{section |<option value="$section.name$">$section.name$</option>}$
+ </select>
+ <div id="message"></div>
+</body>
+</html>
+
+<script type="text/javascript">
+function protocolChange(control) {
+	document.getElementById("message").innerHTML = control.value;
+}
+</script>
+>>
+
+categories(categories) ::= <<
+<!DOCTYPE html>
+<html>
+<body>
+$categories:{category|<a href="$category.id$Messages.html">$category.id$</a><br>}$
+</body>
+</html>
+>>
+
+datatypes(datatypes) ::= <<
+<!DOCTYPE html>
+<html>
+<body>
+$datatypes:{datatype|<a href="$datatype.name$.html">$datatype.name$</a><br>}$
+</body>
+</html>
+>>
+
+actors(actors) ::= <<
+<!DOCTYPE html>
+<html>
+<body>
+$actors:{actor|<a href="$actor.name$.html">$actor.name$</a><br>}$
+</body>
+</html>
+>>
+
+actor(actor) ::= <<
+<!DOCTYPE html>
+<html>
+<title>Actor $actor.name$</title>
+<head>
+<link rel="stylesheet" href="../orchestra.css">
+</head>
+<body>
+<h1>Actor $actor.name$</h1>
+$if(actor.extends)$<h1>extends scenario <a href="$message.name$-$actor.extends$.html">$message.extends$</a></h1>$endif$
+$documentation(object=message)$
+</body>
+</html>
+>>
+
+flows(flows) ::= <<
+<!DOCTYPE html>
+<html>
+<body>
+$flows:{flow|<a href="$flow.name$.html">$flow.name$</a><br>}$
+</body>
+</html>
+>>
+
+flow(flow) ::= <<
+<!DOCTYPE html>
+<html>
+<title>Flow $flow.name$</title>
+<head>
+<link rel="stylesheet" href="../orchestra.css">
+</head>
+<body>
+<h1>Flow $flow.name$</h1>
+$documentation(object=flow)$
+<br>
+<table class="major">
+<tr>
+<th class="major">Source</th>
+<th class="major">Destination</th>
+</tr>
+<tr><td class="major"><a href="$flow.source$.html">$flow.source$</a></td><td class="major"><a href="$flow.destination$.html">$flow.destination$</a></td</tr>
+</table>
+>>
+messages(messages) ::= <<
+<!DOCTYPE html>
+<html>
+<body>
+$messages:{message|<a href="$message.name$-$message.scenario$.html">$message.name$-$message.scenario$</a><br>}$
+</body>
+</html>
+>>
+
+codeSets(codeSets) ::= <<
+<!DOCTYPE html>
+<html>
+<body>
+$codeSets:{codeSet|<a href="$codeSet.name$.html">$codeSet.name$</a><br>}$
+</body>
+</html>
+>>
+
+fields(fields) ::= <<
+<!DOCTYPE html>
+<html>
+<body>
+$fields:{field|<a href="$field.name$.html">$field.name$</a><br>}$
+</body>
+</html>
+>>
+
+messageStart(message) ::= <<
+<!DOCTYPE html>
+<html>
+<title>Message $message.name$ Scenario $message.scenario$</title>
+<head>
+<link rel="stylesheet" href="../orchestra.css">
+</head>
+<body>
+<h1>Message $message.name$ Scenario $message.scenario$</h1>
+$if(message.extends)$<h1>extends scenario <a href="$message.name$-$message.extends$.html">$message.extends$</a></h1>$endif$
+$documentation(object=message)$
+<br>
+<table class="major">
+<tr>
+<th class="major">ID</th>
+<th class="major">MsgType</th>
+<th class="major">Abbr</th>
+<th class="major">Flow</th>
+</tr>
+<tr><td class="major">$message.id$</td><td class="major">$message.msgType$</td><td class="major">$message.abbrName$</td><td class="major"><a href="$message.flow$.html">$message.flow$</a></td></tr>
+</table>
+$pedigree(object=message)$
+<h2>Responses</h2>
+<table class="mid">
+<tr>
+<th class="mid">Message</th>
+<th class="mid">Scenario</th>
+<th class="mid">When</th>
+</tr>
+>>
+
+messageResponse(message, scenario, when) ::= <<
+<tr><td class="mid"><a href="$message$-$scenario$.html">$message$</a></td><td class="mid"><a href="$message$-$scenario$.html">$scenario$</a></td><td class="code">$when$</td></tr>
+>>
+
+messagePart2(message) ::= <<
+</table>
+<h2>Members</h2>
+<table class="members">
+<tr>
+<th class="members">ID</th>
+<th class="members">Name</th>
+<th class="members">Abbr</th>
+<th class="members">Presence</th>
+<th class="members">Description</th>
+</tr>
+>>
+
+messageEnd(message) ::= <<
+</table>
+</body>
+</html>
+>>
+
+fieldMember(field, presence) ::= <<
+<tr><td class="members-id">$field.id$</td><td class="members"><a href="../fields/$field.name$.html">$field.name$</a></td><td class="members">$field.abbrName$</td><td class="members">$presence$</td><td class="members">$documentation(object=field)$</td></tr>
+>>
+
+componentMember(component, presence) ::= <<
+<tr><td class="members-id-hilite">$component.id$</td><td class="members-hilite"><a href="$component.name$.html">$component.name$</a></td><td class="members-hilite">$component.abbrName$</td><td class="members-hilite">$presence$</td><td class="members-hilite">$documentation(object=component)$</td></tr>
+>>
+
+componentStart(component) ::= <<
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="../orchestra.css">
+</head>
+<body>
+<h1>Component $component.name$</h1>
+$documentation(object=component)$
+<br>
+<table class="major">
+<tr>
+<th class="major">ID</th>
+<th class="major">Abbr</th>
+</tr>
+<tr><td class="major">$component.id$</td><td class="major">$component.abbrName$</td></tr>
+</table>
+$pedigree(object=component)$
+<h2>Members</h2>
+<table class="members">
+<tr>
+<th class="members">ID</th>
+<th class="members">Name</th>
+<th class="members">Presence</th>
+</tr>
+>>
+
+groupStart(component) ::= <<
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="../orchestra.css">
+</head>
+<body>
+<h1>Group $component.name$</h1>
+$documentation(object=component)$
+<br>
+<table class="major">
+<tr>
+<th class="major">ID</th>
+<th class="major">Abbr</th>
+<th class="major">NumInGroup ID</th>
+<th class="major">NumInGroup Name</th>
+</tr>
+<tr><td class="major">$component.id$</td><td class="major">$component.abbrName$</td><td class="major">$component.numInGroupId$</td><td class="major"><a href="../fields/$component.numInGroupName$.html">$component.numInGroupName$</a></td></tr>
+</table>
+$pedigree(object=component)$
+<h2>Members</h2>
+<table class="members">
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Presence</th>
+</tr>
+>>
+
+componentEnd(component) ::= <<
+</table>
+</body>
+</html>
+>>
+
+field(field) ::= <<
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="../orchestra.css">
+</head>
+<body>
+<h1>Field $field.name$</h1>
+$documentation(object=field)$
+<br>
+<table class="major">
+<tr>
+<th class="major">ID</th>
+<th class="major">Abbr</th>
+<th class="major">Datatype</th>
+</tr>
+<tr><td class="major">$field.id$</td><td class="major">$field.abbrName$</td><td class="major"><a href="../datatypes/$field.type$.html">$field.type$</a></td></tr>
+</table>
+$pedigree(object=field)$
+</body>
+</html>
+>>
+
+datatype(datatype) ::= <<
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="../orchestra.css">
+</head>
+<body>
+<h1>Datatype $datatype.name$</h1>
+$documentation(object=datatype)$
+<br>
+$pedigree(object=datatype)$
+<h3>Mappings</h3>
+$mappings(datatype.mappedDatatype)$
+</body>
+</html>
+>>
+
+mappings(mappings) ::= <<
+<table class="minor">
+<tr>
+<th class="minor">Standard</th>
+<th class="minor">Base type</th>
+<th class="minor">Parameter</th>
+<th class="minor">Pattern</th>
+</tr>
+$mappings:{mapping|<tr><td class="minor">$mapping.standard$</td><td class="minor">$mapping.base$</td><td class="minor">$mapping.parameter$</td><td class="minor">$mapping.pattern$</td></tr>}$
+</table>
+>>
+
+codeSet(codeSet) ::= <<
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="../orchestra.css">
+</head>
+<body>
+<h1>Code Set $codeSet.name$</h1>
+$documentation(object=codeSet)$
+<br>
+<table class="major">
+<tr>
+<th class="major">ID</th>
+<th class="major">Datatype</th>
+</tr>
+<tr><td class="major">$codeSet.id$</td><td class="major"><a href="$codeSet.type$.html">$codeSet.type$</a></td></tr>
+</table>
+<h2>Codes</h2>
+$codes(codeSet.code)$
+</body>
+</html>
+>>
+
+codes(codes) ::= <<
+<table class="members">
+<tr>
+<th class="members">ID</th>
+<th class="members">Name</th>
+<th class="members">Value</th>
+<th class="members">Description</th>
+<th class="members">Added</th>
+<th class="members">EP</th>
+<th class="members">Updated</th>
+<th class="members">EP</th>
+<th class="members">Deprecated</th>
+<th class="members">EP</th>
+</tr>
+$codes:{code|<tr><td class="members-id">$code.id$</td><td class="members">$code.name$</td><td class="members">$code.value$</td><td class="members">$documentation(object=code)$</td><td class="members">$code.added$</td><td class="members">$code.addedEP$</td><td class="members">$code.updated$</td><td class="members">$code.updatedEP$</td><td class="members">$code.deprecated$</td><td class="members">$code.deprecatedEP$</td></tr>}$
+</table>
+>>
+
+pedigree(object) ::= <<
+<h3>Pedigree</h3>
+<table class="minor">
+<tr>
+<th class="minor">Added</th>
+<th class="minor">EP</th>
+<th class="minor">Updated</th>
+<th class="minor">EP</th>
+<th class="minor">Deprecated</th>
+<th class="minor">EP</th>
+</tr>
+<tr><td class="minor">$object.added$</td><td class="minor">$object.addedEP$</td><td class="minor">$object.updated$</td><td class="minor">$object.updatedEP$</td><td class="minor">$object.deprecated$</td><td class="minor">$object.deprecatedEP$</td></tr>
+</table>
+>>
+
+documentation(object) ::= <<
+$object.annotation.DocumentationOrAppinfo:{doc|$if(doc.purpose)$<b>$doc.purpose$:</b> $endif$$doc.content$<br>}$
+>>
+
