@@ -4,36 +4,56 @@ main(title, protocols) ::= <<
 <title>$title$</title>
 <head>
 <link rel="stylesheet" href="orchestra.css">
-</head>
-<body>
-<div>
-$fixedMenu(title)$
-</div>
-<div>
-$protocols(protocols)$
-</div>
-<iframe id="leftFrame" width="200px" height="100%"></iframe>
-</body>
-</html>
 <script type="text/javascript">
-function protocolChange(select) {
-	document.getElementById("leftFrame").src = select.value+"/AllMessages.html";
+function protocolClicked(li) {
+	document.getElementById("protocolLabel").innerHTML = li.id;
 }
 </script>
+</head>
+<body>
+<div id="topMenu">
+$topMenu(title)$
+</div>
+<div id="controlContainer">
+<div id="globalControl">
+$protocols(protocols)$
+</div>
+<div id="protocolControl">
+<ul class="major">
+<li class="major"><a href="FIX.5.0SP2/AllActors.html" target="listFrame" class="major">Actors</a></li>
+<li class="major"><a href="FIX.5.0SP2/AllFlows.html" target="listFrame" class="major">Flows</a></li>
+<li class="major"><a href="FIX.5.0SP2/AllMessages.html" target="listFrame" class="major">All Messages</a></li>
+<li class="major"><a href="FIX.5.0SP2/AllComponents.html" target="listFrame" class="major">Components</a></li>
+</ul>
+</div>
+</div>
+<div id="contentContainer">
+<iframe name="listFrame" id="listFrame" src="FIX.5.0SP2/AllMessages.html""></iframe>
+<iframe name="contentFrame" id="contentFrame"></iframe>
+</div>
+</body>
+</html>
 >>
 
 protocols(protocols) ::= <<
-Protocol <select id="protocolSelect" onchange="protocolChange(this)">
-    $protocols:{protocol |<option value="$protocol.name$">$protocol.name$</option>}$
- </select>
+<div class="dropdown">
+<label class="dropdownLabel">Protocol</label>
+<div class="dropdown-content">
+<ul>
+$protocols:{protocol |<li id="$protocol.name$" class="major" onclick="protocolClicked(this)"><a href="$protocol.name$/AllMessages.html" target="listFrame" class="major">$protocol.name$</a></li>
+}$
+</ul>
+</div>
+</div>
+<label class="major-title" id="protocolLabel"></label>
 >>
 
-fixedMenu(title) ::= <<
-<ul>
-<li class="title">$title$</li>
-<li><a href="datatypes/AllCodeSets.html" target="leftFrame">Code sets</a></li>
-<li><a href="datatypes/AllDatatypes.html" target="leftFrame">Datatypes</a></li>
-<li><a href="fields/AllFields.html" target="leftFrame">Fields</a></li>
+topMenu(title) ::= <<
+<ul class="major">
+<li class="major-title">$title$</li>
+<li class="major"><a href="datatypes/AllCodeSets.html" target="listFrame" class="major">Code sets</a></li>
+<li class="major"><a href="datatypes/AllDatatypes.html" target="listFrame" class="major">Datatypes</a></li>
+<li class="major"><a href="fields/AllFields.html" target="listFrame" class="major">Fields</a></li>
 </ul>
 >>
 
@@ -47,12 +67,6 @@ Section <select id="sectionSelect" onchange="sectionChange(this)" onload="sectio
  <div id="message"></div>
 </body>
 </html>
-
-<script type="text/javascript">
-function protocolChange(control) {
-	document.getElementById("message").innerHTML = control.value;
-}
-</script>
 >>
 
 categories(categories) ::= <<
@@ -64,20 +78,31 @@ $categories:{category|<a href="$category.id$Messages.html">$category.id$</a><br>
 </html>
 >>
 
-datatypes(datatypes) ::= <<
+datatypes(datatypes, title) ::= <<
 <!DOCTYPE html>
 <html>
+<head>
+<link rel="stylesheet" href="../orchestra.css">
+</head>
 <body>
-$datatypes:{datatype|<a href="$datatype.name$.html">$datatype.name$</a><br>}$
+<ul class="minor">
+<li class="minor-title">$title$</li>
+$datatypes:{datatype|<li><a href="$datatype.name$.html" target="contentFrame" class="minor">$datatype.name$</a></li>}$
 </body>
 </html>
 >>
 
-actors(actors) ::= <<
+actors(actors, title) ::= <<
 <!DOCTYPE html>
 <html>
+<head>
+<link rel="stylesheet" href="../orchestra.css">
+</head>
 <body>
-$actors:{actor|<a href="$actor.name$.html">$actor.name$</a><br>}$
+<ul class="minor">
+<li class="minor-title">$title$</li>
+$actors:{actor|<a href="$actor.name$.html" target="contentFrame" class="minor">$actor.name$</a><br>}$
+</ul>
 </body>
 </html>
 >>
@@ -91,17 +116,23 @@ actor(actor) ::= <<
 </head>
 <body>
 <h1>Actor $actor.name$</h1>
-$if(actor.extends)$<h1>extends scenario <a href="$message.name$-$actor.extends$.html">$message.extends$</a></h1>$endif$
-$documentation(object=message)$
+$if(actor.extends)$<h1>extends scenario <a href="$actor.name$-$actor.extends$.html">$actor.extends$</a></h1>$endif$
+$documentation(object=actor)$
 </body>
 </html>
 >>
 
-flows(flows) ::= <<
+flows(flows, title) ::= <<
 <!DOCTYPE html>
 <html>
+<head>
+<link rel="stylesheet" href="../orchestra.css">
+</head>
 <body>
-$flows:{flow|<a href="$flow.name$.html">$flow.name$</a><br>}$
+<ul class="minor">
+<li class="minor-title">$title$</li>
+$flows:{flow|<a href="$flow.name$.html" target="contentFrame" class="minor">$flow.name$</a><br>}$
+</ul>
 </body>
 </html>
 >>
@@ -120,34 +151,56 @@ $documentation(object=flow)$
 <table class="major">
 <tr>
 <th class="major">Source</th>
+<th class="major"></th>
 <th class="major">Destination</th>
 </tr>
-<tr><td class="major"><a href="$flow.source$.html">$flow.source$</a></td><td class="major"><a href="$flow.destination$.html">$flow.destination$</a></td</tr>
+<tr><td class="major"><a href="$flow.source$.html">$flow.source$</a></td><td class="major">&rarr;</td><td class="major"><a href="$flow.destination$.html">$flow.destination$</a></td</tr>
 </table>
 >>
-messages(messages) ::= <<
+
+messages(messages, title) ::= <<
 <!DOCTYPE html>
 <html>
+<head>
+<link rel="stylesheet" href="../orchestra.css">
+</head>
 <body>
-$messages:{message|<a href="$message.name$-$message.scenario$.html">$message.name$-$message.scenario$</a><br>}$
+<ul class="minor">
+<li class="minor-title">$title$</li>
+$messages:{message|<li><a href="$message.name$-$message.scenario$.html" target="contentFrame" class="minor">$message.name$-$message.scenario$</a></li>
+}$
+</ul>
 </body>
 </html>
 >>
 
-codeSets(codeSets) ::= <<
+codeSets(codeSets, title) ::= <<
 <!DOCTYPE html>
 <html>
+<head>
+<link rel="stylesheet" href="../orchestra.css">
+</head>
 <body>
-$codeSets:{codeSet|<a href="$codeSet.name$.html">$codeSet.name$</a><br>}$
+<ul class="minor">
+<li class="minor-title">$title$</li>
+$codeSets:{codeSet|<li><a href="$codeSet.name$.html" target="contentFrame" class="minor">$codeSet.name$</a></li>
+}$
+</ul>
 </body>
 </html>
 >>
 
-fields(fields) ::= <<
+fields(fields, title) ::= <<
 <!DOCTYPE html>
 <html>
+<head>
+<link rel="stylesheet" href="../orchestra.css">
+</head>
 <body>
-$fields:{field|<a href="$field.name$.html">$field.name$</a><br>}$
+<ul class="minor">
+<li class="minor-title">$title$</li>
+$fields:{field|<li><a href="$field.name$.html" target="contentFrame" class="minor">$field.name$</a></li>}$
+</ul>
 </body>
 </html>
 >>
@@ -214,6 +267,22 @@ componentMember(component, presence) ::= <<
 <tr><td class="members-id-hilite">$component.id$</td><td class="members-hilite"><a href="$component.name$.html">$component.name$</a></td><td class="members-hilite">$component.abbrName$</td><td class="members-hilite">$presence$</td><td class="members-hilite">$documentation(object=component)$</td></tr>
 >>
 
+components(components, title) ::= <<
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="../orchestra.css">
+</head>
+<body>
+<ul class="minor">
+<li class="minor-title">$title$</li>
+$components:{component|<li><a href="$component.name$.html" target="contentFrame" class="minor">$component.name$</a></li>
+}$
+</ul>
+</body>
+</html>
+>>
+
 componentStart(component) ::= <<
 <!DOCTYPE html>
 <html>
@@ -237,7 +306,9 @@ $pedigree(object=component)$
 <tr>
 <th class="members">ID</th>
 <th class="members">Name</th>
+<th class="members">Abbr</th>
 <th class="members">Presence</th>
+<th class="members">Description</th>
 </tr>
 >>
 
@@ -264,9 +335,11 @@ $pedigree(object=component)$
 <h2>Members</h2>
 <table class="members">
 <tr>
-<th>ID</th>
-<th>Name</th>
-<th>Presence</th>
+<th class="members">ID</th>
+<th class="members">Name</th>
+<th class="members">Abbr</th>
+<th class="members">Presence</th>
+<th class="members">Description</th>
 </tr>
 >>
 
