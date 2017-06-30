@@ -43,7 +43,6 @@ import org.stringtemplate.v4.misc.STMessage;
 import io.fixprotocol._2016.fixrepository.ActorType;
 import io.fixprotocol._2016.fixrepository.CategoryType;
 import io.fixprotocol._2016.fixrepository.CodeSetType;
-import io.fixprotocol._2016.fixrepository.CodeSets;
 import io.fixprotocol._2016.fixrepository.ComponentRefType;
 import io.fixprotocol._2016.fixrepository.ComponentType;
 import io.fixprotocol._2016.fixrepository.Datatype;
@@ -75,13 +74,20 @@ public class DocGenerator {
     }
   }
   
+  private static final class ComponentTypeComparator implements Comparator<ComponentType> {
+    @Override
+    public int compare(ComponentType o1, ComponentType o2) {
+      return o1.getName().compareTo(o2.getName());
+    }
+  }
+
   private static final class FieldTypeComparator implements Comparator<FieldType> {
     @Override
     public int compare(FieldType o1, FieldType o2) {
       return o1.getName().compareTo(o2.getName());
     }
   }
-
+  
   private static final class MessageTypeComparator implements Comparator<MessageType> {
     @Override
     public int compare(MessageType o1, MessageType o2) {
@@ -257,6 +263,9 @@ public class DocGenerator {
 
           });
 
+          List<ComponentType> sortedComponentList = p.getComponents().getComponentOrGroup().stream()
+              .sorted(new ComponentTypeComparator()).collect(Collectors.toList());
+          generateAllComponentsList(protocolOutputDir, sortedComponentList);
           p.getComponents().getComponentOrGroup().forEach(c -> {
 
             try {
@@ -282,6 +291,8 @@ public class DocGenerator {
       Throwable cause = e.getCause();
       if (cause instanceof IOException) {
         throw (IOException) cause;
+      } else {
+        throw e;
       }
     }
   }
@@ -304,14 +315,25 @@ public class DocGenerator {
   private void generateActorsList(File outputDir, List<ActorType> actorList) throws IOException {
     ST st = stGroup.getInstanceOf("actors");
     st.add("actors", actorList);
+    st.add("title", "All Actors");
     File outputFile = new File(outputDir, "AllActors.html");
     st.write(outputFile, errorListener, encoding);
   }
 
+  private void generateAllComponentsList(File outputDir, List<ComponentType> componentList)
+      throws IOException {
+    ST st = stGroup.getInstanceOf("components");
+    st.add("components", componentList);
+    st.add("title", "All Components");
+    File outputFile = new File(outputDir, "AllComponents.html");
+    st.write(outputFile, errorListener, encoding);
+  }
+  
   private void generateAllMessageList(File outputDir, List<MessageType> messageList)
       throws IOException {
     ST st = stGroup.getInstanceOf("messages");
     st.add("messages", messageList);
+    st.add("title", "All Messages");
     File outputFile = new File(outputDir, "AllMessages.html");
     st.write(outputFile, errorListener, encoding);
   }
@@ -336,6 +358,7 @@ public class DocGenerator {
   private void generateCodeSetList(File outputDir, List<CodeSetType> codeSetList) throws IOException {
     ST st = stGroup.getInstanceOf("codeSets");
     st.add("codeSets", codeSetList);
+    st.add("title", "All Code Sets");
     File outputFile = new File(outputDir, "AllCodeSets.html");
     st.write(outputFile, errorListener, encoding);
   }
@@ -374,6 +397,7 @@ public class DocGenerator {
       throws IOException {
     ST st = stGroup.getInstanceOf("datatypes");
     st.add("datatypes", datatypeList);
+    st.add("title", "All Datatypes");
     File outputFile = new File(outputDir, "AllDatatypes.html");
     st.write(outputFile, errorListener, encoding);
   }
@@ -388,6 +412,7 @@ public class DocGenerator {
   private void generateFieldsList(File outputDir, List<FieldType> fieldList) throws IOException {
     ST st = stGroup.getInstanceOf("fields");
     st.add("fields", fieldList);
+    st.add("title", "All Fields");
     File outputFile = new File(outputDir, "AllFields.html");
     st.write(outputFile, errorListener, encoding);
   }
@@ -402,6 +427,7 @@ public class DocGenerator {
   private void generateFlowsList(File outputDir, List<FlowType> flowList) throws IOException {
     ST st = stGroup.getInstanceOf("flows");
     st.add("flows", flowList);
+    st.add("title", "All Flows");
     File outputFile = new File(outputDir, "AllFlows.html");
     st.write(outputFile, errorListener, encoding);
   }
@@ -471,6 +497,7 @@ public class DocGenerator {
     final List<MessageType> filteredMessageList = messageList.stream()
         .filter(m -> category.getId().equals(m.getCategory())).collect(Collectors.toList());
     st.add("messages", filteredMessageList);
+    st.add("title", String.format("%s Messages", category.getId()));
     File outputFile = new File(outputDir, String.format("%sMessages.html", category.getId()));
     st.write(outputFile, errorListener, encoding);
   }
@@ -481,6 +508,7 @@ public class DocGenerator {
     final List<MessageType> filteredMessageList = messageList.stream()
         .filter(m -> flow.getName().equals(m.getFlow())).collect(Collectors.toList());
     st.add("messages", filteredMessageList);
+    st.add("title", String.format("%s Messages", flow.getName()));
     File outputFile = new File(outputDir, String.format("%sMessages.html", flow.getName()));
     st.write(outputFile, errorListener, encoding);
   }

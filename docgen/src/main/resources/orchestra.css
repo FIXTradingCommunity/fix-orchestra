@@ -40,7 +40,7 @@ a:hover {
     color:white;
 }
 
-ul {
+ul.major {
     list-style-type: none;
     margin: 0;
     padding: 0;
@@ -48,22 +48,53 @@ ul {
     background-color: #bb9c87;
 }
 
-li {
+li.major {
     float: left;
 }
 
-li.title {
+li.major-title {
     float: left;
-    color: white;
+	font-weight: bold;
+    color: #ae4949;
     padding: 5px;
     text-decoration: none;
 }
 
-li a {
+ul.minor {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: white;
+}
+
+li.major {
+    float: left;
+}
+
+li a.major {
     display: block;
     color: white;
     text-align: center;
     padding: 5px;
+    text-decoration: none;
+}
+
+li.minor-title {
+	font-family: Verdana;
+	font-weight: bold;
+	font-size: small;
+    text-align: center;
+    color: #ae4949;
+    text-decoration: none;
+}
+
+li a.minor {
+    display: block;
+	font-family: Verdana;
+	font-weight: normal;
+	font-size: x-small;
+    text-align: left;
     text-decoration: none;
 }
 
@@ -74,6 +105,7 @@ li a:hover {
 table.major {
 	border-collapse: collapse;
 	border: none;
+	width: 25%;
 }
 
 th.major {
@@ -89,6 +121,7 @@ th.major {
 td.major {
 	font-family: Verdana;
 	font-size: small;
+	font-weight: bold;
 	text-align: center;
 	background-color: #f2e9ce;
 	border: none;
@@ -98,6 +131,7 @@ td.major {
 table.mid {
 	border-collapse: collapse;
     border: 1px solid black;
+	width: 100%;
 }
 
 th.mid {
@@ -125,6 +159,7 @@ td.code {
 table.minor {
 	border-collapse: collapse;
     border: 1px solid black;
+	width: 25%;
 }
 
 th.minor {
@@ -178,5 +213,72 @@ td.members-id-hilite {
 	border: 1px solid black;
 	background-color: #dcdcdc;
 }
+
+#controlContainer {
+    display: flex;
+    width: 100%;
+    height: 25px;
+}
+
+#globalControl {
+	width: 250px;
+	background-color: #bb9c87;
+}
+
+#protocolControl {
+	width: 100%;
+}
+
+#contentContainer {
+    display: flex;
+    width: 100%;
+    height: 1000px;
+}
+
+#listFrame {
+	width: 250px;
+}
+
+#contentFrame {
+	width: 100%;
+}
+
+.dropdownLabel {
+    display: block;
+    color: white;
+    padding: 5px;
+    text-decoration: none;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #bb9c87;
+    min-width: 160px;
+}
+
+.dropdown-content a {
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {
+	background-color: #bb9c87;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown:hover {
+    background-color: #bb9c87;
+}
+
 
 /* The Mangrove IIII Color Palette */
