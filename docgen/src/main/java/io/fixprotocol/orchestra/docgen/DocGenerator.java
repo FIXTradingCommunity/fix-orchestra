@@ -173,7 +173,7 @@ public class DocGenerator {
   public void generate() throws IOException {
     // createCss(baseOutputDir);
    
-    generateSectionsList(baseOutputDir, repository.getSections().getSection());
+    generateMetadata(baseOutputDir, repository.getMetadata().getAny());
 
     try {
       repository.getSections().getSection().forEach(s -> {
@@ -295,6 +295,13 @@ public class DocGenerator {
         throw e;
       }
     }
+  }
+
+  private void generateMetadata(File outputDir, List<JAXBElement<SimpleLiteral>> elementList) throws IOException {
+    ST st = stGroup.getInstanceOf("metadata");
+    st.add("elementList", elementList);
+    File outputFile = new File(outputDir, "metadata.html");
+    st.write(outputFile, errorListener, encoding);
   }
 
   private void createCss(File outputDir) throws IOException {
@@ -527,14 +534,6 @@ public class DocGenerator {
         }
       }
     }
-  }
-
-  private void generateSectionsList(File outputDir, List<SectionType> sectionList)
-      throws IOException {
-    ST st = stGroup.getInstanceOf("sections");
-    st.add("sections", sectionList);
-    File outputFile = new File(outputDir, "sections.html");
-    st.write(outputFile, errorListener, encoding);
   }
 
   private ComponentType getComponent(String protocolName, int componentId) {

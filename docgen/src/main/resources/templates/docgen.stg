@@ -54,6 +54,7 @@ topMenu(title) ::= <<
 <li class="major"><a href="datatypes/AllCodeSets.html" target="listFrame" class="major">Code sets</a></li>
 <li class="major"><a href="datatypes/AllDatatypes.html" target="listFrame" class="major">Datatypes</a></li>
 <li class="major"><a href="fields/AllFields.html" target="listFrame" class="major">Fields</a></li>
+<li class="major"><a href="metadata.html" target="contentFrame" class="major">Metadata</a></li>
 </ul>
 >>
 
@@ -153,9 +154,12 @@ $documentation(object=flow)$
 <th class="major">Source</th>
 <th class="major"></th>
 <th class="major">Destination</th>
+<th class="major"></th>
 </tr>
-<tr><td class="major"><a href="$flow.source$.html">$flow.source$</a></td><td class="major">&rarr;</td><td class="major"><a href="$flow.destination$.html">$flow.destination$</a></td</tr>
+<tr><td class="major"><a href="$flow.source$.html">$flow.source$</a></td><td class="major">&rarr;</td><td class="major"><a href="$flow.destination$.html">$flow.destination$</a></td><td class="major"><a href="$flow.name$Messages.html" target="listFrame" class="major">Messages</a></td></tr>
 </table>
+</body>
+</html>
 >>
 
 messages(messages, title) ::= <<
@@ -455,6 +459,25 @@ pedigree(object) ::= <<
 </tr>
 <tr><td class="minor">$object.added$</td><td class="minor">$object.addedEP$</td><td class="minor">$object.updated$</td><td class="minor">$object.updatedEP$</td><td class="minor">$object.deprecated$</td><td class="minor">$object.deprecatedEP$</td></tr>
 </table>
+>>
+
+metadata(elementList) ::= <<
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="orchestra.css">
+</head>
+<body>
+<h3>Metadata</h3>
+<table class="minor">
+<tr>
+<th class="minor">Name</th>
+<th class="minor">Value</th>
+</tr>
+$elementList:{element|<tr><td class="minor">$element.name.localPart$</td><td class="minor">$element.value.content$</td></tr>}$
+</table>
+</body>
+</html>
 >>
 
 documentation(object) ::= <<
