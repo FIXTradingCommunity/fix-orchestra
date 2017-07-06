@@ -23,7 +23,6 @@ import java.io.OutputStreamWriter;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,7 +49,6 @@ import io.fixprotocol._2016.fixrepository.FieldRefType;
 import io.fixprotocol._2016.fixrepository.FieldRuleType;
 import io.fixprotocol._2016.fixrepository.FieldType;
 import io.fixprotocol._2016.fixrepository.FlowType;
-import io.fixprotocol._2016.fixrepository.GroupRefType;
 import io.fixprotocol._2016.fixrepository.GroupType;
 import io.fixprotocol._2016.fixrepository.MessageRefType;
 import io.fixprotocol._2016.fixrepository.MessageType;
@@ -66,38 +64,6 @@ import io.fixprotocol._2016.fixrepository.SectionType;
  *
  */
 public class DocGenerator {
-
-  private static final class CodeSetComparator implements Comparator<CodeSetType> {
-    @Override
-    public int compare(CodeSetType o1, CodeSetType o2) {
-      return o1.getName().compareTo(o2.getName());
-    }
-  }
-  
-  private static final class ComponentTypeComparator implements Comparator<ComponentType> {
-    @Override
-    public int compare(ComponentType o1, ComponentType o2) {
-      return o1.getName().compareTo(o2.getName());
-    }
-  }
-
-  private static final class FieldTypeComparator implements Comparator<FieldType> {
-    @Override
-    public int compare(FieldType o1, FieldType o2) {
-      return o1.getName().compareTo(o2.getName());
-    }
-  }
-  
-  private static final class MessageTypeComparator implements Comparator<MessageType> {
-    @Override
-    public int compare(MessageType o1, MessageType o2) {
-      int retv = o1.getName().compareTo(o2.getName());
-      if (retv == 0) {
-        retv = o1.getScenario().compareTo(o2.getScenario());
-      }
-      return retv;
-    }
-  }
 
   /**
    * Generates documentation
@@ -131,8 +97,8 @@ public class DocGenerator {
   }
 
   private final File baseOutputDir;
-  private String encoding = "UTF-8";
-  private STErrorListener errorListener = new STErrorListener() {
+  private final String encoding = "UTF-8";
+  private final STErrorListener errorListener = new STErrorListener() {
 
     @Override
     public void compileTimeError(STMessage msg) {
@@ -171,18 +137,11 @@ public class DocGenerator {
   }
 
   public void generate() throws IOException {
-    // createCss(baseOutputDir);
+    createCss(baseOutputDir);
    
     generateMetadata(baseOutputDir, repository.getMetadata().getAny());
 
     try {
-      repository.getSections().getSection().forEach(s -> {
-        try {
-          generateCategoryListBySection(baseOutputDir, s, repository.getCategories().getCategory());
-        } catch (IOException e) {
-          throw new RuntimeException(e);
-        }
-      });
 
       File datatypesOutputDir = makeDirectory(new File(baseOutputDir, "datatypes"));
       generateDatatypeList(datatypesOutputDir, repository.getDatatypes().getDatatype());
@@ -196,7 +155,7 @@ public class DocGenerator {
 
       File fieldsOutputDir = makeDirectory(new File(baseOutputDir, "fields"));
       List<FieldType> sortedFieldList = repository.getFields().getField().stream()
-          .sorted(new FieldTypeComparator()).collect(Collectors.toList());
+          .sorted((o1, o2) -> o1.getName().compareTo(o2.getName())).collect(Collectors.toList());
       generateFieldsList(fieldsOutputDir, sortedFieldList);
       repository.getFields().getField().forEach(f -> {
         try {
@@ -209,7 +168,7 @@ public class DocGenerator {
       List<CodeSetType> allCodeSets = new ArrayList<>();
       repository.getCodeSets().forEach(csl -> allCodeSets.addAll(csl.getCodeSet()));
       generateCodeSetList(datatypesOutputDir, allCodeSets.stream()
-          .sorted(new CodeSetComparator()).collect(Collectors.toList()));
+          .sorted((o1, o2) -> o1.getName().compareTo(o2.getName())).collect(Collectors.toList()));
       repository.getCodeSets().forEach(csl -> csl.getCodeSet().forEach(cs -> {
         try {
           generateCodeSetDetail(datatypesOutputDir, cs);
@@ -224,7 +183,13 @@ public class DocGenerator {
           File protocolOutputDir = makeDirectory(new File(baseOutputDir, p.getName()));
 
           List<MessageType> sortedMessageList = p.getMessages().getMessage().stream()
-              .sorted(new MessageTypeComparator()).collect(Collectors.toList());
+              .sorted((o1, o2) -> {
+                int retv = o1.getName().compareTo(o2.getName());
+                if (retv == 0) {
+                  retv = o1.getScenario().compareTo(o2.getScenario());
+                }
+                return retv;
+              }).collect(Collectors.toList());
           
           final List<ActorType> actorList =
               p.getActors().getActorOrFlow().stream().filter(af -> af instanceof ActorType)
@@ -264,7 +229,7 @@ public class DocGenerator {
           });
 
           List<ComponentType> sortedComponentList = p.getComponents().getComponentOrGroup().stream()
-              .sorted(new ComponentTypeComparator()).collect(Collectors.toList());
+              .sorted((o1, o2) -> o1.getName().compareTo(o2.getName())).collect(Collectors.toList());
           generateAllComponentsList(protocolOutputDir, sortedComponentList);
           p.getComponents().getComponentOrGroup().forEach(c -> {
 
@@ -455,7 +420,7 @@ public class DocGenerator {
         stField.add("field", field);
         stField.add("presence", getFieldPresence((FieldRefType) member));
         stField.write(writer, errorListener);
-      } else if (member instanceof ComponentRefType || member instanceof GroupRefType) {
+      } else if (member instanceof ComponentRefType) {
         ComponentType component =
             getComponent(protocolName, ((ComponentRefType) member).getId().intValue());
         ST stComponent = stGroup.getInstanceOf("componentMember");

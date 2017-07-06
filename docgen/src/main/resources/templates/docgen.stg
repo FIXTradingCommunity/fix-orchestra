@@ -5,8 +5,21 @@ main(title, protocols) ::= <<
 <head>
 <link rel="stylesheet" href="orchestra.css">
 <script type="text/javascript">
-function protocolClicked(li) {
-	document.getElementById("protocolLabel").innerHTML = li.id;
+window.onload = function()
+{
+ 	pageLoaded;
+}
+
+function pageLoaded() {
+	document.getElementById("metadataLink").click();
+}
+
+function protocolClicked(a) {
+	document.getElementById("protocolLabel").innerHTML = a.text;
+	document.getElementById("actorsLink").href = a.text.concat("/AllActors.html");
+	document.getElementById("flowsLink").href = a.text.concat("/AllFlows.html");
+	document.getElementById("allMessagesLink").href = a.text.concat("/AllMessages.html");
+	document.getElementById("componentsLink").href = a.text.concat("/AllComponents.html");
 }
 </script>
 </head>
@@ -20,15 +33,15 @@ $protocols(protocols)$
 </div>
 <div id="protocolControl">
 <ul class="major">
-<li class="major"><a href="FIX.5.0SP2/AllActors.html" target="listFrame" class="major">Actors</a></li>
-<li class="major"><a href="FIX.5.0SP2/AllFlows.html" target="listFrame" class="major">Flows</a></li>
-<li class="major"><a href="FIX.5.0SP2/AllMessages.html" target="listFrame" class="major">All Messages</a></li>
-<li class="major"><a href="FIX.5.0SP2/AllComponents.html" target="listFrame" class="major">Components</a></li>
+<li class="major"><a href="AllActors.html" target="listFrame" class="major" id="actorsLink">Actors</a></li>
+<li class="major"><a href="AllFlows.html" target="listFrame" class="major" id="flowsLink">Flows</a></li>
+<li class="major"><a href="AllMessages.html" target="listFrame" class="major" id="allMessagesLink">All Messages</a></li>
+<li class="major"><a href="AllComponents.html" target="listFrame" class="major" id="componentsLink">Components</a></li>
 </ul>
 </div>
 </div>
 <div id="contentContainer">
-<iframe name="listFrame" id="listFrame" src="FIX.5.0SP2/AllMessages.html""></iframe>
+<iframe name="listFrame" id="listFrame"></iframe>
 <iframe name="contentFrame" id="contentFrame"></iframe>
 </div>
 </body>
@@ -39,8 +52,8 @@ protocols(protocols) ::= <<
 <div class="dropdown">
 <label class="dropdownLabel">Protocol</label>
 <div class="dropdown-content">
-<ul>
-$protocols:{protocol |<li id="$protocol.name$" class="major" onclick="protocolClicked(this)"><a href="$protocol.name$/AllMessages.html" target="listFrame" class="major">$protocol.name$</a></li>
+<ul class="major">
+$protocols:{protocol |<li class="major"><a href="$protocol.name$/AllMessages.html" target="listFrame" class="major" onclick="protocolClicked(this)">$protocol.name$</a></li>
 }$
 </ul>
 </div>
@@ -54,7 +67,7 @@ topMenu(title) ::= <<
 <li class="major"><a href="datatypes/AllCodeSets.html" target="listFrame" class="major">Code sets</a></li>
 <li class="major"><a href="datatypes/AllDatatypes.html" target="listFrame" class="major">Datatypes</a></li>
 <li class="major"><a href="fields/AllFields.html" target="listFrame" class="major">Fields</a></li>
-<li class="major"><a href="metadata.html" target="contentFrame" class="major">Metadata</a></li>
+<li class="major"><a href="metadata.html" target="contentFrame" class="major" id="metadataLink">Metadata</a></li>
 </ul>
 >>
 
@@ -89,6 +102,7 @@ datatypes(datatypes, title) ::= <<
 <ul class="minor">
 <li class="minor-title">$title$</li>
 $datatypes:{datatype|<li><a href="$datatype.name$.html" target="contentFrame" class="minor">$datatype.name$</a></li>}$
+</ul>
 </body>
 </html>
 >>
@@ -102,7 +116,7 @@ actors(actors, title) ::= <<
 <body>
 <ul class="minor">
 <li class="minor-title">$title$</li>
-$actors:{actor|<a href="$actor.name$.html" target="contentFrame" class="minor">$actor.name$</a><br>}$
+$actors:{actor|<li><a href="$actor.name$.html" target="contentFrame" class="minor">$actor.name$</a></li>}$
 </ul>
 </body>
 </html>
@@ -132,7 +146,7 @@ flows(flows, title) ::= <<
 <body>
 <ul class="minor">
 <li class="minor-title">$title$</li>
-$flows:{flow|<a href="$flow.name$.html" target="contentFrame" class="minor">$flow.name$</a><br>}$
+$flows:{flow|<li><a href="$flow.name$.html" target="contentFrame" class="minor">$flow.name$</a></li>}$
 </ul>
 </body>
 </html>
