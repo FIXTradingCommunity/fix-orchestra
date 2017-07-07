@@ -7,11 +7,7 @@ main(title, protocols, categories) ::= <<
 <script type="text/javascript">
 window.onload = function()
 {
- 	pageLoaded;
-}
-
-function pageLoaded() {
-	document.getElementById("metadataLink").click();
+ 	document.getElementById("metadataLink").click();
 }
 
 function protocolClicked(a) {
@@ -25,7 +21,7 @@ function protocolClicked(a) {
     	links[i].href = a.text.concat("/", links[i].text.replace(/\s/g, ""), "Messages.html");
 	}
 	
-	document.getElementById("protocolMenu").style.visibility = "visible";
+	document.getElementById("protocolControl").style.visibility = "visible";
 }
 </script>
 </head>
@@ -39,7 +35,7 @@ $protocols(protocols)$
 </div>
 <div id="protocolControl">
 $categories(categories)$
-<ul class="major" id="protocolMenu">
+<ul class="major">
 <li class="major"><a href="AllActors.html" target="listFrame" class="major" id="actorsLink">Actors</a></li>
 <li class="major"><a href="AllFlows.html" target="listFrame" class="major" id="flowsLink">Flows</a></li>
 <li class="major"><a href="AllComponents.html" target="listFrame" class="major" id="componentsLink">Components</a></li>
