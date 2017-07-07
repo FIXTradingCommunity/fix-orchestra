@@ -1,4 +1,4 @@
-main(title, protocols) ::= <<
+main(title, protocols, categories) ::= <<
 <!DOCTYPE html>
 <html>
 <title>$title$</title>
@@ -18,8 +18,14 @@ function protocolClicked(a) {
 	document.getElementById("protocolLabel").innerHTML = a.text;
 	document.getElementById("actorsLink").href = a.text.concat("/AllActors.html");
 	document.getElementById("flowsLink").href = a.text.concat("/AllFlows.html");
-	document.getElementById("allMessagesLink").href = a.text.concat("/AllMessages.html");
 	document.getElementById("componentsLink").href = a.text.concat("/AllComponents.html");
+	
+	var links = document.getElementsByClassName("major-message");
+	for (i = 0; i < links.length; i++) {
+    	links[i].href = a.text.concat("/", links[i].text.replace(/\s/g, ""), "Messages.html");
+	}
+	
+	document.getElementById("protocolMenu").style.visibility = "visible";
 }
 </script>
 </head>
@@ -32,10 +38,10 @@ $topMenu(title)$
 $protocols(protocols)$
 </div>
 <div id="protocolControl">
-<ul class="major">
+$categories(categories)$
+<ul class="major" id="protocolMenu">
 <li class="major"><a href="AllActors.html" target="listFrame" class="major" id="actorsLink">Actors</a></li>
 <li class="major"><a href="AllFlows.html" target="listFrame" class="major" id="flowsLink">Flows</a></li>
-<li class="major"><a href="AllMessages.html" target="listFrame" class="major" id="allMessagesLink">All Messages</a></li>
 <li class="major"><a href="AllComponents.html" target="listFrame" class="major" id="componentsLink">Components</a></li>
 </ul>
 </div>
@@ -61,6 +67,19 @@ $protocols:{protocol |<li class="major"><a href="$protocol.name$/AllMessages.htm
 <label class="major-title" id="protocolLabel"></label>
 >>
 
+categories(categories) ::= <<
+<div class="dropdown">
+<label class="dropdownLabel">Messages</label>
+<div class="dropdown-content">
+<ul class="major">
+<li class="major"><a href="/AllMessages.html" target="listFrame" class="major-message">All</a></li>
+$categories:{category |<li class="major"><a href="/$category.id$Messages.html" target="listFrame" class="major-message">$category.id$</a></li>
+}$
+</ul>
+</div>
+</div>
+>>
+
 topMenu(title) ::= <<
 <ul class="major">
 <li class="major-title">$title$</li>
@@ -69,27 +88,6 @@ topMenu(title) ::= <<
 <li class="major"><a href="fields/AllFields.html" target="listFrame" class="major">Fields</a></li>
 <li class="major"><a href="metadata.html" target="contentFrame" class="major" id="metadataLink">Metadata</a></li>
 </ul>
->>
-
-sections(sections) ::= <<
-<!DOCTYPE html>
-<html>
-<body>
-Section <select id="sectionSelect" onchange="sectionChange(this)" onload="sectionChange(this)">
-    $sections:{section |<option value="$section.name$">$section.name$</option>}$
- </select>
- <div id="message"></div>
-</body>
-</html>
->>
-
-categories(categories) ::= <<
-<!DOCTYPE html>
-<html>
-<body>
-$categories:{category|<a href="$category.id$Messages.html">$category.id$</a><br>}$
-</body>
-</html>
 >>
 
 datatypes(datatypes, title) ::= <<

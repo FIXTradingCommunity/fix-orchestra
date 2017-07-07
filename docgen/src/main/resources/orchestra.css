@@ -80,6 +80,14 @@ li a.major {
     text-decoration: none;
 }
 
+li a.major-message {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 5px;
+    text-decoration: none;
+}
+
 li.minor-title {
 	font-family: Verdana;
 	font-weight: bold;
@@ -222,12 +230,17 @@ td.members-id-hilite {
 
 #globalControl {
 	width: 250px;
-	flex-basis: auto;
 	background-color: #bb9c87;
 }
 
 #protocolControl {
+	display: flex;
 	width: 100%;
+	background-color: #bb9c87;
+}
+
+#protocolMenu {
+	visibility: hidden;
 }
 
 #contentContainer {
