@@ -7,10 +7,12 @@ This utility generates documentation for an Orchestra file that can be view in a
 To run the documentation generator, enter this command line:
 
 ```
-java io.fixprotocol.orchestra.docgen.DocGenerator <filename> 
+java -jar docgen-1.2.0-RC3-SNAPSHOT-jar-with-dependencies <filename> [output-dir]
 ```
 
-Open `index.html` in a browser to view the documentation. There is no other run-time requirement.
+As the first argument, enter the name of an Orchestra file to document. The output directory defaults to "doc".
+
+When generation completes, open `index.html` in a browser to view the documentation. There is no other run-time requirement.
 
 ## File Preparation
 
