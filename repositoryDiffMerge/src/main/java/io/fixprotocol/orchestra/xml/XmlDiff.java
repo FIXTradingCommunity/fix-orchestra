@@ -69,7 +69,7 @@ public class XmlDiff {
           String name1 = n1.getAttribute("name");
           String name2 = n2.getAttribute("name");
           if (name1.length() > 0 && name2.length() > 0) {
-            retv = name2.compareTo(name2);
+            retv = name1.compareTo(name2);
           }
         }
       }

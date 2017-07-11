@@ -15,14 +15,18 @@ import java.io.StringWriter;
  */
 public class RepositoryXslTransformer {
     public static void main(String[] args) throws TransformerException, IOException {
-        if (args.length != 3) {
-            System.out.println("Usage : $<application> [xsl_file_path] [input_xml_file_path] [output_file_path]");
+        if (args.length < 4) {
+            System.out.println(
+                "Usage : $<application> [xsl_file_path] [input_xml_file_path] [output_file_path] [param=value]");
             return;
         }
         System.out.println("Received args : \n" +
                 "xslFile = "+args[0]+"\n" +
                 "inputXml = "+args[1]+"\n" +
                 "outputXml = "+args[2]);
+        for (int i = 3; i < args.length; i++) {
+          System.out.format("Parameter : %s%n", args[i]);  
+        }
         File xsltFile = new File(args[0]);
         File inputXml = new File(args[1]);
 
@@ -34,7 +38,12 @@ public class RepositoryXslTransformer {
 
         TransformerFactory transFact = new TransformerFactoryImpl();
         Transformer trans = transFact.newTransformer(xsltSource);
-
+        
+        for (int i = 3; i < args.length; i++) {
+          String[] parts = args[i].split("=");
+          trans.setParameter(parts[0], parts[1]);
+        }
+        
         trans.transform(xmlSource, result);
         FileWriter output = new FileWriter(args[2]);
         output.write(sw.toString());

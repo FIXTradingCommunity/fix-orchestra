@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phrases xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="FixPhrases.xsd"
-         version="FIX.5.0SP2_EP208"
+         version="FIX.5.0SP2_EP216"
          langId="en"
-         generated="2016-08-03T17:26:59-04:00">
+         generated="2016-10-13T16:24:13-04:00">
    <phrase textId="AT_Acct">
       <text>
          <para>Account</para>
@@ -2549,6 +2549,26 @@
          <para>Vega</para>
       </text>
    </phrase>
+   <phrase textId="AT_Rmntn">
+      <text>
+         <para>Remuneration</para>
+      </text>
+   </phrase>
+   <phrase textId="AT_Cmprsn">
+      <text>
+         <para>Compression</para>
+      </text>
+   </phrase>
+   <phrase textId="AT_Slf">
+      <text>
+         <para>Self</para>
+      </text>
+   </phrase>
+   <phrase textId="AT_Prvntn">
+      <text>
+         <para>Prevention</para>
+      </text>
+   </phrase>
 -
 				<phrase textId="CAT_AccountReporting">
       <text purpose="SYNOPSIS">
@@ -3531,6 +3551,14 @@
    <phrase textId="ENUM_18_x">
       <text purpose="SYNOPSIS">
          <para>Ignore notional value checks</para>
+      </text>
+   </phrase>
+   <phrase textId="ENUM_18_y">
+      <text purpose="SYNOPSIS">
+         <para>Trade at reference price</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>In the context of Reg NMS and the Tick Size Pilot Program, this is intended to indicate the order should Trade At Intermarket Sweep Order (TAISO) price.</para>
       </text>
    </phrase>
    <phrase textId="FIELD_19">
@@ -16069,17 +16097,20 @@
    </phrase>
    <phrase textId="FIELD_570">
       <text purpose="SYNOPSIS">
-         <para>Indicates if the trade capture report was previously reported to the counterparty.</para>
+         <para>Indicates if the trade capture report was previously reported to the counterparty or market.</para>
       </text>
    </phrase>
    <phrase textId="ENUM_570_N">
       <text purpose="SYNOPSIS">
-         <para>Not reported to counterparty</para>
+         <para>Not reported to counterparty or market</para>
       </text>
    </phrase>
    <phrase textId="ENUM_570_Y">
       <text purpose="SYNOPSIS">
-         <para>Previously reported to counterparty</para>
+         <para>Previously reported to counterparty or market</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>In the context of MiFID II when a trade is reported to more than one "approved publication arrangement" (APA) the additional reports need to be flagged as "duplicative" and this flag needs to be present on any occurrence (even when publishing to the market).</para>
       </text>
    </phrase>
    <phrase textId="FIELD_571">
@@ -19074,9 +19105,10 @@
    <phrase textId="FIELD_762">
       <text purpose="SYNOPSIS">
          <para>Sub-type qualification/identification of the SecurityType. As an example for SecurityType(167)="REPO", the SecuritySubType="General Collateral" can be used to further specify the type of REPO.</para>
-         <para>If SecuritySubType is used then SecurityType is required.</para>
+         <para>If SecuritySubType is used, then SecurityType is required.</para>
          <para>For SecurityType="MLEG" a name of the option or futures strategy name can be specified, such as "Calendar", "Vertical", "Butterfly".</para>
          <para>For SecurityType(167)="OPT" the subclassification can be specified, such as "Asian".</para>
+         <para>For SecurityType(167)="SWAPTION" a value of "Straddle" is used to identify a straddle swaption.</para>
       </text>
    </phrase>
    <phrase textId="FIELD_763">
@@ -20821,6 +20853,9 @@
    <phrase textId="ENUM_828_64">
       <text purpose="SYNOPSIS">
          <para>Benchmark</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>For Market Model Typology (MMT) the "benchmark" price depends on a benchmark which has no current price but was derived from a time series such as a VWAP.</para>
       </text>
    </phrase>
    <phrase textId="ENUM_828_59">
@@ -22903,7 +22938,7 @@
    </phrase>
    <phrase textId="FIELD_940">
       <text purpose="SYNOPSIS">
-         <para>Identifies the status of the ConfirmationAck.</para>
+         <para>Specifies the affirmation status of the confirmation.</para>
       </text>
    </phrase>
    <phrase textId="ENUM_940_1">
@@ -24089,7 +24124,7 @@
    </phrase>
    <phrase textId="FIELD_1024">
       <text purpose="SYNOPSIS">
-         <para>Used to describe the origin of an entry in the book</para>
+         <para>Used to describe the origin of the market data entry.</para>
       </text>
    </phrase>
    <phrase textId="ENUM_1024_0">
@@ -24118,6 +24153,22 @@
    <phrase textId="ENUM_1024_4">
       <text purpose="SYNOPSIS">
          <para>Dark order book</para>
+      </text>
+   </phrase>
+   <phrase textId="ENUM_1024_5">
+      <text purpose="SYNOPSIS">
+         <para>Auction driven market</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>Markets where matching occurs only in scheduled auctions.</para>
+      </text>
+   </phrase>
+   <phrase textId="ENUM_1024_6">
+      <text purpose="SYNOPSIS">
+         <para>Quote negotiation</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>Discretionary quoting on request or "request for quote" market.</para>
       </text>
    </phrase>
    <phrase textId="FIELD_1025">
@@ -25673,6 +25724,9 @@
       <text purpose="SYNOPSIS">
          <para>One-party report for pass through</para>
       </text>
+      <text purpose="ELABORATION">
+         <para>Can be used when one of the parties to the trade submits a report which then has to be approved or confirmed by the other (counter)party.</para>
+      </text>
    </phrase>
    <phrase textId="ENUM_1123_4">
       <text purpose="SYNOPSIS">
@@ -25687,6 +25741,14 @@
    <phrase textId="ENUM_1123_6">
       <text purpose="SYNOPSIS">
          <para>One-party report</para>
+      </text>
+   </phrase>
+   <phrase textId="ENUM_1123_7">
+      <text purpose="SYNOPSIS">
+         <para>Third-party report for pass through</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>Can be used when RootParties component contains a service provider role who submits the trade report and is not necessarily also on one side of the trade.</para>
       </text>
    </phrase>
    <phrase textId="FIELD_1124">
@@ -28193,6 +28255,22 @@
          <para>Dark order book</para>
       </text>
    </phrase>
+   <phrase textId="ENUM_1430_A">
+      <text purpose="SYNOPSIS">
+         <para>Auction driven market</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>Markets where matching occurs only in scheduled auctions.</para>
+      </text>
+   </phrase>
+   <phrase textId="ENUM_1430_N">
+      <text purpose="SYNOPSIS">
+         <para>Quote negotiation</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>Discretionary quoting on request or "request for quote" market.</para>
+      </text>
+   </phrase>
    <phrase textId="FIELD_1431">
       <text purpose="SYNOPSIS">
          <para>The reason for updating the RefOrdID</para>
@@ -30208,10 +30286,10 @@
    </phrase>
    <phrase textId="ENUM_1530_10">
       <text purpose="SYNOPSIS">
-         <para>Clip size</para>
+         <para>Clip size/notional limit per time period</para>
       </text>
       <text purpose="ELABORATION">
-         <para>The total amount allowed to be traded within a defined period of time, or velocity. The defined period of time is specified by the RiskLimitVelocityPeriod(2336) and RiskLimitVelocityUnit(2337).</para>
+         <para>The total notional amount limit allowed to be executed within a defined period of time or velocity. The defined period of time may be specified by the RiskLimitVelocityPeriod(2336) and RiskLimitVelocityUnit(2337).</para>
       </text>
    </phrase>
    <phrase textId="ENUM_1530_11">
@@ -30233,6 +30311,38 @@
       </text>
       <text purpose="ELABORATION">
          <para>Credit spread sensitivity. Represents the change in market value of a CDS for a one basis point change in the credit spread. This limits the credit risk exposure of a CDS. Also known as "risky-DV01".</para>
+      </text>
+   </phrase>
+   <phrase textId="ENUM_1530_14">
+      <text purpose="SYNOPSIS">
+         <para>Volume limit per time period</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>The total number of shares, bonds or contracts allowed to be executed within a defined period of time or velocity. The defined period of time may be specified by the RiskLimitVelocityPeriod(2336) and RiskLimitVelocityUnit(2337).</para>
+      </text>
+   </phrase>
+   <phrase textId="ENUM_1530_15">
+      <text purpose="SYNOPSIS">
+         <para>Volume filled as percent of ordered volume per time period</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>The total number of shares, bonds or contracts executed as a percentage of the total ordered shares, contracts or notional amount for a specified security, instrument, symbol, or underlying, over a defined period of time or velocity. The defined period of time may be specified by the RiskLimitVelocityPeriod(2336) and RiskLimitVelocityUnit(2337).</para>
+      </text>
+   </phrase>
+   <phrase textId="ENUM_1530_16">
+      <text purpose="SYNOPSIS">
+         <para>Notional filled as percent of notional per time period</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>The total notional amount executed as a percentage of the total ordered shares, contracts or notional amount for a specified security, instrument, symbol, or underlying, over a defined period of time or velocity. The defined period of time may be specified by the RiskLimitVelocityPeriod(2336) and RiskLimitVelocityUnit(2337).</para>
+      </text>
+   </phrase>
+   <phrase textId="ENUM_1530_17">
+      <text purpose="SYNOPSIS">
+         <para>Transaction/execution limit per time period</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>The total number of transactions or execution fills allowed within a defined period of time or velocity. The defined period of time may be specified by the RiskLimitVelocityPeriod(2336) and RiskLimitVelocityUnit(2337).</para>
       </text>
    </phrase>
    <phrase textId="FIELD_1531">
@@ -30707,6 +30817,30 @@
          <para>Constituent exchange</para>
       </text>
       <text purpose="ELABORATION"/>
+   </phrase>
+   <phrase textId="ENUM_1674_17">
+      <text purpose="SYNOPSIS">
+         <para>Exempt from trade reporting</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>In the context of FINRA TRACE reporting requirements, this is used to indicate the ATS has been granted a regulatory exemption from reporting.</para>
+      </text>
+   </phrase>
+   <phrase textId="ENUM_1674_18">
+      <text purpose="SYNOPSIS">
+         <para>Current</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>Can be used to convey an existing party identifier for the same party role in a single message.</para>
+      </text>
+   </phrase>
+   <phrase textId="ENUM_1674_19">
+      <text purpose="SYNOPSIS">
+         <para>New</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>Can be used to convey a future party identifier for the same party role in a single message.</para>
+      </text>
    </phrase>
    <phrase textId="FIELD_1675">
       <text purpose="SYNOPSIS">
@@ -33199,6 +33333,38 @@
          <para>Guaranteed delivery (GD)</para>
       </text>
    </phrase>
+   <phrase textId="ENUM_1839_13">
+      <text purpose="SYNOPSIS">
+         <para>Special dividend</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>Deviation from regular ex/cum treatment (without further specification) leading to price modification. To be used only if it is not clear whether it is a special cum or special ex dividend. For ESMA RTS 1, this is the "SDIV" flag.</para>
+      </text>
+   </phrase>
+   <phrase textId="ENUM_1839_14">
+      <text purpose="SYNOPSIS">
+         <para>Price improvement</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>The price is better than a reference price. For example, this may be due to an offer by a systematic internaliser to always quote better prices than a public reference price. For ESMA RTS 1, this is the "RPRI" flag.</para>
+      </text>
+   </phrase>
+   <phrase textId="ENUM_1839_15">
+      <text purpose="SYNOPSIS">
+         <para>Non-price forming trade</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>In the context of MiFID II, these are transactions which are exempted from the trading obligation (i.e. permitted to be transacted as an OTC transaction) and are deemed not to be contributing to the price discovery process. However, these transactions are not exempted from post trade transparency reporting and are required to be published by MiFID venues and "approved publication arrangement" (APAs) for market transparency purposes. The price from exempted transactions should be disregarded for the purposes of price discovery. For ESMA RTS 1 and RTS 2, this is the "NPFT" flag.</para>
+      </text>
+   </phrase>
+   <phrase textId="ENUM_1839_16">
+      <text purpose="SYNOPSIS">
+         <para>Trade exempted from trading obligation</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>Per MiFIR Article 23, these types of trades are not exempted from post-trade transparency if reported to a trading venue under MiFID II and deemed "on exchange", however, they are ignored for price formation despite published by venue. For ESMA RTS 1, this is the "TNCP" flag.</para>
+      </text>
+   </phrase>
    <phrase textId="FIELD_1840">
       <text purpose="SYNOPSIS">
          <para>Identifies the status of an allocation when using a pre-clear workflow.</para>
@@ -33856,7 +34022,10 @@
    </phrase>
    <phrase textId="FIELD_1891">
       <text purpose="SYNOPSIS">
-         <para>Used to identify each price levels within a match event, e.g. each match steps or clips.</para>
+         <para>Used to identify each price level, step or clip within a match event.</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>The identifier may represent a grouping of matched resting orders at a given price level that was matched by an aggressor order. For example, an aggressive order sweeping through 2 price levels that included 3 resting orders would have two different TrdMatchSubID(1891) values.</para>
       </text>
    </phrase>
    <phrase textId="FIELD_1892">
@@ -34410,6 +34579,94 @@
       </text>
       <text purpose="ELABORATION">
          <para>Report of a regulated transaction continuation event that falls within the requirements for real-time reporting and public dissemination. If dissemination is to be suppressed due to an end user exception or to local regulatory rules that allow suppression of certain types of transactions, use TradePublishIndicator(1390) = 0 (Do not publish trade).</para>
+      </text>
+   </phrase>
+   <phrase textId="ENUM_1934_11">
+      <text purpose="SYNOPSIS">
+         <para>Limited Details Trade</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>Designates a trade in instruments specified in ESMA RTS 2 Article 11 (1)(a)(i) for immediate publication of all details except the quantity. This is ESMA RTS 2 deferral flag "LMTF".</para>
+      </text>
+   </phrase>
+   <phrase textId="ENUM_1934_12">
+      <text purpose="SYNOPSIS">
+         <para>Daily Aggregated Trade</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>Designates a trade in instruments specified in ESMA RTS 2 Article 11 (1)(a)(ii) for aggregated publication of at least 5 transactions before 9:00 a.m. local time next day. This is ESMA RTS 2 deferral flag "DATF".</para>
+      </text>
+   </phrase>
+   <phrase textId="ENUM_1934_13">
+      <text purpose="SYNOPSIS">
+         <para>Volume Omission Trade</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>Designates a trade in instruments specified in ESMA RTS 2 Article 11 (1)(b) for immediate publication of all details except the quantity. This is ESMA RTS 2 deferral flag "VOLO".</para>
+      </text>
+   </phrase>
+   <phrase textId="ENUM_1934_14">
+      <text purpose="SYNOPSIS">
+         <para>Four Weeks Aggregation Trade</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>Designates a trade in instruments specified in ESMA RTS 2 Article 11 (1)(c) (non-sovereign debt only) for aggregated publication of transactions executed over the course of one calendar week before 9:00 a.m. local time following Tuesday. This is ESMA RTS 2 deferral flag "FWAF".</para>
+      </text>
+   </phrase>
+   <phrase textId="ENUM_1934_15">
+      <text purpose="SYNOPSIS">
+         <para>Indefinite Aggregation Trade</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>Designates a trade in instruments specified in ESMA RTS 2 Article 11 (1)(d) (sovereign debt only) for aggregated publication of transactions executed over the course of one calendar week before 9:00 a.m. local time following Tuesday. This is ESMA RTS 2 deferral flag "IDAF".</para>
+      </text>
+   </phrase>
+   <phrase textId="ENUM_1934_16">
+      <text purpose="SYNOPSIS">
+         <para>Volume Omission Trade Eligible for Subsequent Aggregated Enrichment</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>Designates a trade in instruments specified in ESMA RTS 2 Article 11 (1)(b) and (d) consecutively (sovereign debt only) for immediate publication of all details except the quantity. This is ESMA RTS 2 deferral flag "VOLW".</para>
+      </text>
+   </phrase>
+   <phrase textId="ENUM_1934_17">
+      <text purpose="SYNOPSIS">
+         <para>Full Details Trade of "Limited Details Trade"</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>Full details of a previously reported "limited details trade (LMTF)". Designates a trade in instruments specified in ESMA RTS 2 Article 11 (1)(a)(i) which is a follow-up publication of all details before 7pm local time on the second day after initial publication. This is ESMA RTS deferral flag "FULF".</para>
+      </text>
+   </phrase>
+   <phrase textId="ENUM_1934_18">
+      <text purpose="SYNOPSIS">
+         <para>Full Details of "Daily Aggregated Trade"</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>Full details of a previously reported "daily aggregated trade (DATF)". Designates a trade in instruments specified in RTS 2 Article 11 (1)(a)(ii) which is a follow-up publication of the individual transaction with full details before 7pm local time on the second day after initial publication. This is ESMA RTS 2 deferral flag "FULA".</para>
+      </text>
+   </phrase>
+   <phrase textId="ENUM_1934_19">
+      <text purpose="SYNOPSIS">
+         <para>Full Details of "Volume Omission Trade"</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>Full details of a previously reported "volume omission trade (VOLO)". Designates a trade in instruments specified in ESMA RTS 2 Article 11 (1)(b) which is a follow-up publication of all details before 9 am local time four weeks after initial publication. This is ESMA RTS 2 deferral flag "FULV".</para>
+      </text>
+   </phrase>
+   <phrase textId="ENUM_1934_20">
+      <text purpose="SYNOPSIS">
+         <para>Full Details of "Four Weeks Aggregation Trade"</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>Full details of a previously reported "four weeks aggregation trade (FWAF)". Designates a trade in instruments specified in ESMA RTS 2 Article 11 (1)(c) (non-sovereign debt only) which is a follow-up publication of the individual transaction with full details before 9 am local time four weeks after initial publication. This is ESMA RTS 2 deferral flag "FULJ".</para>
+      </text>
+   </phrase>
+   <phrase textId="ENUM_1934_21">
+      <text purpose="SYNOPSIS">
+         <para>Full Details in Aggregated Form of "Volume Omission Trade Eligible for Subsequent Aggregated Enrichment"</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>Full details of a previously reported "volume omission trade eligible for subsequent aggregated enrichment (VOLW)". Designates a trade report in instruments specified in ESMA RTS 2 Article 11(1)(b) and (d) consecutively which is an aggregated publication of transactions executed over the course of one calendar week before 9:00 a.m. CET local time the following Tuesday four weeks after initial publication. This is ESMA RTS 2 deferral flag "COAF".</para>
       </text>
    </phrase>
    <phrase textId="FIELD_1935">
@@ -59751,6 +60008,186 @@
          <para>For equity swaps this specifies the conditions that govern the adjustment to the number of units of the swap.</para>
       </text>
    </phrase>
+   <phrase textId="FIELD_2356">
+      <text purpose="SYNOPSIS">
+         <para>Indicates whether the trade price was adjusted for compensation (i.e. includes a mark-up, mark-down or commission) in the price paid.</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>In the context of MSRB and FINRA TRACE reporting requirements, this is used among firms to indicate trade remuneration.</para>
+      </text>
+   </phrase>
+   <phrase textId="ENUM_2356_0">
+      <text purpose="SYNOPSIS">
+         <para>No remuneration paid</para>
+      </text>
+   </phrase>
+   <phrase textId="ENUM_2356_1">
+      <text purpose="SYNOPSIS">
+         <para>Remuneration paid</para>
+      </text>
+   </phrase>
+   <phrase textId="FIELD_2361">
+      <text purpose="SYNOPSIS">
+         <para>Use to identify a netting or compression group where trades in the group were netted or compressed. This includes both terminating trades and any remnant trades that result from the operation.</para>
+      </text>
+   </phrase>
+   <phrase textId="FIELD_2362">
+      <text purpose="SYNOPSIS">
+         <para>Identifies an order or trade that should not be matched to an opposite order or trade if both buy and sell orders for the same asset contain the same SelfMatchPreventionID(2362) and submitted by the same firm.</para>
+      </text>
+   </phrase>
+   <phrase textId="FIELD_2355">
+      <text purpose="SYNOPSIS">
+         <para>The status of risk limits for a party.</para>
+      </text>
+   </phrase>
+   <phrase textId="ENUM_2355_0">
+      <text purpose="SYNOPSIS">
+         <para>Disabled</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>Risk limits for party is disabled.</para>
+      </text>
+   </phrase>
+   <phrase textId="ENUM_2355_1">
+      <text purpose="SYNOPSIS">
+         <para>Enabled</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>Risk limits for party is enabled.</para>
+      </text>
+   </phrase>
+   <phrase textId="FIELD_2390">
+      <text purpose="SYNOPSIS">
+         <para>A reference or control identifier or number used as a trade confirmation key.</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>An example of a control identifier is the DTC ID Control Number.</para>
+      </text>
+   </phrase>
+   <phrase textId="FIELD_2667">
+      <text purpose="SYNOPSIS">
+         <para>Indicates that the order or trade originates from a computer program or algorithm requiring little-to-no human intervention.</para>
+      </text>
+   </phrase>
+   <phrase textId="ENUM_2667_0">
+      <text purpose="SYNOPSIS">
+         <para>Non-algorithmic trade</para>
+      </text>
+   </phrase>
+   <phrase textId="ENUM_2667_1">
+      <text purpose="SYNOPSIS">
+         <para>Algorithmic trade</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>In the context of ESMA MiFID II, a trade has to be flagged as "algorithmic" if at least one of the matched orders was submitted by a trading algorithm. See Directive 2014/65/EU Article 4(1)(39).</para>
+      </text>
+   </phrase>
+   <phrase textId="FIELD_2668">
+      <text purpose="SYNOPSIS">
+         <para>Number of regulatory publication rules in repeating group.</para>
+      </text>
+   </phrase>
+   <phrase textId="FIELD_2669">
+      <text purpose="SYNOPSIS">
+         <para>Specifies the type of regulatory trade publication.</para>
+         <para>Additional reasons for the publication type may be specified in TrdRegPublicationReason(2670).</para>
+      </text>
+   </phrase>
+   <phrase textId="ENUM_2669_0">
+      <text purpose="SYNOPSIS">
+         <para>Pre-trade transparency waiver</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>There are allowable waivers from the obligation to make public current bid/offer prices and trading depth. In the context of MiFIR, see Article 3 and Article 4.</para>
+      </text>
+   </phrase>
+   <phrase textId="ENUM_2669_1">
+      <text purpose="SYNOPSIS">
+         <para>Post-trade deferral</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>There are allowable deferrals for the post-trade publication of trade transactions. In the context of MiFIR, see Article 7(1).</para>
+      </text>
+   </phrase>
+   <phrase textId="FIELD_2670">
+      <text purpose="SYNOPSIS">
+         <para>Additional reason for trade publication type specified in TrdRegPublicationType(2669).</para>
+         <para>Reasons may be specific to regulatory trade publication rules.</para>
+      </text>
+   </phrase>
+   <phrase textId="ENUM_2670_0">
+      <text purpose="SYNOPSIS">
+         <para>No preceding order in book as transaction price set within average spread of a liquid instrument</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>Per MiFIR Article 4(1)(b)(i) the obligation to place a public order can be waived for transactions of liquid instruments on "systems that formalise negotiated transactions which are made within the current volume weighted spread reflected on the order book or the quotes of the market makers of the trading venue operating that system, subject to the conditions set out in Article 5" of MiFIR on volume caps. "Liquid markets" as per MiFIR Article 2(17)(b) are assessed by the regulator for the purposes of MiFIR Articles 4, 5 and 14. For ESMA RTS 1, this is the "NLIQ" flag.</para>
+      </text>
+   </phrase>
+   <phrase textId="ENUM_2670_1">
+      <text purpose="SYNOPSIS">
+         <para>No preceding order in book as transaction price depends on system-set reference price for an illiquid instrument</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>Per MiFIR Article 4(1)(b)(ii) the obligation to place a public order can be waived for "negotiated transactions which are in an illiquid share, depositary receipt, ETF, certificate or other similar financial instrument that does not fall within the meaning of a liquid market, and are dealt within a percentage of a suitable reference price, being a percentage and a reference price set in advance by the system operator." For ESMA RTS 1, this is the "OLIQ" flag.</para>
+      </text>
+   </phrase>
+   <phrase textId="ENUM_2670_2">
+      <text purpose="SYNOPSIS">
+         <para>No preceding order in book as transaction price is for transaction subject to conditions other than current market price</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>Per MiFIR Article 4(1)(b)(iii), the obligation to place a public order can be waived in "systems that formalise negotiated transactions which are subject to conditions other than the current market price of that financial instrument." For ESMA RTS 1, this is the "PRIC" flag.</para>
+      </text>
+   </phrase>
+   <phrase textId="ENUM_2670_3">
+      <text purpose="SYNOPSIS">
+         <para>No public price for preceding order as public reference price was used for matching orders</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>Per MiFIR Article 4(1)(a) the obligation to place a public order can be waived for "systems matching orders based on a trading methodology by which the price of the financial instrument is derived from the trading venue where that financial instrument was first admitted to trading or the most relevant market in terms of liquidity, where that reference price is widely published and is regarded by market participants as a reliable reference price." For ESMA RTS 1, this is the "RFPT" flag.</para>
+      </text>
+   </phrase>
+   <phrase textId="ENUM_2670_4">
+      <text purpose="SYNOPSIS">
+         <para>No public price quoted as instrument is illiquid</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>According to Article 14(1) MiFIR the systematic internaliser was not obliged to publish the quote prior to closing the trade as it was made in an illiquid instrument. For ESMA RTS 1, this is the "ILQD" flag.</para>
+      </text>
+   </phrase>
+   <phrase textId="ENUM_2670_5">
+      <text purpose="SYNOPSIS">
+         <para>No public price quoted as order is above standard market size</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>ESMA: As per Article 14(2) MiFIR, the systematic internaliser was not obliged to quote prior to closing the trade as the trade was above the instrument's standard market size. For ESMA RTS 1, this is the "SIZE" flag.</para>
+      </text>
+   </phrase>
+   <phrase textId="ENUM_2670_6">
+      <text purpose="SYNOPSIS">
+         <para>Deferral due to "Large in Scale"</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>Per MiFID Article 14, publication deferral is permitted if the transaction's volume is large in scale compared to a standard market size, as set in RTS 1/Annex II (thresholds for "large in scale") and RTS 2/Annex III ("LIS and SSTI thresholds"). For ESMA RTS 1 and RTS 2, this is the "LRGS" flag.</para>
+      </text>
+   </phrase>
+   <phrase textId="ENUM_2670_7">
+      <text purpose="SYNOPSIS">
+         <para>Deferral due to "Illiquid Instrument"</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>Publication deferral is permitted if the transaction's instrument is illiquid, as defined by regulator's stipulation. For ESMA RTS 2, this is the "ILQD" flag.</para>
+      </text>
+   </phrase>
+   <phrase textId="ENUM_2670_8">
+      <text purpose="SYNOPSIS">
+         <para>Deferral due to "Size Specific"</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>Per MiFIR Article 11, publication deferral is permitted if the transaction's volume is greater than the stipulated 'Size Specific to the financial instrument' threshold. For ESMA RTS 2, this is the "SIZE" flag.</para>
+      </text>
+   </phrase>
    <phrase textId="MSG_1_TITLE">
       <text purpose="SYNOPSIS">
          <para>The Heartbeat monitors the status of the communication link and identifies when the last of a string of messages was not received.</para>
@@ -60691,6 +61128,9 @@
       <text>
          <para>If ExecType(150) = F (Trade), indicates the market where the trade was executed. If ExecType(150) = 0 (New (0), indicates the market where the order was routed.</para>
       </text>
+   </phrase>
+   <phrase textId="MSG_9_REF_1430">
+      <text/>
    </phrase>
    <phrase textId="MSG_9_REF_1300">
       <text/>
@@ -68322,6 +68762,9 @@
    <phrase textId="MSG_64_REF_855">
       <text/>
    </phrase>
+   <phrase textId="MSG_64_REF_2667">
+      <text/>
+   </phrase>
    <phrase textId="MSG_64_REF_1849">
       <text/>
    </phrase>
@@ -68677,6 +69120,9 @@
       <text/>
    </phrase>
    <phrase textId="MSG_64_REF_1390">
+      <text/>
+   </phrase>
+   <phrase textId="MSG_64_REF_TrdRegPublicationGrp">
       <text/>
    </phrase>
    <phrase textId="MSG_64_REF_853">
@@ -69696,6 +70142,15 @@
       </text>
    </phrase>
    <phrase textId="MSG_70_REF_665">
+      <text/>
+   </phrase>
+   <phrase textId="MSG_70_REF_940">
+      <text>
+         <para>Used to communicate an "affirmed" Confirmation(35=AK) status message (i.e. when ConfirmType(773) = 1 (Status)) to interested parties that need to or should receive such confirmation status message.</para>
+         <para>This field must not be used when sending a Confirmation(35=AK) message that needs to be affirmed.</para>
+      </text>
+   </phrase>
+   <phrase textId="MSG_70_REF_2390">
       <text/>
    </phrase>
    <phrase textId="MSG_70_REF_1832">
@@ -71837,6 +72292,9 @@
       </text>
    </phrase>
    <phrase textId="MSG_80_REF_940">
+      <text/>
+   </phrase>
+   <phrase textId="MSG_80_REF_2390">
       <text/>
    </phrase>
    <phrase textId="MSG_80_REF_774">
@@ -75982,6 +76440,9 @@
       <text>
          <para>Conditionally required when responding to a PartyRiskLimitsRequest(35=CL).</para>
       </text>
+   </phrase>
+   <phrase textId="MSG_124_REF_325">
+      <text/>
    </phrase>
    <phrase textId="MSG_124_REF_1512">
       <text/>
@@ -82656,6 +83117,9 @@
    <phrase textId="CMP_2031_REF_TradePriceConditionGrp">
       <text/>
    </phrase>
+   <phrase textId="CMP_2031_REF_2667">
+      <text/>
+   </phrase>
    <phrase textId="CMP_2031_REF_282">
       <text/>
    </phrase>
@@ -82778,6 +83242,11 @@
          <para>For optional use in reporting trades.</para>
       </text>
    </phrase>
+   <phrase textId="CMP_2031_REF_1934">
+      <text>
+         <para>Used only when reporting a trade (MDEntryType(269)=2 (Trade)) that is a regulatory trade report.</para>
+      </text>
+   </phrase>
    <phrase textId="CMP_2031_REF_2405">
       <text/>
    </phrase>
@@ -82793,6 +83262,12 @@
       <text>
          <para>For optional use in reporting trades.</para>
       </text>
+   </phrase>
+   <phrase textId="CMP_2031_REF_TrdRegPublicationGrp">
+      <text/>
+   </phrase>
+   <phrase textId="CMP_2031_REF_570">
+      <text/>
    </phrase>
    <phrase textId="CMP_2031_REF_RelatedTradeGrp">
       <text>
@@ -83066,6 +83541,14 @@
    <phrase textId="CMP_2032_REF_TradePriceConditionGrp">
       <text/>
    </phrase>
+   <phrase textId="CMP_2032_REF_2667">
+      <text/>
+   </phrase>
+   <phrase textId="CMP_2032_REF_1934">
+      <text>
+         <para>Used only when reporting a trade (MDEntryType(269)=2 (Trade)) that is a regulatory trade report.</para>
+      </text>
+   </phrase>
    <phrase textId="CMP_2032_REF_828">
       <text>
          <para>For optional use in reporting trades.</para>
@@ -83091,6 +83574,12 @@
       <text>
          <para>For optional use in reporting trades.</para>
       </text>
+   </phrase>
+   <phrase textId="CMP_2032_REF_TrdRegPublicationGrp">
+      <text/>
+   </phrase>
+   <phrase textId="CMP_2032_REF_570">
+      <text/>
    </phrase>
    <phrase textId="CMP_2032_REF_RelatedTradeGrp">
       <text>
@@ -85355,6 +85844,9 @@
    <phrase textId="CMP_2061_REF_943">
       <text/>
    </phrase>
+   <phrase textId="CMP_2061_REF_2356">
+      <text/>
+   </phrase>
    <phrase textId="CMP_2061_REF_CommissionData">
       <text/>
    </phrase>
@@ -85540,6 +86032,9 @@
       <text/>
    </phrase>
    <phrase textId="CMP_2061_REF_2335">
+      <text/>
+   </phrase>
+   <phrase textId="CMP_2061_REF_2361">
       <text/>
    </phrase>
    <phrase textId="COMP_TrdCollGrp_TITLE">
@@ -88367,6 +88862,11 @@
    <phrase textId="CMP_2143_REF_MatchingInstructions">
       <text/>
    </phrase>
+   <phrase textId="CMP_2143_REF_2362">
+      <text>
+         <para>May be used as an alternative to MatchingInstructions when the identifier does not appear in another field.</para>
+      </text>
+   </phrase>
    <phrase textId="CMP_2143_REF_1629">
       <text>
          <para>The (minimum or suggested) period of time a quoted price is to be tradable before it becomes indicative. (i.e. quoted price becomes off-the-wire).</para>
@@ -89436,6 +89936,9 @@
    <phrase textId="CMP_2184_REF_2339">
       <text/>
    </phrase>
+   <phrase textId="CMP_2184_REF_2355">
+      <text/>
+   </phrase>
    <phrase textId="COMP_RiskLimitsGrp_TITLE">
       <text purpose="SYNOPSIS">
          <para>Repeating group of risk limits.</para>
@@ -89769,6 +90272,9 @@
    <phrase textId="CMP_2193_REF_2339">
       <text/>
    </phrase>
+   <phrase textId="CMP_2193_REF_2355">
+      <text/>
+   </phrase>
    <phrase textId="COMP_PartyRiskLimitsAckGrp_TITLE">
       <text purpose="SYNOPSIS">
          <para>This new block is a repeating group based on the existing block &lt;PartyRiskLimitsGrp&gt; with an additional field RiskLimitStatus(1763) to accept (with or without changes) or reject individual risk limits. It is only used in PartyRiskLimitDefinitionRequestAck, the response to the request to define risk limits. An approval with changes requires to send &lt;RiskLimitsGrp&gt; with the complete set of risk limits that have been accepted for the party defined.</para>
@@ -89822,6 +90328,9 @@
       <text>
          <para>Encoded (non-ASCII characters) representation of the RejectText(1328) field in the encoded format specified via the MessageEncoding(347) field.</para>
       </text>
+   </phrase>
+   <phrase textId="CMP_2194_REF_2355">
+      <text/>
    </phrase>
    <phrase textId="COMP_PartyEntitlementGrp_TITLE">
       <text purpose="SYNOPSIS">
@@ -98128,7 +98637,7 @@
    </phrase>
    <phrase textId="COMP_OptionExercise_TITLE">
       <text purpose="SYNOPSIS">
-         <para>The OptionExercise component is a subcomponent of the Instrument component used to specify option exercise provisions.</para>
+         <para>The OptionExercise component is a subcomponent of the Instrument component used to specify option exercise provisions. Its purpose is to identify the opportunities and conditions for exercise, e.g. the schedule of dates on which exercise is allowed. The embedded OptionExerciseExpiration component is used to terminate the opportunity for exercise.</para>
       </text>
       <text purpose="ELABORATION"/>
    </phrase>
@@ -98315,7 +98824,7 @@
    </phrase>
    <phrase textId="COMP_OptionExerciseExpiration_TITLE">
       <text purpose="SYNOPSIS">
-         <para>The OptionExerciseExpiration component is a subcomponent of the OptionExercise component used to specify option exercise expiration dates and times.</para>
+         <para>The OptionExerciseExpiration component is a subcomponent of the OptionExercise component used to specify option exercise expiration dates and times. The purpose of OptionExercise is to identify the scheduled opportunities for exercise. OptionExerciseExpiration identifies the end of the schedule.</para>
       </text>
       <text purpose="ELABORATION"/>
    </phrase>
@@ -99898,7 +100407,7 @@
    </phrase>
    <phrase textId="COMP_LegOptionExercise_TITLE">
       <text purpose="SYNOPSIS">
-         <para>The LegOptionExercise component is a subcomponent of the InstrumentLeg component used to specify option exercise provisions.</para>
+         <para>The LegOptionExercise component is a subcomponent of the InstrumentLeg component used to specify option exercise provisions. Its purpose is to identify the opportunities and conditions for exercise, e.g. the schedule of dates on which exercise is allowed. The embedded LegOptionExerciseExpiration component is used to terminate the opportunity for exercise.</para>
       </text>
       <text purpose="ELABORATION"/>
    </phrase>
@@ -100083,7 +100592,7 @@
    </phrase>
    <phrase textId="COMP_LegOptionExerciseExpiration_TITLE">
       <text purpose="SYNOPSIS">
-         <para>The LegOptionExerciseExpiration component is a subcomponent of the LegOptionExercise component used to specify option exercise expiration dates and times.</para>
+         <para>The LegOptionExerciseExpiration component is a subcomponent of the LegOptionExercise component used to specify option exercise expiration dates and times. The purpose of LegOptionExercise is to identify the scheduled opportunities for exercise. LegOptionExerciseExpiration identifies the end of the schedule.</para>
       </text>
       <text purpose="ELABORATION"/>
    </phrase>
@@ -101268,7 +101777,7 @@
    </phrase>
    <phrase textId="COMP_UnderlyingOptionExercise_TITLE">
       <text purpose="SYNOPSIS">
-         <para>The UnderlyingOptionExercise component is a subcomponent of the UnderlyingInstrument component used to specify option exercise provisions.</para>
+         <para>The UnderlyingOptionExercise component is a subcomponent of the UnderlyingInstrument component used to specify option exercise provisions. Its purpose is to identify the opportunities and conditions for exercise, e.g. the schedule of dates on which exercise is allowed. The embedded UnderlyingOptionExerciseExpiration component is used to terminate the opportunity for exercise.</para>
       </text>
       <text purpose="ELABORATION"/>
    </phrase>
@@ -101455,7 +101964,7 @@
    </phrase>
    <phrase textId="COMP_UnderlyingOptionExerciseExpiration_TITLE">
       <text purpose="SYNOPSIS">
-         <para>The UnderlyingOptionExerciseExpiration component is a subcomponent of the UnderlyingOptionExercise component used to specify option exercise expiration dates and times.</para>
+         <para>The UnderlyingOptionExerciseExpiration component is a subcomponent of the UnderlyingOptionExercise component used to specify option exercise expiration dates and times. The purpose of UnderlyingOptionExercise is to identify the scheduled opportunities for exercise. UnderlyingOptionExerciseExpiration identifies the end of the schedule.</para>
       </text>
       <text purpose="ELABORATION"/>
    </phrase>
@@ -107629,6 +108138,25 @@
       <text/>
    </phrase>
    <phrase textId="CMP_4424_REF_43082">
+      <text/>
+   </phrase>
+   <phrase textId="COMP_TrdRegPublicationGrp_TITLE">
+      <text purpose="SYNOPSIS">
+         <para>The TrdRegPublicationGrp component is used to express trade publication reasons that are required by regulatory agencies. Reasons may include deferrals, exemptions, waivers, etc.</para>
+      </text>
+      <text purpose="ELABORATION">
+         <para>Under the MiFID II regulation, this is used for indicating the reduction of pre- ("waivers") or post-trade transparency. In cases where a trade has been made outside an open order book venue or publication of trade data has been deferred, pertinent reason indicators are set in the TrdRegPublicationReason(2670) to further qualify the TrdRegPublicationType(2669).</para>
+      </text>
+   </phrase>
+   <phrase textId="CMP_1072_REF_2668">
+      <text/>
+   </phrase>
+   <phrase textId="CMP_1072_REF_2669">
+      <text>
+         <para>Required if NoTrdRegPublications(2668) &gt; 0.</para>
+      </text>
+   </phrase>
+   <phrase textId="CMP_1072_REF_2670">
       <text/>
    </phrase>
 </phrases>

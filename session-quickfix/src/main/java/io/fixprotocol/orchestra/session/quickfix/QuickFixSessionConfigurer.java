@@ -23,6 +23,7 @@ import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -190,7 +191,7 @@ public class QuickFixSessionConfigurer {
         dictionary.setString(SessionSettings.TARGETLOCID,
             identifierMap.getOrDefault(SessionSettings.TARGETLOCID, SessionID.NOT_SET));
 
-        if (FixVersions.FIX50SP2 == version) {
+        if (FixVersions.FIX50SP2.equals(version)) {
           dictionary.setString(quickfix.Session.SETTING_DEFAULT_APPL_VER_ID, applVersion);
         }
 

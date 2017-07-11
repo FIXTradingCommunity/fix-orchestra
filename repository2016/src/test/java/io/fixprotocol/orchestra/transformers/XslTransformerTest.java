@@ -28,12 +28,14 @@ import java.io.IOException;
 public class XslTransformerTest {
     @Test
     public void testTransformer() throws IOException, TransformerException {
-        String[] arr = new String[3];
+        String[] arr = new String[4];
         arr[0] = Thread.currentThread().getContextClassLoader().getResource("xsl/Repository2010to2016.xsl")
                 .getFile();
         arr[1] = Thread.currentThread().getContextClassLoader().getResource("FixRepository.xml")
                 .getFile();
-        arr[2] = System.getProperty("java.io.tmpdir").concat("/output.xml");
+        String sourceDir = new File(arr[1]).getParent();
+        arr[2] = String.format("%s%soutput.xml", System.getProperty("java.io.tmpdir"), System.getProperty("file.separator"));
+        arr[3] = String.format("phrases-file=%s%sFIX.5.0SP2_EP216_en_phrases.xml", sourceDir, System.getProperty("file.separator"));
         RepositoryXslTransformer.main(arr);
         File outFile = new File(arr[2]);
         Assert.assertTrue(outFile.exists());

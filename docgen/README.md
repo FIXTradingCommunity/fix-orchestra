@@ -2,7 +2,7 @@
 
 This utility generates documentation for an Orchestra file that can be view in any web browser. The output of the generator may be used locally or from a web server.
 
-## Useage
+## Usage
 
 To run the documentation generator, enter this command line:
 
@@ -10,7 +10,7 @@ To run the documentation generator, enter this command line:
 java -jar docgen-1.2.0-RC3-SNAPSHOT-jar-with-dependencies <filename> [output-dir]
 ```
 
-As the first argument, enter the name of an Orchestra file to document. The output directory defaults to "doc".
+As the first argument, enter the name of an Orchestra file to document. The second argument is output directory, which defaults to "doc".
 
 When generation completes, open `index.html` in a browser to view the documentation. There is no other run-time requirement.
 
