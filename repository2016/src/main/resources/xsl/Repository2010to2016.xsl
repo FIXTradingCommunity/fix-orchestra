@@ -14,6 +14,7 @@
     <xsl:template match="fixRepository">
     <fixr:repository>
             <metadata>
+				<dc:title>Orchestra</dc:title>
                 <dc:creator>Repository2010to2016</dc:creator>
                 <dc:date>
                     <xsl:value-of select="fn:current-dateTime()"/>
@@ -21,7 +22,7 @@
                 <dc:format>Repository 2016 Edition</dc:format>
             </metadata>
             <codeSets>
-                <xsl:for-each select="/fixRepository/fix/fields/field[enum]">
+                <xsl:for-each select="/fixRepository/fix/fields[last()]/field[enum]">
                     <xsl:variable name="fieldName" select="@name"></xsl:variable>
                     <xsl:variable name="fieldId" select="@id"></xsl:variable>
                     <xsl:variable name="fieldType" select="@type"></xsl:variable>
@@ -29,7 +30,7 @@
 						<xsl:attribute name="name"><xsl:value-of select="concat($fieldName, 'CodeSet')"/></xsl:attribute>
 						<xsl:attribute name="id"><xsl:value-of select="$fieldId"/></xsl:attribute>
 						<xsl:attribute name="type"><xsl:value-of select="$fieldType"/></xsl:attribute>
-                        <xsl:for-each select="//field[@name = $fieldName]/enum">
+                        <xsl:for-each select="(//field[@name = $fieldName])[fn:last()]/enum">
                             <xsl:element name="fixr:code">
 								<xsl:attribute name="name"><xsl:value-of select="current()/@symbolicName"/></xsl:attribute>
 								<xsl:attribute name="id"><xsl:value-of select="concat($fieldId, 
@@ -41,11 +42,11 @@
                     </xsl:element>
                 </xsl:for-each>
             </codeSets>
-            <xsl:apply-templates select="//abbreviations[last()]"/>
-            <xsl:apply-templates select="//datatypes[last()]"/>
-            <xsl:apply-templates select="//categories[last()]"/>
-            <xsl:apply-templates select="//sections[last()]"/>
-            <xsl:apply-templates select="//fields[last()]"/>
+            <xsl:apply-templates select="//fix[last()]/abbreviations"/>
+            <xsl:apply-templates select="//fix[last()]/datatypes"/>
+            <xsl:apply-templates select="//fix[last()]/categories"/>
+            <xsl:apply-templates select="//fix[last()]/sections"/>
+            <xsl:apply-templates select="//fix[last()]/fields"/>
             <xsl:apply-templates select="//fix"/>
     </fixr:repository>
     </xsl:template>
@@ -132,15 +133,16 @@
                 </xsl:when>
                 <xsl:when test="@type = 'data'">
                     <xsl:attribute name="lengthId"
-                                   select="//field[@associatedDataTag = current()/@id]/@id"/>
+                                   select="(//field[@associatedDataTag = current()/@id]/@id)[fn:last()]"/>
                     <xsl:attribute name="lengthName"
-                                   select="//field[@associatedDataTag = current()/@id]/@name"/>
+                                   select="(//field[@associatedDataTag = current()/@id]/@name)[fn:last()]"/>
                 </xsl:when>
             </xsl:choose>
             <xsl:apply-templates select="@textId"/>
     </fixr:field>
     </xsl:template>
     <xsl:template match="fix">
+        <!-- Assumption: protocols are listed in the original file in version order, so last() picks latest. -->
 		<fixr:protocol>
 			<xsl:attribute name="name"><xsl:value-of select="substring-before(current()/@version, '_')"/></xsl:attribute>
             <xsl:apply-templates select="@*"/>
@@ -175,7 +177,7 @@
             <xsl:attribute name="name" select="../@name"/>
             <xsl:attribute name="numInGroupId" select="@id"/>
             <xsl:attribute name="numInGroupName"
-                           select="//field[@id = current()/@id]/@name"/>
+                           select="(//field[@id = current()])[fn:last()]/@name"/>
             <xsl:attribute name="category" select="../@category"/>
             <xsl:attribute name="abbrName" select="../@abbrName"/>
             <xsl:apply-templates/>
@@ -217,7 +219,7 @@
     </fixr:fieldRef>
     </xsl:template>
     <xsl:template match="@enumDatatype">
-        <xsl:variable name="fieldName" select="//field[@id = current()]/@name"/>
+        <xsl:variable name="fieldName" select="(//field[@id=fn:current()]/@name)[fn:last()]"/>
         <xsl:attribute name="type" select="concat($fieldName, 'CodeSet')"/>
     </xsl:template>
     <!-- name changes -->

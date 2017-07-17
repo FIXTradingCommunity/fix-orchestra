@@ -27,16 +27,32 @@ import java.io.IOException;
 
 public class XslTransformerTest {
     @Test
-    public void testTransformer() throws IOException, TransformerException {
+    public void transformEP() throws IOException, TransformerException {
         String[] arr = new String[4];
         arr[0] = Thread.currentThread().getContextClassLoader().getResource("xsl/Repository2010to2016.xsl")
                 .getFile();
         arr[1] = Thread.currentThread().getContextClassLoader().getResource("FixRepository.xml")
                 .getFile();
         String sourceDir = new File(arr[1]).getParent();
-        arr[2] = String.format("%s/%soutput.xml", System.getProperty("java.io.tmpdir"));
+        arr[2] = String.format("%s/output.xml", System.getProperty("java.io.tmpdir"));
         // document function in XSLT expects a URI, not a file name (Saxon does not convert) 
         arr[3] = String.format("phrases-file=file:///%s/FIX.5.0SP2_EP216_en_phrases.xml", sourceDir.replace('\\', '/'));
+        RepositoryXslTransformer.main(arr);
+        File outFile = new File(arr[2]);
+        Assert.assertTrue(outFile.exists());
+    }
+    
+    @Test
+    public void transformMultiProtocol() throws IOException, TransformerException {
+        String[] arr = new String[4];
+        arr[0] = Thread.currentThread().getContextClassLoader().getResource("xsl/Repository2010to2016.xsl")
+                .getFile();
+        arr[1] = Thread.currentThread().getContextClassLoader().getResource("multiprotocol/FixRepository.xml")
+                .getFile();
+        String sourceDir = new File(arr[1]).getParent();
+        arr[2] = String.format("%s/output.xml", System.getProperty("java.io.tmpdir"));
+        // document function in XSLT expects a URI, not a file name (Saxon does not convert) 
+        arr[3] = String.format("phrases-file=file:///%s/FIX.5.0SP2_en_phrases.xml", sourceDir.replace('\\', '/'));
         RepositoryXslTransformer.main(arr);
         File outFile = new File(arr[2]);
         Assert.assertTrue(outFile.exists());
