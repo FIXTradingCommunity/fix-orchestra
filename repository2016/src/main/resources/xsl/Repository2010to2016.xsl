@@ -6,8 +6,9 @@
                 xmlns:fixr="http://fixprotocol.io/2016/fixrepository"
                 xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0"
                 exclude-result-prefixes="fn">
-    <xsl:param name="phrases-file"/>
-    <xsl:variable name="phrases-doc" select="fn:document($phrases-file)"/>
+    <!-- argument is a delimited string of phrase file URLs -->
+    <xsl:param name="phrases-files"/>
+    <xsl:variable name="phrases-files-seq" select="fn:tokenize($phrases-files, '[,\s]')"/>
     <xsl:key name="phrases-key" match="phrase" use="@textId"/>
     <xsl:output method="xml" encoding="UTF-8" indent="yes"/>
     <xsl:namespace-alias stylesheet-prefix="#default" result-prefix="fixr"/>
@@ -87,6 +88,8 @@
             <xsl:apply-templates select="@* except @textId"/>
             <xsl:apply-templates select="XML"/>
             <fixr:annotation>
+            <xsl:variable name="phrases-file" select="$phrases-files-seq[fn:last()]"/>
+			<xsl:variable name="phrases-doc" select="fn:document($phrases-file)"/>
             <xsl:for-each select="fn:key('phrases-key', @textId, $phrases-doc)//text">
                 <xsl:element name="fixr:documentation"><xsl:apply-templates select="@purpose"/><xsl:value-of select="."/></xsl:element>
             </xsl:for-each>
@@ -270,8 +273,11 @@
     </xsl:template>
 
     <xsl:template match="@textId">
+		<xsl:variable name="index" select="index-of(/fixRepository/fix, current()/ancestor::fix)"/>
+		<xsl:variable name="phrases-file" select="fn:subsequence($phrases-files-seq, $index, 1)"/>
+		<xsl:variable name="phrases-doc" select="fn:document($phrases-file)"/>
         <xsl:element name="fixr:annotation">
-            <xsl:for-each select="fn:key('phrases-key', ../@textId, $phrases-doc)//text">
+            <xsl:for-each select="fn:key('phrases-key', ../@textId, $phrases-doc)/text">
                 <xsl:element name="fixr:documentation"><xsl:apply-templates select="@purpose"/><xsl:value-of select="."/></xsl:element>
             </xsl:for-each>
         </xsl:element>
