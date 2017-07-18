@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                xmlns:fn="http://www.w3.org/2005/xpath-functions" xmlns:fixr="http://fixprotocol.io/2016/fixrepository"
+				xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                xmlns:fn="http://www.w3.org/2005/xpath-functions" 
+                xmlns:functx="http://www.functx.com"
+                xmlns:fixr="http://fixprotocol.io/2016/fixrepository"
                 xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0"
                 exclude-result-prefixes="fn">
     <xsl:param name="phrases-file"/>
@@ -22,15 +25,19 @@
                 <dc:format>Repository 2016 Edition</dc:format>
             </metadata>
             <codeSets>
-                <xsl:for-each select="/fixRepository/fix/fields[last()]/field[enum]">
-                    <xsl:variable name="fieldName" select="@name"></xsl:variable>
-                    <xsl:variable name="fieldId" select="@id"></xsl:variable>
-                    <xsl:variable name="fieldType" select="@type"></xsl:variable>
+				<!-- Need to store context outside of for-each loop -->
+				<xsl:variable name="doc" select="/"/>
+				<!-- Add codesets for fields that have enums from latest fix version to contain it -->
+                <xsl:for-each select="fn:distinct-values(/fixRepository/fix/fields/field[enum]/@name)">
+					<xsl:variable name="fieldName" select="."/>
+					<xsl:variable name="field" select="($doc/fixRepository/fix/fields/field[@name=$fieldName])[last()]"/>
+                    <xsl:variable name="fieldId" select="$field/@id"></xsl:variable>
+                    <xsl:variable name="fieldType" select="$field/@type"></xsl:variable>
                     <xsl:element name="fixr:codeSet">
 						<xsl:attribute name="name"><xsl:value-of select="concat($fieldName, 'CodeSet')"/></xsl:attribute>
 						<xsl:attribute name="id"><xsl:value-of select="$fieldId"/></xsl:attribute>
 						<xsl:attribute name="type"><xsl:value-of select="$fieldType"/></xsl:attribute>
-                        <xsl:for-each select="(//field[@name = $fieldName])[fn:last()]/enum">
+                        <xsl:for-each select="($doc//field[@name = $fieldName])[fn:last()]/enum">
                             <xsl:element name="fixr:code">
 								<xsl:attribute name="name"><xsl:value-of select="current()/@symbolicName"/></xsl:attribute>
 								<xsl:attribute name="id"><xsl:value-of select="concat($fieldId, 
@@ -38,7 +45,7 @@
                                 <xsl:apply-templates select="@* except @symbolicName"/>
                             </xsl:element>
                         </xsl:for-each>
-                        <xsl:apply-templates select="@textId"/>
+                        <xsl:apply-templates select="$field/@textId"/>
                     </xsl:element>
                 </xsl:for-each>
             </codeSets>
@@ -46,7 +53,15 @@
             <xsl:apply-templates select="//fix[last()]/datatypes"/>
             <xsl:apply-templates select="//fix[last()]/categories"/>
             <xsl:apply-templates select="//fix[last()]/sections"/>
-            <xsl:apply-templates select="//fix[last()]/fields"/>
+            <fields>
+            	<!-- Need to store context outside of for-each loop -->
+				<xsl:variable name="doc" select="/"/>
+				<!-- Add fields from latest fix version to contain it -->
+                <xsl:for-each select="fn:distinct-values(/fixRepository/fix/fields/field/@name)">
+                	<xsl:variable name="fieldName" select="."/>
+                	<xsl:apply-templates select="($doc/fixRepository/fix/fields/field[@name=$fieldName])[last()]"/>
+                </xsl:for-each>
+			</fields>
             <xsl:apply-templates select="//fix"/>
     </fixr:repository>
     </xsl:template>
@@ -119,11 +134,6 @@
             <xsl:apply-templates select="@textId"/>
     </fixr:section>
     </xsl:template>
-    <xsl:template match="fields">
-    <fixr:fields>
-            <xsl:apply-templates/>
-    </fixr:fields>
-    </xsl:template>
     <xsl:template match="field">
     <fixr:field>
             <xsl:apply-templates select="@* except @textId"/>
@@ -144,7 +154,7 @@
     <xsl:template match="fix">
         <!-- Assumption: protocols are listed in the original file in version order, so last() picks latest. -->
 		<fixr:protocol>
-			<xsl:attribute name="name"><xsl:value-of select="substring-before(current()/@version, '_')"/></xsl:attribute>
+			<xsl:attribute name="name"><xsl:value-of select="functx:substring-before-if-contains(current()/@version, '_')"/></xsl:attribute>
             <xsl:apply-templates select="@*"/>
             <xsl:apply-templates select="components"/>
             <xsl:apply-templates select="messages"/>
@@ -272,4 +282,16 @@
             <xsl:value-of select="."/>
         </xsl:attribute>
     </xsl:template>
+    
+    <xsl:function name="functx:substring-before-if-contains" as="xs:string?">
+	  <xsl:param name="arg" as="xs:string?"/>
+	  <xsl:param name="delim" as="xs:string"/>
+
+	  <xsl:sequence select="
+	   if (contains($arg,$delim))
+	   then substring-before($arg,$delim)
+	   else $arg
+	 "/>
+
+	</xsl:function>
 </xsl:stylesheet>
