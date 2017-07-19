@@ -30,6 +30,9 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.DOMException;
@@ -38,6 +41,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import io.fixprotocol.orchestra.xml.XmlDiffListener.Event;
@@ -113,7 +117,7 @@ public class XmlDiff {
   private XmlDiffListener listener;
 
   /**
-   * Generates differences between two XML files
+   * Generates differences between two XML documents
    * 
    * @param is1 first XML input stream
    * @param is2 second XML input stream
@@ -139,7 +143,42 @@ public class XmlDiff {
       is1.close();
       is2.close();
     }
+  }
+  
+  /**
+   * Generates differences between two XML node trees
+   * 
+   * @param is1 first XML input stream
+   * @param xpathString1 XPath expression that evaluates to an Element in the first stream
+   * @param is2 second XML input stream
+   * @param xpathString2 XPath expression that evaluates to an Element in the second stream
+   * @throws Exception if an IO or parsing error occurs
+   * @throws IllegalArgumentException if XPath expressions do not both evaluate to Elements
+   */
+  public void diff(InputStream is1, String xpathString1, InputStream is2, String xpathString2)
+      throws Exception {
+    Objects.requireNonNull(is1, "First input stream cannot be null");
+    Objects.requireNonNull(xpathString1, "First expression cannot be null");
+    Objects.requireNonNull(is2, "Second input stream cannot be null");
+    Objects.requireNonNull(xpathString2, "Second expression cannot be null");
 
+    try {
+      XPathFactory factory = XPathFactory.newInstance();
+      XPath xpath1 = factory.newXPath();
+      Object node1 = xpath1.evaluate(xpathString1, new InputSource(is1), XPathConstants.NODE);
+      XPath xpath2 = factory.newXPath();
+      Object node2 = xpath2.evaluate(xpathString2, new InputSource(is2), XPathConstants.NODE);
+
+      if (node1 instanceof Element && node2 instanceof Element) {
+        compareElements((Element) node1, (Element) node2);
+      } else {
+        throw new IllegalArgumentException("Nodes to compare are not both Elements");
+      }
+    } finally {
+      listener.close();
+      is1.close();
+      is2.close();
+    }
   }
 
   /**

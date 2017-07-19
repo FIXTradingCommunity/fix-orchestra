@@ -86,7 +86,7 @@ public class PatchOpsListener implements XmlDiffListener {
           addElement.setAttribute("type", t.getValue().getNodeName());
           Text textNode = document.createTextNode(t.getValue().getNodeValue());
           addElement.appendChild(textNode);
-        } else {
+        } else if (t.getValue() instanceof Element) {
           // add element
           addElement.setAttribute("sel", t.getXpath());
           // will import child text node if it exists

@@ -35,23 +35,39 @@ public class XmlDiffTest {
   @Before
   public void setUp() throws Exception {
     xmlDiff = new XmlDiff();
-    xmlDiff.setListener(new PatchOpsListener(
-        new FileOutputStream(DIFF_FILENAME)));
+    xmlDiff.setListener(new PatchOpsListener(new FileOutputStream(DIFF_FILENAME)));
     xmlMerge = new XmlMerge();
   }
 
 
   @Test
   public void diffAndMerge() throws Exception {
-    xmlDiff.diff(
-        new FileInputStream(Thread.currentThread().getContextClassLoader()
-            .getResource("FixRepository2016EP215.xml").getFile()),
-        new FileInputStream(Thread.currentThread().getContextClassLoader()
-            .getResource("FixRepository2016EP216.xml").getFile()));
-    xmlMerge.merge(
-        new FileInputStream(Thread.currentThread().getContextClassLoader()
-            .getResource("FixRepository2016EP215.xml").getFile()),
-        new FileInputStream(DIFF_FILENAME), new FileOutputStream("testmerged.xml"));
+    try (
+        final FileInputStream is1 = new FileInputStream(Thread.currentThread()
+            .getContextClassLoader().getResource("FixRepository2016EP215.xml").getFile());
+        final FileInputStream is2 = new FileInputStream(Thread.currentThread()
+            .getContextClassLoader().getResource("FixRepository2016EP216.xml").getFile())) {
+      xmlDiff.diff(is1, is2);
+
+      try (
+          final FileInputStream is1Baseline = new FileInputStream(Thread.currentThread()
+              .getContextClassLoader().getResource("FixRepository2016EP215.xml").getFile());
+          final FileInputStream isDiff = new FileInputStream(DIFF_FILENAME);
+          final FileOutputStream osMerge = new FileOutputStream("testmerged.xml")) {
+        xmlMerge.merge(is1Baseline, isDiff, osMerge);
+      }
+    }
+  }
+
+  @Test
+  public void diffElements() throws Exception {
+    try (final FileInputStream is1 = new FileInputStream(
+        "../repository2016/src/test/resources/multiprotocol/FixRepository.xml");
+        final FileInputStream is2 = new FileInputStream(
+            "../repository2016/src/test/resources/multiprotocol/FixRepository.xml")) {
+      xmlDiff.diff(is1, "/fixRepository/fix[@version='FIX.4.2']/fields", is2,
+          "/fixRepository/fix[@version='FIX.4.3']/fields");
+    }
   }
 
 }
