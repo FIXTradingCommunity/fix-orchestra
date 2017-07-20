@@ -108,7 +108,7 @@ public class RepositoryDiffReporter extends XmlDiff {
                       XpathUtil.getParentLocalName(t.getXpath()),
                       XpathUtil.getParentPredicate(t.getXpath()), t.getValue().getNodeName(),
                       t.getValue().getNodeValue()));
-            } else {
+            } else if (t.getValue() instanceof Element) {
               Element element = (Element) t.getValue();
               String text = null;
               NodeList children = element.getChildNodes();

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aaa version="1">
+	<bbb attr="x"/>
+	<ccc>Some test</ccc>
+	<ddd att="y"/>
+	<fff id="1"/>
+	<fff id="2"/>
+</aaa>

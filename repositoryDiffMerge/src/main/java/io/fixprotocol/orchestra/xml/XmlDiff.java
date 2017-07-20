@@ -133,7 +133,7 @@ public class XmlDiff {
       final Document doc2 = parse(is2);
       final Element root2 = doc2.getDocumentElement();
 
-      if (!compareElements(root1, root2)) {
+      if (!diffElements(root1, root2)) {
         System.err.format("Not comparing same root nodes; %s %s%n", XpathUtil.getFullXPath(root1),
             XpathUtil.getFullXPath(root2));
         System.exit(1);
@@ -170,7 +170,7 @@ public class XmlDiff {
       Object node2 = xpath2.evaluate(xpathString2, new InputSource(is2), XPathConstants.NODE);
 
       if (node1 instanceof Element && node2 instanceof Element) {
-        compareElements((Element) node1, (Element) node2);
+        diffElements((Element) node1, (Element) node2);
       } else {
         throw new IllegalArgumentException("Nodes to compare are not both Elements");
       }
@@ -214,7 +214,7 @@ public class XmlDiff {
     }
   }
 
-  private boolean compareAttributes(NamedNodeMap attributes1, NamedNodeMap attributes2) {
+  private boolean diffAttributes(NamedNodeMap attributes1, NamedNodeMap attributes2) {
     boolean isEqual = true;
     sortAttributes(attributes1, attributesArray1);
     sortAttributes(attributes2, attributesArray2);
@@ -273,7 +273,7 @@ public class XmlDiff {
     return isEqual;
   }
 
-  private boolean compareChildElements(Element element1, Element element2)
+  private boolean diffChildElements(Element element1, Element element2)
       throws DOMException, UnsupportedEncodingException, TransformerException {
     NodeList nodeList1 = element1.getChildNodes();
     NodeList nodeList2 = element2.getChildNodes();
@@ -285,7 +285,6 @@ public class XmlDiff {
 
     int index1 = 0;
     int index2 = 0;
-
     boolean isEqual = true;
     while (index1 < elementsArray1.size() || index2 < elementsArray2.size()) {
       Difference difference = Difference.EQUAL;
@@ -298,9 +297,7 @@ public class XmlDiff {
         final Element child2 = elementsArray2.get(index2);
         int elementCompare = elementComparator.compare(child1, child2);
         if (elementCompare == 0) {
-          compareElements(child1, child2);
-          index1 = Math.min(elementsArray1.size() - 1, index1 + 1);
-          index2 = Math.min(elementsArray2.size() - 1, index2 + 1);
+          diffElements(child1, child2);
         } else if (elementCompare > 0) {
           difference = ADD;
         } else {
@@ -337,20 +334,20 @@ public class XmlDiff {
     return isEqual;
   }
 
-  private boolean compareElements(final Element child1, final Element child2)
+  private boolean diffElements(final Element child1, final Element child2)
       throws DOMException, UnsupportedEncodingException, TransformerException {
     if (!child1.getNodeName().equals(child2.getNodeName())) {
       return false;
     }
-    compareText(child1, child2);
+    diffText(child1, child2);
     NamedNodeMap attributes1 = child1.getAttributes();
     NamedNodeMap attributes2 = child2.getAttributes();
-    compareAttributes(attributes1, attributes2);
-    compareChildElements(child1, child2);
+    diffAttributes(attributes1, attributes2);
+    diffChildElements(child1, child2);
     return true;
   }
 
-  private boolean compareText(Element element1, Element element2) {
+  private boolean diffText(Element element1, Element element2) {
     Node child1 = element1.getFirstChild();
     Node child2 = element2.getFirstChild();
 

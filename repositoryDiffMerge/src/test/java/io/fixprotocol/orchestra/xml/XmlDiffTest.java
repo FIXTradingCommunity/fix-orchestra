@@ -14,11 +14,17 @@
  */
 package io.fixprotocol.orchestra.xml;
 
+import static org.junit.Assert.*;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.junit.Before;
 import org.junit.Test;
+import org.w3c.dom.Document;
 
 public class XmlDiffTest {
 
@@ -32,6 +38,7 @@ public class XmlDiffTest {
   /**
    * @throws java.lang.Exception
    */
+  @SuppressWarnings("resource")
   @Before
   public void setUp() throws Exception {
     xmlDiff = new XmlDiff();
@@ -39,6 +46,24 @@ public class XmlDiffTest {
     xmlMerge = new XmlMerge();
   }
 
+  @Test
+  public void simpleDiff() throws Exception {
+    try (
+        final FileInputStream is1 = new FileInputStream(Thread.currentThread()
+            .getContextClassLoader().getResource("DiffTest1.xml").getFile());
+        final FileInputStream is2 = new FileInputStream(Thread.currentThread()
+            .getContextClassLoader().getResource("DiffTest2.xml").getFile())) {
+      xmlDiff.diff(is1, is2);
+    }
+    
+    DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+    DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+    Document doc = docBuilder.parse(DIFF_FILENAME);
+
+    assertEquals(2, doc.getElementsByTagName("add").getLength());
+    assertEquals(2, doc.getElementsByTagName("replace").getLength());
+    assertEquals(2, doc.getElementsByTagName("remove").getLength());
+  }
 
   @Test
   public void diffAndMerge() throws Exception {
