@@ -1,0 +1,28 @@
+feature(protocol, flow, actor) ::= <<
+Feature: As a <actor.name>,
+<\t><documentation(object=actor)>
+<\n>
+Background:
+<\t>Given an established session with <flow.destination> using protocol <protocol.name>
+<documentation(object=protocol)>  
+>>
+
+scenario(actor, message, response) ::= <<
+<\n>
+Scenario: <response.name>
+<documentation(object=response)> 
+<\t>Given <actor.name> sends message <message.name>
+<\t>When <response.when>
+>>
+
+messageRef(actor, messageRef)  ::= <<
+<\n><\t>Then <actor.name> receives message <messageRef.name> at most <messageRef.implMaxOccurs> times
+>>
+
+field(fieldRef) ::= <<
+<\n><\t>And <fieldRef.name> is <if(fieldRef.assign)><fieldRef.assign><else><fieldRef.presence><endif>
+>>
+
+documentation(object) ::= <<
+<object.annotation.DocumentationOrAppinfo:{doc|<doc.content>}>
+>>

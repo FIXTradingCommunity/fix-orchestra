@@ -126,6 +126,7 @@
 				<xs:element ref="fixr:actors" minOccurs="0"/>
 				<xs:element ref="fixr:components"/>
 				<xs:element ref="fixr:messages"/>
+				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:all>
 			<xs:attribute name="name" type="xs:string" use="required">
 				<xs:annotation>

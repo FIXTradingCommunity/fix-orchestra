@@ -63,6 +63,7 @@
 		<module>session-owl</module>
 		<module>interfaces2016</module>
 		<module>docgen</module>
+		<module>testgen</module>
 	</modules>
 
 	<properties>

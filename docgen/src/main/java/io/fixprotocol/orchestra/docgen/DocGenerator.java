@@ -124,10 +124,12 @@ public class DocGenerator {
   private final Repository repository;
   private final STGroup stGroup;
 
-
-  /*
-   * @throws JAXBException
-   * 
+  /**
+   * Constructs a DocGenerator
+   * @param is an input stream to consume a Repository
+   * @param baseOutputDir directory to write documentation files
+   * @throws JAXBException if a parsing error occurs
+   * @throws IOException if a file cannot be accessed
    */
   public DocGenerator(InputStream is, File baseOutputDir) throws JAXBException, IOException {
     this.baseOutputDir = makeDirectory(baseOutputDir);
@@ -136,6 +138,10 @@ public class DocGenerator {
     this.repository = unmarshal(is);
   }
 
+  /**
+   * Generates documentation
+   * @throws IOException if documentation cannot be written to a file
+   */
   public void generate() throws IOException {
     createCss(baseOutputDir);
 

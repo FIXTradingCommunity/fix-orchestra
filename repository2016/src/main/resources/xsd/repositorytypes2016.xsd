@@ -463,8 +463,8 @@
 	<xs:complexType name="groupRefType">
 		<xs:complexContent>
 			<xs:extension base="fixr:componentRefType">
-				<xs:attribute name="implMinOccurs" type="xs:short"/>
-				<xs:attribute name="implMaxOccurs" type="xs:short"/>
+				<xs:attribute name="implMinOccurs" type="xs:nonNegativeInteger"/>
+				<xs:attribute name="implMaxOccurs" type="fixr:unboundedIntType" default="unbounded"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -473,8 +473,8 @@
 			<xs:extension base="fixr:componentType">
 				<xs:attribute name="numInGroupId" type="fixr:id_t" use="required"/>
 				<xs:attribute name="numInGroupName" type="fixr:Name_t" use="required"/>
-				<xs:attribute name="implMinOccurs" type="xs:short"/>
-				<xs:attribute name="implMaxOccurs" type="xs:short"/>
+				<xs:attribute name="implMinOccurs" type="xs:nonNegativeInteger"/>
+				<xs:attribute name="implMaxOccurs" type="fixr:unboundedIntType" default="unbounded"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -501,7 +501,7 @@
 		<xs:attribute name="msgType" type="fixr:MsgType_t"/>
 		<xs:attribute name="scenario" type="xs:string" default="base"/>
 		<xs:attribute name="implMinOccurs" type="xs:positiveInteger" default="1"/>
-		<xs:attribute name="implMaxOccurs" type="fixr:unboundedIntType" default="1">
+		<xs:attribute name="implMaxOccurs" type="fixr:unboundedIntType" default="unbounded">
 			<xs:annotation>
 				<xs:documentation>The same message type may be sent one or more times</xs:documentation>
 			</xs:annotation>

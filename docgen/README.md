@@ -16,4 +16,6 @@ When generation completes, open `index.html` in a browser to view the documentat
 
 ## File Preparation
 
-The input file must conform to the Orchestra XML Schema. Since the metadata section is viewable in generated documentation, be sure to populate it in the Orchestra file with important identification. In particular, the "title" element should be populated; it is presented by the generator as the title of the documentation.
+The input file must conform to the Orchestra XML Schema. Violations will make the document generator fail with parsing exceptions.
+
+Since the metadata section is viewable in generated documentation, be sure to populate it in the Orchestra file with important identification. In particular, the "title" element should be populated; it is presented by the generator as the title of the documentation.
