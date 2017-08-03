@@ -38,7 +38,7 @@ import quickfix.fix50sp2.ExecutionReport;
 import quickfix.fix50sp2.NewOrderSingle;
 
 /**
- * @author donme
+ * @author Don Mendelson
  *
  */
 public class PopulatorTest {

@@ -14,18 +14,11 @@
  */
 package io.fixprotocol.orchestra.dsl.antlr;
 
-import static java.time.temporal.ChronoField.HOUR_OF_DAY;
-import static java.time.temporal.ChronoField.MINUTE_OF_HOUR;
-import static java.time.temporal.ChronoField.NANO_OF_SECOND;
-import static java.time.temporal.ChronoField.SECOND_OF_MINUTE;
-
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 import java.util.List;
 
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
@@ -59,6 +52,7 @@ import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.TimestampContext;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.UnaryMinusContext;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.VarContext;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.VariableContext;
+import io.fixprotocol.orchestra.dsl.datetime.DateTimeFormatters;
 import io.fixprotocol.orchestra.model.FixNode;
 import io.fixprotocol.orchestra.model.FixType;
 import io.fixprotocol.orchestra.model.FixValue;
@@ -88,23 +82,7 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
   
   private final SymbolResolver symbolResolver;
   
-  /**
-   * Formatter for ISO 8601 time of day only. Java has ISO_LOCAL_TIME, but it doesn't handle the leading 'T'
-   * or time zone.
-   */
-  private final DateTimeFormatter TIME_ONLY = new DateTimeFormatterBuilder()
-      .appendLiteral('T')
-      .appendValue(HOUR_OF_DAY, 2)
-      .appendLiteral(':')
-      .appendValue(MINUTE_OF_HOUR, 2)
-      .optionalStart()
-      .appendLiteral(':')
-      .appendValue(SECOND_OF_MINUTE, 2)
-      .optionalStart()
-      .appendFraction(NANO_OF_SECOND, 0, 9, true)
-      .optionalStart()
-      .appendZoneOrOffsetId()
-      .toFormatter();
+
   private boolean trace = false;
   /**
    * Constructor with default SemanticErrorListener
@@ -578,7 +556,7 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
   public FixValue<?> visitTimeonly(TimeonlyContext ctx) {
     // Remove initial T and timeztamp for Java, even though ISO require them
     return new FixValue<LocalTime>(FixType.UTCTimeOnly,
-        LocalTime.parse(ctx.TIME().getText(), TIME_ONLY));
+        LocalTime.parse(ctx.TIME().getText(), DateTimeFormatters.TIME_ONLY));
   }
 
   /*
@@ -590,7 +568,8 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
    */
   @Override
   public FixValue<?> visitTimestamp(TimestampContext ctx) {
-    return new FixValue<Instant>(FixType.UTCTimestamp, Instant.parse(ctx.DATETIME().getText()));
+    final Instant instant = DateTimeFormatters.DATE_TIME.parse(ctx.DATETIME().getText(), Instant::from);
+    return new FixValue<Instant>(FixType.UTCTimestamp, instant);
   }
 
   /*
