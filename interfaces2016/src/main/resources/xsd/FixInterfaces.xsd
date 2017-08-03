@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- edited with XMLSpy v2017 rel. 3 (x64) (http://www.altova.com) by Don Mendelson (FIX Protocol Ltd. (FPL)) -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fixi="http://fixprotocol.io/2016/fixinterfaces" xmlns:dcterms="http://purl.org/dc/terms/" targetNamespace="http://fixprotocol.io/2016/fixinterfaces" elementFormDefault="qualified" version="1.0-rc2">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fixi="http://fixprotocol.io/2016/fixinterfaces" xmlns:dcterms="http://purl.org/dc/terms/" targetNamespace="http://fixprotocol.io/2016/fixinterfaces" elementFormDefault="qualified" version="1.0-rc3">
 	<xs:annotation>
 		<xs:documentation>
 			FIX interface configuration

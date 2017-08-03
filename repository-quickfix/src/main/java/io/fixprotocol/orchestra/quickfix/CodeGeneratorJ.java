@@ -1,8 +1,11 @@
 package io.fixprotocol.orchestra.quickfix;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,7 +20,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import io.fixprotocol._2016.fixrepository.CodeSetType;
-import io.fixprotocol._2016.fixrepository.CodeSets;
 import io.fixprotocol._2016.fixrepository.CodeType;
 import io.fixprotocol._2016.fixrepository.ComponentRefType;
 import io.fixprotocol._2016.fixrepository.ComponentType;
@@ -26,7 +28,6 @@ import io.fixprotocol._2016.fixrepository.FieldType;
 import io.fixprotocol._2016.fixrepository.GroupRefType;
 import io.fixprotocol._2016.fixrepository.GroupType;
 import io.fixprotocol._2016.fixrepository.MessageType;
-import io.fixprotocol._2016.fixrepository.Protocol;
 import io.fixprotocol._2016.fixrepository.Repository;
 
 /**
@@ -60,8 +61,10 @@ public class CodeGeneratorJ {
    * @param args command line arguments. The first argument is the name of a FIX Orchestra file. An
    *        optional second argument is the target directory for generated code. It defaults to
    *        "target/generated-sources".
+   * @throws IOException 
+   * @throws FileNotFoundException 
    */
-  public static void main(String[] args) {
+  public static void main(String[] args) throws IOException {
     CodeGeneratorJ generator = new CodeGeneratorJ();
     if (args.length >= 1) {
       File inputFile = new File(args[0]);
@@ -71,7 +74,9 @@ public class CodeGeneratorJ {
       } else {
         outputDir = new File("target/generated-sources");
       }
-      generator.generate(inputFile, outputDir);
+      try (FileInputStream inputStream = new FileInputStream(inputFile)) {
+        generator.generate(inputStream, outputDir);
+      }
     } else {
       generator.usage();
     }
@@ -82,15 +87,12 @@ public class CodeGeneratorJ {
   private final Map<Integer, FieldType> fields = new HashMap<>();
   private final Map<Integer, GroupType> groups = new HashMap<>();
 
-  public void generate(File inputFile, File outputDir) {
+  public void generate(InputStream inputFile, File outputDir) {
     try {
       final Repository repository = unmarshal(inputFile);
-      final List<CodeSets> codeSetsList = repository.getCodeSets();
-      for (CodeSets codeSetsCollection : codeSetsList) {
-        final List<CodeSetType> codeSetList = codeSetsCollection.getCodeSet();
-        for (CodeSetType codeSet : codeSetList) {
-          codeSets.put(codeSet.getName(), codeSet);
-        }
+      final List<CodeSetType> codeSetList = repository.getCodeSets().getCodeSet();
+      for (CodeSetType codeSet : codeSetList) {
+        codeSets.put(codeSet.getName(), codeSet);
       }
 
       final List<FieldType> fieldList = repository.getFields().getField();
@@ -100,44 +102,43 @@ public class CodeGeneratorJ {
         fields.put(fieldType.getId().intValue(), fieldType);
         generateField(outputDir, fieldType, FIELD_PACKAGE);
       }
-      final List<Protocol> protocols = repository.getProtocol();
-      for (Protocol protocol : protocols) {
-        String version = protocol.getVersion();
-        // Split off EP portion of version
-        String[] parts = version.split("_");
-        if (parts.length > 0) {
-          version = parts[0];
-        }
-        String versionPath = version.replaceAll("[\\.]", "").toLowerCase();
-        final String componentPackage = getPackage("quickfix", versionPath, "component");
-        final File componentDir = getPackagePath(outputDir, componentPackage);
-        componentDir.mkdirs();
-        final List<ComponentType> componentList = protocol.getComponents().getComponentOrGroup();
-        for (ComponentType component : componentList) {
-          if (component instanceof GroupType) {
-            groups.put(component.getId().intValue(), (GroupType) component);
-          } else {
-            components.put(component.getId().intValue(), component);
-          }
-        }
-        for (ComponentType component : componentList) {
-          if (component instanceof GroupType) {
-            generateGroup(outputDir, (GroupType) component, componentPackage);
-          } else if (protocol.isHasComponents()) {
-            generateComponent(outputDir, component, componentPackage);
-          }
-        }
-        final String messagePackage = getPackage("quickfix", versionPath);
-        final File messageDir = getPackagePath(outputDir, messagePackage);
-        messageDir.mkdirs();
-        final List<MessageType> messageList = protocol.getMessages().getMessage();
-        for (MessageType message : messageList) {
-          generateMessage(outputDir, message, messagePackage, componentPackage);
-        }
-        generateMessageBaseClass(outputDir, version, messagePackage);
-        generateMessageFactory(outputDir, messagePackage, messageList);
-        generateMessageCracker(outputDir, messagePackage, messageList);
+
+      String version = repository.getVersion();
+      // Split off EP portion of version
+      String[] parts = version.split("_");
+      if (parts.length > 0) {
+        version = parts[0];
       }
+      String versionPath = version.replaceAll("[\\.]", "").toLowerCase();
+      final String componentPackage = getPackage("quickfix", versionPath, "component");
+      final File componentDir = getPackagePath(outputDir, componentPackage);
+      componentDir.mkdirs();
+      final List<ComponentType> componentList = repository.getComponents().getComponentOrGroup();
+      for (ComponentType component : componentList) {
+        if (component instanceof GroupType) {
+          groups.put(component.getId().intValue(), (GroupType) component);
+        } else {
+          components.put(component.getId().intValue(), component);
+        }
+      }
+      for (ComponentType component : componentList) {
+        if (component instanceof GroupType) {
+          generateGroup(outputDir, (GroupType) component, componentPackage);
+        } else if (repository.isHasComponents()) {
+          generateComponent(outputDir, component, componentPackage);
+        }
+      }
+      final String messagePackage = getPackage("quickfix", versionPath);
+      final File messageDir = getPackagePath(outputDir, messagePackage);
+      messageDir.mkdirs();
+      final List<MessageType> messageList = repository.getMessages().getMessage();
+      for (MessageType message : messageList) {
+        generateMessage(outputDir, message, messagePackage, componentPackage);
+      }
+      generateMessageBaseClass(outputDir, version, messagePackage);
+      generateMessageFactory(outputDir, messagePackage, messageList);
+      generateMessageCracker(outputDir, messagePackage, messageList);
+
     } catch (JAXBException | IOException e) {
       e.printStackTrace();
     }
@@ -296,11 +297,13 @@ public class CodeGeneratorJ {
       writeImport(writer, "quickfix.*");
       writeImport(writer, "quickfix.field.*");
       writeClassDeclaration(writer, "MessageCracker");
-      
-      writer.write(String.format("%n%spublic void onMessage(quickfix.Message message, SessionID sessionID) throws FieldNotFound, UnsupportedMessageType, IncorrectTagValue {%n", indent(1)));
+
+      writer.write(String.format(
+          "%n%spublic void onMessage(quickfix.Message message, SessionID sessionID) throws FieldNotFound, UnsupportedMessageType, IncorrectTagValue {%n",
+          indent(1)));
       writer.write(String.format("%sthrow new UnsupportedMessageType();%n", indent(2)));
       writer.write(String.format("%s}%n", indent(1)));
-      
+
       for (MessageType messageType : messageList) {
         String name = messageType.getName();
         String scenario = messageType.getScenario();
@@ -351,8 +354,8 @@ public class CodeGeneratorJ {
             name, indent(3)));
       }
 
-      writer.write(String.format("%sdefault:%n%sonMessage(message, sessionID);%n%s}%n%s}%n", indent(2),
-          indent(3), indent(2), indent(1)));
+      writer.write(String.format("%sdefault:%n%sonMessage(message, sessionID);%n%s}%n%s}%n",
+          indent(2), indent(3), indent(2), indent(1)));
       writeEndClassDeclaration(writer);
     }
   }
@@ -365,7 +368,8 @@ public class CodeGeneratorJ {
       writePackage(writer, messagePackage);
       writeImport(writer, "quickfix.Message");
       writeImport(writer, "quickfix.Group");
-      writer.write(String.format("%npublic class %s implements %s {%n", "MessageFactory", "quickfix.MessageFactory"));
+      writer.write(String.format("%npublic class %s implements %s {%n", "MessageFactory",
+          "quickfix.MessageFactory"));
       writeMessageCreateMethod(writer, messageList, messagePackage);
       writeGroupCreateMethod(writer, messageList, messagePackage);
       writeEndClassDeclaration(writer);
@@ -474,7 +478,7 @@ public class CodeGeneratorJ {
     return new String(chars);
   }
 
-  private Repository unmarshal(File inputFile) throws JAXBException {
+  private Repository unmarshal(InputStream inputFile) throws JAXBException {
     JAXBContext jaxbContext = JAXBContext.newInstance(Repository.class);
     Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
     return (Repository) jaxbUnmarshaller.unmarshal(inputFile);
@@ -875,8 +879,7 @@ public class CodeGeneratorJ {
   // Capitalize first char and any after underscore or space. Leave other caps as-is.
   private String toTitleCase(String text) {
     String[] parts = text.split("_ ");
-    return Arrays.stream(parts)
-        .map(part -> part.substring(0, 1).toUpperCase() + part.substring(1))
+    return Arrays.stream(parts).map(part -> part.substring(0, 1).toUpperCase() + part.substring(1))
         .collect(Collectors.joining());
   }
 

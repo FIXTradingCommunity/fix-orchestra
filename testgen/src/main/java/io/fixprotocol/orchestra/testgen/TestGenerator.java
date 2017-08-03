@@ -37,12 +37,10 @@ import org.stringtemplate.v4.misc.STMessage;
 
 import io.fixprotocol._2016.fixrepository.ActorType;
 import io.fixprotocol._2016.fixrepository.FieldRefType;
-import io.fixprotocol._2016.fixrepository.FieldType;
 import io.fixprotocol._2016.fixrepository.FlowType;
 import io.fixprotocol._2016.fixrepository.MessageRefType;
 import io.fixprotocol._2016.fixrepository.MessageType;
 import io.fixprotocol._2016.fixrepository.PresenceT;
-import io.fixprotocol._2016.fixrepository.Protocol;
 import io.fixprotocol._2016.fixrepository.Repository;
 import io.fixprotocol._2016.fixrepository.ResponseType;
 
@@ -134,47 +132,45 @@ public class TestGenerator {
   public void generate() throws IOException {
     makeDirectory(baseOutputDir);
 
-    repository.getProtocol().forEach(protocol -> {
-      protocol.getActors().getActorOrFlow().stream().filter(o -> o instanceof FlowType)
-          .forEach(o -> {
-            FlowType flow = (FlowType) o;
-            String sourceName = flow.getSource();
-            Optional<Object> opt = protocol.getActors().getActorOrFlow().stream()
-                .filter(af -> af instanceof ActorType).findFirst();
-            opt.ifPresent(obj -> {
-              ActorType actor = (ActorType) obj;
-              if (sourceName.equals(actor.getName())) {
-                File outputFile = new File(baseOutputDir,
-                    String.format("%s-%s.feature", protocol.getName(), actor.getName()));
-                try (OutputStreamWriter fileWriter =
-                    new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8")) {
-                  AutoIndentWriter writer = new AutoIndentWriter(fileWriter);
 
-                  generateFeature(writer, protocol, flow, actor);
-                  protocol.getMessages().getMessage().stream()
-                      .filter(m -> flow.getName().equals(m.getFlow())).forEach(message -> {
-                        message.getResponses().getResponse().forEach(response -> {
-                          generateScenario(writer, protocol, actor, message, response);
-                        });
+    repository.getActors().getActorOrFlow().stream().filter(o -> o instanceof FlowType)
+        .forEach(o -> {
+          FlowType flow = (FlowType) o;
+          String sourceName = flow.getSource();
+          Optional<Object> opt = repository.getActors().getActorOrFlow().stream()
+              .filter(af -> af instanceof ActorType).findFirst();
+          opt.ifPresent(obj -> {
+            ActorType actor = (ActorType) obj;
+            if (sourceName.equals(actor.getName())) {
+              File outputFile = new File(baseOutputDir,
+                  String.format("%s-%s.feature", repository.getName(), actor.getName()));
+              try (OutputStreamWriter fileWriter =
+                  new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8")) {
+                AutoIndentWriter writer = new AutoIndentWriter(fileWriter);
+
+                generateFeature(writer, repository, flow, actor);
+                repository.getMessages().getMessage().stream()
+                    .filter(m -> flow.getName().equals(m.getFlow())).forEach(message -> {
+                      message.getResponses().getResponse().forEach(response -> {
+                        generateScenario(writer, repository, actor, message, response);
                       });
-                } catch (UnsupportedEncodingException e) {
-                  // TODO Auto-generated catch block
-                  e.printStackTrace();
-                } catch (FileNotFoundException e) {
-                  // TODO Auto-generated catch block
-                  e.printStackTrace();
-                } catch (IOException e) {
-                  // TODO Auto-generated catch block
-                  e.printStackTrace();
-                }
+                    });
+              } catch (UnsupportedEncodingException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+              } catch (FileNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+              } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
               }
-            });
+            }
           });
-    });
-
+        });
   }
 
-  private void generateScenario(AutoIndentWriter writer, Protocol protocol, ActorType actor,
+  private void generateScenario(AutoIndentWriter writer, Repository repository, ActorType actor,
       MessageType message, ResponseType response) {
     ST st = stGroup.getInstanceOf("scenario");
     st.add("actor", actor);
@@ -192,9 +188,9 @@ public class TestGenerator {
         stMessage.add("messageRef", messageRef);
         stMessage.write(writer, errorListener);
 
-        MessageType responseMessage =
-            findMessage(protocol, messageRef.getName(), messageRef.getScenario());
-        List<Object> responseMessageElements = responseMessage.getStructure().getComponentOrComponentRefOrGroup();
+        MessageType responseMessage = findMessage(messageRef.getName(), messageRef.getScenario());
+        List<Object> responseMessageElements =
+            responseMessage.getStructure().getComponentOrComponentRefOrGroup();
         generateMessageElements(writer, responseMessageElements);
       }
     }
@@ -204,18 +200,18 @@ public class TestGenerator {
     for (Object obj : messageElements) {
       if (obj instanceof FieldRefType) {
         FieldRefType fieldRef = (FieldRefType) obj;
-        if (fieldRef.getAssign() != null || 
-            (fieldRef.getPresence() != PresenceT.IGNORED && fieldRef.getPresence() != PresenceT.OPTIONAL)) {
+        if (fieldRef.getAssign() != null || (fieldRef.getPresence() != PresenceT.IGNORED
+            && fieldRef.getPresence() != PresenceT.OPTIONAL)) {
           ST st = stGroup.getInstanceOf("field");
           st.add("fieldRef", fieldRef);
           st.write(writer, errorListener);
         }
-      } 
+      }
     }
   }
 
-  private MessageType findMessage(Protocol protocol, String name, String scenario) {
-    for (MessageType message : protocol.getMessages().getMessage()) {
+  private MessageType findMessage(String name, String scenario) {
+    for (MessageType message : repository.getMessages().getMessage()) {
       if (message.getName().equals(name) && message.getScenario().equals(scenario)) {
         return message;
       }
@@ -223,10 +219,10 @@ public class TestGenerator {
     return null;
   }
 
-  private void generateFeature(AutoIndentWriter writer, Protocol protocol, FlowType flow,
+  private void generateFeature(AutoIndentWriter writer, Repository repository, FlowType flow,
       ActorType actor) {
     ST st = stGroup.getInstanceOf("feature");
-    st.add("protocol", protocol);
+    st.add("repository", repository);
     st.add("flow", flow);
     st.add("actor", actor);
     st.write(writer, errorListener);

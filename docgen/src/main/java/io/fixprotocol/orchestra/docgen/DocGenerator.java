@@ -22,7 +22,6 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,7 +54,6 @@ import io.fixprotocol._2016.fixrepository.MessageRefType;
 import io.fixprotocol._2016.fixrepository.MessageType;
 import io.fixprotocol._2016.fixrepository.MessageType.Responses;
 import io.fixprotocol._2016.fixrepository.PresenceT;
-import io.fixprotocol._2016.fixrepository.Protocol;
 import io.fixprotocol._2016.fixrepository.Repository;
 import io.fixprotocol._2016.fixrepository.ResponseType;
 
@@ -126,6 +124,7 @@ public class DocGenerator {
 
   /**
    * Constructs a DocGenerator
+   * 
    * @param is an input stream to consume a Repository
    * @param baseOutputDir directory to write documentation files
    * @throws JAXBException if a parsing error occurs
@@ -140,141 +139,127 @@ public class DocGenerator {
 
   /**
    * Generates documentation
+   * 
    * @throws IOException if documentation cannot be written to a file
    */
   public void generate() throws IOException {
+    try {
     createCss(baseOutputDir);
 
     generateMetadata(baseOutputDir, repository.getMetadata().getAny());
 
-    try {
+    File datatypesOutputDir = makeDirectory(new File(baseOutputDir, "datatypes"));
+    generateDatatypeList(datatypesOutputDir, repository.getDatatypes().getDatatype());
+    repository.getDatatypes().getDatatype().forEach(d -> {
+      try {
+        generateDatatype(datatypesOutputDir, d);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    });
+    File fieldsOutputDir = makeDirectory(new File(baseOutputDir, "fields"));
+    List<FieldType> sortedFieldList = repository.getFields().getField().stream()
+        .sorted((o1, o2) -> o1.getName().compareTo(o2.getName())).collect(Collectors.toList());
+    generateFieldsList(fieldsOutputDir, sortedFieldList);
+    repository.getFields().getField().forEach(f -> {
+      try {
+        generateFieldDetail(fieldsOutputDir, f);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    });
 
-      File datatypesOutputDir = makeDirectory(new File(baseOutputDir, "datatypes"));
-      generateDatatypeList(datatypesOutputDir, repository.getDatatypes().getDatatype());
-      repository.getDatatypes().getDatatype().forEach(d -> {
-        try {
-          generateDatatype(datatypesOutputDir, d);
-        } catch (IOException e) {
-          throw new RuntimeException(e);
-        }
-      });
+    List<CodeSetType> allCodeSets = repository.getCodeSets().getCodeSet();
+    generateCodeSetList(datatypesOutputDir, allCodeSets.stream()
+        .sorted((o1, o2) -> o1.getName().compareTo(o2.getName())).collect(Collectors.toList()));
+    repository.getCodeSets().getCodeSet().forEach(cs -> {
+      try {
+        generateCodeSetDetail(datatypesOutputDir, cs);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    });
 
-      File fieldsOutputDir = makeDirectory(new File(baseOutputDir, "fields"));
-      List<FieldType> sortedFieldList = repository.getFields().getField().stream()
-          .sorted((o1, o2) -> o1.getName().compareTo(o2.getName())).collect(Collectors.toList());
-      generateFieldsList(fieldsOutputDir, sortedFieldList);
-      repository.getFields().getField().forEach(f -> {
-        try {
-          generateFieldDetail(fieldsOutputDir, f);
-        } catch (IOException e) {
-          throw new RuntimeException(e);
-        }
-      });
-
-      List<CodeSetType> allCodeSets = new ArrayList<>();
-      repository.getCodeSets().forEach(csl -> allCodeSets.addAll(csl.getCodeSet()));
-      generateCodeSetList(datatypesOutputDir, allCodeSets.stream()
-          .sorted((o1, o2) -> o1.getName().compareTo(o2.getName())).collect(Collectors.toList()));
-      repository.getCodeSets().forEach(csl -> csl.getCodeSet().forEach(cs -> {
-        try {
-          generateCodeSetDetail(datatypesOutputDir, cs);
-        } catch (IOException e) {
-          throw new RuntimeException(e);
-        }
-      }));
-
-      final List<CategoryType> sortedCategoryList = repository.getCategories().getCategory().stream()
-          .filter(c -> c.getComponentType() == CatComponentTypeT.MESSAGE)
-          .sorted((o1, o2) -> {
-        final String sectionValue1 = o1.getSection() != null ? o1.getSection().value() : "";
-        final String sectionValue2 = o2.getSection() != null ? o2.getSection().value() : "";
-        int retv = sectionValue1.compareTo(sectionValue2);
-        if (retv == 0) {
-          retv = o1.getId().compareTo(o2.getId());
-        }
-        return retv;
-      }).collect(Collectors.toList());
-      generateMain(baseOutputDir, getTitle(), repository.getProtocol(),
-          sortedCategoryList);
-      repository.getProtocol().forEach(p -> {
-        try {
-          File protocolOutputDir = makeDirectory(new File(baseOutputDir, p.getName()));
-
-          List<MessageType> sortedMessageList =
-              p.getMessages().getMessage().stream().sorted((o1, o2) -> {
-                int retv = o1.getName().compareTo(o2.getName());
-                if (retv == 0) {
-                  retv = o1.getScenario().compareTo(o2.getScenario());
-                }
-                return retv;
-              }).collect(Collectors.toList());
-
-          final List<ActorType> actorList =
-              p.getActors().getActorOrFlow().stream().filter(af -> af instanceof ActorType)
-                  .map(af -> (ActorType) af).collect(Collectors.toList());
-          generateActorsList(protocolOutputDir, actorList);
-          actorList.forEach(a -> {
-            try {
-              generateActorDetail(protocolOutputDir, a);
-            } catch (IOException e) {
-              throw new RuntimeException(e);
-            }
-          });
-
-          final List<FlowType> flowList =
-              p.getActors().getActorOrFlow().stream().filter(af -> af instanceof FlowType)
-                  .map(af -> (FlowType) af).collect(Collectors.toList());
-          generateFlowsList(protocolOutputDir, flowList);
-          flowList.forEach(f -> {
-            try {
-              generateFlowDetail(protocolOutputDir, f);
-              generateMessageListByFlow(protocolOutputDir, f, sortedMessageList);
-            } catch (IOException e) {
-              throw new RuntimeException(e);
-            }
-          });
+    final List<CategoryType> sortedCategoryList = repository.getCategories().getCategory().stream()
+        .filter(c -> c.getComponentType() == CatComponentTypeT.MESSAGE).sorted((o1, o2) -> {
+          final String sectionValue1 = o1.getSection() != null ? o1.getSection().value() : "";
+          final String sectionValue2 = o2.getSection() != null ? o2.getSection().value() : "";
+          int retv = sectionValue1.compareTo(sectionValue2);
+          if (retv == 0) {
+            retv = o1.getId().compareTo(o2.getId());
+          }
+          return retv;
+        }).collect(Collectors.toList());
+    generateMain(baseOutputDir, getTitle(), sortedCategoryList);
 
 
-          generateAllMessageList(protocolOutputDir, sortedMessageList);
-          sortedCategoryList.forEach(c -> {
+    File protocolOutputDir = makeDirectory(new File(baseOutputDir, repository.getName()));
 
-            try {
-              generateMessageListByCategory(protocolOutputDir, c, sortedMessageList);
-            } catch (IOException e) {
-              throw new RuntimeException(e);
-            }
+    List<MessageType> sortedMessageList =
+        repository.getMessages().getMessage().stream().sorted((o1, o2) -> {
+          int retv = o1.getName().compareTo(o2.getName());
+          if (retv == 0) {
+            retv = o1.getScenario().compareTo(o2.getScenario());
+          }
+          return retv;
+        }).collect(Collectors.toList());
 
-          });
+    final List<ActorType> actorList =
+        repository.getActors().getActorOrFlow().stream().filter(af -> af instanceof ActorType)
+            .map(af -> (ActorType) af).collect(Collectors.toList());
+    generateActorsList(protocolOutputDir, actorList);
+    actorList.forEach(a -> {
+      try {
+        generateActorDetail(protocolOutputDir, a);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    });
 
-          List<ComponentType> sortedComponentList = p.getComponents().getComponentOrGroup().stream()
-              .sorted((o1, o2) -> o1.getName().compareTo(o2.getName()))
-              .collect(Collectors.toList());
-          generateAllComponentsList(protocolOutputDir, sortedComponentList);
-          p.getComponents().getComponentOrGroup().forEach(c -> {
+    final List<FlowType> flowList = repository.getActors().getActorOrFlow().stream()
+        .filter(af -> af instanceof FlowType).map(af -> (FlowType) af).collect(Collectors.toList());
+    generateFlowsList(protocolOutputDir, flowList);
+    flowList.forEach(f -> {
+      try {
+        generateFlowDetail(protocolOutputDir, f);
 
-            try {
-              generateComponentDetail(protocolOutputDir, c, p.getName());
-            } catch (IOException e) {
-              throw new RuntimeException(e);
-            }
-          });
-          p.getMessages().getMessage().forEach(m -> {
+      generateMessageListByFlow(protocolOutputDir, f, sortedMessageList);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    });
 
-            try {
-              generateMessageDetail(protocolOutputDir, m, p.getName());
-            } catch (IOException e) {
-              throw new RuntimeException(e);
-            }
-          });
 
-        } catch (IOException e) {
-          throw new RuntimeException(e);
-        }
-      });
+    generateAllMessageList(protocolOutputDir, sortedMessageList);
+    sortedCategoryList.forEach(c -> {
+      try {
+        generateMessageListByCategory(protocolOutputDir, c, sortedMessageList);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    });
+
+    List<ComponentType> sortedComponentList =
+        repository.getComponents().getComponentOrGroup().stream()
+            .sorted((o1, o2) -> o1.getName().compareTo(o2.getName())).collect(Collectors.toList());
+    generateAllComponentsList(protocolOutputDir, sortedComponentList);
+    repository.getComponents().getComponentOrGroup().forEach(c -> {
+      try {
+        generateComponentDetail(protocolOutputDir, c, repository.getName());
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    });
+    repository.getMessages().getMessage().forEach(m -> {
+      try {
+        generateMessageDetail(protocolOutputDir, m, repository.getName());
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    });
     } catch (RuntimeException e) {
-      Throwable cause = e.getCause();
-      if (cause instanceof IOException) {
-        throw (IOException) cause;
+      if (e.getCause() instanceof IOException) {
+        throw (IOException)e.getCause();
       } else {
         throw e;
       }
@@ -356,7 +341,7 @@ public class DocGenerator {
         new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8")) {
       NoIndentWriter writer = new NoIndentWriter(fileWriter);
       stComponentStart.write(writer, errorListener);
-      generateMembers(protocolName, members, writer);
+      generateMembers(members, writer);
       stComponentEnd.write(writer, errorListener);
     }
   }
@@ -407,17 +392,16 @@ public class DocGenerator {
     st.write(outputFile, errorListener, encoding);
   }
 
-  private void generateMain(File outputDir, String title, List<Protocol> protocolList,
-      List<CategoryType> categoriesList) throws IOException {
+  private void generateMain(File outputDir, String title, List<CategoryType> categoriesList)
+      throws IOException {
     ST st = stGroup.getInstanceOf("main");
     st.add("title", title);
-    st.add("protocols", protocolList);
     st.add("categories", categoriesList);
     File outputFile = new File(outputDir, "index.html");
     st.write(outputFile, errorListener, encoding);
   }
 
-  private void generateMembers(String protocolName, List<Object> members, NoIndentWriter writer) {
+  private void generateMembers(List<Object> members, NoIndentWriter writer) {
     for (Object member : members) {
       if (member instanceof FieldRefType) {
         FieldType field = getField(((FieldRefType) member).getId().intValue());
@@ -426,8 +410,7 @@ public class DocGenerator {
         stField.add("presence", getFieldPresence((FieldRefType) member));
         stField.write(writer, errorListener);
       } else if (member instanceof ComponentRefType) {
-        ComponentType component =
-            getComponent(protocolName, ((ComponentRefType) member).getId().intValue());
+        ComponentType component = getComponent(((ComponentRefType) member).getId().intValue());
         ST stComponent = stGroup.getInstanceOf("componentMember");
         stComponent.add("component", component);
         stComponent.add("presence",
@@ -463,7 +446,7 @@ public class DocGenerator {
         generateResponses(responses, writer);
       }
       stMessagePart2.write(writer, errorListener);
-      generateMembers(protocolName, members, writer);
+      generateMembers(members, writer);
       stMessageEnd.write(writer, errorListener);
     }
   }
@@ -514,18 +497,8 @@ public class DocGenerator {
     }
   }
 
-  private ComponentType getComponent(String protocolName, int componentId) {
-    Protocol protocol = null;
-    for (Protocol p : repository.getProtocol()) {
-      if (p.getName().equals(protocolName)) {
-        protocol = p;
-      }
-    }
-    if (protocol == null) {
-      return null;
-    }
-
-    List<ComponentType> components = protocol.getComponents().getComponentOrGroup();
+  private ComponentType getComponent(int componentId) {
+    List<ComponentType> components = repository.getComponents().getComponentOrGroup();
     for (ComponentType component : components) {
       if (component.getId().intValue() == componentId) {
         return component;

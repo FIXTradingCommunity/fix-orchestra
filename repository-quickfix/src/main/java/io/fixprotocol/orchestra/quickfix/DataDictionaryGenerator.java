@@ -1,8 +1,10 @@
 package io.fixprotocol.orchestra.quickfix;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Writer;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -16,7 +18,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import io.fixprotocol._2016.fixrepository.CodeSetType;
-import io.fixprotocol._2016.fixrepository.CodeSets;
 import io.fixprotocol._2016.fixrepository.CodeType;
 import io.fixprotocol._2016.fixrepository.ComponentRefType;
 import io.fixprotocol._2016.fixrepository.ComponentType;
@@ -26,13 +27,13 @@ import io.fixprotocol._2016.fixrepository.GroupRefType;
 import io.fixprotocol._2016.fixrepository.GroupType;
 import io.fixprotocol._2016.fixrepository.MessageType;
 import io.fixprotocol._2016.fixrepository.PresenceT;
-import io.fixprotocol._2016.fixrepository.Protocol;
 import io.fixprotocol._2016.fixrepository.Repository;
 
 /**
  * Generates a QuickFIX data dictionary from a FIX Orchestra file
  * <p>
  * This format is consumable by the C++, Java and .NET versions of QuickFIX.
+ * 
  * @author Don Mendelson
  *
  */
@@ -49,7 +50,7 @@ public class DataDictionaryGenerator {
   }
 
   private static final int SPACES_PER_LEVEL = 2;
-  
+
   /**
    * Runs a DataDictionaryGenerator with command line arguments
    * <p>
@@ -58,8 +59,9 @@ public class DataDictionaryGenerator {
    * @param args command line arguments. The first argument is the name of a FIX Orchestra file. An
    *        optional second argument is the target directory for generated files. It defaults to
    *        directory "spec".
+   * @throws IOException 
    */
-  public static void main(String[] args) {
+  public static void main(String[] args) throws IOException {
     DataDictionaryGenerator generator = new DataDictionaryGenerator();
     if (args.length >= 1) {
       File inputFile = new File(args[0]);
@@ -69,86 +71,82 @@ public class DataDictionaryGenerator {
       } else {
         outputDir = new File("spec");
       }
-      generator.generate(inputFile, outputDir);
+      try (FileInputStream inputStream = new FileInputStream(inputFile)) {
+        generator.generate(inputStream, outputDir);
+      }
     } else {
       generator.usage();
     }
   }
+
   private final Map<String, CodeSetType> codeSets = new HashMap<>();
   private final Map<Integer, ComponentType> components = new HashMap<>();
-
   private final Map<Integer, GroupType> groups = new HashMap<>();
 
-  public void generate(File inputFile, File outputDir) {
+  public void generate(InputStream inputFile, File outputDir) {
     try {
       final Repository repository = unmarshal(inputFile);
-      final List<CodeSets> codeSetsList = repository.getCodeSets();
-      for (CodeSets codeSetsCollection : codeSetsList) {
-        final List<CodeSetType> codeSetList = codeSetsCollection.getCodeSet();
-        for (CodeSetType codeSet : codeSetList) {
-          codeSets.put(codeSet.getName(), codeSet);
+      final List<CodeSetType> codeSetList = repository.getCodeSets().getCodeSet();
+      for (CodeSetType codeSet : codeSetList) {
+        codeSets.put(codeSet.getName(), codeSet);
+      }
+
+      final List<ComponentType> componentList = repository.getComponents().getComponentOrGroup();
+      for (ComponentType component : componentList) {
+        if (component instanceof GroupType) {
+          groups.put(component.getId().intValue(), (GroupType) component);
+        } else {
+          components.put(component.getId().intValue(), component);
         }
       }
-      final List<Protocol> protocols = repository.getProtocol();
-      for (Protocol protocol : protocols) {
-        
-        final List<ComponentType> componentList = protocol.getComponents().getComponentOrGroup();
-        for (ComponentType component : componentList) {
-          if (component instanceof GroupType) {
-            groups.put(component.getId().intValue(), (GroupType) component);
-          } else {
-            components.put(component.getId().intValue(), component);
-          }
-        }
-        String version = protocol.getVersion();
-        // Split off EP portion of version in the form "FIX.5.0SP2_EP216"
-        String[] parts = version.split("_");
-        if (parts.length > 0) {
-          version = parts[0];
-        }
-        int major = 0;
-        int minor = 0;
-        String regex = "(FIX\\.)(?<major>\\d+)(\\.)(?<minor>\\d+)(.*)";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(version);
-        if (matcher.find()) {
-          major = Integer.parseInt(matcher.group("major"));
-          minor = Integer.parseInt(matcher.group("minor"));
+      String version = repository.getVersion();
+      // Split off EP portion of version in the form "FIX.5.0SP2_EP216"
+      String[] parts = version.split("_");
+      if (parts.length > 0) {
+        version = parts[0];
+      }
+      int major = 0;
+      int minor = 0;
+      String regex = "(FIX\\.)(?<major>\\d+)(\\.)(?<minor>\\d+)(.*)";
+      Pattern pattern = Pattern.compile(regex);
+      Matcher matcher = pattern.matcher(version);
+      if (matcher.find()) {
+        major = Integer.parseInt(matcher.group("major"));
+        minor = Integer.parseInt(matcher.group("minor"));
 
-          String versionPath = version.replaceAll("[\\.]", "");
-          File file = getSpecFilePath(outputDir, versionPath, ".xml");
-          outputDir.mkdirs();
-          try (FileWriter writer = new FileWriter(file)) {
-            writeElement(writer, "fix", 0, false, new KeyValue<Integer>("major", major),
-                new KeyValue<Integer>("minor", minor));
-            writeElement(writer, "header", 1, true);
-            writeElement(writer, "trailer", 1, true);
-            writeElement(writer, "messages", 1, false);
-            final List<MessageType> messageList = protocol.getMessages().getMessage();
-            for (MessageType messageType : messageList) {
-              writeMessage(writer, messageType);
-            }
-            writeElementEnd(writer, "messages", 1);
-            writeElement(writer, "components", 1, false);
-            for (ComponentType component : componentList) {
-              if (component instanceof GroupType) {
-                writeGroup(writer, (GroupType) component);
-              } else if (protocol.isHasComponents()) {
-                writeComponent(writer, component);
-              }
-            }
-            writeElementEnd(writer, "components", 1);
-            writeElement(writer, "fields", 1, false);
-            final List<FieldType> fieldList = repository.getFields().getField();
-            for (FieldType fieldType : fieldList) {
-              writeField(writer, fieldType);
-            }
-            writeElementEnd(writer, "fields", 1);
-            writeElementEnd(writer, "fix", 0);
+        String versionPath = version.replaceAll("[\\.]", "");
+        File file = getSpecFilePath(outputDir, versionPath, ".xml");
+        outputDir.mkdirs();
+        try (FileWriter writer = new FileWriter(file)) {
+          writeElement(writer, "fix", 0, false, new KeyValue<Integer>("major", major),
+              new KeyValue<Integer>("minor", minor));
+          writeElement(writer, "header", 1, true);
+          writeElement(writer, "trailer", 1, true);
+          writeElement(writer, "messages", 1, false);
+          final List<MessageType> messageList = repository.getMessages().getMessage();
+          for (MessageType messageType : messageList) {
+            writeMessage(writer, messageType);
           }
-        } else {
-          System.err.format("Failed to parse FIX major and minor version in %s%n", version);
+          writeElementEnd(writer, "messages", 1);
+          writeElement(writer, "components", 1, false);
+          for (ComponentType componentType : componentList) {
+            if (componentType instanceof GroupType) {
+              writeGroup(writer, (GroupType) componentType);
+            } else if (repository.isHasComponents()) {
+              writeComponent(writer, componentType);
+            }
+          }
+          writeElementEnd(writer, "components", 1);
+          writeElement(writer, "fields", 1, false);
+          final List<FieldType> fieldList = repository.getFields().getField();
+          for (FieldType fieldType : fieldList) {
+            writeField(writer, fieldType);
+          }
+          writeElementEnd(writer, "fields", 1);
+          writeElementEnd(writer, "fix", 0);
         }
+      } else {
+        System.err.format("Failed to parse FIX major and minor version in %s%n", version);
       }
     } catch (JAXBException | IOException e) {
       e.printStackTrace();
@@ -184,7 +182,7 @@ public class DataDictionaryGenerator {
     return sb.toString().toUpperCase();
   }
 
-  private Repository unmarshal(File inputFile) throws JAXBException {
+  private Repository unmarshal(InputStream inputFile) throws JAXBException {
     JAXBContext jaxbContext = JAXBContext.newInstance(Repository.class);
     Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
     return (Repository) jaxbUnmarshaller.unmarshal(inputFile);
@@ -193,13 +191,13 @@ public class DataDictionaryGenerator {
   private void usage() {
     System.out.format("Usage: java %s <input-file> <output-dir>", this.getClass().getName());
   }
-  
+
   private Writer writeCode(Writer writer, CodeType code) throws IOException {
     writeElement(writer, "value", 3, true, new KeyValue<String>("enum", code.getValue()),
         new KeyValue<String>("description", toConstantName(code.getName())));
     return writer;
   }
-  
+
   private Writer writeComponent(Writer writer, ComponentRefType componentRefType)
       throws IOException {
     writeElement(writer, "component", 3, true,
@@ -227,7 +225,9 @@ public class DataDictionaryGenerator {
     writeElementEnd(writer, "component", 2);
     return writer;
   }
-  private Writer writeElement(Writer writer, String name, int level, boolean isEmpty) throws IOException {
+
+  private Writer writeElement(Writer writer, String name, int level, boolean isEmpty)
+      throws IOException {
     writer.write(String.format("%s<%s", indent(level), name));
     if (isEmpty) {
       writer.write("/>\n");
@@ -262,15 +262,16 @@ public class DataDictionaryGenerator {
             fieldRefType.getPresence().equals(PresenceT.REQUIRED) ? "Y" : "N"));
     return writer;
   }
-  
+
   private Writer writeField(Writer writer, FieldType fieldType) throws IOException {
     String type = fieldType.getType();
     CodeSetType codeSet = codeSets.get(type);
     String fixType = codeSet == null ? type : codeSet.getType();
-    writeElement(writer, "field", 2, codeSet==null, new KeyValue<Integer>("number", fieldType.getId().intValue()),
+    writeElement(writer, "field", 2, codeSet == null,
+        new KeyValue<Integer>("number", fieldType.getId().intValue()),
         new KeyValue<String>("name", fieldType.getName()),
         new KeyValue<String>("type", fixType.toUpperCase()));
-    if (codeSet!=null) {
+    if (codeSet != null) {
       for (CodeType code : codeSet.getCode()) {
         writeCode(writer, code);
       }
@@ -279,8 +280,7 @@ public class DataDictionaryGenerator {
     return writer;
   }
 
-  private Writer writeGroup(Writer writer, GroupRefType componentRefType)
-      throws IOException {
+  private Writer writeGroup(Writer writer, GroupRefType componentRefType) throws IOException {
     writeElement(writer, "component", 3, true,
         new KeyValue<String>("name", componentRefType.getName()), new KeyValue<String>("required",
             componentRefType.getPresence().equals(PresenceT.REQUIRED) ? "Y" : "N"));
@@ -288,8 +288,7 @@ public class DataDictionaryGenerator {
   }
 
   private Writer writeGroup(Writer writer, GroupType groupType) throws IOException {
-    writeElement(writer, "component", 2, false,
-        new KeyValue<String>("name", groupType.getName()));
+    writeElement(writer, "component", 2, false, new KeyValue<String>("name", groupType.getName()));
     writeElement(writer, "group", 3, false,
         new KeyValue<String>("name", groupType.getNumInGroupName()));
     List<Object> members = groupType.getComponentRefOrGroupRefOrFieldRef();

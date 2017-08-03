@@ -17,9 +17,12 @@
     </xsl:template>
     <xsl:template match="fixRepository">
     <fixr:repository>
+			<xsl:attribute name="name"><xsl:value-of select="functx:substring-before-if-contains(//fix[fn:last()]/@version, '_')"/></xsl:attribute>
+            <xsl:apply-templates select="//fix[fn:last()]/@* except hasComponents"/>
             <metadata>
 				<dc:title>Orchestra</dc:title>
-                <dc:creator>Repository2010to2016</dc:creator>
+                <dc:creator>Repository2010to2016.xsl script</dc:creator>
+                <dc:publisher>FIX Trading Community</dc:publisher>
                 <dc:date>
                     <xsl:value-of select="fn:current-dateTime()"/>
                 </dc:date>
@@ -50,20 +53,14 @@
                     </xsl:element>
                 </xsl:for-each>
             </codeSets>
+            <!-- Assumption: protocols are listed in the original file in version order, so last() picks latest. -->
             <xsl:apply-templates select="//fix[last()]/abbreviations"/>
             <xsl:apply-templates select="//fix[last()]/datatypes"/>
             <xsl:apply-templates select="//fix[last()]/categories"/>
             <xsl:apply-templates select="//fix[last()]/sections"/>
-            <fields>
-            	<!-- Need to store context outside of for-each loop -->
-				<xsl:variable name="doc" select="/"/>
-				<!-- Add fields from latest fix version to contain it -->
-                <xsl:for-each select="fn:distinct-values(/fixRepository/fix/fields/field/@name)">
-                	<xsl:variable name="fieldName" select="."/>
-                	<xsl:apply-templates select="($doc/fixRepository/fix/fields/field[@name=$fieldName])[last()]"/>
-                </xsl:for-each>
-			</fields>
-            <xsl:apply-templates select="//fix"/>
+            <xsl:apply-templates select="//fix[last()]/fields"/>
+            <xsl:apply-templates select="//fix[last()]/components"/>
+            <xsl:apply-templates select="//fix[last()]/messages"/>
     </fixr:repository>
     </xsl:template>
     <xsl:template match="abbreviations">
@@ -137,6 +134,12 @@
             <xsl:apply-templates select="@textId"/>
     </fixr:section>
     </xsl:template>
+    <xsl:template match="fields">
+    <fixr:fields>
+            <xsl:apply-templates select="@*"/>
+            <xsl:apply-templates/>
+    </fixr:fields>
+    </xsl:template>
     <xsl:template match="field">
     <fixr:field>
             <xsl:apply-templates select="@* except @textId"/>
@@ -154,16 +157,7 @@
             <xsl:apply-templates select="@textId"/>
     </fixr:field>
     </xsl:template>
-    <xsl:template match="fix">
-        <!-- Assumption: protocols are listed in the original file in version order, so last() picks latest. -->
-		<fixr:protocol>
-			<xsl:attribute name="name"><xsl:value-of select="functx:substring-before-if-contains(current()/@version, '_')"/></xsl:attribute>
-            <xsl:apply-templates select="@*"/>
-            <xsl:apply-templates select="components"/>
-            <xsl:apply-templates select="messages"/>
-        </fixr:protocol>
-    </xsl:template>
-    <xsl:template match="components">
+     <xsl:template match="components">
     <fixr:components>
             <xsl:apply-templates select="@*"/>
             <xsl:apply-templates/>
@@ -190,7 +184,7 @@
             <xsl:attribute name="name" select="../@name"/>
             <xsl:attribute name="numInGroupId" select="@id"/>
             <xsl:attribute name="numInGroupName"
-                           select="(//field[@id = current()])[fn:last()]/@name"/>
+                           select="(//field[@id = current()/@id])[fn:last()]/@name"/>
             <xsl:attribute name="category" select="../@category"/>
             <xsl:attribute name="abbrName" select="../@abbrName"/>
             <xsl:apply-templates/>
@@ -255,6 +249,9 @@
     <!-- don't copy deprecated attributes -->
     <xsl:template match="@elaborationTextId"/>
     <xsl:template match="@fixml"/>
+    <xsl:template match="@hasComponents">
+		<xsl:copy/>
+    </xsl:template>
     <xsl:template match="@notReqXML"/>
     <xsl:template match="@generateImplFile"/>
     <xsl:template match="@legacyIndent"/>

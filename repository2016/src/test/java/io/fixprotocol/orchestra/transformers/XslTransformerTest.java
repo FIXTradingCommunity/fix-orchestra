@@ -41,30 +41,4 @@ public class XslTransformerTest {
         File outFile = new File(arr[2]);
         Assert.assertTrue(outFile.exists());
     }
-    
-    @Test
-    public void transformMultiProtocol() throws IOException, TransformerException {
-        String[] arr = new String[4];
-        arr[0] = Thread.currentThread().getContextClassLoader().getResource("xsl/Repository2010to2016.xsl")
-                .getFile();
-        arr[1] = Thread.currentThread().getContextClassLoader().getResource("multiprotocol/FixRepository.xml")
-                .getFile();
-        String sourceDir = new File(arr[1]).getParent();
-        arr[2] = String.format("%s/output.xml", System.getProperty("java.io.tmpdir"));
-        // Add a phrases file as a URI for each version of FIX
-        StringBuilder sb = new StringBuilder("phrases-files=");
-        sb.append(String.format("file:///%s/FIX.4.0_en_phrases.xml,", sourceDir.replace('\\', '/')));
-        sb.append(String.format("file:///%s/FIX.4.1_en_phrases.xml,", sourceDir.replace('\\', '/')));
-        sb.append(String.format("file:///%s/FIX.4.2_en_phrases.xml,", sourceDir.replace('\\', '/')));
-        sb.append(String.format("file:///%s/FIX.4.3_en_phrases.xml,", sourceDir.replace('\\', '/')));
-        sb.append(String.format("file:///%s/FIX.4.4_en_phrases.xml,", sourceDir.replace('\\', '/')));
-        sb.append(String.format("file:///%s/FIX.5.0_en_phrases.xml,", sourceDir.replace('\\', '/')));
-        sb.append(String.format("file:///%s/FIX.5.0SP1_en_phrases.xml,", sourceDir.replace('\\', '/')));
-        sb.append(String.format("file:///%s/FIXT.1.1_en_phrases.xml,", sourceDir.replace('\\', '/')));
-        sb.append(String.format("file:///%s/FIX.5.0SP2_en_phrases.xml", sourceDir.replace('\\', '/')));
-         arr[3] = sb.toString();
-        RepositoryXslTransformer.main(arr);
-        File outFile = new File(arr[2]);
-        Assert.assertTrue(outFile.exists());
-    }
 }

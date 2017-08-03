@@ -56,11 +56,11 @@
 		<module>repository2010</module>
 		<module>repository2016</module>
 		<module>dsl-antlr</module>
-		<module>repositoryToOWL</module>
+		
 		<module>repository-quickfix</module>
 		<module>model-quickfix</module>
 		<module>repositoryDiffMerge</module>
-		<module>session-owl</module>
+		
 		<module>interfaces2016</module>
 		<module>docgen</module>
 		<module>testgen</module>
@@ -70,7 +70,6 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<junit.version>4.11</junit.version>
 		<java.version>1.8</java.version>
-		<owlapi.version>5.0.4</owlapi.version>
 		<slf4j.version>1.7.22</slf4j.version>
 		<quickfixj.version>1.6.2</quickfixj.version>
 		<saxon.version>9.7.0-14</saxon.version>

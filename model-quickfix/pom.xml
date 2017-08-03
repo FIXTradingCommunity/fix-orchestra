@@ -45,7 +45,7 @@
 				<configuration>
 					<mainClass>io.fixprotocol.orchestra.quickfix.CodeGeneratorJ</mainClass>
 					<arguments>
-						<argument>${project.build.testResources[0].directory}/FixRepository2016.xml</argument>
+						<argument>${project.build.testResources[0].directory}/mit_2016.xml</argument>
 						<argument>${project.build.directory}/generated-test-sources/java/</argument>
 					</arguments>
 				</configuration>

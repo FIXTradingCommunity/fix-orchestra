@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fixr="http://fixprotocol.io/2016/fixrepository" xmlns:dcterms="http://purl.org/dc/terms/" targetNamespace="http://fixprotocol.io/2016/fixrepository" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0-rc2">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fixr="http://fixprotocol.io/2016/fixrepository" xmlns:dcterms="http://purl.org/dc/terms/" targetNamespace="http://fixprotocol.io/2016/fixrepository" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0-rc3">
 	<xs:annotation>
 		<xs:documentation>
-			FIX Repository standard structure of messages
+			FIX Repository standard structure of messages with workflow
 			© Copyright 2016-2017 FIX Protocol Limited
 			Creative Commons Attribution-NoDerivatives 4.0
 			International Public License
@@ -120,9 +120,16 @@
 			<xs:field xpath="@destination"/>
 		</xs:keyref>
 	</xs:element>
-	<xs:element name="protocol">
+	<xs:element name="repository">
 		<xs:complexType>
 			<xs:all>
+				<xs:element name="metadata" type="dcterms:elementOrRefinementContainer"/>
+				<xs:element ref="fixr:abbreviations" minOccurs="0"/>
+				<xs:element ref="fixr:categories" minOccurs="0"/>
+				<xs:element ref="fixr:sections" minOccurs="0"/>
+				<xs:element ref="fixr:datatypes"/>
+				<xs:element ref="fixr:codeSets"/>
+				<xs:element ref="fixr:fields"/>
 				<xs:element ref="fixr:actors" minOccurs="0"/>
 				<xs:element ref="fixr:components"/>
 				<xs:element ref="fixr:messages"/>
@@ -148,28 +155,6 @@
 				</xs:annotation>
 			</xs:attribute>
 			<xs:attribute name="applVerId" type="xs:string"/>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="repository">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="metadata" type="dcterms:elementOrRefinementContainer"/>
-				<xs:element ref="fixr:codeSets" maxOccurs="unbounded">
-					<xs:annotation>
-						<xs:documentation>May have more than one section of code sets, for example internal and external codes</xs:documentation>
-					</xs:annotation>
-				</xs:element>
-				<xs:element ref="fixr:abbreviations" minOccurs="0"/>
-				<xs:element ref="fixr:datatypes"/>
-				<xs:element ref="fixr:categories" minOccurs="0"/>
-				<xs:element ref="fixr:sections" minOccurs="0"/>
-				<xs:element ref="fixr:fields"/>
-				<xs:element ref="fixr:protocol" maxOccurs="unbounded">
-					<xs:annotation>
-						<xs:documentation>Contains elements of a supported version of FIX or other protocol</xs:documentation>
-					</xs:annotation>
-				</xs:element>
-			</xs:sequence>
 		</xs:complexType>
 		<xs:key name="typeKey">
 			<xs:selector xpath="fixr:codeSets/fixr:codeSet|fixr:datatypes/fixr:datatype"/>

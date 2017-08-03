@@ -17,7 +17,6 @@ package io.fixprotocol.orchestra.model.quickfix;
 import java.util.List;
 
 import io.fixprotocol._2016.fixrepository.CodeSetType;
-import io.fixprotocol._2016.fixrepository.CodeSets;
 import io.fixprotocol._2016.fixrepository.ComponentRefType;
 import io.fixprotocol._2016.fixrepository.ComponentType;
 import io.fixprotocol._2016.fixrepository.Datatype;
@@ -48,21 +47,18 @@ class RepositoryAdapter {
   }
 
   CodeSetType getCodeset(String name) {
-    List<CodeSets> allCodeSets = repository.getCodeSets();
-    for (CodeSets codeSets : allCodeSets) {
-      List<CodeSetType> codeSetList = codeSets.getCodeSet();
+    List<CodeSetType> codeSetList = repository.getCodeSets().getCodeSet();
       for (CodeSetType codeSet : codeSetList) {
         if (name.equals(codeSet.getName())) {
           return codeSet;
         }
-      }
     }
     return null;
   }
 
   ComponentType getComponent(ComponentRefType componentRefType) {
     List<ComponentType> components =
-        repository.getProtocol().get(0).getComponents().getComponentOrGroup();
+        repository.getComponents().getComponentOrGroup();
     for (ComponentType component : components) {
       if (component.getId().equals(componentRefType.getId())) {
         return component;
@@ -94,7 +90,7 @@ class RepositoryAdapter {
 
   GroupType getGroup(GroupRefType groupRefType) {
     List<ComponentType> components =
-        repository.getProtocol().get(0).getComponents().getComponentOrGroup();
+        repository.getComponents().getComponentOrGroup();
     for (ComponentType component : components) {
       if (component.getId().equals(groupRefType.getId())) {
         return (GroupType) component;
@@ -104,7 +100,7 @@ class RepositoryAdapter {
   }
 
   MessageType getMessage(String name, String context) {
-    List<MessageType> messageList = repository.getProtocol().get(0).getMessages().getMessage();
+    List<MessageType> messageList = repository.getMessages().getMessage();
     for (MessageType messageType : messageList) {
       if (name.equals(messageType.getName()) && context.equals(messageType.getScenario())) {
 

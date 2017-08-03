@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:fixr="http://fixprotocol.io/2016/fixrepository" targetNamespace="http://fixprotocol.io/2016/fixrepository" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0-rc1">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:fixr="http://fixprotocol.io/2016/fixrepository" 
+	targetNamespace="http://fixprotocol.io/2016/fixrepository" 
+	elementFormDefault="qualified" attributeFormDefault="unqualified" 
+	version="1.0-rc3">
 	<xs:annotation>
 		<xs:documentation>
 			© Copyright 2016-2017 FIX Protocol Limited Creative

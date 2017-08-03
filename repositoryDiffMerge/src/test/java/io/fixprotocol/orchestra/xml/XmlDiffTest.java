@@ -84,15 +84,4 @@ public class XmlDiffTest {
     }
   }
 
-  @Test
-  public void diffElements() throws Exception {
-    try (final FileInputStream is1 = new FileInputStream(
-        "../repository2016/src/test/resources/multiprotocol/FixRepository.xml");
-        final FileInputStream is2 = new FileInputStream(
-            "../repository2016/src/test/resources/multiprotocol/FixRepository.xml")) {
-      xmlDiff.diff(is1, "/fixRepository/fix[@version='FIX.4.2']/fields", is2,
-          "/fixRepository/fix[@version='FIX.4.3']/fields");
-    }
-  }
-
 }
