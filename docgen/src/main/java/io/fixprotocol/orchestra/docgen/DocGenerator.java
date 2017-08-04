@@ -146,7 +146,8 @@ public class DocGenerator {
     try {
     createCss(baseOutputDir);
 
-    generateMetadata(baseOutputDir, repository.getMetadata().getAny());
+   generateMain(baseOutputDir, getTitle());
+   generateMetadata(baseOutputDir, repository, repository.getMetadata().getAny());
 
     File datatypesOutputDir = makeDirectory(new File(baseOutputDir, "datatypes"));
     generateDatatypeList(datatypesOutputDir, repository.getDatatypes().getDatatype());
@@ -180,6 +181,8 @@ public class DocGenerator {
       }
     });
 
+    File messagesOutputDir = makeDirectory(new File(baseOutputDir, "messages"));
+
     final List<CategoryType> sortedCategoryList = repository.getCategories().getCategory().stream()
         .filter(c -> c.getComponentType() == CatComponentTypeT.MESSAGE).sorted((o1, o2) -> {
           final String sectionValue1 = o1.getSection() != null ? o1.getSection().value() : "";
@@ -190,10 +193,7 @@ public class DocGenerator {
           }
           return retv;
         }).collect(Collectors.toList());
-    generateMain(baseOutputDir, getTitle(), sortedCategoryList);
-
-
-    File protocolOutputDir = makeDirectory(new File(baseOutputDir, repository.getName()));
+    generateCategories(messagesOutputDir, "Message Categories", sortedCategoryList);
 
     List<MessageType> sortedMessageList =
         repository.getMessages().getMessage().stream().sorted((o1, o2) -> {
@@ -207,10 +207,10 @@ public class DocGenerator {
     final List<ActorType> actorList =
         repository.getActors().getActorOrFlow().stream().filter(af -> af instanceof ActorType)
             .map(af -> (ActorType) af).collect(Collectors.toList());
-    generateActorsList(protocolOutputDir, actorList);
+    generateActorsList(messagesOutputDir, actorList);
     actorList.forEach(a -> {
       try {
-        generateActorDetail(protocolOutputDir, a);
+        generateActorDetail(messagesOutputDir, a);
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
@@ -218,22 +218,22 @@ public class DocGenerator {
 
     final List<FlowType> flowList = repository.getActors().getActorOrFlow().stream()
         .filter(af -> af instanceof FlowType).map(af -> (FlowType) af).collect(Collectors.toList());
-    generateFlowsList(protocolOutputDir, flowList);
+    generateFlowsList(messagesOutputDir, flowList);
     flowList.forEach(f -> {
       try {
-        generateFlowDetail(protocolOutputDir, f);
+        generateFlowDetail(messagesOutputDir, f);
 
-      generateMessageListByFlow(protocolOutputDir, f, sortedMessageList);
+      generateMessageListByFlow(messagesOutputDir, f, sortedMessageList);
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
     });
 
 
-    generateAllMessageList(protocolOutputDir, sortedMessageList);
+    generateAllMessageList(messagesOutputDir, sortedMessageList);
     sortedCategoryList.forEach(c -> {
       try {
-        generateMessageListByCategory(protocolOutputDir, c, sortedMessageList);
+        generateMessageListByCategory(messagesOutputDir, c, sortedMessageList);
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
@@ -242,17 +242,17 @@ public class DocGenerator {
     List<ComponentType> sortedComponentList =
         repository.getComponents().getComponentOrGroup().stream()
             .sorted((o1, o2) -> o1.getName().compareTo(o2.getName())).collect(Collectors.toList());
-    generateAllComponentsList(protocolOutputDir, sortedComponentList);
+    generateAllComponentsList(messagesOutputDir, sortedComponentList);
     repository.getComponents().getComponentOrGroup().forEach(c -> {
       try {
-        generateComponentDetail(protocolOutputDir, c, repository.getName());
+        generateComponentDetail(messagesOutputDir, c);
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
     });
     repository.getMessages().getMessage().forEach(m -> {
       try {
-        generateMessageDetail(protocolOutputDir, m, repository.getName());
+        generateMessageDetail(messagesOutputDir, m);
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
@@ -323,7 +323,7 @@ public class DocGenerator {
     st.write(outputFile, errorListener, encoding);
   }
 
-  private void generateComponentDetail(File outputDir, ComponentType component, String protocolName)
+  private void generateComponentDetail(File outputDir, ComponentType component)
       throws IOException {
     ST stComponentStart;
     if (component instanceof GroupType) {
@@ -392,12 +392,20 @@ public class DocGenerator {
     st.write(outputFile, errorListener, encoding);
   }
 
-  private void generateMain(File outputDir, String title, List<CategoryType> categoriesList)
+  private void generateMain(File outputDir, String title)
       throws IOException {
     ST st = stGroup.getInstanceOf("main");
     st.add("title", title);
-    st.add("categories", categoriesList);
     File outputFile = new File(outputDir, "index.html");
+    st.write(outputFile, errorListener, encoding);
+  }
+  
+  private void generateCategories(File outputDir, String title, List<CategoryType> categoriesList)
+      throws IOException {
+    ST st = stGroup.getInstanceOf("categories");
+    st.add("title", title);
+    st.add("categories", categoriesList);
+    File outputFile = new File(outputDir, "MessageCategories.html");
     st.write(outputFile, errorListener, encoding);
   }
 
@@ -420,7 +428,7 @@ public class DocGenerator {
     }
   }
 
-  private void generateMessageDetail(File outputDir, MessageType message, String protocolName)
+  private void generateMessageDetail(File outputDir, MessageType message)
       throws IOException {
     ST stMessageStart = stGroup.getInstanceOf("messageStart");
     ST stMessagePart2 = stGroup.getInstanceOf("messagePart2");
@@ -473,9 +481,10 @@ public class DocGenerator {
     st.write(outputFile, errorListener, encoding);
   }
 
-  private void generateMetadata(File outputDir, List<JAXBElement<SimpleLiteral>> elementList)
+  private void generateMetadata(File outputDir, Repository repository, List<JAXBElement<SimpleLiteral>> elementList)
       throws IOException {
     ST st = stGroup.getInstanceOf("metadata");
+    st.add("repository", repository);
     st.add("elementList", elementList);
     File outputFile = new File(outputDir, "metadata.html");
     st.write(outputFile, errorListener, encoding);

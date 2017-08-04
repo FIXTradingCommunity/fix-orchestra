@@ -67,18 +67,14 @@ Repository 2010 Edition was the version of the FIX Repository prior to FIX Orche
 ### repositoryDiffMerge
 These utilities extract incremental changes to XML files and selectively apply changes to a base file. The difference format is conformant to standard [IETF RFC 5261](https://tools.ietf.org/html/rfc5261). A benefit of these utilities, aside from editing Orchestra files, is that they can be used for HTTP PATCH operations with Orchestra XML payloads.
 
+### docgen
+This utility generates documentation for an Orchestra file that can be view in any web browser. The output of the generator may be used locally or from a web server.
+
 ## Experimental Modules
 This following modules are **experimental**. Requirements are still being gathered and discussed by the FIX Orchestra working group. Participation in the working group is encouraged by FIX Trading Community members, and more broadly, feedback is welcome from interested GitHub users.
 
-### Semantic Web
-
-#### repositoryToOWL
-This module translates a FIX Repository 2016 Editor or Orchestra XML file to Web Ontology Language (OWL), a semantic notation. As compared to XML, OWL is more expressive, can support web endpoints for programmatic queries and user interfaces, and can be used to express equivalencies between FIX and other protocols.
-
-#### session-owl
-This module allows counterparties to discover configurations of sessions between them. Direct support is supplied for FIXT sessions (the traditional FIX session layer) as well as FIXP, the FIX performance session layer. The prototype also demonstrates how session definitions could be extended to cover non-FIX protocols.
-
-This experiment uses its own Ontology. It was developed prior to the standardization of `interfaces2016`, so it is not compatible with it.
+### testgen
+This module is a demonstration of acceptance test generation from an Orchestra file using Behavior Driven Design (BDD) concepts.
 
 ### FIX Engine Provisioning
 

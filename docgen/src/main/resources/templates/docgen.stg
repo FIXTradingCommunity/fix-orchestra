@@ -1,4 +1,4 @@
-main(title, protocols, categories) ::= <<
+main(title, categories) ::= <<
 <!DOCTYPE html>
 <html>
 <title>$title$</title>
@@ -9,38 +9,11 @@ window.onload = function()
 {
  	document.getElementById("metadataLink").click();
 }
-
-function protocolClicked(a) {
-	document.getElementById("protocolLabel").innerHTML = a.text;
-	document.getElementById("actorsLink").href = a.text.concat("/AllActors.html");
-	document.getElementById("flowsLink").href = a.text.concat("/AllFlows.html");
-	document.getElementById("componentsLink").href = a.text.concat("/AllComponents.html");
-	
-	var links = document.getElementsByClassName("major-message");
-	for (i = 0; i < links.length; i++) {
-    	links[i].href = a.text.concat("/", links[i].text.replace(/\s/g, ""), "Messages.html");
-	}
-	
-	document.getElementById("protocolControl").style.visibility = "visible";
-}
 </script>
 </head>
 <body>
 <div id="topMenu">
 $topMenu(title)$
-</div>
-<div id="controlContainer">
-<div id="globalControl">
-$protocols(protocols)$
-</div>
-<div id="protocolControl">
-$categories(categories)$
-<ul class="major">
-<li class="major"><a href="AllActors.html" target="listFrame" class="major" id="actorsLink">Actors</a></li>
-<li class="major"><a href="AllFlows.html" target="listFrame" class="major" id="flowsLink">Flows</a></li>
-<li class="major"><a href="AllComponents.html" target="listFrame" class="major" id="componentsLink">Components</a></li>
-</ul>
-</div>
 </div>
 <div id="contentContainer">
 <iframe name="listFrame" id="listFrame"></iframe>
@@ -50,39 +23,33 @@ $categories(categories)$
 </html>
 >>
 
-protocols(protocols) ::= <<
-<div class="dropdown">
-<label class="dropdownLabel">Protocol</label>
-<div class="dropdown-content">
-<ul class="major">
-$protocols:{protocol |<li class="major"><a href="$protocol.name$/AllMessages.html" target="listFrame" class="major" onclick="protocolClicked(this)">$protocol.name$</a></li>
-}$
+categories(categories, title) ::= <<
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="../orchestra.css">
+</head>
+<body>
+<ul class="minor">
+<li class="minor-title">$title$</li>
+<li class="major"><a href="AllMessages.html" target="listFrame" class="minor">All Messages</a></li>
+$categories:{category|<li><a href="$category.id$Messages.html" target="listFrame" class="minor">$category.id$</a></li>}$
 </ul>
-</div>
-</div>
-<label class="major-title" id="protocolLabel"></label>
->>
-
-categories(categories) ::= <<
-<div class="dropdown">
-<label class="dropdownLabel">Messages</label>
-<div class="dropdown-content">
-<ul class="major">
-<li class="major"><a href="/AllMessages.html" target="listFrame" class="major-message">All</a></li>
-$categories:{category |<li class="major"><a href="/$category.id$Messages.html" target="listFrame" class="major-message">$category.id$</a></li>
-}$
-</ul>
-</div>
-</div>
+</body>
+</html>
 >>
 
 topMenu(title) ::= <<
 <ul class="major">
 <li class="major-title">$title$</li>
+<li class="major"><a href="metadata.html" target="contentFrame" class="major" id="metadataLink">Metadata</a></li>
 <li class="major"><a href="datatypes/AllCodeSets.html" target="listFrame" class="major">Code sets</a></li>
 <li class="major"><a href="datatypes/AllDatatypes.html" target="listFrame" class="major">Datatypes</a></li>
 <li class="major"><a href="fields/AllFields.html" target="listFrame" class="major">Fields</a></li>
-<li class="major"><a href="metadata.html" target="contentFrame" class="major" id="metadataLink">Metadata</a></li>
+<li class="major"><a href="messages/AllActors.html" target="listFrame" class="major">Actors</a></li>
+<li class="major"><a href="messages/AllFlows.html" target="listFrame" class="major">Flows</a></li>
+<li class="major"><a href="messages/AllComponents.html" target="listFrame" class="major">Components</a></li>
+<li class="major"><a href="messages/MessageCategories.html" target="listFrame" class="major">Messages</a></li>
 </ul>
 >>
 
@@ -469,13 +436,21 @@ pedigree(object) ::= <<
 </table>
 >>
 
-metadata(elementList) ::= <<
+metadata(repository, elementList) ::= <<
 <!DOCTYPE html>
 <html>
 <head>
 <link rel="stylesheet" href="orchestra.css">
 </head>
 <body>
+<h1>Repository</h1>
+<table class="major">
+<tr>
+<th class="major">Name</th>
+<th class="major">Version</th>
+</tr>
+<tr><td class="major">$repository.name$</td><td class="major">$repository.version$</td></tr>
+</table>
 <h3>Metadata</h3>
 <table class="minor">
 <tr>

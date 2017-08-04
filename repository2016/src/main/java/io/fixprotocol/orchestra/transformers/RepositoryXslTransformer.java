@@ -45,7 +45,9 @@ public class RepositoryXslTransformer {
         }
         
         trans.transform(xmlSource, result);
-        FileWriter output = new FileWriter(args[2]);
+        File file = new File(args[2]);
+        new File(file.getParent()).mkdir();
+        FileWriter output = new FileWriter(file);
         output.write(sw.toString());
         output.close();
     }
