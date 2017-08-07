@@ -14,11 +14,8 @@
  */
 package io.fixprotocol.orchestra.dsl.antlr;
 
-import java.io.IOException;
-import java.io.StringReader;
-
-import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.BaseErrorListener;
+import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
@@ -85,13 +82,11 @@ public class Evaluator {
    */
   public FixValue<?> evaluate(String expression) throws ScoreException {
     try {
-      final ScoreLexer lexer = new ScoreLexer(new ANTLRInputStream(new StringReader(expression)));
+      final ScoreLexer lexer = new ScoreLexer(CharStreams.fromString(expression));
       final ScoreParser parser = new ScoreParser(new CommonTokenStream(lexer));
       parser.addErrorListener(errorListener);
       final AnyExpressionContext ctx = parser.anyExpression();
       return visitor.visitAnyExpression(ctx);
-    } catch (IOException e) {
-      throw new RuntimeException("Internal reading from String", e);
     } catch (IllegalStateException e) {
       throw new ScoreException("Syntactical or semantic error; " + e.getMessage());
     }

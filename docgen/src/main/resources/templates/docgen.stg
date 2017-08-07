@@ -79,11 +79,9 @@ actors(actors, title) ::= <<
 <li class="minor-title">$title$</li>
 $actors:{actor|<li><a href="$actor.name$.html" target="contentFrame" class="minor">$actor.name$</a></li>}$
 </ul>
-</body>
-</html>
 >>
 
-actor(actor) ::= <<
+actorStart(actor) ::= <<
 <!DOCTYPE html>
 <html>
 <title>Actor $actor.name$</title>
@@ -94,8 +92,44 @@ actor(actor) ::= <<
 <h1>Actor $actor.name$</h1>
 $if(actor.extends)$<h1>extends scenario <a href="$actor.name$-$actor.extends$.html">$actor.extends$</a></h1>$endif$
 $documentation(object=actor)$
-</body>
-</html>
+<h2>State Variables</h2>
+<table class="members">
+<tr>
+<th class="members">ID</th>
+<th class="members">Name</th>
+<th class="members">Abbr</th>
+<th class="members">Presence</th>
+<th class="members">Description</th>
+</tr>
+>>
+
+actorPart2(actor) ::= <<
+</table>
+>>
+
+stateMachine(states) ::= <<
+<h2>State Machine $states.name$</h2>
+<table class="members">
+$documentation(object=states)$
+<tr>
+<th class="members">State</th>
+<th class="members">Transition</th>
+<th class="members">Target</th>
+<th class="members">Description</th>
+<th class="members">Guard</th>
+</tr>
+$state(states.initial)$
+$states.state:{state|$state(state)$}$
+</table>
+>>
+
+state(state) ::= <<
+<tr><td class="members-hilite">$state.name$</td><td class="members-hilite"></td><td class="members-hilite"></td><td class="members-hilite">$documentation(object=state)$</td><td class="members-hilite"></td></tr>
+$state.transition:{transition|$transition(transition)$}$
+>>
+
+transition(transition) ::= <<
+<tr><td class="members"></td><td class="members">$transition.name$</td><td class="members">$transition.target$</td><td class="members">$documentation(object=transition)$</td><td class="code">$transition.when$</td></tr>
 >>
 
 flows(flows, title) ::= <<

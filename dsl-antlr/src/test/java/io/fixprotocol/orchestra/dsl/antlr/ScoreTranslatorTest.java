@@ -14,12 +14,11 @@
  */
 package io.fixprotocol.orchestra.dsl.antlr;
 
-import java.io.StringReader;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.BaseErrorListener;
+import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
@@ -80,7 +79,7 @@ public class ScoreTranslatorTest {
 
   @Test
   public void testExampleFieldCondition() throws Exception {
-    ScoreLexer l = new ScoreLexer(new ANTLRInputStream(new StringReader(expression)));
+    ScoreLexer l = new ScoreLexer(CharStreams.fromString(expression));
     ScoreParser p = new ScoreParser(new CommonTokenStream(l));
     p.addErrorListener(new BaseErrorListener() {
       @Override

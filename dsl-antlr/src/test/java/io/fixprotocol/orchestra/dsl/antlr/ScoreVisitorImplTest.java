@@ -14,18 +14,20 @@
  */
 package io.fixprotocol.orchestra.dsl.antlr;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.io.StringReader;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.BaseErrorListener;
+import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
@@ -525,7 +527,7 @@ public class ScoreVisitorImplTest {
 
 
   private ScoreParser parse(String expression) throws IOException {
-    ScoreLexer l = new ScoreLexer(new ANTLRInputStream(new StringReader(expression)));
+    ScoreLexer l = new ScoreLexer(CharStreams.fromString(expression));
     ScoreParser p = new ScoreParser(new CommonTokenStream(l));
     p.addErrorListener(new BaseErrorListener() {
       @Override

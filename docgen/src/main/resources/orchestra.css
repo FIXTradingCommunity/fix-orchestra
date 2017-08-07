@@ -239,10 +239,12 @@ td.members-id-hilite {
 
 #listFrame {
 	min-width: 250px;
+	height: 100%
 }
 
 #contentFrame {
 	width: 100%;
+	height: 100%
 }
 
 .dropdownLabel {

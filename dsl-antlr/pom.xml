@@ -10,10 +10,6 @@
 	<artifactId>dsl-antlr</artifactId>
 	<name>${project.groupId}:${project.artifactId}</name>
 
-	<properties>
-		<antlr.version>4.6</antlr.version>
-	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>org.antlr</groupId>

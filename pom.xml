@@ -55,12 +55,10 @@
 		<module>session-quickfix</module>
 		<module>repository2010</module>
 		<module>repository2016</module>
-		<module>dsl-antlr</module>
-		
+		<module>dsl-antlr</module>	
 		<module>repository-quickfix</module>
 		<module>model-quickfix</module>
 		<module>repositoryDiffMerge</module>
-		
 		<module>interfaces2016</module>
 		<module>docgen</module>
 		<module>testgen</module>
@@ -68,11 +66,12 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<antlr.version>4.7</antlr.version>
 		<junit.version>4.11</junit.version>
 		<java.version>1.8</java.version>
 		<slf4j.version>1.7.22</slf4j.version>
-		<quickfixj.version>1.6.2</quickfixj.version>
-		<saxon.version>9.7.0-14</saxon.version>
+		<quickfixj.version>1.6.4</quickfixj.version>
+		<saxon.version>9.8.0-3</saxon.version>
 		<stringtemplate.version>4.0.2</stringtemplate.version>
 	</properties>
 

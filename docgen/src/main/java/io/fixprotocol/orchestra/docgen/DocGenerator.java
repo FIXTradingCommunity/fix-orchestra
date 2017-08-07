@@ -56,6 +56,7 @@ import io.fixprotocol._2016.fixrepository.MessageType.Responses;
 import io.fixprotocol._2016.fixrepository.PresenceT;
 import io.fixprotocol._2016.fixrepository.Repository;
 import io.fixprotocol._2016.fixrepository.ResponseType;
+import io.fixprotocol._2016.fixrepository.StateMachineType;
 
 /**
  * @author Don Mendelson
@@ -275,10 +276,32 @@ public class DocGenerator {
   }
 
   private void generateActorDetail(File outputDir, ActorType actor) throws IOException {
-    ST st = stGroup.getInstanceOf("actor");
-    st.add("actor", actor);
     File outputFile = new File(outputDir, String.format("%s.html", actor.getName()));
-    st.write(outputFile, errorListener, encoding);
+
+    try (OutputStreamWriter fileWriter =
+        new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8")) {
+      NoIndentWriter writer = new NoIndentWriter(fileWriter);
+
+      ST stActor = stGroup.getInstanceOf("actorStart");
+      stActor.add("actor", actor);
+      stActor.write(writer, errorListener);
+
+      List<Object> members = actor.getFieldOrFieldRefOrComponent();
+      generateMembers(members, writer);
+      
+      ST stActor2 = stGroup.getInstanceOf("actorPart2");
+      stActor2.add("actor", actor);
+      stActor2.write(writer, errorListener);
+
+      List<Object> stateMachines = actor.getFieldOrFieldRefOrComponent().stream()
+          .filter(o -> o instanceof StateMachineType).collect(Collectors.toList());
+      
+      for (Object obj : stateMachines) {
+        ST stStates = stGroup.getInstanceOf("stateMachine");
+        stStates.add("states", obj);
+        stStates.write(writer, errorListener);
+      }
+    }
   }
 
   private void generateActorsList(File outputDir, List<ActorType> actorList) throws IOException {
