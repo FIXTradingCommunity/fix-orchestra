@@ -21,6 +21,12 @@
 			<artifactId>stringtemplate</artifactId>
 			<version>${stringtemplate.version}</version>
 		</dependency>
+		<dependency>
+			<!-- REQUIRES Graphviz executable for graphics -->
+			<groupId>net.sourceforge.plantuml</groupId>
+			<artifactId>plantuml</artifactId>
+			<version>8059</version>
+		</dependency>
 	</dependencies>
 
 	<build>

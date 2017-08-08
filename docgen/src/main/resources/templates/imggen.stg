@@ -1,0 +1,45 @@
+stateMachine(stateMachine) ::= <<
+@startuml
+title State Machine $stateMachine.name$
+$initial(stateMachine.initial)$
+$stateMachine.state:{state|$state(state)$}$
+@enduml
+>>
+
+initial(state) ::= <<
+[*] --> $state.name$
+$state(state)$
+>>
+
+state(state) ::= <<
+$state.name$ : $documentation(object=state)$
+$if(!state.transition)$$state.name$ --> [*]$endif$
+$state.transition:{transition|$transition(state, transition)$}$
+>>
+
+transition(state, transition) ::= <<
+$state.name$ --> $transition.target$ : $transition.name$
+
+>>
+
+sequence(message, flow) ::= <<
+@startuml
+title Sequence $message.name$ $message.scenario$
+actor $flow.source$ as source
+actor $flow.destination$ as destination
+source -> destination: $message.name$ $message.scenario$
+
+>>
+
+sequenceEnd(message) ::= <<
+@enduml
+>>
+
+messageResponse(messageName, scenarioName, async) ::= <<
+source $if(async)$<<--$else$<--$endif$ destination: $messageName$ $scenarioName$
+
+>>
+
+documentation(object) ::= <<
+$object.annotation.DocumentationOrAppinfo:{doc|$doc.content$}$
+>>

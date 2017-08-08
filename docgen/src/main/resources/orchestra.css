@@ -32,6 +32,11 @@ p {
 	font-size: x-small;
 }
 
+img {
+    border-style: solid;
+    border-width: 1px;
+}
+
 a {
     text-decoration: none;
 }

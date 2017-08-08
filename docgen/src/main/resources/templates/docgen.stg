@@ -109,8 +109,9 @@ actorPart2(actor) ::= <<
 
 stateMachine(states) ::= <<
 <h2>State Machine $states.name$</h2>
-<table class="members">
 $documentation(object=states)$
+<img src="img/$states.name$.png" alt="State machine $states.name$"></img>
+<table class="members">
 <tr>
 <th class="members">State</th>
 <th class="members">Transition</th>
@@ -241,6 +242,7 @@ $documentation(object=message)$
 </table>
 $pedigree(object=message)$
 <h2>Responses</h2>
+<img src="img/$message.name$-$message.scenario$.png" alt="Sequence $message.name$ $message.scenario$"></img>
 <table class="mid">
 <tr>
 <th class="mid">Message</th>

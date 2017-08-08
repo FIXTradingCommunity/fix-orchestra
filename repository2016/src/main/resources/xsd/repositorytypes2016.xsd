@@ -690,10 +690,10 @@
 	</xs:complexType>
 	<xs:complexType name="stateType">
 		<xs:annotation>
-			<xs:documentation>A state of a state machine</xs:documentation>
+			<xs:documentation>A state of a state machine. If it has no transitions, then it is a final state.</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="transition" type="fixr:transitionType" maxOccurs="unbounded"/>
+			<xs:element name="transition" type="fixr:transitionType" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attribute name="name" type="fixr:Name_t" use="required"/>

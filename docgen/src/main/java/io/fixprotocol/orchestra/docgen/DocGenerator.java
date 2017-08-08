@@ -97,6 +97,8 @@ public class DocGenerator {
 
   private final File baseOutputDir;
   private final String encoding = "UTF-8";
+  private final ImgGenerator imgGenerator = new ImgGenerator();
+  
   private final STErrorListener errorListener = new STErrorListener() {
 
     @Override
@@ -182,7 +184,8 @@ public class DocGenerator {
       }
     });
 
-    File messagesOutputDir = makeDirectory(new File(baseOutputDir, "messages"));
+    File messagesDocDir = makeDirectory(new File(baseOutputDir, "messages"));   
+    File messagesImgDir = makeDirectory(new File(messagesDocDir, "img"));
 
     final List<CategoryType> sortedCategoryList = repository.getCategories().getCategory().stream()
         .filter(c -> c.getComponentType() == CatComponentTypeT.MESSAGE).sorted((o1, o2) -> {
@@ -194,7 +197,7 @@ public class DocGenerator {
           }
           return retv;
         }).collect(Collectors.toList());
-    generateCategories(messagesOutputDir, "Message Categories", sortedCategoryList);
+    generateCategories(messagesDocDir, "Message Categories", sortedCategoryList);
 
     List<MessageType> sortedMessageList =
         repository.getMessages().getMessage().stream().sorted((o1, o2) -> {
@@ -208,10 +211,10 @@ public class DocGenerator {
     final List<ActorType> actorList =
         repository.getActors().getActorOrFlow().stream().filter(af -> af instanceof ActorType)
             .map(af -> (ActorType) af).collect(Collectors.toList());
-    generateActorsList(messagesOutputDir, actorList);
+    generateActorsList(messagesDocDir, actorList);
     actorList.forEach(a -> {
       try {
-        generateActorDetail(messagesOutputDir, a);
+        generateActorDetail(messagesDocDir, messagesImgDir, a);
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
@@ -219,22 +222,22 @@ public class DocGenerator {
 
     final List<FlowType> flowList = repository.getActors().getActorOrFlow().stream()
         .filter(af -> af instanceof FlowType).map(af -> (FlowType) af).collect(Collectors.toList());
-    generateFlowsList(messagesOutputDir, flowList);
+    generateFlowsList(messagesDocDir, flowList);
     flowList.forEach(f -> {
       try {
-        generateFlowDetail(messagesOutputDir, f);
+        generateFlowDetail(messagesDocDir, f);
 
-      generateMessageListByFlow(messagesOutputDir, f, sortedMessageList);
+      generateMessageListByFlow(messagesDocDir, f, sortedMessageList);
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
     });
 
 
-    generateAllMessageList(messagesOutputDir, sortedMessageList);
+    generateAllMessageList(messagesDocDir, sortedMessageList);
     sortedCategoryList.forEach(c -> {
       try {
-        generateMessageListByCategory(messagesOutputDir, c, sortedMessageList);
+        generateMessageListByCategory(messagesDocDir, c, sortedMessageList);
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
@@ -243,17 +246,17 @@ public class DocGenerator {
     List<ComponentType> sortedComponentList =
         repository.getComponents().getComponentOrGroup().stream()
             .sorted((o1, o2) -> o1.getName().compareTo(o2.getName())).collect(Collectors.toList());
-    generateAllComponentsList(messagesOutputDir, sortedComponentList);
+    generateAllComponentsList(messagesDocDir, sortedComponentList);
     repository.getComponents().getComponentOrGroup().forEach(c -> {
       try {
-        generateComponentDetail(messagesOutputDir, c);
+        generateComponentDetail(messagesDocDir, c);
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
     });
     repository.getMessages().getMessage().forEach(m -> {
       try {
-        generateMessageDetail(messagesOutputDir, m);
+        generateMessageDetail(messagesDocDir, messagesImgDir, m);
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
@@ -275,8 +278,8 @@ public class DocGenerator {
     }
   }
 
-  private void generateActorDetail(File outputDir, ActorType actor) throws IOException {
-    File outputFile = new File(outputDir, String.format("%s.html", actor.getName()));
+  private void generateActorDetail(File docDir, File imgDir, ActorType actor) throws IOException {
+    File outputFile = new File(docDir, String.format("%s.html", actor.getName()));
 
     try (OutputStreamWriter fileWriter =
         new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8")) {
@@ -296,10 +299,11 @@ public class DocGenerator {
       List<Object> stateMachines = actor.getFieldOrFieldRefOrComponent().stream()
           .filter(o -> o instanceof StateMachineType).collect(Collectors.toList());
       
-      for (Object obj : stateMachines) {
+      for (Object stateMachine : stateMachines) {
         ST stStates = stGroup.getInstanceOf("stateMachine");
-        stStates.add("states", obj);
+        stStates.add("states", stateMachine);
         stStates.write(writer, errorListener);
+        imgGenerator.generateUMLStateMachine(imgDir, (StateMachineType)stateMachine, errorListener);
       }
     }
   }
@@ -451,7 +455,7 @@ public class DocGenerator {
     }
   }
 
-  private void generateMessageDetail(File outputDir, MessageType message)
+  private void generateMessageDetail(File messagesDocDir, File messagesImgDir, MessageType message)
       throws IOException {
     ST stMessageStart = stGroup.getInstanceOf("messageStart");
     ST stMessagePart2 = stGroup.getInstanceOf("messagePart2");
@@ -460,7 +464,7 @@ public class DocGenerator {
     stMessagePart2.add("message", message);
     stMessageEnd.add("message", message);
     File outputFile =
-        new File(outputDir, String.format("%s-%s.html", message.getName(), message.getScenario()));
+        new File(messagesDocDir, String.format("%s-%s.html", message.getName(), message.getScenario()));
 
     List<ResponseType> responses = null;
     final Responses responses2 = message.getResponses();
@@ -475,6 +479,13 @@ public class DocGenerator {
       stMessageStart.write(writer, errorListener);
       if (responses != null) {
         generateResponses(responses, writer);
+        File imgFile =
+                new File(messagesImgDir, String.format("%s-%s.png", message.getName(), message.getScenario()));
+        try (OutputStreamWriter imgFileWriter =
+                new OutputStreamWriter(new FileOutputStream(imgFile), "UTF-8")) {
+        	FlowType flow = getFlow(message.getFlow());
+	        imgGenerator.generateUMLSequence(messagesImgDir, message, flow, responses, errorListener);
+        };
       }
       stMessagePart2.write(writer, errorListener);
       generateMembers(members, writer);
@@ -528,6 +539,8 @@ public class DocGenerator {
       }
     }
   }
+  
+
 
   private ComponentType getComponent(int componentId) {
     List<ComponentType> components = repository.getComponents().getComponentOrGroup();
@@ -537,6 +550,19 @@ public class DocGenerator {
       }
     }
     return null;
+  }
+  
+  private FlowType getFlow(String name) {
+	  List<Object> afList = repository.getActors().getActorOrFlow();
+	  for (Object obj : afList) {
+		  if (obj instanceof FlowType) {
+			  FlowType flow = (FlowType) obj;
+			  if (flow.getName().equals(name)) {
+				  return flow;
+			  }
+		  }
+	  }
+	  return null;
   }
 
   private FieldType getField(int id) {
