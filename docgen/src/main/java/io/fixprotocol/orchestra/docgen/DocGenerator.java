@@ -22,7 +22,9 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBContext;
@@ -57,6 +59,7 @@ import io.fixprotocol._2016.fixrepository.PresenceT;
 import io.fixprotocol._2016.fixrepository.Repository;
 import io.fixprotocol._2016.fixrepository.ResponseType;
 import io.fixprotocol._2016.fixrepository.StateMachineType;
+import io.fixprotocol._2016.fixrepository.SupportType;
 
 /**
  * @author Don Mendelson
@@ -98,7 +101,7 @@ public class DocGenerator {
   private final File baseOutputDir;
   private final String encoding = "UTF-8";
   private final ImgGenerator imgGenerator = new ImgGenerator();
-  
+
   private final STErrorListener errorListener = new STErrorListener() {
 
     @Override
@@ -125,6 +128,14 @@ public class DocGenerator {
   private final Repository repository;
   private final STGroup stGroup;
 
+  private final static Map<SupportType, String> supportedMap = new HashMap<>();
+
+  static {
+    supportedMap.put(SupportType.SUPPORTED, "&#10003;"); // check mark
+    supportedMap.put(SupportType.FORBIDDEN, "&#10007;"); // ballot x
+    supportedMap.put(SupportType.IGNORED, "&ndash;");
+  }
+
   /**
    * Constructs a DocGenerator
    * 
@@ -147,123 +158,124 @@ public class DocGenerator {
    */
   public void generate() throws IOException {
     try {
-    createCss(baseOutputDir);
+      createCss(baseOutputDir);
 
-   generateMain(baseOutputDir, getTitle());
-   generateMetadata(baseOutputDir, repository, repository.getMetadata().getAny());
+      generateMain(baseOutputDir, getTitle());
+      generateMetadata(baseOutputDir, repository, repository.getMetadata().getAny());
 
-    File datatypesOutputDir = makeDirectory(new File(baseOutputDir, "datatypes"));
-    generateDatatypeList(datatypesOutputDir, repository.getDatatypes().getDatatype());
-    repository.getDatatypes().getDatatype().forEach(d -> {
-      try {
-        generateDatatype(datatypesOutputDir, d);
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    });
-    File fieldsOutputDir = makeDirectory(new File(baseOutputDir, "fields"));
-    List<FieldType> sortedFieldList = repository.getFields().getField().stream()
-        .sorted((o1, o2) -> o1.getName().compareTo(o2.getName())).collect(Collectors.toList());
-    generateFieldsList(fieldsOutputDir, sortedFieldList);
-    repository.getFields().getField().forEach(f -> {
-      try {
-        generateFieldDetail(fieldsOutputDir, f);
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    });
+      File datatypesOutputDir = makeDirectory(new File(baseOutputDir, "datatypes"));
+      generateDatatypeList(datatypesOutputDir, repository.getDatatypes().getDatatype());
+      repository.getDatatypes().getDatatype().forEach(d -> {
+        try {
+          generateDatatype(datatypesOutputDir, d);
+        } catch (IOException e) {
+          throw new RuntimeException(e);
+        }
+      });
+      File fieldsOutputDir = makeDirectory(new File(baseOutputDir, "fields"));
+      List<FieldType> sortedFieldList = repository.getFields().getField().stream()
+          .sorted((o1, o2) -> o1.getName().compareTo(o2.getName())).collect(Collectors.toList());
+      generateFieldsList(fieldsOutputDir, sortedFieldList);
+      repository.getFields().getField().forEach(f -> {
+        try {
+          generateFieldDetail(fieldsOutputDir, f);
+        } catch (IOException e) {
+          throw new RuntimeException(e);
+        }
+      });
 
-    List<CodeSetType> allCodeSets = repository.getCodeSets().getCodeSet();
-    generateCodeSetList(datatypesOutputDir, allCodeSets.stream()
-        .sorted((o1, o2) -> o1.getName().compareTo(o2.getName())).collect(Collectors.toList()));
-    repository.getCodeSets().getCodeSet().forEach(cs -> {
-      try {
-        generateCodeSetDetail(datatypesOutputDir, cs);
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    });
+      List<CodeSetType> allCodeSets = repository.getCodeSets().getCodeSet();
+      generateCodeSetList(datatypesOutputDir, allCodeSets.stream()
+          .sorted((o1, o2) -> o1.getName().compareTo(o2.getName())).collect(Collectors.toList()));
+      repository.getCodeSets().getCodeSet().forEach(cs -> {
+        try {
+          generateCodeSetDetail(datatypesOutputDir, cs);
+        } catch (IOException e) {
+          throw new RuntimeException(e);
+        }
+      });
 
-    File messagesDocDir = makeDirectory(new File(baseOutputDir, "messages"));   
-    File messagesImgDir = makeDirectory(new File(messagesDocDir, "img"));
+      File messagesDocDir = makeDirectory(new File(baseOutputDir, "messages"));
+      File messagesImgDir = makeDirectory(new File(messagesDocDir, "img"));
 
-    final List<CategoryType> sortedCategoryList = repository.getCategories().getCategory().stream()
-        .filter(c -> c.getComponentType() == CatComponentTypeT.MESSAGE).sorted((o1, o2) -> {
-          final String sectionValue1 = o1.getSection() != null ? o1.getSection().value() : "";
-          final String sectionValue2 = o2.getSection() != null ? o2.getSection().value() : "";
-          int retv = sectionValue1.compareTo(sectionValue2);
-          if (retv == 0) {
-            retv = o1.getId().compareTo(o2.getId());
-          }
-          return retv;
-        }).collect(Collectors.toList());
-    generateCategories(messagesDocDir, "Message Categories", sortedCategoryList);
+      final List<CategoryType> sortedCategoryList =
+          repository.getCategories().getCategory().stream()
+              .filter(c -> c.getComponentType() == CatComponentTypeT.MESSAGE).sorted((o1, o2) -> {
+                final String sectionValue1 = o1.getSection() != null ? o1.getSection().value() : "";
+                final String sectionValue2 = o2.getSection() != null ? o2.getSection().value() : "";
+                int retv = sectionValue1.compareTo(sectionValue2);
+                if (retv == 0) {
+                  retv = o1.getId().compareTo(o2.getId());
+                }
+                return retv;
+              }).collect(Collectors.toList());
+      generateCategories(messagesDocDir, "Message Categories", sortedCategoryList);
 
-    List<MessageType> sortedMessageList =
-        repository.getMessages().getMessage().stream().sorted((o1, o2) -> {
-          int retv = o1.getName().compareTo(o2.getName());
-          if (retv == 0) {
-            retv = o1.getScenario().compareTo(o2.getScenario());
-          }
-          return retv;
-        }).collect(Collectors.toList());
+      List<MessageType> sortedMessageList =
+          repository.getMessages().getMessage().stream().sorted((o1, o2) -> {
+            int retv = o1.getName().compareTo(o2.getName());
+            if (retv == 0) {
+              retv = o1.getScenario().compareTo(o2.getScenario());
+            }
+            return retv;
+          }).collect(Collectors.toList());
 
-    final List<ActorType> actorList =
-        repository.getActors().getActorOrFlow().stream().filter(af -> af instanceof ActorType)
-            .map(af -> (ActorType) af).collect(Collectors.toList());
-    generateActorsList(messagesDocDir, actorList);
-    actorList.forEach(a -> {
-      try {
-        generateActorDetail(messagesDocDir, messagesImgDir, a);
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    });
+      final List<ActorType> actorList =
+          repository.getActors().getActorOrFlow().stream().filter(af -> af instanceof ActorType)
+              .map(af -> (ActorType) af).collect(Collectors.toList());
+      generateActorsList(messagesDocDir, actorList);
+      actorList.forEach(a -> {
+        try {
+          generateActorDetail(messagesDocDir, messagesImgDir, a);
+        } catch (IOException e) {
+          throw new RuntimeException(e);
+        }
+      });
 
-    final List<FlowType> flowList = repository.getActors().getActorOrFlow().stream()
-        .filter(af -> af instanceof FlowType).map(af -> (FlowType) af).collect(Collectors.toList());
-    generateFlowsList(messagesDocDir, flowList);
-    flowList.forEach(f -> {
-      try {
-        generateFlowDetail(messagesDocDir, f);
+      final List<FlowType> flowList =
+          repository.getActors().getActorOrFlow().stream().filter(af -> af instanceof FlowType)
+              .map(af -> (FlowType) af).collect(Collectors.toList());
+      generateFlowsList(messagesDocDir, flowList);
+      flowList.forEach(f -> {
+        try {
+          generateFlowDetail(messagesDocDir, f);
 
-      generateMessageListByFlow(messagesDocDir, f, sortedMessageList);
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    });
+          generateMessageListByFlow(messagesDocDir, f, sortedMessageList);
+        } catch (IOException e) {
+          throw new RuntimeException(e);
+        }
+      });
 
+      generateAllMessageList(messagesDocDir, sortedMessageList);
+      sortedCategoryList.forEach(c -> {
+        try {
+          generateMessageListByCategory(messagesDocDir, c, sortedMessageList);
+        } catch (IOException e) {
+          throw new RuntimeException(e);
+        }
+      });
 
-    generateAllMessageList(messagesDocDir, sortedMessageList);
-    sortedCategoryList.forEach(c -> {
-      try {
-        generateMessageListByCategory(messagesDocDir, c, sortedMessageList);
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    });
-
-    List<ComponentType> sortedComponentList =
-        repository.getComponents().getComponentOrGroup().stream()
-            .sorted((o1, o2) -> o1.getName().compareTo(o2.getName())).collect(Collectors.toList());
-    generateAllComponentsList(messagesDocDir, sortedComponentList);
-    repository.getComponents().getComponentOrGroup().forEach(c -> {
-      try {
-        generateComponentDetail(messagesDocDir, c);
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    });
-    repository.getMessages().getMessage().forEach(m -> {
-      try {
-        generateMessageDetail(messagesDocDir, messagesImgDir, m);
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    });
+      List<ComponentType> sortedComponentList = repository.getComponents().getComponentOrGroup()
+          .stream().sorted((o1, o2) -> o1.getName().compareTo(o2.getName()))
+          .collect(Collectors.toList());
+      generateAllComponentsList(messagesDocDir, sortedComponentList);
+      repository.getComponents().getComponentOrGroup().forEach(c -> {
+        try {
+          generateComponentDetail(messagesDocDir, c);
+        } catch (IOException e) {
+          throw new RuntimeException(e);
+        }
+      });
+      repository.getMessages().getMessage().forEach(m -> {
+        try {
+          generateMessageDetail(messagesDocDir, messagesImgDir, m);
+        } catch (IOException e) {
+          throw new RuntimeException(e);
+        }
+      });
     } catch (RuntimeException e) {
       if (e.getCause() instanceof IOException) {
-        throw (IOException)e.getCause();
+        throw (IOException) e.getCause();
       } else {
         throw e;
       }
@@ -291,19 +303,20 @@ public class DocGenerator {
 
       List<Object> members = actor.getFieldOrFieldRefOrComponent();
       generateMembers(members, writer);
-      
+
       ST stActor2 = stGroup.getInstanceOf("actorPart2");
       stActor2.add("actor", actor);
       stActor2.write(writer, errorListener);
 
       List<Object> stateMachines = actor.getFieldOrFieldRefOrComponent().stream()
           .filter(o -> o instanceof StateMachineType).collect(Collectors.toList());
-      
+
       for (Object stateMachine : stateMachines) {
         ST stStates = stGroup.getInstanceOf("stateMachine");
         stStates.add("states", stateMachine);
         stStates.write(writer, errorListener);
-        imgGenerator.generateUMLStateMachine(imgDir, (StateMachineType)stateMachine, errorListener);
+        imgGenerator.generateUMLStateMachine(imgDir, (StateMachineType) stateMachine,
+            errorListener);
       }
     }
   }
@@ -350,8 +363,7 @@ public class DocGenerator {
     st.write(outputFile, errorListener, encoding);
   }
 
-  private void generateComponentDetail(File outputDir, ComponentType component)
-      throws IOException {
+  private void generateComponentDetail(File outputDir, ComponentType component) throws IOException {
     ST stComponentStart;
     if (component instanceof GroupType) {
       stComponentStart = stGroup.getInstanceOf("groupStart");
@@ -419,14 +431,13 @@ public class DocGenerator {
     st.write(outputFile, errorListener, encoding);
   }
 
-  private void generateMain(File outputDir, String title)
-      throws IOException {
+  private void generateMain(File outputDir, String title) throws IOException {
     ST st = stGroup.getInstanceOf("main");
     st.add("title", title);
     File outputFile = new File(outputDir, "index.html");
     st.write(outputFile, errorListener, encoding);
   }
-  
+
   private void generateCategories(File outputDir, String title, List<CategoryType> categoriesList)
       throws IOException {
     ST st = stGroup.getInstanceOf("categories");
@@ -442,14 +453,23 @@ public class DocGenerator {
         FieldType field = getField(((FieldRefType) member).getId().intValue());
         ST stField = stGroup.getInstanceOf("fieldMember");
         stField.add("field", field);
-        stField.add("presence", getFieldPresence((FieldRefType) member));
+        if (((FieldRefType) member).getSupported() == SupportType.SUPPORTED) {
+          stField.add("presence", getFieldPresence((FieldRefType) member));
+        } else {
+          stField.add("presence", supportedMap.get(((FieldRefType) member).getSupported()));
+        }
+        stField.add("assign", ((FieldRefType) member).getAssign());
         stField.write(writer, errorListener);
       } else if (member instanceof ComponentRefType) {
         ComponentType component = getComponent(((ComponentRefType) member).getId().intValue());
         ST stComponent = stGroup.getInstanceOf("componentMember");
         stComponent.add("component", component);
-        stComponent.add("presence",
+        if (((ComponentRefType) member).getSupported() == SupportType.SUPPORTED) {
+          stComponent.add("presence",
             ((ComponentRefType) member).getPresence().value().toLowerCase());
+        } else {
+          stComponent.add("presence", supportedMap.get(((ComponentRefType) member).getSupported()));
+        }
         stComponent.write(writer, errorListener);
       }
     }
@@ -463,8 +483,8 @@ public class DocGenerator {
     stMessageStart.add("message", message);
     stMessagePart2.add("message", message);
     stMessageEnd.add("message", message);
-    File outputFile =
-        new File(messagesDocDir, String.format("%s-%s.html", message.getName(), message.getScenario()));
+    File outputFile = new File(messagesDocDir,
+        String.format("%s-%s.html", message.getName(), message.getScenario()));
 
     List<ResponseType> responses = null;
     final Responses responses2 = message.getResponses();
@@ -479,13 +499,13 @@ public class DocGenerator {
       stMessageStart.write(writer, errorListener);
       if (responses != null) {
         generateResponses(responses, writer);
-        File imgFile =
-                new File(messagesImgDir, String.format("%s-%s.png", message.getName(), message.getScenario()));
+        File imgFile = new File(messagesImgDir,
+            String.format("%s-%s.png", message.getName(), message.getScenario()));
         try (OutputStreamWriter imgFileWriter =
-                new OutputStreamWriter(new FileOutputStream(imgFile), "UTF-8")) {
-        	FlowType flow = getFlow(message.getFlow());
-	        imgGenerator.generateUMLSequence(messagesImgDir, message, flow, responses, errorListener);
-        };
+            new OutputStreamWriter(new FileOutputStream(imgFile), "UTF-8")) {
+          FlowType flow = getFlow(message.getFlow());
+          imgGenerator.generateUMLSequence(messagesImgDir, message, flow, responses, errorListener);
+        } ;
       }
       stMessagePart2.write(writer, errorListener);
       generateMembers(members, writer);
@@ -515,8 +535,8 @@ public class DocGenerator {
     st.write(outputFile, errorListener, encoding);
   }
 
-  private void generateMetadata(File outputDir, Repository repository, List<JAXBElement<SimpleLiteral>> elementList)
-      throws IOException {
+  private void generateMetadata(File outputDir, Repository repository,
+      List<JAXBElement<SimpleLiteral>> elementList) throws IOException {
     ST st = stGroup.getInstanceOf("metadata");
     st.add("repository", repository);
     st.add("elementList", elementList);
@@ -539,8 +559,6 @@ public class DocGenerator {
       }
     }
   }
-  
-
 
   private ComponentType getComponent(int componentId) {
     List<ComponentType> components = repository.getComponents().getComponentOrGroup();
@@ -551,18 +569,18 @@ public class DocGenerator {
     }
     return null;
   }
-  
+
   private FlowType getFlow(String name) {
-	  List<Object> afList = repository.getActors().getActorOrFlow();
-	  for (Object obj : afList) {
-		  if (obj instanceof FlowType) {
-			  FlowType flow = (FlowType) obj;
-			  if (flow.getName().equals(name)) {
-				  return flow;
-			  }
-		  }
-	  }
-	  return null;
+    List<Object> afList = repository.getActors().getActorOrFlow();
+    for (Object obj : afList) {
+      if (obj instanceof FlowType) {
+        FlowType flow = (FlowType) obj;
+        if (flow.getName().equals(name)) {
+          return flow;
+        }
+      }
+    }
+    return null;
   }
 
   private FieldType getField(int id) {

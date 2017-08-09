@@ -93,6 +93,7 @@ actorStart(actor) ::= <<
 $if(actor.extends)$<h1>extends scenario <a href="$actor.name$-$actor.extends$.html">$actor.extends$</a></h1>$endif$
 $documentation(object=actor)$
 <h2>State Variables</h2>
+$if(actor.fieldOrFieldRefOrComponent)$
 <table class="members">
 <tr>
 <th class="members">ID</th>
@@ -101,10 +102,11 @@ $documentation(object=actor)$
 <th class="members">Presence</th>
 <th class="members">Description</th>
 </tr>
+$else$None$endif$
 >>
 
 actorPart2(actor) ::= <<
-</table>
+$if(actor.fieldOrFieldRefOrComponent)</table>$endif$
 >>
 
 stateMachine(states) ::= <<
@@ -242,6 +244,7 @@ $documentation(object=message)$
 </table>
 $pedigree(object=message)$
 <h2>Responses</h2>
+$if(message.responses.response)$
 <img src="img/$message.name$-$message.scenario$.png" alt="Sequence $message.name$ $message.scenario$"></img>
 <table class="mid">
 <tr>
@@ -249,6 +252,7 @@ $pedigree(object=message)$
 <th class="mid">Scenario</th>
 <th class="mid">When</th>
 </tr>
+$else$None$endif$
 >>
 
 messageResponse(message, scenario, when) ::= <<
@@ -256,7 +260,7 @@ messageResponse(message, scenario, when) ::= <<
 >>
 
 messagePart2(message) ::= <<
-</table>
+$if(message.responses.response)$</table>$endif$
 <h2>Members</h2>
 <table class="members">
 <tr>
@@ -274,8 +278,10 @@ messageEnd(message) ::= <<
 </html>
 >>
 
-fieldMember(field, presence) ::= <<
-<tr><td class="members-id">$field.id$</td><td class="members"><a href="../fields/$field.name$.html">$field.name$</a></td><td class="members">$field.abbrName$</td><td class="members">$presence$</td><td class="members">$documentation(object=field)$</td></tr>
+fieldMember(field, presence, assign) ::= <<
+<tr><td class="members-id">$field.id$</td><td class="members"><a href="../fields/$field.name$.html">$field.name$</a></td><td class="members">$field.abbrName$</td>
+<td class="members">$if(assign)$<b>Assign: </b>$assign$$else$$presence$$endif$</td>
+<td class="members">$documentation(object=field)$</td></tr>
 >>
 
 componentMember(component, presence) ::= <<
