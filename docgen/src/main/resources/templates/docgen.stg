@@ -106,7 +106,7 @@ $else$None$endif$
 >>
 
 actorPart2(actor) ::= <<
-$if(actor.fieldOrFieldRefOrComponent)</table>$endif$
+$if(actor.fieldOrFieldRefOrComponent)$</table>$endif$
 >>
 
 stateMachine(states) ::= <<
@@ -261,7 +261,8 @@ messageResponse(message, scenario, when) ::= <<
 
 messagePart2(message) ::= <<
 $if(message.responses.response)$</table>$endif$
-<h2>Members</h2>
+<h2><a>Members</a></h2>
+$if(message.extends)$<a href="$message.name$-$message.extends$.html#Members">Scenario $message.extends$ members</a>$endif$
 <table class="members">
 <tr>
 <th class="members">ID</th>
@@ -422,7 +423,7 @@ $mappings:{mapping|<tr><td class="minor">$mapping.standard$</td><td class="minor
 </table>
 >>
 
-codeSet(codeSet) ::= <<
+codeSetStart(codeSet) ::= <<
 <!DOCTYPE html>
 <html>
 <head>
@@ -440,18 +441,13 @@ $documentation(object=codeSet)$
 <tr><td class="major">$codeSet.id$</td><td class="major"><a href="$codeSet.type$.html">$codeSet.type$</a></td></tr>
 </table>
 <h2>Codes</h2>
-$codes(codeSet.code)$
-</body>
-</html>
->>
-
-codes(codes) ::= <<
 <table class="members">
 <tr>
 <th class="members">ID</th>
 <th class="members">Name</th>
 <th class="members">Value</th>
 <th class="members">Description</th>
+<th class="members">Supported</th>
 <th class="members">Added</th>
 <th class="members">EP</th>
 <th class="members">Updated</th>
@@ -459,8 +455,16 @@ codes(codes) ::= <<
 <th class="members">Deprecated</th>
 <th class="members">EP</th>
 </tr>
-$codes:{code|<tr><td class="members-id">$code.id$</td><td class="members">$code.name$</td><td class="members">$code.value$</td><td class="members">$documentation(object=code)$</td><td class="members">$code.added$</td><td class="members">$code.addedEP$</td><td class="members">$code.updated$</td><td class="members">$code.updatedEP$</td><td class="members">$code.deprecated$</td><td class="members">$code.deprecatedEP$</td></tr>}$
+>>
+
+code(code, supported) ::= <<
+<tr><td class="members-id">$code.id$</td><td class="members">$code.name$</td><td class="members">$code.value$</td><td class="members">$documentation(object=code)$</td><td class="members">$supported$</td><td class="members">$code.added$</td><td class="members">$code.addedEP$</td><td class="members">$code.updated$</td><td class="members">$code.updatedEP$</td><td class="members">$code.deprecated$</td><td class="members">$code.deprecatedEP$</td></tr>
+>>
+
+codeSetEnd(codeSet) ::= <<
 </table>
+</body>
+</html>
 >>
 
 pedigree(object) ::= <<

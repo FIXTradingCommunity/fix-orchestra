@@ -27,6 +27,7 @@ sequence(message, flow) ::= <<
 title Sequence $message.name$ $message.scenario$
 actor $flow.source$ as source
 actor $flow.destination$ as destination
+
 source -> destination: $message.name$ $message.scenario$
 
 >>
@@ -35,7 +36,8 @@ sequenceEnd(message) ::= <<
 @enduml
 >>
 
-messageResponse(messageName, scenarioName, async) ::= <<
+messageResponse(messageName, scenarioName, async, name, isFirstAlt, isAlt) ::= <<
+$if(isFirstAlt)$alt $elseif(isAlt)$else $endif$$name$
 source $if(async)$<<--$else$<--$endif$ destination: $messageName$ $scenarioName$
 
 >>

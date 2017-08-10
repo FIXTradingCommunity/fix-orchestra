@@ -44,6 +44,7 @@ import io.fixprotocol._2016.fixrepository.ActorType;
 import io.fixprotocol._2016.fixrepository.CatComponentTypeT;
 import io.fixprotocol._2016.fixrepository.CategoryType;
 import io.fixprotocol._2016.fixrepository.CodeSetType;
+import io.fixprotocol._2016.fixrepository.CodeType;
 import io.fixprotocol._2016.fixrepository.ComponentRefType;
 import io.fixprotocol._2016.fixrepository.ComponentType;
 import io.fixprotocol._2016.fixrepository.Datatype;
@@ -348,10 +349,27 @@ public class DocGenerator {
   }
 
   private void generateCodeSetDetail(File outputDir, CodeSetType codeSet) throws IOException {
-    ST st = stGroup.getInstanceOf("codeSet");
-    st.add("codeSet", codeSet);
     File outputFile = new File(outputDir, String.format("%s.html", codeSet.getName()));
-    st.write(outputFile, errorListener, encoding);
+    
+    try (OutputStreamWriter fileWriter =
+        new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8")) {
+      NoIndentWriter writer = new NoIndentWriter(fileWriter);
+      ST stCodesetStart = stGroup.getInstanceOf("codeSetStart");
+      stCodesetStart.add("codeSet", codeSet);
+      stCodesetStart.write(writer, errorListener);
+      
+      List<CodeType> codeList = codeSet.getCode();
+      for (CodeType code : codeList) {
+        ST stCode = stGroup.getInstanceOf("code");
+        stCode.add("code", code);
+        stCode.add("supported", supportedMap.get(code.getSupported()));
+        stCode.write(writer, errorListener);
+      }
+      
+      ST stCodesetEnd = stGroup.getInstanceOf("codeSetEnd");
+      stCodesetEnd.add("codeSet", codeSet);
+      stCodesetEnd.write(writer, errorListener);
+    }
   }
 
   private void generateCodeSetList(File outputDir, List<CodeSetType> codeSetList)
