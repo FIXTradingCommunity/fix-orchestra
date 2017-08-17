@@ -23,7 +23,7 @@
 		<dependency>
 			<groupId>org.quickfixj</groupId>
 			<artifactId>quickfixj-core</artifactId>
-			<version>1.6.2</version>
+			<version>${quickfixj.version}</version>
 		</dependency>
 	</dependencies>
 

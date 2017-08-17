@@ -72,7 +72,7 @@ import io.fixprotocol.orchestra.dsl.datetime.DateTimeFormatters;
 class ScoreTranslator extends AbstractParseTreeVisitor<String> implements ScoreVisitor<String> {
 
   private static <K, U> Collector<Map.Entry<K, U>, ?, Map<K, U>> entriesToMap() {
-    return Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue());
+    return Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue);
   }
 
   private static <K, V> Map.Entry<K, V> entry(K key, V value) {
@@ -181,7 +181,7 @@ class ScoreTranslator extends AbstractParseTreeVisitor<String> implements ScoreV
   public String visitContains(ContainsContext ctx) {
     String val = visit(ctx.val);
     List<String> memberStrings =
-        ctx.member.stream().map(e -> visit(e)).collect(Collectors.toList());
+        ctx.member.stream().map(this::visit).collect(Collectors.toList());
     return String.format("%s %s %s %s", translateToken("if"), val, translateToken("in"),
         String.join(", ", memberStrings));
   }
@@ -343,7 +343,7 @@ class ScoreTranslator extends AbstractParseTreeVisitor<String> implements ScoreV
 
     List<QualContext> qualifiers = ctx.qual();
 
-    List<String> qualStrings = qualifiers.stream().map(q -> visit(q)).collect(Collectors.toList());
+    List<String> qualStrings = qualifiers.stream().map(this::visit).collect(Collectors.toList());
     return String.format("%s %s", translateToken(scopeText), String.join("-", qualStrings));
   }
 

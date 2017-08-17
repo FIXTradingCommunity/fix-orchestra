@@ -32,7 +32,7 @@ import quickfix.Message;
  * @author Don Mendelson
  *
  */
-class MessageScope extends AbstractMessageScope implements Scope {
+public class MessageScope extends AbstractMessageScope implements Scope {
 
   private final MessageType messageType;
   private Scope parent;
@@ -106,7 +106,7 @@ class MessageScope extends AbstractMessageScope implements Scope {
   @Override
   public FixNode resolve(PathStep pathStep) {
     String name = pathStep.getName();
-    List<Object> members = messageType.getStructure().getComponentOrComponentRefOrGroup();
+    List<Object> members = getRepository().getMessageMembers(messageType);
     for (Object member : members) {
       if (member instanceof FieldRefType) {
         FieldRefType fieldRefType = (FieldRefType) member;
@@ -140,8 +140,11 @@ class MessageScope extends AbstractMessageScope implements Scope {
    */
   @Override
   public FixValue<?> assign(PathStep pathStep, FixValue<?> value) throws ModelException {
+    if (value.getValue() == null) {
+      throw new ModelException(String.format("Assigning field %s null not allowed", value.getName()));
+    }
     String name = pathStep.getName();
-    List<Object> members = messageType.getStructure().getComponentOrComponentRefOrGroup();
+    List<Object> members = getRepository().getMessageMembers(messageType);
     for (Object member : members) {
       if (member instanceof FieldRefType) {
         FieldRefType fieldRefType = (FieldRefType) member;

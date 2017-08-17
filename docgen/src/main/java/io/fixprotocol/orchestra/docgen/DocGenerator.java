@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -175,7 +176,7 @@ public class DocGenerator {
       });
       File fieldsOutputDir = makeDirectory(new File(baseOutputDir, "fields"));
       List<FieldType> sortedFieldList = repository.getFields().getField().stream()
-          .sorted((o1, o2) -> o1.getName().compareTo(o2.getName())).collect(Collectors.toList());
+          .sorted(Comparator.comparing(FieldType::getName)).collect(Collectors.toList());
       generateFieldsList(fieldsOutputDir, sortedFieldList);
       repository.getFields().getField().forEach(f -> {
         try {
@@ -187,7 +188,7 @@ public class DocGenerator {
 
       List<CodeSetType> allCodeSets = repository.getCodeSets().getCodeSet();
       generateCodeSetList(datatypesOutputDir, allCodeSets.stream()
-          .sorted((o1, o2) -> o1.getName().compareTo(o2.getName())).collect(Collectors.toList()));
+          .sorted(Comparator.comparing(CodeSetType::getName)).collect(Collectors.toList()));
       repository.getCodeSets().getCodeSet().forEach(cs -> {
         try {
           generateCodeSetDetail(datatypesOutputDir, cs);
@@ -257,7 +258,7 @@ public class DocGenerator {
       });
 
       List<ComponentType> sortedComponentList = repository.getComponents().getComponentOrGroup()
-          .stream().sorted((o1, o2) -> o1.getName().compareTo(o2.getName()))
+          .stream().sorted(Comparator.comparing(ComponentType::getName))
           .collect(Collectors.toList());
       generateAllComponentsList(messagesDocDir, sortedComponentList);
       repository.getComponents().getComponentOrGroup().forEach(c -> {
@@ -523,7 +524,7 @@ public class DocGenerator {
             new OutputStreamWriter(new FileOutputStream(imgFile), "UTF-8")) {
           FlowType flow = getFlow(message.getFlow());
           imgGenerator.generateUMLSequence(messagesImgDir, message, flow, responses, errorListener);
-        } ;
+        }
       }
       stMessagePart2.write(writer, errorListener);
       generateMembers(members, writer);

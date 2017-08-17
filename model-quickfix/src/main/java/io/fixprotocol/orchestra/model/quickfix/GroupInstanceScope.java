@@ -31,16 +31,16 @@ import io.fixprotocol.orchestra.model.SymbolResolver;
 import quickfix.Group;
 
 /**
- * Symbol Scope for an entry of a repeating group
+ * Symbol Scope for an instance of a repeating group
  * @author Don Mendelson
  *
  */
-class GroupEntryScope extends AbstractMessageScope implements Scope {
+class GroupInstanceScope extends AbstractMessageScope implements Scope {
 
   private final GroupType groupType;
   private Scope parent;
 
-  public GroupEntryScope(Group group, GroupType groupType, RepositoryAdapter repository, SymbolResolver symbolResolver, Evaluator evaluator) {
+  public GroupInstanceScope(Group group, GroupType groupType, RepositoryAdapter repository, SymbolResolver symbolResolver, Evaluator evaluator) {
     super(group, repository, symbolResolver, evaluator);
     this.groupType = groupType;
   }

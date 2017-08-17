@@ -113,9 +113,9 @@ public class Validator implements io.fixprotocol.orchestra.model.Validator<Messa
       try (Scope local = (Scope) symbolResolver.resolve(SymbolResolver.LOCAL_ROOT)) {
         local.nest(new PathStep(messageType.getName()), messageScope);
 
-        List<Object> elements = messageType.getStructure().getComponentOrComponentRefOrGroup();
+        List<Object> members = repositoryAdapter.getMessageMembers(messageType);
 
-        validateFieldMap(message, testException, elements);
+        validateFieldMap(message, testException, members);
       }
     } catch (Exception e) {
       throw new RuntimeException("Internal error", e);
@@ -193,21 +193,21 @@ public class Validator implements io.fixprotocol.orchestra.model.Validator<Messa
   }
 
   private void validateFieldMap(FieldMap fieldMap, TestException testException,
-      List<Object> elements) {
-    for (Object element : elements) {
-      if (element instanceof FieldRefType) {
-        FieldRefType fieldRefType = (FieldRefType) element;
+      List<Object> members) {
+    for (Object member : members) {
+      if (member instanceof FieldRefType) {
+        FieldRefType fieldRefType = (FieldRefType) member;
         validateField(fieldMap, testException, fieldRefType);
-      } else if (element instanceof GroupRefType) {
-        GroupRefType groupRefType = (GroupRefType) element;
+      } else if (member instanceof GroupRefType) {
+        GroupRefType groupRefType = (GroupRefType) member;
         GroupType groupType = repositoryAdapter.getGroup(groupRefType);       
         List<Group> groups = fieldMap.getGroups(groupType.getNumInGroupId().intValue());
         for (Group group : groups) {
           validateFieldMap(group, testException,
               groupType.getComponentRefOrGroupRefOrFieldRef());
         }
-      } else if (element instanceof ComponentRefType) {
-        ComponentRefType componentRefType = (ComponentRefType) element;
+      } else if (member instanceof ComponentRefType) {
+        ComponentRefType componentRefType = (ComponentRefType) member;
         ComponentType component = repositoryAdapter.getComponent(componentRefType);
         if (!component.getName().equals("StandardHeader") && !component.getName().equals("StandardTrailer"))
         validateFieldMap(fieldMap, testException,

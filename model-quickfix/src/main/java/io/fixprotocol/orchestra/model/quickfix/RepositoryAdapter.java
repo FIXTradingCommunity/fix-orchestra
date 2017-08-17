@@ -14,6 +14,7 @@
  */
 package io.fixprotocol.orchestra.model.quickfix;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.fixprotocol._2016.fixrepository.CodeSetType;
@@ -28,14 +29,11 @@ import io.fixprotocol._2016.fixrepository.MessageType;
 import io.fixprotocol._2016.fixrepository.Repository;
 
 /**
- * Wraps a Repository
+ * Helper methods for a Repository
  * 
  * @author Don Mendelson
- * 
- *         TODO consider building dictionaries from repository structures if sequential search
- *         becomes a performance problem.
  */
-class RepositoryAdapter {
+public class RepositoryAdapter {
 
   private final Repository repository;
 
@@ -46,6 +44,11 @@ class RepositoryAdapter {
     this.repository = repository;
   }
 
+  /**
+   * Get a Code Set by name
+   * @param name Code Set name
+   * @return A Code Set or {@code null} if not found
+   */
   CodeSetType getCodeset(String name) {
     List<CodeSetType> codeSetList = repository.getCodeSets().getCodeSet();
       for (CodeSetType codeSet : codeSetList) {
@@ -56,6 +59,11 @@ class RepositoryAdapter {
     return null;
   }
 
+  /**
+   * Get a component by name
+   * @param name component name
+   * @return A component or {@code null} if not found
+   */ 
   ComponentType getComponent(ComponentRefType componentRefType) {
     List<ComponentType> components =
         repository.getComponents().getComponentOrGroup();
@@ -67,6 +75,11 @@ class RepositoryAdapter {
     return null;
   }
 
+  /**
+   * Get a datatype by name
+   * @param name datatype name
+   * @return A datatype or {@code null} if not found
+   */ 
   Datatype getDatatype(String name) {
     Datatypes datatypes = repository.getDatatypes();
     List<Datatype> datatypeList = datatypes.getDatatype();
@@ -78,6 +91,11 @@ class RepositoryAdapter {
     return null;
   }
 
+  /**
+   * Get the datatype of a field by its ID
+   * @param id field ID
+   * @return name of the datatype or {@code null} if the field is not found
+   */
   String getFieldDatatype(int id) {
     List<FieldType> fields = repository.getFields().getField();
     for (FieldType fieldType : fields) {
@@ -88,6 +106,11 @@ class RepositoryAdapter {
     return null;
   }
 
+  /**
+   * Get a group given a reference to it
+   * @param groupRefType group reference
+   * @return a group or {@code null} if not found
+   */
   GroupType getGroup(GroupRefType groupRefType) {
     List<ComponentType> components =
         repository.getComponents().getComponentOrGroup();
@@ -99,15 +122,42 @@ class RepositoryAdapter {
     return null;
   }
 
-  MessageType getMessage(String name, String context) {
+  /**
+   * Get a message by its name and scenario name
+   * @param name message name
+   * @param scenario scenario name
+   * @return a message or {@code null} if not found
+   */
+  MessageType getMessage(String name, String scenario) {
     List<MessageType> messageList = repository.getMessages().getMessage();
     for (MessageType messageType : messageList) {
-      if (name.equals(messageType.getName()) && context.equals(messageType.getScenario())) {
+      if (name.equals(messageType.getName()) && scenario.equals(messageType.getScenario())) {
 
         return messageType;
       }
     }
     return null;
+  }
+
+  /**
+   * Get a combined list of a message members including members from base scenarios
+   * @param messageType a message
+   * @return a combined list of members
+   */
+  List<Object> getMessageMembers(MessageType messageType) {
+    List<Object> elements = new ArrayList<Object>();
+   
+    elements.addAll(
+        messageType.getStructure().getComponentOrComponentRefOrGroup());
+
+    String baseScenario = messageType.getExtends();
+    while (baseScenario != null) {
+      MessageType baseMessageType = getMessage(messageType.getName(), baseScenario);
+      elements.addAll(
+          baseMessageType.getStructure().getComponentOrComponentRefOrGroup());
+      baseScenario = baseMessageType.getExtends();
+    }
+    return elements;
   }
 
 }

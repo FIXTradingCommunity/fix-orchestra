@@ -40,7 +40,7 @@ public final class FixValueFactory {
    * @throws ModelException  if the type cannot be created
    */
   @SuppressWarnings("rawtypes")
-  public static FixValue create(String name, FixType type, Class<? extends Object> valueClass) throws ModelException {
+  public static FixValue create(String name, FixType type, Class<?> valueClass) throws ModelException {
     Objects.requireNonNull(type, "FIX type missing");
     Objects.requireNonNull(valueClass, "Value class missing");
     

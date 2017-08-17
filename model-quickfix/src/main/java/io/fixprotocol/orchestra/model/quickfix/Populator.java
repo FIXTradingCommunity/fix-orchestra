@@ -14,6 +14,7 @@
  */
 package io.fixprotocol.orchestra.model.quickfix;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
@@ -71,10 +72,9 @@ public class Populator implements io.fixprotocol.orchestra.model.Populator<Messa
         Scope outScope = symbolResolver.nest(new PathStep("out."), new MessageScope(outboundMessage,
             outboundMessageType, repositoryAdapter, symbolResolver, evaluator))) {
 
-      List<Object> elements =
-          outboundMessageType.getStructure().getComponentOrComponentRefOrGroup();
-
-      populateFieldMap(outboundMessage, elements, outScope);
+      List<Object> members = repositoryAdapter.getMessageMembers(outboundMessageType);
+      
+      populateFieldMap(outboundMessage, members, outScope);
 
     } catch (Exception e1) {
       // TODO Auto-generated catch block
@@ -82,11 +82,11 @@ public class Populator implements io.fixprotocol.orchestra.model.Populator<Messa
     }
   }
 
-  private void populateFieldMap(FieldMap fieldMap, List<?> elements, Scope outScope)
+  private void populateFieldMap(FieldMap fieldMap, List<?> members, Scope outScope)
       throws ModelException {
-    for (Object element : elements) {
-      if (element instanceof FieldRefType) {
-        FieldRefType fieldRefType = (FieldRefType) element;
+    for (Object member : members) {
+      if (member instanceof FieldRefType) {
+        FieldRefType fieldRefType = (FieldRefType) member;
         String assignExpression = fieldRefType.getAssign();
         if (assignExpression != null) {
           try {
@@ -103,15 +103,15 @@ public class Populator implements io.fixprotocol.orchestra.model.Populator<Messa
             throw new ModelException("Failed to assign field " + fieldRefType.getName(), e);
           }
         }
-      } else if (element instanceof GroupRefType) {
-        GroupRefType groupRefType = (GroupRefType) element;
+      } else if (member instanceof GroupRefType) {
+        GroupRefType groupRefType = (GroupRefType) member;
         List<BlockAssignmentType> blockAssignments = groupRefType.getBlockAssignment();
         GroupType groupType = repositoryAdapter.getGroup(groupRefType);
 
         for (int i = 0; i < blockAssignments.size(); i++) {
           Group group = groupFactory.apply(groupType.getNumInGroupId().intValue());
-          try (GroupEntryScope groupScope =
-              new GroupEntryScope(group, groupType, repositoryAdapter, symbolResolver, evaluator)) {
+          try (GroupInstanceScope groupScope =
+              new GroupInstanceScope(group, groupType, repositoryAdapter, symbolResolver, evaluator)) {
             try (Scope local = (Scope) symbolResolver.resolve(SymbolResolver.LOCAL_ROOT)) {
               local.nest(new PathStep(groupType.getName()), groupScope);
               populateFieldMap(group, blockAssignments.get(i).getFieldRef(), groupScope);
@@ -122,8 +122,8 @@ public class Populator implements io.fixprotocol.orchestra.model.Populator<Messa
             e.printStackTrace();
           }
         }
-      } else if (element instanceof ComponentRefType) {
-        ComponentRefType componentRefType = (ComponentRefType) element;
+      } else if (member instanceof ComponentRefType) {
+        ComponentRefType componentRefType = (ComponentRefType) member;
         List<BlockAssignmentType> blockAssignments = componentRefType.getBlockAssignment();
         if (blockAssignments.size() > 0) {
           List<?> blockElements = blockAssignments.get(0).getFieldRef();

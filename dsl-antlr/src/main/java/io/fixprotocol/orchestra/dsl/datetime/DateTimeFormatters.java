@@ -34,7 +34,7 @@ public final class DateTimeFormatters {
    * 
    * Java has ISO_DATE_TIME, but it doesn't handle time zone offset.
    */
-  public static DateTimeFormatter DATE_TIME = new DateTimeFormatterBuilder()
+  public static final DateTimeFormatter DATE_TIME = new DateTimeFormatterBuilder()
       .append(DateTimeFormatter.ISO_LOCAL_DATE)
       .appendLiteral('T')
       .appendValue(HOUR_OF_DAY, 2)
@@ -53,7 +53,7 @@ public final class DateTimeFormatters {
    * 
    * Java has ISO_LOCAL_TIME, but it doesn't handle the leading 'T' or time zone.
    */
-  public static DateTimeFormatter TIME_ONLY = new DateTimeFormatterBuilder()
+  public static final DateTimeFormatter TIME_ONLY = new DateTimeFormatterBuilder()
       .appendLiteral('T')
       .appendValue(HOUR_OF_DAY, 2)
       .appendLiteral(':')

@@ -43,13 +43,13 @@ topMenu(title) ::= <<
 <ul class="major">
 <li class="major-title">$title$</li>
 <li class="major"><a href="metadata.html" target="contentFrame" class="major" id="metadataLink">Metadata</a></li>
-<li class="major"><a href="datatypes/AllCodeSets.html" target="listFrame" class="major">Code sets</a></li>
-<li class="major"><a href="datatypes/AllDatatypes.html" target="listFrame" class="major">Datatypes</a></li>
-<li class="major"><a href="fields/AllFields.html" target="listFrame" class="major">Fields</a></li>
 <li class="major"><a href="messages/AllActors.html" target="listFrame" class="major">Actors</a></li>
 <li class="major"><a href="messages/AllFlows.html" target="listFrame" class="major">Flows</a></li>
-<li class="major"><a href="messages/AllComponents.html" target="listFrame" class="major">Components</a></li>
 <li class="major"><a href="messages/MessageCategories.html" target="listFrame" class="major">Messages</a></li>
+<li class="major"><a href="messages/AllComponents.html" target="listFrame" class="major">Components</a></li>
+<li class="major"><a href="fields/AllFields.html" target="listFrame" class="major">Fields</a></li>
+<li class="major"><a href="datatypes/AllCodeSets.html" target="listFrame" class="major">Code sets</a></li>
+<li class="major"><a href="datatypes/AllDatatypes.html" target="listFrame" class="major">Datatypes</a></li>
 </ul>
 >>
 
@@ -262,7 +262,8 @@ messageResponse(message, scenario, when) ::= <<
 messagePart2(message) ::= <<
 $if(message.responses.response)$</table>$endif$
 <h2><a>Members</a></h2>
-$if(message.extends)$<a href="$message.name$-$message.extends$.html#Members">Scenario $message.extends$ members</a>$endif$
+$if(message.extends)$<a href="$message.name$-$message.extends$.html#Members">Scenario $message.extends$ members</a><br>$endif$
+$message.name$ $message.scenario$ members
 <table class="members">
 <tr>
 <th class="members">ID</th>

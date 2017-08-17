@@ -53,11 +53,11 @@ import quickfix.Group;
  */
 abstract class AbstractMessageScope {
 
+  private final Evaluator evaluator;
   private final FieldMap fieldMap;
   private final RepositoryAdapter repository;
-  private final SymbolResolver symbolResolver;
-  private final Evaluator evaluator;
 
+  private final SymbolResolver symbolResolver;
   protected AbstractMessageScope(FieldMap fieldMap, RepositoryAdapter repository,
       SymbolResolver symbolResolver, Evaluator evaluator) {
     this.fieldMap = fieldMap;
@@ -66,42 +66,6 @@ abstract class AbstractMessageScope {
     this.evaluator = evaluator;
   }
 
-  protected FixNode resolveGroup(PathStep pathStep, GroupRefType groupRefType) {
-    GroupType groupType = repository.getGroup(groupRefType);
-    int index = pathStep.getIndex();
-    String predicate = pathStep.getPredicate();
-    if (index != PathStep.NO_INDEX) {
-      Group group;
-      try {
-        // Both PathStep and QuickFIX use one-based index for group entries
-        group = fieldMap.getGroup(index, (groupType.getNumInGroupId().intValue()));
-      } catch (FieldNotFound e) {
-        return null;
-      }
-      return new GroupEntryScope(group, groupType, repository, symbolResolver, evaluator);
-    } else if (predicate != null) {
-      List<Group> groups = fieldMap.getGroups(groupType.getNumInGroupId().intValue());
-      for (Group group : groups) {
-        GroupEntryScope scope =
-            new GroupEntryScope(group, groupType, repository, symbolResolver, evaluator);
-        Scope local = (Scope) symbolResolver.resolve(SymbolResolver.LOCAL_ROOT);
-        local.nest(new PathStep(groupType.getName()), scope);
-        FixValue<?> fixValue;
-        try {
-          fixValue = evaluator.evaluate(predicate);
-          if (fixValue.getValue() == Boolean.TRUE) {
-            return scope;
-          }
-        } catch (ScoreException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
-        }
-      }
-      return null;
-    } else
-      return null;
-  }
-  
   protected void assignField(FieldRefType fieldRefType, FixValue fixValue) {
     int id = fieldRefType.getId().intValue();
     String dataTypeString = repository.getFieldDatatype(id);
@@ -167,6 +131,10 @@ abstract class AbstractMessageScope {
     }
   }
 
+  protected RepositoryAdapter getRepository() {
+    return repository;
+  }
+  
   @SuppressWarnings("unchecked")
   protected FixNode resolveField(FieldRefType fieldRefType) {
     String name = fieldRefType.getName();
@@ -264,6 +232,42 @@ abstract class AbstractMessageScope {
       }
     }
     return fixValue;
+  }
+
+  protected FixNode resolveGroup(PathStep pathStep, GroupRefType groupRefType) {
+    GroupType groupType = repository.getGroup(groupRefType);
+    int index = pathStep.getIndex();
+    String predicate = pathStep.getPredicate();
+    if (index != PathStep.NO_INDEX) {
+      Group group;
+      try {
+        // Both PathStep and QuickFIX use one-based index for group entries
+        group = fieldMap.getGroup(index, (groupType.getNumInGroupId().intValue()));
+      } catch (FieldNotFound e) {
+        return null;
+      }
+      return new GroupInstanceScope(group, groupType, repository, symbolResolver, evaluator);
+    } else if (predicate != null) {
+      List<Group> groups = fieldMap.getGroups(groupType.getNumInGroupId().intValue());
+      for (Group group : groups) {
+        GroupInstanceScope scope =
+            new GroupInstanceScope(group, groupType, repository, symbolResolver, evaluator);
+        Scope local = (Scope) symbolResolver.resolve(SymbolResolver.LOCAL_ROOT);
+        local.nest(new PathStep(groupType.getName()), scope);
+        FixValue<?> fixValue;
+        try {
+          fixValue = evaluator.evaluate(predicate);
+          if (fixValue.getValue() == Boolean.TRUE) {
+            return scope;
+          }
+        } catch (ScoreException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+      }
+      return null;
+    } else
+      return null;
   }
 
 }

@@ -59,9 +59,10 @@ public class DataDictionaryGenerator {
    * @param args command line arguments. The first argument is the name of a FIX Orchestra file. An
    *        optional second argument is the target directory for generated files. It defaults to
    *        directory "spec".
-   * @throws IOException 
+   * @throws IOException
+   * @throws JAXBException
    */
-  public static void main(String[] args) throws IOException {
+  public static void main(String[] args) throws IOException, JAXBException {
     DataDictionaryGenerator generator = new DataDictionaryGenerator();
     if (args.length >= 1) {
       File inputFile = new File(args[0]);
@@ -83,77 +84,75 @@ public class DataDictionaryGenerator {
   private final Map<Integer, ComponentType> components = new HashMap<>();
   private final Map<Integer, GroupType> groups = new HashMap<>();
 
-  public void generate(InputStream inputFile, File outputDir) {
-    try {
-      final Repository repository = unmarshal(inputFile);
-      final List<CodeSetType> codeSetList = repository.getCodeSets().getCodeSet();
-      for (CodeSetType codeSet : codeSetList) {
-        codeSets.put(codeSet.getName(), codeSet);
-      }
-
-      final List<ComponentType> componentList = repository.getComponents().getComponentOrGroup();
-      for (ComponentType component : componentList) {
-        if (component instanceof GroupType) {
-          groups.put(component.getId().intValue(), (GroupType) component);
-        } else {
-          components.put(component.getId().intValue(), component);
-        }
-      }
-      String version = repository.getVersion();
-      // Split off EP portion of version in the form "FIX.5.0SP2_EP216"
-      String[] parts = version.split("_");
-      if (parts.length > 0) {
-        version = parts[0];
-      }
-      int major = 0;
-      int minor = 0;
-      String regex = "(FIX\\.)(?<major>\\d+)(\\.)(?<minor>\\d+)(.*)";
-      Pattern pattern = Pattern.compile(regex);
-      Matcher matcher = pattern.matcher(version);
-      if (matcher.find()) {
-        major = Integer.parseInt(matcher.group("major"));
-        minor = Integer.parseInt(matcher.group("minor"));
-
-        String versionPath = version.replaceAll("[\\.]", "");
-        File file = getSpecFilePath(outputDir, versionPath, ".xml");
-        outputDir.mkdirs();
-        try (FileWriter writer = new FileWriter(file)) {
-          writeElement(writer, "fix", 0, false, new KeyValue<Integer>("major", major),
-              new KeyValue<Integer>("minor", minor));
-          writeElement(writer, "header", 1, true);
-          writeElement(writer, "trailer", 1, true);
-          writeElement(writer, "messages", 1, false);
-          final List<MessageType> messageList = repository.getMessages().getMessage();
-          for (MessageType messageType : messageList) {
-            writeMessage(writer, messageType);
-          }
-          writeElementEnd(writer, "messages", 1);
-          writeElement(writer, "components", 1, false);
-          for (ComponentType componentType : componentList) {
-            if (componentType instanceof GroupType) {
-              writeGroup(writer, (GroupType) componentType);
-            } else if (repository.isHasComponents()) {
-              writeComponent(writer, componentType);
-            }
-          }
-          writeElementEnd(writer, "components", 1);
-          writeElement(writer, "fields", 1, false);
-          final List<FieldType> fieldList = repository.getFields().getField();
-          for (FieldType fieldType : fieldList) {
-            writeField(writer, fieldType);
-          }
-          writeElementEnd(writer, "fields", 1);
-          writeElementEnd(writer, "fix", 0);
-        }
-      } else {
-        System.err.format("Failed to parse FIX major and minor version in %s%n", version);
-      }
-    } catch (JAXBException | IOException e) {
-      e.printStackTrace();
-    }
+  public void generate(InputStream inputFile, File outputDir) throws JAXBException, IOException {
+    final Repository repository = unmarshal(inputFile);
+    generate(repository, outputDir);
   }
 
+  public void generate(Repository repository, File outputDir) throws IOException {
+    final List<CodeSetType> codeSetList = repository.getCodeSets().getCodeSet();
+    for (CodeSetType codeSet : codeSetList) {
+      codeSets.put(codeSet.getName(), codeSet);
+    }
 
+    final List<ComponentType> componentList = repository.getComponents().getComponentOrGroup();
+    for (ComponentType component : componentList) {
+      if (component instanceof GroupType) {
+        groups.put(component.getId().intValue(), (GroupType) component);
+      } else {
+        components.put(component.getId().intValue(), component);
+      }
+    }
+    String version = repository.getVersion();
+    // Split off EP portion of version in the form "FIX.5.0SP2_EP216"
+    String[] parts = version.split("_");
+    if (parts.length > 0) {
+      version = parts[0];
+    }
+    int major = 0;
+    int minor = 0;
+    String regex = "(FIX\\.)(?<major>\\d+)(\\.)(?<minor>\\d+)(.*)";
+    Pattern pattern = Pattern.compile(regex);
+    Matcher matcher = pattern.matcher(version);
+    if (matcher.find()) {
+      major = Integer.parseInt(matcher.group("major"));
+      minor = Integer.parseInt(matcher.group("minor"));
+
+      String versionPath = version.replaceAll("[\\.]", "");
+      File file = getSpecFilePath(outputDir, versionPath, ".xml");
+      outputDir.mkdirs();
+      try (FileWriter writer = new FileWriter(file)) {
+        writeElement(writer, "fix", 0, false, new KeyValue<Integer>("major", major),
+            new KeyValue<Integer>("minor", minor));
+        writeElement(writer, "header", 1, true);
+        writeElement(writer, "trailer", 1, true);
+        writeElement(writer, "messages", 1, false);
+        final List<MessageType> messageList = repository.getMessages().getMessage();
+        for (MessageType messageType : messageList) {
+          writeMessage(writer, messageType);
+        }
+        writeElementEnd(writer, "messages", 1);
+        writeElement(writer, "components", 1, false);
+        for (ComponentType componentType : componentList) {
+          if (componentType instanceof GroupType) {
+            writeGroup(writer, (GroupType) componentType);
+          } else if (repository.isHasComponents()) {
+            writeComponent(writer, componentType);
+          }
+        }
+        writeElementEnd(writer, "components", 1);
+        writeElement(writer, "fields", 1, false);
+        final List<FieldType> fieldList = repository.getFields().getField();
+        for (FieldType fieldType : fieldList) {
+          writeField(writer, fieldType);
+        }
+        writeElementEnd(writer, "fields", 1);
+        writeElementEnd(writer, "fix", 0);
+      }
+    } else {
+      System.err.format("Failed to parse FIX major and minor version in %s%n", version);
+    }
+  }
 
   private File getSpecFilePath(File outputDir, String versionPath, String extension) {
     StringBuilder sb = new StringBuilder();

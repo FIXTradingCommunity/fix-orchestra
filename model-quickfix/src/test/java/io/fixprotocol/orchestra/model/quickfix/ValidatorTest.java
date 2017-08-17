@@ -44,7 +44,7 @@ public class ValidatorTest {
 
   @BeforeClass
   public static void setupOnce() throws Exception {
-    repository = unmarshal(new File("FixRepository2016.xml"));
+    repository = unmarshal(new File("mit_2016.xml"));
   }
 
   @Before

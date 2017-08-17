@@ -33,7 +33,11 @@ import io.fixprotocol.orchestra.model.ModelException;
 import io.fixprotocol.orchestra.model.SymbolResolver;
 import quickfix.Group;
 import quickfix.Message;
+import quickfix.field.Account;
 import quickfix.field.ClOrdID;
+import quickfix.field.OrdType;
+import quickfix.field.Side;
+import quickfix.field.TimeInForce;
 import quickfix.fix50sp2.ExecutionReport;
 import quickfix.fix50sp2.NewOrderSingle;
 
@@ -47,7 +51,7 @@ public class PopulatorTest {
 
   @BeforeClass
   public static void setupOnce() throws Exception {
-    repository = unmarshal(new File("FixRepository2016.xml"));
+    repository = unmarshal(new File("mit_2016.xml"));
   }
 
   private RepositoryAdapter repositoryAdapter;
@@ -118,9 +122,14 @@ public class PopulatorTest {
     MessageType inboundMessageType = repositoryAdapter.getMessage("NewOrderSingle", "base");
     MessageType outboundMessageType = repositoryAdapter.getMessage("ExecutionReport", "traded");
     
-    String clOrdId = "ABC123";
     NewOrderSingle inboundMessage = new NewOrderSingle();
+    String clOrdId = "ABC123";
+    // required fields
     inboundMessage.set(new ClOrdID(clOrdId));
+    inboundMessage.set(new Account("ABC"));
+    inboundMessage.set(new Side('2'));
+    inboundMessage.set(new OrdType('2'));
+    inboundMessage.set(new TimeInForce('2'));
     
     ExecutionReport outboundMessage = new ExecutionReport();
 

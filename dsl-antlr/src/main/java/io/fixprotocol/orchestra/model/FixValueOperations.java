@@ -72,14 +72,15 @@ public class FixValueOperations {
     }
 
     @SuppressWarnings("rawtypes")
+    final
     BiFunction evaluate;
-    FixType resultType;
-    Class<? extends Object> resultValueType;
+    final FixType resultType;
+    final Class<?> resultValueType;
 
     @SuppressWarnings("rawtypes")
     Operation(FixType fixType1, FixType fixType2, FixType resultType,
-        Class<? extends Object> valueType1, Class<? extends Object> valueType2,
-        Class<? extends Object> resultValueType, BiFunction evaluate) {
+              Class<?> valueType1, Class<?> valueType2,
+              Class<?> resultValueType, BiFunction evaluate) {
       super(fixType1, fixType2, valueType1, valueType2);
       this.resultType = resultType;
       this.resultValueType = resultValueType;
@@ -90,8 +91,8 @@ public class FixValueOperations {
   private static class OperationKey {
     final FixType fixType1;
     final FixType fixType2;
-    final Class<? extends Object> valueType1;
-    final Class<? extends Object> valueType2;
+    final Class<?> valueType1;
+    final Class<?> valueType2;
 
     /**
      * @param fixType1
@@ -99,8 +100,8 @@ public class FixValueOperations {
      * @param valueType1
      * @param valueType2
      */
-    OperationKey(FixType fixType1, FixType fixType2, Class<? extends Object> valueType1,
-        Class<? extends Object> valueType2) {
+    OperationKey(FixType fixType1, FixType fixType2, Class<?> valueType1,
+        Class<?> valueType2) {
       this.fixType1 = fixType1;
       this.fixType2 = fixType2;
       this.valueType1 = valueType1;
@@ -141,7 +142,7 @@ public class FixValueOperations {
 
   static final BiFunction<Instant, Instant, Boolean> eqInstant = Instant::equals;
 
-  static final BiFunction<Integer, Integer, Boolean> eqInteger = (x, y) -> Objects.equals(x, y);
+  static final BiFunction<Integer, Integer, Boolean> eqInteger = Objects::equals;
 
   static final BiFunction<Integer, BigDecimal, Boolean> eqIntegerDecimal =
       (x, y) -> y.compareTo(BigDecimal.valueOf(x)) == 0;

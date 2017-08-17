@@ -18,8 +18,12 @@ messageRef(actor, messageRef)  ::= <<
 <\n><\t>Then <actor.name> receives message <messageRef.name> at most <messageRef.implMaxOccurs> times
 >>
 
-field(fieldRef) ::= <<
-<\n><\t>And <fieldRef.name> is <if(fieldRef.assign)><fieldRef.assign><else><fieldRef.presence><endif>
+fieldRequired(fieldRef) ::= <<
+<\n><\t>And field <fieldRef.name> is present
+>>
+
+fieldValue(fieldRef, value) ::= <<
+<\n><\t>And field <fieldRef.name> is equal to <value>
 >>
 
 documentation(object) ::= <<
