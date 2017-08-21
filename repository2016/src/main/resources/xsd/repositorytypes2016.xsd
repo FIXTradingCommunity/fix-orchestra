@@ -622,13 +622,28 @@
 			<xs:enumeration value="recoverable"/>
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:complexType name="responseType">
+	<xs:complexType name="actionType">
 		<xs:sequence>
-			<xs:choice maxOccurs="unbounded">
+			<xs:choice id="parameters" minOccurs="0" maxOccurs="unbounded">
 				<xs:annotation>
-					<xs:documentation>Any number of response actions can be triggered by the same 'when' condition</xs:documentation>
+					<xs:documentation>Event parameters</xs:documentation>
 				</xs:annotation>
-				<xs:element name="messageRef" type="fixr:messageRefType"/>
+				<xs:element name="field" type="fixr:fieldType"/>
+				<xs:element name="fieldRef" type="fixr:fieldRefType"/>
+				<xs:element name="component" type="fixr:componentType"/>
+				<xs:element name="componentRef" type="fixr:componentRefType"/>
+				<xs:element name="group" type="fixr:groupType"/>
+				<xs:element name="groupRef" type="fixr:groupRefType"/>
+			</xs:choice>
+			<xs:choice id="actions" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Any number of action behaviors can be triggered at the same time.</xs:documentation>
+				</xs:annotation>
+				<xs:element name="messageRef" type="fixr:messageRefType">
+					<xs:annotation>
+						<xs:documentation>Send a message</xs:documentation>
+					</xs:annotation>
+				</xs:element>
 				<xs:element name="assign" type="fixr:expressionType">
 					<xs:annotation>
 						<xs:documentation>Content of element holds an assignment expression
@@ -636,21 +651,36 @@
 						</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element name="transitionRef" type="fixr:transitionRefType"/>
-				<xs:element name="timerRef" type="fixr:timerRefType"/>
+				<xs:element name="trigger" type="fixr:triggerType">
+					<xs:annotation>
+						<xs:documentation>Trigger a state transtion in a state machine</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="timerSchedule" type="fixr:timerSchedule"/>
 			</xs:choice>
-			<xs:element name="when" type="fixr:expressionType" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>A common condition for all of the actions. If it
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="responseType">
+		<xs:annotation>
+			<xs:documentation>Any number of action behaviors can be triggered by the same 'when' condition</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="fixr:actionType">
+				<xs:sequence>
+					<xs:element name="when" type="fixr:expressionType" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>A common condition for all of the actions. If it
 						evalutes true, then the actions are invoked. If 'when' is not
 						present, the actions are unconditional.
 					</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
-		</xs:sequence>
-		<xs:attribute name="name" type="fixr:Name_t"/>
-		<xs:attribute name="sync" type="fixr:synchronization" use="optional"/>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
+				</xs:sequence>
+				<xs:attribute name="name" type="fixr:Name_t"/>
+				<xs:attribute name="sync" type="fixr:synchronization" use="optional"/>
+			</xs:extension>
+		</xs:complexContent>
 	</xs:complexType>
 	<xs:simpleType name="SectionID_t">
 		<xs:restriction base="fixr:Name_t">
@@ -694,6 +724,21 @@
 		</xs:annotation>
 		<xs:sequence>
 			<xs:element name="transition" type="fixr:transitionType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="onentry" type="fixr:actionType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Operation fired when entering a state.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="activity" type="fixr:actionType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Operation fired when entering a state and completing when exiting or earlier.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="onexit" type="fixr:actionType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Operation fired when exiting a state.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
@@ -741,19 +786,13 @@
 			</xs:enumeration>
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:complexType name="timerRefType">
+	<xs:complexType name="timerSchedule">
 		<xs:sequence>
-			<xs:element name="responses" minOccurs="0">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="response" type="fixr:responseType" maxOccurs="unbounded">
-							<xs:annotation>
-								<xs:documentation>Action to take when a timer expires
+			<xs:element name="activity" type="fixr:actionType">
+				<xs:annotation>
+					<xs:documentation>Action to take when a timer expires
 								</xs:documentation>
-							</xs:annotation>
-						</xs:element>
-					</xs:sequence>
-				</xs:complexType>
+				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
 		<xs:attribute name="actor" type="fixr:Name_t" use="required">
@@ -773,7 +812,7 @@
 	<xs:complexType name="timerType">
 		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
 	</xs:complexType>
-	<xs:complexType name="transitionRefType">
+	<xs:complexType name="triggerType">
 		<xs:attribute name="stateMachine" type="xs:string" use="required">
 			<xs:annotation>
 				<xs:documentation>Name of the state machine</xs:documentation>

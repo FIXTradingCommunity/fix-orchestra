@@ -565,7 +565,7 @@ public class DocGenerator {
 
   private void generateResponses(List<ResponseType> responseList, NoIndentWriter writer) {
     for (ResponseType response : responseList) {
-      List<Object> responses = response.getMessageRefOrAssignOrTransitionRef();
+      List<Object> responses = response.getMessageRefOrAssignOrTrigger();
       for (Object responseRef : responses) {
         if (responseRef instanceof MessageRefType) {
           MessageRefType messageRef = (MessageRefType) responseRef;

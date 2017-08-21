@@ -70,7 +70,7 @@ public class ImgGenerator {
       STErrorListener errorListener) {
     for (int i = 0; i < responseList.size(); i++) {
       ResponseType response = responseList.get(i);
-      List<Object> responses = response.getMessageRefOrAssignOrTransitionRef();
+      List<Object> responses = response.getMessageRefOrAssignOrTrigger();
       for (int j = 0; j < responses.size(); j++) {
         Object responseRef = responses.get(j);
         if (responseRef instanceof MessageRefType) {
