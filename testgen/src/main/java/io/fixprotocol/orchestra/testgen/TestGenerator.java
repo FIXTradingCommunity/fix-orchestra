@@ -20,6 +20,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Optional;
 
@@ -75,14 +77,14 @@ public class TestGenerator {
         if (args.length > 1) {
           resourcesDir = new File("args[1]");
         } else {
-          resourcesDir = new File("target/generated-cukes");
+          resourcesDir = new File("target/generated-resources");
         }
 
         File sourceDir;
         if (args.length > 2) {
           sourceDir = new File("args[2]");
         } else {
-          sourceDir = new File("target/generated-cukes/java");
+          sourceDir = new File("target/generated-sources/java");
         }
         TestGenerator gen = new TestGenerator(is, resourcesDir, sourceDir);
         gen.generate();
@@ -159,9 +161,7 @@ public class TestGenerator {
     .filter(m -> flow.getName().equals(m.getFlow())).forEach(message -> {
       Responses responses = message.getResponses();
       if (responses != null)
-        responses.getResponse().forEach(response -> {
-          generateFeatureScenario(writer, stFeatureGroup, repository, actor, message, response);
-        });
+        responses.getResponse().forEach(response -> generateFeatureScenario(writer, stFeatureGroup, repository, actor, message, response));
     });
   }
 
@@ -186,7 +186,7 @@ public class TestGenerator {
         }
       }
     }
-  };
+  }
 
   private void generateFeatureScenario(AutoIndentWriter writer, STGroupFile stFeatureGroup, Repository repository, ActorType actor,
       MessageType message, ResponseType response) {
@@ -256,8 +256,8 @@ public class TestGenerator {
     }
   }
 
-  private void generateSource() {
-    // TODO Auto-generated method stub
+  private void generateSource() throws IOException {
+    copySource("OrchestraStepDefinitions.java", new File(sourceDir, "io/fixprotocol/orchestra/testgen"));
     
   }
 
@@ -276,8 +276,17 @@ public class TestGenerator {
     return null;
   }
 
+  private void copySource(String resourceName, File outputDir) throws IOException {
+    makeDirectory(outputDir);
+    ClassLoader classLoader = getClass().getClassLoader();
+    try (InputStream in = classLoader.getResourceAsStream("templates/"+resourceName)) {
+      Files.copy(in, new File(outputDir, resourceName).toPath(),
+          StandardCopyOption.REPLACE_EXISTING);
+    }
+  }
+  
   File makeDirectory(File dir) throws IOException {
-    dir.mkdir();
+    dir.mkdirs();
     if (!dir.isDirectory()) {
       throw new IOException(dir.toString() + " not a directory or is inaccessible");
     }

@@ -110,7 +110,7 @@ public class RepositoryCompressor {
     outRepository.setFields(outFields);
 
     List<String> typeList =
-        fieldsWithFlow.stream().map(f -> f.getType()).distinct().collect(Collectors.toList());
+        fieldsWithFlow.stream().map(FieldType::getType).distinct().collect(Collectors.toList());
     CodeSets inCodeSets = (CodeSets) inRepository.getCodeSets().clone();
     List<CodeSetType> codeSetsWithFlow = inCodeSets.getCodeSet().stream()
         .filter(cs -> typeList.contains(cs.getName())).collect(Collectors.toList());

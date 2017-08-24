@@ -649,7 +649,7 @@ public class DocGenerator {
   }
 
   private File makeDirectory(File dir) throws IOException {
-    dir.mkdir();
+    dir.mkdirs();
     if (!dir.isDirectory()) {
       throw new IOException(dir.toString() + " not a directory or is inaccessible");
     }

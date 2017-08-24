@@ -35,8 +35,8 @@
                 <xsl:for-each select="fn:distinct-values(/fixRepository/fix/fields/field[enum]/@name)">
 					<xsl:variable name="fieldName" select="."/>
 					<xsl:variable name="field" select="($doc/fixRepository/fix/fields/field[@name=$fieldName])[last()]"/>
-                    <xsl:variable name="fieldId" select="$field/@id"></xsl:variable>
-                    <xsl:variable name="fieldType" select="$field/@type"></xsl:variable>
+                    <xsl:variable name="fieldId" select="$field/@id"/>
+                    <xsl:variable name="fieldType" select="$field/@type"/>
                     <xsl:element name="fixr:codeSet">
 						<xsl:attribute name="name"><xsl:value-of select="concat($fieldName, 'CodeSet')"/></xsl:attribute>
 						<xsl:attribute name="id"><xsl:value-of select="$fieldId"/></xsl:attribute>
