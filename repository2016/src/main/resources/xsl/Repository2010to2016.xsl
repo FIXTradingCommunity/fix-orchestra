@@ -147,7 +147,7 @@
                 <xsl:when test="current()/enum">
                     <xsl:attribute name="type" select="concat(@name, 'CodeSet')"/>
                 </xsl:when>
-                <xsl:when test="@type = 'data'">
+                <xsl:when test="@type = 'data' or @type = 'XMLData'">
                     <xsl:attribute name="lengthId"
                                    select="(//field[@associatedDataTag = current()/@id]/@id)[fn:last()]"/>
                     <xsl:attribute name="lengthName"

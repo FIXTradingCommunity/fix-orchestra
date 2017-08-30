@@ -67,7 +67,7 @@ public class RepositoryDiffReporter extends XmlDiff {
         } else {
           firstRow = false;
         }
-        out.write(String.format("<tr>"));
+        out.write("<tr>");
 
 
         switch (t.getDifference()) {
