@@ -115,11 +115,79 @@
 			<xs:enumeration value="broadcast"/>
 		</xs:restriction>
 	</xs:simpleType>
+	<xs:simpleType name="protocolEnum_t">
+		<xs:annotation>
+			<xs:documentation>List of FIX protocols to standardize spelling</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="FIX4">
+				<xs:annotation>
+					<xs:documentation>FIX 4.x session layer</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="FIXT">
+				<xs:annotation>
+					<xs:documentation>FIX Transport Session Protocol</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="FIXP">
+				<xs:annotation>
+					<xs:documentation>FIX Performance Session Layer</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TagValue">
+				<xs:annotation>
+					<xs:documentation>Tag Value encoding (classic FIX)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="FIXML">
+				<xs:annotation>
+					<xs:documentation>XML Schema</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="FAST">
+				<xs:annotation>
+					<xs:documentation>FIX Adapted for Streaming</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SBE">
+				<xs:annotation>
+					<xs:documentation>Simple Binary Encoding</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SOFH">
+				<xs:annotation>
+					<xs:documentation>Simple Open Framing Header</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="GPB">
+				<xs:annotation>
+					<xs:documentation>Google Protocol Buffers</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="JSON">
+				<xs:annotation>
+					<xs:documentation>Javascript Object Notation</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="FIXS">
+				<xs:annotation>
+					<xs:documentation>FIX over TLS security recommendation</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="protocolName_t">
+		<xs:annotation>
+			<xs:documentation>Protocol names are not constrained to FIX protocols</xs:documentation>
+		</xs:annotation>
+		<xs:union memberTypes="fixi:protocolEnum_t xs:string"/>
+	</xs:simpleType>
 	<xs:complexType name="protocolType">
 		<xs:sequence>
 			<xs:element name="annotation" type="fixi:annotation" minOccurs="0"/>
 		</xs:sequence>
-		<xs:attribute name="name" type="xs:string"/>
+		<xs:attribute name="name" type="fixi:protocolName_t"/>
 		<xs:attribute name="version" type="xs:string"/>
 		<xs:attribute name="layer" type="fixi:layer_t"/>
 		<xs:attribute name="reliability" type="fixi:reliability_t">
@@ -162,7 +230,7 @@
 					<xs:element name="activationTime" type="xs:dateTime" minOccurs="0"/>
 					<xs:element name="deactivationTime" type="xs:dateTime" minOccurs="0"/>
 					<xs:element name="role" type="fixi:role_t" minOccurs="0"/>
-				</xs:sequence>		
+				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
