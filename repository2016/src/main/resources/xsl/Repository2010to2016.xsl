@@ -199,7 +199,7 @@
     </xsl:template>
     <xsl:template match="message">
     <fixr:message>
-            <xsl:apply-templates select="@* except @textId"/>
+            <xsl:apply-templates select="@* except @textId except @section"/>
             <fixr:structure>
 				<xsl:apply-templates/>
             </fixr:structure>
