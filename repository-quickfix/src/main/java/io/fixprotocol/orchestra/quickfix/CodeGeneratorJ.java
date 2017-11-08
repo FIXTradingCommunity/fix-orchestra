@@ -595,9 +595,9 @@ public class CodeGeneratorJ {
         break;
       case "DoubleField":
         writer.write(String.format("%n%spublic %s(Double data) {%n%ssuper(%d, data);%n%s}%n",
-            indent(1), className, indent(2), fieldId, indent(2), indent(1)));
+            indent(1), className, indent(2), fieldId, indent(2)));
         writer.write(String.format("%n%spublic %s(double data) {%n%ssuper(%d, data);%n%s}%n",
-            indent(1), className, indent(2), fieldId, indent(2), indent(1)));
+            indent(1), className, indent(2), fieldId, indent(2)));
         break;
       case "IntField":
         writer.write(String.format("%n%spublic %s(Integer data) {%n%ssuper(%d, data);%n%s}%n",

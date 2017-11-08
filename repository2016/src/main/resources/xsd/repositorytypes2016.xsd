@@ -159,7 +159,6 @@
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 		<xs:attributeGroup ref="fixr:oidGrp"/>
 		<xs:attribute name="presence" type="fixr:presence_t" default="optional"/>
-		<xs:attribute name="abbrName" type="fixr:Abbreviation_t"/>
 		<xs:attribute name="instanceName" type="fixr:ComponentName_t">
 			<xs:annotation>
 				<xs:documentation>Override the component name for this instance, for
@@ -184,7 +183,6 @@
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 		<xs:attributeGroup ref="fixr:oidGrp"/>
 		<xs:attribute name="category" type="fixr:CategoryID_t"/>
-		<xs:attribute name="abbrName" type="fixr:Abbreviation_t"/>
 	</xs:complexType>
 	<xs:attributeGroup name="containerAttribGrp">
 		<xs:attribute name="latestEP" type="fixr:EP_t"/>
@@ -430,7 +428,6 @@
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attribute name="lengthName" type="fixr:Name_t"/>
-		<xs:attribute name="abbrName" type="fixr:Abbreviation_t"/>
 		<xs:attribute name="baseCategory" type="fixr:CategoryID_t"/>
 		<xs:attribute name="baseCategoryAbbrName" type="fixr:Name_t"/>
 		<xs:attribute name="unionDataType" type="fixr:UnionDataType_t"/>
@@ -490,12 +487,6 @@
 	<xs:simpleType name="language_t">
 		<xs:restriction base="xs:language"/>
 	</xs:simpleType>
-	<xs:attributeGroup name="messageAttribGrp">
-		<xs:attribute name="msgType" type="fixr:MsgType_t"/>
-		<xs:attribute name="category" type="fixr:CategoryID_t"/>
-		<xs:attribute name="section" type="fixr:SectionID_t"/>
-		<xs:attribute name="abbrName" type="fixr:Abbreviation_t"/>
-	</xs:attributeGroup>
 	<xs:complexType name="messageRefType">
 		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
 		<xs:attribute name="msgType" type="fixr:MsgType_t"/>
@@ -535,7 +526,8 @@
 			</xs:element>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
-		<xs:attributeGroup ref="fixr:messageAttribGrp"/>
+		<xs:attribute name="msgType" type="fixr:MsgType_t"/>
+		<xs:attribute name="category" type="fixr:CategoryID_t"/>
 		<xs:attributeGroup ref="fixr:oidGrp"/>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 		<xs:attribute name="scenario" type="xs:string" default="base">
@@ -573,6 +565,7 @@
 	<xs:attributeGroup name="oidGrp">
 		<xs:attribute name="id" type="fixr:id_t" use="required"/>
 		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
+		<xs:attribute name="abbrName" type="fixr:Abbreviation_t"/>
 		<xs:attribute name="oid" type="fixr:oid_t">
 			<xs:annotation>
 				<xs:documentation>Object identifier (OID) in ASN.1 or dotted notation</xs:documentation>
