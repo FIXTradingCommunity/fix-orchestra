@@ -167,6 +167,7 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
+		<xs:attribute name="scenario" type="xs:string" default="base"/>
 	</xs:complexType>
 	<xs:complexType name="componentType">
 		<xs:sequence>
@@ -180,6 +181,20 @@
 			</xs:choice>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
+		<xs:attribute name="scenario" type="xs:string" default="base">
+			<xs:annotation>
+				<xs:documentation>The name of one use case of this component. 
+				Each scenario of a component must have a unique numeric id.
+				The default scenario name is 'base'.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="extends" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>If present, refers to another scenario, assuming
+					the same component name
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 		<xs:attributeGroup ref="fixr:oidGrp"/>
 		<xs:attribute name="category" type="fixr:CategoryID_t"/>
@@ -532,7 +547,9 @@
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 		<xs:attribute name="scenario" type="xs:string" default="base">
 			<xs:annotation>
-				<xs:documentation>The name of one use case of this message type. The default scenario name is 'base'.</xs:documentation>
+				<xs:documentation>The name of one use case of this message type. 
+				Each scenario of a message must have a unique numeric id.
+				The default scenario name is 'base'.</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attribute name="extends" type="xs:string">
