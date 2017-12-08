@@ -23,6 +23,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -63,6 +64,13 @@ public class XmlDiffTest {
     assertEquals(2, doc.getElementsByTagName("add").getLength());
     assertEquals(2, doc.getElementsByTagName("replace").getLength());
     assertEquals(2, doc.getElementsByTagName("remove").getLength());
+  }
+  
+  @Ignore
+  @Test
+  public void mainDiff() throws Exception {
+    String[] args = {"DiffTest1.xml", "DiffTest2.xml", DIFF_FILENAME};
+    XmlDiff.main(args);
   }
 
   @Test

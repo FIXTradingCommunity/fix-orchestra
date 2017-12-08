@@ -138,8 +138,8 @@ public class XmlDiff {
             XpathUtil.getFullXPath(root2));
         System.exit(1);
       }
-    } finally {
       listener.close();
+    } finally {
       is1.close();
       is2.close();
     }

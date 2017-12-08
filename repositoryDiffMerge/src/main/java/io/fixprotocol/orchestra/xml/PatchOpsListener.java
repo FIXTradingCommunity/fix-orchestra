@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -47,6 +48,7 @@ public class PatchOpsListener implements XmlDiffListener {
   private final OutputStreamWriter writer;
   private final Document document;
   private final Element rootElement;
+  private final AtomicBoolean isClosed = new AtomicBoolean();
 
   /**
    * Constructs a listener with an output stream
@@ -129,13 +131,16 @@ public class PatchOpsListener implements XmlDiffListener {
    */
   @Override
   public void close() throws Exception {
-    TransformerFactory transformerFactory = TransformerFactory.newInstance();
-    Transformer transformer = transformerFactory.newTransformer();
-    transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-    DOMSource source = new DOMSource(document);
-    StreamResult result = new StreamResult(writer);
-    transformer.transform(source, result);
-    writer.close();
+    // Idempotent - only close once
+    if (isClosed.compareAndSet(false, true)) {
+      TransformerFactory transformerFactory = TransformerFactory.newInstance();
+      Transformer transformer = transformerFactory.newTransformer();
+      transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+      DOMSource source = new DOMSource(document);
+      StreamResult result = new StreamResult(writer);
+      transformer.transform(source, result);
+      writer.close();
+    }
   }
 
 }
