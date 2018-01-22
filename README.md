@@ -90,6 +90,10 @@ A demonstration of session configuration for QuickFIX open-source FIX engine. It
 
 A module like this needs to be developed to support each FIX engine that uses a proprietary configuration format. The demonstration provides an example to follow for that work.
 
+### Data Files
+Data files in this project under `test/resources` are strictly for testing and to serve as examples for format. They are non-normative for FIX standards and may not be up to date.
+
+See [FIX Standards](https://www.fixtrading.org/standards/) for normative standards documents and [FIX Repository](https://www.fixtrading.org/standards/fix-repository/) for latest Repository extension packs.
 
 ## License
 © Copyright 2016-2017 FIX Protocol Limited
