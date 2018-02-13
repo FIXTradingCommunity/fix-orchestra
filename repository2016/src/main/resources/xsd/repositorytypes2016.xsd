@@ -18,6 +18,44 @@
 		<xs:attribute name="name" type="xs:string"/>
 		<!-- was abbrTerm -->
 	</xs:complexType>
+	<xs:complexType name="actionType">
+		<xs:sequence>
+			<xs:choice id="parameters" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Event parameters</xs:documentation>
+				</xs:annotation>
+				<xs:element name="field" type="fixr:fieldType"/>
+				<xs:element name="fieldRef" type="fixr:fieldRefType"/>
+				<xs:element name="component" type="fixr:componentType"/>
+				<xs:element name="componentRef" type="fixr:componentRefType"/>
+				<xs:element name="group" type="fixr:groupType"/>
+				<xs:element name="groupRef" type="fixr:groupRefType"/>
+			</xs:choice>
+			<xs:choice id="actions" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Any number of action behaviors can be triggered at the same time.</xs:documentation>
+				</xs:annotation>
+				<xs:element name="messageRef" type="fixr:messageRefType">
+					<xs:annotation>
+						<xs:documentation>Send a message</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="assign" type="fixr:expressionType">
+					<xs:annotation>
+						<xs:documentation>Content of element holds an assignment expression
+							for a state variable in the form '$actor.variable=value'
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="trigger" type="fixr:triggerType">
+					<xs:annotation>
+						<xs:documentation>Trigger a state transtion in a state machine</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="timerSchedule" type="fixr:timerSchedule"/>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
 	<xs:complexType name="actorType">
 		<xs:annotation>
 			<xs:documentation>Represents a class of participants</xs:documentation>
@@ -204,6 +242,19 @@
 				<xs:documentation>A hint to processes about how to interpret the element. Not validated.</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="conceptType">
+		<xs:sequence>
+			<xs:choice maxOccurs="unbounded">
+				<xs:element name="componentRef" type="fixr:componentRefType"/>
+				<xs:element name="groupRef" type="fixr:groupRefType"/>
+				<xs:element name="fieldRef" type="fixr:fieldRefType"/>
+				<xs:element name="messageRef" type="fixr:messageRefType"/>
+			</xs:choice>
+			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
+		<xs:attribute name="oid" type="fixr:oidOrUri_t"/>
 	</xs:complexType>
 	<xs:attributeGroup name="containerAttribGrp">
 		<xs:attribute name="latestEP" type="fixr:EP_t"/>
@@ -473,7 +524,14 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="lengthName" type="fixr:Name_t"/>
+		<xs:attribute name="lengthName" type="fixr:Name_t"/>	
+		<xs:attribute name="discriminatorId" type="fixr:id_t">
+			<xs:annotation>
+				<xs:documentation>Identifies a field used as a discriminator for this field's domain
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="discriminatorName" type="fixr:Name_t"/>
 		<xs:attribute name="baseCategory" type="fixr:CategoryID_t"/>
 		<xs:attribute name="baseCategoryAbbrName" type="fixr:Name_t"/>
 		<xs:attribute name="unionDataType" type="fixr:UnionDataType_t"/>
@@ -618,6 +676,9 @@
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="oid_t">
+		<xs:annotation>
+			<xs:documentation>Object identifier (OID) in ASN.1 or dotted notation</xs:documentation>
+		</xs:annotation>
 		<xs:restriction base="xs:string">
 			<xs:pattern value="\{?[a-zA-Z0-9()\-\.]+\}?"/>
 		</xs:restriction>
@@ -626,12 +687,15 @@
 		<xs:attribute name="id" type="fixr:id_t" use="required"/>
 		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
 		<xs:attribute name="abbrName" type="fixr:Abbreviation_t"/>
-		<xs:attribute name="oid" type="fixr:oid_t">
+		<xs:attribute name="oid" type="fixr:oidOrUri_t">
 			<xs:annotation>
-				<xs:documentation>Object identifier (OID) in ASN.1 or dotted notation</xs:documentation>
+				<xs:documentation>An object ID or URI</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 	</xs:attributeGroup>
+	<xs:simpleType name="oidOrUri_t">
+		<xs:union memberTypes="xs:anyURI fixr:oid_t"/>
+	</xs:simpleType>
 	<xs:simpleType name="presence_t">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="optional"/>
@@ -675,44 +739,6 @@
 			<xs:enumeration value="recoverable"/>
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:complexType name="actionType">
-		<xs:sequence>
-			<xs:choice id="parameters" minOccurs="0" maxOccurs="unbounded">
-				<xs:annotation>
-					<xs:documentation>Event parameters</xs:documentation>
-				</xs:annotation>
-				<xs:element name="field" type="fixr:fieldType"/>
-				<xs:element name="fieldRef" type="fixr:fieldRefType"/>
-				<xs:element name="component" type="fixr:componentType"/>
-				<xs:element name="componentRef" type="fixr:componentRefType"/>
-				<xs:element name="group" type="fixr:groupType"/>
-				<xs:element name="groupRef" type="fixr:groupRefType"/>
-			</xs:choice>
-			<xs:choice id="actions" maxOccurs="unbounded">
-				<xs:annotation>
-					<xs:documentation>Any number of action behaviors can be triggered at the same time.</xs:documentation>
-				</xs:annotation>
-				<xs:element name="messageRef" type="fixr:messageRefType">
-					<xs:annotation>
-						<xs:documentation>Send a message</xs:documentation>
-					</xs:annotation>
-				</xs:element>
-				<xs:element name="assign" type="fixr:expressionType">
-					<xs:annotation>
-						<xs:documentation>Content of element holds an assignment expression
-							for a state variable in the form '$actor.variable=value'
-						</xs:documentation>
-					</xs:annotation>
-				</xs:element>
-				<xs:element name="trigger" type="fixr:triggerType">
-					<xs:annotation>
-						<xs:documentation>Trigger a state transtion in a state machine</xs:documentation>
-					</xs:annotation>
-				</xs:element>
-				<xs:element name="timerSchedule" type="fixr:timerSchedule"/>
-			</xs:choice>
-		</xs:sequence>
-	</xs:complexType>
 	<xs:complexType name="responseType">
 		<xs:annotation>
 			<xs:documentation>Any number of action behaviors can be triggered by the same 'when' condition</xs:documentation>
@@ -865,25 +891,6 @@
 	<xs:complexType name="timerType">
 		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
 	</xs:complexType>
-	<xs:complexType name="triggerType">
-		<xs:attribute name="stateMachine" type="xs:string" use="required">
-			<xs:annotation>
-				<xs:documentation>Name of the state machine</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
-		<xs:attribute name="actor" type="fixr:Name_t" use="required">
-			<xs:annotation>
-				<xs:documentation>Name of the actor that owns the state machine
-				</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
-		<xs:attribute name="name" type="fixr:Name_t" use="required">
-			<xs:annotation>
-				<xs:documentation>Name of the transition to invoke
-				</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
-	</xs:complexType>
 	<xs:complexType name="transitionType">
 		<xs:sequence>
 			<xs:element name="when" type="fixr:expressionType" minOccurs="0">
@@ -900,6 +907,25 @@
 		<xs:attribute name="target" type="xs:string" use="required">
 			<xs:annotation>
 				<xs:documentation>The target state of the transition
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="triggerType">
+		<xs:attribute name="stateMachine" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation>Name of the state machine</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="actor" type="fixr:Name_t" use="required">
+			<xs:annotation>
+				<xs:documentation>Name of the actor that owns the state machine
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="name" type="fixr:Name_t" use="required">
+			<xs:annotation>
+				<xs:documentation>Name of the transition to invoke
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>

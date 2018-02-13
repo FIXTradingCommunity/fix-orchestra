@@ -22,6 +22,35 @@
 			<xs:field xpath="@name"/>
 		</xs:key>
 	</xs:element>
+	<xs:element name="actors">
+		<xs:annotation>
+			<xs:documentation>Participants and the message flows between them</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice maxOccurs="unbounded">
+					<xs:element name="actor" type="fixr:actorType"/>
+					<xs:element name="flow" type="fixr:flowType"/>
+				</xs:choice>
+			</xs:sequence>
+		</xs:complexType>
+		<xs:key name="actorKey">
+			<xs:selector xpath="fixr:actor"/>
+			<xs:field xpath="@name"/>
+		</xs:key>
+		<xs:keyref name="actorKeyRef" refer="fixr:actorKey">
+			<xs:selector xpath="fixr:actor"/>
+			<xs:field xpath="@extends"/>
+		</xs:keyref>
+		<xs:keyref name="producerKeyRef" refer="fixr:actorKey">
+			<xs:selector xpath="fixr:flow"/>
+			<xs:field xpath="@source"/>
+		</xs:keyref>
+		<xs:keyref name="consumerKeyRef" refer="fixr:actorKey">
+			<xs:selector xpath="fixr:flow"/>
+			<xs:field xpath="@destination"/>
+		</xs:keyref>
+	</xs:element>
 	<xs:element name="categories">
 		<xs:complexType>
 			<xs:sequence>
@@ -60,6 +89,17 @@
 			<xs:field xpath="@id"/>
 		</xs:key>
 	</xs:element>
+	<xs:element name="concepts">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="concept" type="fixr:conceptType" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+		<xs:key name="conceptKey">
+			<xs:selector xpath="fixr:concept"/>
+			<xs:field xpath="@name"/>
+		</xs:key>
+	</xs:element>
 	<xs:element name="datatype">
 		<xs:complexType>
 			<xs:sequence>
@@ -91,76 +131,6 @@
 			<xs:field xpath="@id"/>
 		</xs:key>
 	</xs:element>
-	<xs:element name="actors">
-		<xs:annotation>
-			<xs:documentation>Participants and the message flows between them</xs:documentation>
-		</xs:annotation>
-		<xs:complexType>
-			<xs:sequence>
-				<xs:choice maxOccurs="unbounded">
-					<xs:element name="actor" type="fixr:actorType"/>
-					<xs:element name="flow" type="fixr:flowType"/>
-				</xs:choice>
-			</xs:sequence>
-		</xs:complexType>
-		<xs:key name="actorKey">
-			<xs:selector xpath="fixr:actor"/>
-			<xs:field xpath="@name"/>
-		</xs:key>
-		<xs:keyref name="actorKeyRef" refer="fixr:actorKey">
-			<xs:selector xpath="fixr:actor"/>
-			<xs:field xpath="@extends"/>
-		</xs:keyref>
-		<xs:keyref name="producerKeyRef" refer="fixr:actorKey">
-			<xs:selector xpath="fixr:flow"/>
-			<xs:field xpath="@source"/>
-		</xs:keyref>
-		<xs:keyref name="consumerKeyRef" refer="fixr:actorKey">
-			<xs:selector xpath="fixr:flow"/>
-			<xs:field xpath="@destination"/>
-		</xs:keyref>
-	</xs:element>
-	<xs:element name="repository">
-		<xs:complexType>
-			<xs:all>
-				<xs:element name="metadata" type="dcterms:elementOrRefinementContainer"/>
-				<xs:element ref="fixr:abbreviations" minOccurs="0"/>
-				<xs:element ref="fixr:categories" minOccurs="0"/>
-				<xs:element ref="fixr:sections" minOccurs="0"/>
-				<xs:element ref="fixr:datatypes"/>
-				<xs:element ref="fixr:codeSets"/>
-				<xs:element ref="fixr:fields"/>
-				<xs:element ref="fixr:actors" minOccurs="0"/>
-				<xs:element ref="fixr:components"/>
-				<xs:element ref="fixr:messages"/>
-				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
-			</xs:all>
-			<xs:attribute name="name" type="xs:string" use="required">
-				<xs:annotation>
-					<xs:documentation>Stable name that does not change with minor version updates</xs:documentation>
-				</xs:annotation>
-			</xs:attribute>
-			<xs:attribute name="version" type="fixr:Version_t" use="required"/>
-			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
-			<xs:attribute name="guid" type="xs:string"/>
-			<xs:attribute name="hasComponents" type="xs:boolean" use="required"/>
-			<xs:attribute name="specUrl" type="xs:anyURI">
-				<xs:annotation>
-					<xs:documentation>Reference documentation</xs:documentation>
-				</xs:annotation>
-			</xs:attribute>
-			<xs:attribute name="namespace" type="xs:anyURI">
-				<xs:annotation>
-					<xs:documentation>An associated namespace as URI</xs:documentation>
-				</xs:annotation>
-			</xs:attribute>
-			<xs:attribute name="applVerId" type="xs:string"/>
-		</xs:complexType>
-		<xs:key name="typeKey">
-			<xs:selector xpath="fixr:codeSets/fixr:codeSet|fixr:datatypes/fixr:datatype"/>
-			<xs:field xpath="@name"/>
-		</xs:key>
-	</xs:element>
 	<xs:element name="mappedDatatype">
 		<xs:complexType>
 			<xs:sequence>
@@ -189,6 +159,48 @@
 			<xs:selector xpath="fixr:message"/>
 			<xs:field xpath="@name"/>
 			<xs:field xpath="@scenario"/>
+		</xs:key>
+	</xs:element>
+	<xs:element name="repository">
+		<xs:complexType>
+			<xs:all>
+				<xs:element name="metadata" type="dcterms:elementOrRefinementContainer"/>
+				<xs:element ref="fixr:abbreviations" minOccurs="0"/>
+				<xs:element ref="fixr:categories" minOccurs="0"/>
+				<xs:element ref="fixr:sections" minOccurs="0"/>
+				<xs:element ref="fixr:datatypes"/>
+				<xs:element ref="fixr:codeSets"/>
+				<xs:element ref="fixr:fields"/>
+				<xs:element ref="fixr:actors" minOccurs="0"/>
+				<xs:element ref="fixr:components"/>
+				<xs:element ref="fixr:messages"/>
+				<xs:element ref="fixr:concepts" minOccurs="0"/>
+				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
+			</xs:all>
+			<xs:attribute name="name" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>Stable name that does not change with minor version updates</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="version" type="fixr:Version_t" use="required"/>
+			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
+			<xs:attribute name="guid" type="xs:string"/>
+			<xs:attribute name="hasComponents" type="xs:boolean" use="required"/>
+			<xs:attribute name="specUrl" type="xs:anyURI">
+				<xs:annotation>
+					<xs:documentation>Reference documentation</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="namespace" type="xs:anyURI">
+				<xs:annotation>
+					<xs:documentation>An associated namespace as URI</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="applVerId" type="xs:string"/>
+		</xs:complexType>
+		<xs:key name="typeKey">
+			<xs:selector xpath="fixr:codeSets/fixr:codeSet|fixr:datatypes/fixr:datatype"/>
+			<xs:field xpath="@name"/>
 		</xs:key>
 	</xs:element>
 	<xs:element name="sections">
