@@ -11,7 +11,7 @@
 	<url>https://github.com/FIXTradingCommunity/fix-orchestra/wiki</url>
 	<inceptionYear>2016</inceptionYear>
 	<prerequisites>
-		<maven>3.0</maven>
+		<maven>3.0.5</maven>
 	</prerequisites>
 
 	<organization>
@@ -66,12 +66,12 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<antlr.version>4.7</antlr.version>
+		<antlr.version>4.7.1</antlr.version>
 		<cucumber.version>1.2.5</cucumber.version>
 		<java.version>1.8</java.version>
 		<junit.version>4.11</junit.version>
-		<quickfixj.version>1.6.4</quickfixj.version>
-		<saxon.version>9.8.0-3</saxon.version>
+		<quickfixj.version>2.0.0</quickfixj.version>
+		<saxon.version>9.8.0-8</saxon.version>
 		<slf4j.version>1.7.22</slf4j.version>
 		<stringtemplate.version>4.0.2</stringtemplate.version>
 	</properties>

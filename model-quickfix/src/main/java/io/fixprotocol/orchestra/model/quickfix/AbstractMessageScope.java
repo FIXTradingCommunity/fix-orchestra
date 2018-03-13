@@ -18,20 +18,17 @@ package io.fixprotocol.orchestra.model.quickfix;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Date;
 import java.util.List;
 
 import io.fixprotocol._2016.fixrepository.CodeSetType;
 import io.fixprotocol._2016.fixrepository.FieldRefType;
 import io.fixprotocol._2016.fixrepository.GroupRefType;
 import io.fixprotocol._2016.fixrepository.GroupType;
-
 import io.fixprotocol.orchestra.dsl.antlr.Evaluator;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreException;
-
 import io.fixprotocol.orchestra.model.FixNode;
 import io.fixprotocol.orchestra.model.FixType;
 import io.fixprotocol.orchestra.model.FixValue;
@@ -39,9 +36,7 @@ import io.fixprotocol.orchestra.model.FixValueFactory;
 import io.fixprotocol.orchestra.model.ModelException;
 import io.fixprotocol.orchestra.model.PathStep;
 import io.fixprotocol.orchestra.model.Scope;
-
 import io.fixprotocol.orchestra.model.SymbolResolver;
-
 import quickfix.BytesField;
 import quickfix.FieldMap;
 import quickfix.FieldNotFound;
@@ -110,16 +105,16 @@ abstract class AbstractMessageScope {
         break;
       case UTCTimestamp:
       case TZTimestamp:
-        fieldMap.setUtcTimeStamp(id, Date.from((Instant)fixValue.getValue()));
+        fieldMap.setUtcTimeStamp(id, (LocalDateTime)fixValue.getValue());
         break;
       case UTCTimeOnly:
       case TZTimeOnly:
       case LocalMktTime:
-        fieldMap.setUtcTimeOnly(id, Date.from((Instant.from((LocalTime)fixValue.getValue()))));
+        fieldMap.setUtcTimeOnly(id, (LocalTime)fixValue.getValue());
         break;
       case UTCDateOnly:
       case LocalMktDate:
-        fieldMap.setUtcDateOnly(id, Date.from((Instant.from((LocalDate)fixValue.getValue()))));
+        fieldMap.setUtcDateOnly(id, (LocalDate)fixValue.getValue());
         break;
       case data:
         BytesField bytesField = new BytesField(id, (byte[]) fixValue.getValue());
@@ -191,22 +186,22 @@ abstract class AbstractMessageScope {
           break;
         case UTCTimestamp:
         case TZTimestamp:
-          fixValue = new FixValue<Instant>(name, dataType);
-          ((FixValue<Instant>) fixValue)
-              .setValue(fieldMap.getUtcTimeStamp(id.intValue()).toInstant());
+          fixValue = new FixValue<LocalDateTime>(name, dataType);
+          ((FixValue<LocalDateTime>) fixValue)
+              .setValue(fieldMap.getUtcTimeStamp(id.intValue()));
           break;
         case UTCTimeOnly:
         case TZTimeOnly:
         case LocalMktTime:
           fixValue = new FixValue<LocalTime>(name, dataType);
           ((FixValue<LocalTime>) fixValue)
-              .setValue(LocalTime.from(fieldMap.getUtcTimeOnly(id.intValue()).toInstant()));
+              .setValue(LocalTime.from(fieldMap.getUtcTimeOnly(id.intValue())));
           break;
         case UTCDateOnly:
         case LocalMktDate:
           fixValue = new FixValue<LocalDate>(name, dataType);
           ((FixValue<LocalDate>) fixValue)
-              .setValue(LocalDate.from(fieldMap.getUtcTimeOnly(id.intValue()).toInstant()));
+              .setValue(LocalDate.from(fieldMap.getUtcTimeOnly(id.intValue())));
           break;
         case data:
           fixValue = new FixValue<byte[]>(name, dataType);

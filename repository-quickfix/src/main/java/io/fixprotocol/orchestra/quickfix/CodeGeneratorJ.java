@@ -186,7 +186,10 @@ public class CodeGeneratorJ {
       String fixType = codeSet == null ? type : codeSet.getType();
 
       if (DATE_TYPES.contains(fixType)) {
-        writeImport(writer, "java.util.Date");
+        writeImport(writer, "java.time.LocalDate");
+        writeImport(writer, "java.time.LocalTime");
+        writeImport(writer, "java.time.LocalDateTime");
+        
       }
       String baseClassname = getFieldBaseClass(fixType);
       if (baseClassname.equals("DecimalField")) {
@@ -575,15 +578,17 @@ public class CodeGeneratorJ {
             indent(1), className, indent(2), fieldId, indent(1)));
         writer.write(String.format("%n%spublic %s(char data) {%n%ssuper(%d, data);%n%s}%n",
             indent(1), className, indent(2), fieldId, indent(1)));
-        break;
-      case "DateField":
+        break;     
       case "UtcDateOnlyField":
-        writer.write(String.format("%n%spublic %s(Date data) {%n%ssuper(%d, data);%n%s}%n",
+        writer.write(String.format("%n%spublic %s(LocalDate data) {%n%ssuper(%d, data);%n%s}%n",
             indent(1), className, indent(2), fieldId, indent(1)));
         break;
       case "UtcTimeOnlyField":
+        writer.write(String.format("%n%spublic %s(LocalTime data) {%n%ssuper(%d, data);%n%s}%n",
+            indent(1), className, indent(2), fieldId, indent(1)));
+        break;
       case "UtcTimeStampField":
-        writer.write(String.format("%n%spublic %s(Date data) {%n%ssuper(%d, data);%n%s}%n",
+        writer.write(String.format("%n%spublic %s(LocalDateTime data) {%n%ssuper(%d, data);%n%s}%n",
             indent(1), className, indent(2), fieldId, indent(1)));
         break;
       case "DecimalField":
