@@ -19,6 +19,6 @@ The module may be included as a dependency in a Maven project as follows:
 <dependency>
   <groupId>io.fixprotocol.orchestra</groupId>
   <artifactId>dsl-antlr</artifactId>
-  <version>1.1.0-RC2</version>
+  <version>1.2.0-RC3</version>
 </dependency>
 ```

@@ -23,14 +23,14 @@ Public Orchestra files for service offerings
 
 ## Versions
 
-### Working version: Release Candidate 3
-Planned themes:
-* Reference data
-* Build process and tools
-* Semantic representation
+### Current approved version: Release Candidate 3
+Release Candidate 2 was approved by the Global Technical Committee on March 8, 2018 for 90 day public review.
+Themes:
+* Semantic concepts
+* Additional demonstration applications: documentation generator, test generator
 * Refinement of previous deliverables
 
-### Current approved version: Release Candidate 2
+### Release Candidate 2
 Release Candidate 2 was approved by the Global Technical Committee on May 18, 2017 for 90 day public review. The themes for Release Candidate 2 were:
 * Completion of a DSL grammar for conditional expressions
 * FIXatdl integration
@@ -70,11 +70,11 @@ These utilities extract incremental changes to XML files and selectively apply c
 ### docgen
 This utility generates documentation for an Orchestra file that can be view in any web browser. The output of the generator may be used locally or from a web server.
 
-## Experimental Modules
-This following modules are **experimental**. Requirements are still being gathered and discussed by the FIX Orchestra working group. Participation in the working group is encouraged by FIX Trading Community members, and more broadly, feedback is welcome from interested GitHub users.
-
 ### testgen
 This module is a demonstration of acceptance test generation from an Orchestra file using Behavior Driven Design (BDD) concepts.
+
+## Experimental Modules
+This following modules are **experimental**. Requirements are still being gathered and discussed by the FIX Orchestra working group. Participation in the working group is encouraged by FIX Trading Community members, and more broadly, feedback is welcome from interested GitHub users.
 
 ### FIX Engine Provisioning
 
@@ -96,7 +96,7 @@ Data files in this project under `test/resources` are strictly for testing and t
 See [FIX Standards](https://www.fixtrading.org/standards/) for normative standards documents and [FIX Repository](https://www.fixtrading.org/standards/fix-repository/) for latest Repository extension packs.
 
 ## License
-© Copyright 2016-2017 FIX Protocol Limited
+© Copyright 2016-2018 FIX Protocol Limited
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
