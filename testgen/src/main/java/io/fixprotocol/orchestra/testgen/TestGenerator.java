@@ -61,7 +61,7 @@ public class TestGenerator {
    *        <li>Name of resources output directory--will be created if it does not exist, defaults
    *        to "src/test/resources"</li>
    *        <li>Name of source output directory--will be created if it does not exist, defaults to
-   *        "src/test/java"</li> *
+   *        "src/test/java"</li>
    *        </ol>
    * @throws JAXBException if XML file unmarshaling fails
    * @throws IOException if input file is not found or cannot be read
