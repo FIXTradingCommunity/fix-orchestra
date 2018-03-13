@@ -14,9 +14,9 @@
  */
 package io.fixprotocol.orchestra.model.quickfix;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
-import java.io.File;
+import java.io.InputStream;
 import java.util.function.Function;
 
 import javax.xml.bind.JAXBContext;
@@ -32,7 +32,6 @@ import io.fixprotocol._2016.fixrepository.Repository;
 import io.fixprotocol.orchestra.model.ModelException;
 import io.fixprotocol.orchestra.model.SymbolResolver;
 import quickfix.Group;
-import quickfix.Message;
 import quickfix.field.Account;
 import quickfix.field.ClOrdID;
 import quickfix.field.OrdType;
@@ -51,7 +50,7 @@ public class PopulatorTest {
 
   @BeforeClass
   public static void setupOnce() throws Exception {
-    repository = unmarshal(new File("mit_2016.xml"));
+    repository = unmarshal(Thread.currentThread().getContextClassLoader().getResourceAsStream("mit_2016.xml"));
   }
 
   private RepositoryAdapter repositoryAdapter;
@@ -139,7 +138,7 @@ public class PopulatorTest {
     assertEquals(clOrdId, outboundMessage.getClOrdID().getValue());
    }
 
-  private static Repository unmarshal(File inputFile) throws JAXBException {
+  private static Repository unmarshal(InputStream inputFile) throws JAXBException {
     JAXBContext jaxbContext = JAXBContext.newInstance(Repository.class);
     Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
     return (Repository) jaxbUnmarshaller.unmarshal(inputFile);

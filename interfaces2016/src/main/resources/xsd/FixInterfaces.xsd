@@ -4,7 +4,7 @@
 	<xs:annotation>
 		<xs:documentation>
 			FIX interface configuration
-			© Copyright 2016-2017 FIX Protocol Limited
+			© Copyright 2016-2018 FIX Protocol Limited
 			Creative Commons Attribution-NoDerivatives 4.0
 			International Public License
 		</xs:documentation>

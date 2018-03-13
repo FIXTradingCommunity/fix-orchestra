@@ -17,6 +17,7 @@ package io.fixprotocol.orchestra.model.quickfix;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.io.InputStream;
 import java.math.BigDecimal;
 
 import javax.xml.bind.JAXBContext;
@@ -47,7 +48,7 @@ public class MessageScopeTest {
   
   @BeforeClass
   public static void setupOnce() throws Exception  {
-    repository = unmarshal(new File("mit_2016.xml"));
+    repository = unmarshal(Thread.currentThread().getContextClassLoader().getResourceAsStream("mit_2016.xml"));
   }
 
   private MessageScope messageScope;
@@ -136,7 +137,7 @@ public class MessageScopeTest {
     assertEquals(new BigDecimal("12.31"), node2.getValue());
   }
   
-  private static Repository unmarshal(File inputFile) throws JAXBException {
+  private static Repository unmarshal(InputStream inputFile) throws JAXBException {
     JAXBContext jaxbContext = JAXBContext.newInstance(Repository.class);
     Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
     return (Repository) jaxbUnmarshaller.unmarshal(inputFile);

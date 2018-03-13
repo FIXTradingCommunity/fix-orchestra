@@ -1,8 +1,9 @@
 package io.fixprotocol.orchestra.model.quickfix;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import java.io.File;
+import java.io.InputStream;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -17,20 +18,7 @@ import io.fixprotocol._2016.fixrepository.MessageType;
 import io.fixprotocol._2016.fixrepository.Repository;
 import io.fixprotocol.orchestra.model.SymbolResolver;
 import io.fixprotocol.orchestra.model.TestException;
-import quickfix.Message;
 import quickfix.SessionID;
-import quickfix.SystemTime;
-import quickfix.field.BeginString;
-import quickfix.field.CheckSum;
-import quickfix.field.MsgSeqNum;
-import quickfix.field.MsgType;
-import quickfix.field.SenderCompID;
-import quickfix.field.SenderLocationID;
-import quickfix.field.SenderSubID;
-import quickfix.field.SendingTime;
-import quickfix.field.TargetCompID;
-import quickfix.field.TargetLocationID;
-import quickfix.field.TargetSubID;
 import quickfix.field.TradSesStatus;
 import quickfix.field.TradingSessionID;
 import quickfix.fix50sp2.TradingSessionStatus;
@@ -44,7 +32,7 @@ public class ValidatorTest {
 
   @BeforeClass
   public static void setupOnce() throws Exception {
-    repository = unmarshal(new File("mit_2016.xml"));
+    repository = unmarshal(Thread.currentThread().getContextClassLoader().getResourceAsStream("mit_2016.xml"));
   }
 
   @Before
@@ -56,7 +44,7 @@ public class ValidatorTest {
     validator = new Validator(repositoryAdapter, symbolResolver);
   }
 
-  private static Repository unmarshal(File inputFile) throws JAXBException {
+  private static Repository unmarshal(InputStream inputFile) throws JAXBException {
     JAXBContext jaxbContext = JAXBContext.newInstance(Repository.class);
     Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
     return (Repository) jaxbUnmarshaller.unmarshal(inputFile);

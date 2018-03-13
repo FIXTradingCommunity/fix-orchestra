@@ -114,7 +114,7 @@ public class Populator implements io.fixprotocol.orchestra.model.Populator<Messa
               new GroupInstanceScope(group, groupType, repositoryAdapter, symbolResolver, evaluator)) {
             try (Scope local = (Scope) symbolResolver.resolve(SymbolResolver.LOCAL_ROOT)) {
               local.nest(new PathStep(groupType.getName()), groupScope);
-              populateFieldMap(group, blockAssignments.get(i).getFieldRef(), groupScope);
+              populateFieldMap(group, blockAssignments.get(i).getComponentRefOrGroupRefOrFieldRef(), groupScope);
               fieldMap.addGroup(group);
             }
           } catch (Exception e) {
@@ -126,7 +126,7 @@ public class Populator implements io.fixprotocol.orchestra.model.Populator<Messa
         ComponentRefType componentRefType = (ComponentRefType) member;
         List<BlockAssignmentType> blockAssignments = componentRefType.getBlockAssignment();
         if (blockAssignments.size() > 0) {
-          List<?> blockElements = blockAssignments.get(0).getFieldRef();
+          List<?> blockElements = blockAssignments.get(0).getComponentRefOrGroupRefOrFieldRef();
           populateFieldMap(fieldMap, blockElements, outScope);
         }
       }
