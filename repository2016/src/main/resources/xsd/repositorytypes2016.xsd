@@ -524,7 +524,7 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="lengthName" type="fixr:Name_t"/>	
+		<xs:attribute name="lengthName" type="fixr:Name_t"/>
 		<xs:attribute name="discriminatorId" type="fixr:id_t">
 			<xs:annotation>
 				<xs:documentation>Identifies a field used as a discriminator for this field's domain
@@ -969,22 +969,7 @@
 			<xs:enumeration value="5"/>
 			<xs:enumeration value="6"/>
 			<xs:enumeration value="FIXT.1.1"/>
-			<xs:enumeration value="?"/>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="VolumeName_t">
-		<xs:restriction base="fixr:Name_t">
-			<xs:enumeration value="Volume1"/>
-			<xs:enumeration value="Volume2"/>
-			<xs:enumeration value="Volume3"/>
-			<xs:enumeration value="Volume4"/>
-			<xs:enumeration value="Volume5"/>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="VolumeNumber_t">
-		<xs:restriction base="xs:nonNegativeInteger">
-			<xs:minInclusive value="1"/>
-			<xs:maxInclusive value="5"/>
+			<xs:enumeration value="7"/>
 		</xs:restriction>
 	</xs:simpleType>
 </xs:schema>
