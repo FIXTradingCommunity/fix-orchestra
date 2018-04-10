@@ -126,7 +126,7 @@ public class QuickFixSessionConfigurer {
         if (!isFixSession) {
           continue;
         }
-        
+
         if (version == null) {
           version = interfaceVersion;
         }
@@ -161,6 +161,7 @@ public class QuickFixSessionConfigurer {
           case FixVersions.BEGINSTRING_FIX44:
             beginString = FixVersions.BEGINSTRING_FIX44;
             break;
+          case FixVersions.BEGINSTRING_FIXT11:
           case FixVersions.FIX50SP2:
             beginString = FixVersions.BEGINSTRING_FIXT11;
             applVersion = FixVersions.FIX50SP2;
