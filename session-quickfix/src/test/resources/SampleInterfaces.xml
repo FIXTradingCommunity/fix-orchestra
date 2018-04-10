@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<fixi:interfaces xmlns:dcterms="http://purl.org/dc/terms/" 
-xmlns:fixi="http://fixprotocol.io/2016/fixinterfaces" 
-xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<fixi:interfaces xmlns:dcterms="http://purl.org/dc/terms/"
+xmlns:fixi="http://fixprotocol.io/2016/fixinterfaces"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://fixprotocol.io/2016/fixinterfaces ../../../../interfaces2016/src/main/resources/xsd/FixInterfaces.xsd">
 	<fixi:metadata>
 		<dcterms:subject>Service offerings and sessions example file</dcterms:subject>
@@ -14,7 +14,7 @@ xsi:schemaLocation="http://fixprotocol.io/2016/fixinterfaces ../../../../interfa
 		<!-- the protcol stack -->
 		<fixi:userInterface name="ATDL" orchestration="https://mydomain.com/orchestra/algo.xml"/>
 		<fixi:encoding name="TagValue"/>
-		<fixi:sessionProtocol name="FIXT.1.1" reliability="recoverable" orchestration="https://mydomain.com/orchestra/session.xml">
+		<fixi:sessionProtocol name="FIXT.1.1" version="FIXT.1.1" reliability="recoverable" orchestration="https://mydomain.com/orchestra/session.xml">
 			<fixi:annotation>
 				<fixi:documentation langId="en-us">FIX session protocol</fixi:documentation>
 			</fixi:annotation>
