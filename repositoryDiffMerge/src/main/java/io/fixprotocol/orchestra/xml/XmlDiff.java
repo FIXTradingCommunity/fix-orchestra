@@ -21,6 +21,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -93,11 +94,22 @@ public class XmlDiff {
       usage();
     } else {
       XmlDiff tool = new XmlDiff();
-      try (
-          PatchOpsListener aListener =
-              new PatchOpsListener(args.length > 2 ? new FileOutputStream(args[2]) : System.out);
-          InputStream is1 = new FileInputStream(args[0]);
+      OutputStream out = System.out;
+      try (InputStream is1 = new FileInputStream(args[0]);
           InputStream is2 = new FileInputStream(args[1])) {
+        for (int i = 2; i < args.length; i++) {
+          switch (args[i]) {
+            case "-u":
+              tool.setAreElementsOrdered(false);
+              break;
+            case "-o":
+              tool.setAreElementsOrdered(true);
+              break;
+            default:
+              out = new FileOutputStream(args[i]);
+          }
+        }
+        PatchOpsListener aListener = new PatchOpsListener(out);
         tool.setListener(aListener);
         tool.diff(is1, is2);
       }
@@ -108,13 +120,19 @@ public class XmlDiff {
    * Prints application usage
    */
   public static void usage() {
-    System.out.println("Usage: XmlDiff <xml-file1> <xml-file2> [diff-file]");
+    System.out.println("Usage: XmlDiff <xml-file1> <xml-file2> [diff-file] [-u|-o]\n"
+        + "diff-file defaults to console\t-u=unordered elements\t-o=ordered elements");
   }
 
+  private boolean areElementsOrdered = true;
   private final ArrayList<Attr> attributesArray1 = new ArrayList<>(64);
   private final ArrayList<Attr> attributesArray2 = new ArrayList<>(64);
   private final ElementComparator elementComparator = new ElementComparator();
   private XmlDiffListener listener;
+
+  public boolean areElementsOrdered() {
+    return areElementsOrdered;
+  }
 
   /**
    * Generates differences between two XML documents
@@ -144,7 +162,7 @@ public class XmlDiff {
       is2.close();
     }
   }
-  
+
   /**
    * Generates differences between two XML node trees
    * 
@@ -179,6 +197,10 @@ public class XmlDiff {
       is1.close();
       is2.close();
     }
+  }
+
+  public void setAreElementsOrdered(boolean areElementsOrdered) {
+    this.areElementsOrdered = areElementsOrdered;
   }
 
   /**
@@ -246,15 +268,15 @@ public class XmlDiff {
 
       switch (difference) {
         case ADD:
-          listener.accept(new Event(ADD, XpathUtil.getParentPath(XpathUtil.getFullXPath(attributesArray2.get(index2))),
+          listener.accept(new Event(ADD,
+              XpathUtil.getParentPath(XpathUtil.getFullXPath(attributesArray2.get(index2))),
               attributesArray2.get(index2)));
           index2 = Math.min(index2 + 1, attributesArray2.size());
           isEqual = false;
           break;
         case REPLACE:
           listener.accept(new Event(REPLACE, XpathUtil.getFullXPath(attributesArray1.get(index1)),
-              attributesArray2.get(index2),
-              attributesArray1.get(index1)));
+              attributesArray2.get(index2), attributesArray1.get(index1)));
           index1 = Math.min(index1 + 1, attributesArray1.size());
           index2 = Math.min(index2 + 1, attributesArray2.size());
           isEqual = false;
@@ -280,8 +302,13 @@ public class XmlDiff {
 
     ArrayList<Element> elementsArray1 = new ArrayList<>(64);
     ArrayList<Element> elementsArray2 = new ArrayList<>(64);
-    sortElements(nodeList1, elementsArray1);
-    sortElements(nodeList2, elementsArray2);
+    if (areElementsOrdered()) {
+      selectElements(nodeList1, elementsArray1);
+      selectElements(nodeList2, elementsArray2);
+    } else {
+      sortElements(nodeList1, elementsArray1);
+      sortElements(nodeList2, elementsArray2);
+    }
 
     int index1 = 0;
     int index2 = 0;
@@ -312,8 +339,7 @@ public class XmlDiff {
           break;
         case REPLACE:
           listener.accept(new Event(REPLACE, XpathUtil.getFullXPath(elementsArray1.get(index1)),
-              elementsArray2.get(index2),
-              elementsArray1.get(index1)));
+              elementsArray2.get(index2), elementsArray1.get(index1)));
           index1 = Math.min(index1 + 1, elementsArray1.size());
           index2 = Math.min(index2 + 1, elementsArray2.size());
           isEqual = false;
@@ -358,8 +384,7 @@ public class XmlDiff {
         int valueCompare = child1.getNodeValue().trim().compareTo(child2.getNodeValue().trim());
 
         if (valueCompare != 0) {
-          listener.accept(new Event(REPLACE, XpathUtil.getFullXPath(element1),
-              child2, child1));
+          listener.accept(new Event(REPLACE, XpathUtil.getFullXPath(element1), child2, child1));
         } else {
           return true;
         }
@@ -376,6 +401,18 @@ public class XmlDiff {
     dbf.setNamespaceAware(true);
     final DocumentBuilder db = dbf.newDocumentBuilder();
     return db.parse(is);
+  }
+
+  private ArrayList<Element> selectElements(NodeList nodeList, ArrayList<Element> nodeArray) {
+    nodeArray.clear();
+
+    for (int i = 0; i < nodeList.getLength(); i++) {
+      Node node = nodeList.item(i);
+      if (Node.ELEMENT_NODE == node.getNodeType()) {
+        nodeArray.add((Element) node);
+      }
+    }
+    return nodeArray;
   }
 
   private ArrayList<Attr> sortAttributes(NamedNodeMap attributes, ArrayList<Attr> nodeArray) {
@@ -400,6 +437,5 @@ public class XmlDiff {
     nodeArray.sort(elementComparator);
     return nodeArray;
   }
-
 
 }

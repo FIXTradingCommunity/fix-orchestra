@@ -48,12 +48,13 @@ public class XmlDiffTest {
   }
 
   @Test
-  public void simpleDiff() throws Exception {
+  public void simpleDiffUnordered() throws Exception {
     try (
         final FileInputStream is1 = new FileInputStream(Thread.currentThread()
             .getContextClassLoader().getResource("DiffTest1.xml").getFile());
         final FileInputStream is2 = new FileInputStream(Thread.currentThread()
             .getContextClassLoader().getResource("DiffTest2.xml").getFile())) {
+      xmlDiff.setAreElementsOrdered(false);
       xmlDiff.diff(is1, is2);
     }
     
@@ -64,6 +65,26 @@ public class XmlDiffTest {
     assertEquals(2, doc.getElementsByTagName("add").getLength());
     assertEquals(2, doc.getElementsByTagName("replace").getLength());
     assertEquals(2, doc.getElementsByTagName("remove").getLength());
+  }
+  
+  @Test
+  public void simpleDiffOrdered() throws Exception {
+    try (
+        final FileInputStream is1 = new FileInputStream(Thread.currentThread()
+            .getContextClassLoader().getResource("DiffTest1.xml").getFile());
+        final FileInputStream is2 = new FileInputStream(Thread.currentThread()
+            .getContextClassLoader().getResource("DiffTest2.xml").getFile())) {
+      xmlDiff.setAreElementsOrdered(true);
+      xmlDiff.diff(is1, is2);
+    }
+    
+    DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+    DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+    Document doc = docBuilder.parse(DIFF_FILENAME);
+
+    assertEquals(3, doc.getElementsByTagName("add").getLength());
+    assertEquals(1, doc.getElementsByTagName("replace").getLength());
+    assertEquals(3, doc.getElementsByTagName("remove").getLength());
   }
   
   @Ignore
