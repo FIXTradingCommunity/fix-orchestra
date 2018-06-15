@@ -29,12 +29,12 @@ public class RepositoryXslTransformer {
         }
         File xsltFile = new File(args[0]);
         File inputXml = new File(args[1]);
+        File outputXml = new File(args[2]);
+        outputXml.getParentFile().mkdirs();
 
         Source xmlSource = new javax.xml.transform.stream.StreamSource(inputXml);
         Source xsltSource = new javax.xml.transform.stream.StreamSource(xsltFile);
-        StringWriter sw = new StringWriter();
-
-        Result result = new javax.xml.transform.stream.StreamResult(sw);
+        Result result = new javax.xml.transform.stream.StreamResult(outputXml);
 
         TransformerFactory transFact = new TransformerFactoryImpl();
         Transformer trans = transFact.newTransformer(xsltSource);
@@ -43,12 +43,7 @@ public class RepositoryXslTransformer {
           String[] parts = args[i].split("=");
           trans.setParameter(parts[0], parts[1]);
         }
-        
+         
         trans.transform(xmlSource, result);
-        File file = new File(args[2]);
-        new File(file.getParent()).mkdir();
-        FileWriter output = new FileWriter(file);
-        output.write(sw.toString());
-        output.close();
     }
 }
