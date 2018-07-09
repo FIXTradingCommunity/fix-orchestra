@@ -187,7 +187,6 @@
 			<xsl:attribute name="id" select="../@id"/>
 			<xsl:attribute name="name" select="../@name"/>
 			<xsl:attribute name="numInGroupId" select="@id"/>
-			<xsl:attribute name="numInGroupName" select="(//field[@id = current()/@id])[fn:last()]/@name"/>
 			<xsl:attribute name="category" select="../@category"/>
 			<xsl:attribute name="abbrName" select="../@abbrName"/>
 			<xsl:apply-templates/>

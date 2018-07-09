@@ -105,6 +105,21 @@ public class RepositoryAdapter {
     }
     return null;
   }
+  
+  /**
+   * Get the name of a field by its ID
+   * @param id field ID
+   * @return name of the field or {@code null} if the field is not found
+   */
+  String getFieldName(int id) {
+    List<FieldType> fields = repository.getFields().getField();
+    for (FieldType fieldType : fields) {
+      if (fieldType.getId().intValue() == id) {
+        return fieldType.getName();
+      }
+    }
+    return null;
+  }
 
   /**
    * Get a group given a reference to it
@@ -148,13 +163,13 @@ public class RepositoryAdapter {
     List<Object> elements = new ArrayList<Object>();
    
     elements.addAll(
-        messageType.getStructure().getComponentOrComponentRefOrGroup());
+        messageType.getStructure().getComponentRefOrGroupRefOrFieldRef());
 
     String baseScenario = messageType.getExtends();
     while (baseScenario != null) {
       MessageType baseMessageType = getMessage(messageType.getName(), baseScenario);
       elements.addAll(
-          baseMessageType.getStructure().getComponentOrComponentRefOrGroup());
+          baseMessageType.getStructure().getComponentRefOrGroupRefOrFieldRef());
       baseScenario = baseMessageType.getExtends();
     }
     return elements;

@@ -14,7 +14,6 @@
  */
 package io.fixprotocol.orchestra.model.quickfix;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
@@ -87,6 +86,7 @@ public class Populator implements io.fixprotocol.orchestra.model.Populator<Messa
     for (Object member : members) {
       if (member instanceof FieldRefType) {
         FieldRefType fieldRefType = (FieldRefType) member;
+        String fieldName = repositoryAdapter.getFieldName(fieldRefType.getId().intValue());
         String assignExpression = fieldRefType.getAssign();
         if (assignExpression != null) {
           try {
@@ -97,10 +97,10 @@ public class Populator implements io.fixprotocol.orchestra.model.Populator<Messa
             }
             FixValue<?> fixValue = evaluator.evaluate(assignExpression);
             if (fixValue != null) {
-              outScope.assign(new PathStep(fieldRefType.getName()), fixValue);
+              outScope.assign(new PathStep(fieldName), fixValue);
             }
           } catch (ScoreException e) {
-            throw new ModelException("Failed to assign field " + fieldRefType.getName(), e);
+            throw new ModelException("Failed to assign field " + fieldName, e);
           }
         }
       } else if (member instanceof GroupRefType) {

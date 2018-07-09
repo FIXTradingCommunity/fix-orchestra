@@ -195,7 +195,7 @@ public class TestGenerator {
     st.add("message", message);
     st.add("response", response);
     st.write(writer, errorListener);
-    List<Object> messageElements = message.getStructure().getComponentOrComponentRefOrGroup();
+    List<Object> messageElements = message.getStructure().getComponentRefOrGroupRefOrFieldRef();
     generateFeatureMessageElements(writer, stFeatureGroup, messageElements);
     List<Object> actions = response.getMessageRefOrAssignOrTrigger();
     for (Object action : actions) {
@@ -208,7 +208,7 @@ public class TestGenerator {
 
         MessageType responseMessage = findMessage(messageRef.getName(), messageRef.getScenario());
         List<Object> responseMessageElements =
-            responseMessage.getStructure().getComponentOrComponentRefOrGroup();
+            responseMessage.getStructure().getComponentRefOrGroupRefOrFieldRef();
         generateFeatureMessageElements(writer, stFeatureGroup, responseMessageElements);
       }
     }

@@ -546,7 +546,7 @@ public class DocGenerator {
     if (responses2 != null) {
       responses = responses2.getResponse();
     }
-    List<Object> members = message.getStructure().getComponentOrComponentRefOrGroup();
+    List<Object> members = message.getStructure().getComponentRefOrGroupRefOrFieldRef();
 
     try (OutputStreamWriter fileWriter =
         new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8")) {
@@ -651,14 +651,6 @@ public class DocGenerator {
 
   private String getFieldPresence(FieldRefType fieldRef) {
     switch (fieldRef.getPresence()) {
-      case CONDITIONAL:
-        List<FieldRuleType> rules = fieldRef.getRule();
-        for (FieldRuleType rule : rules) {
-          if (rule.getPresence() == PresenceT.REQUIRED) {
-            return String.format("required when %s", rule.getWhen());
-          }
-        }
-        return "conditional";
       case CONSTANT:
         return String.format("constant %s", fieldRef.getValue());
       case FORBIDDEN:
@@ -666,6 +658,12 @@ public class DocGenerator {
       case IGNORED:
         return "ignored";
       case OPTIONAL:
+        List<FieldRuleType> rules = fieldRef.getRule();
+        for (FieldRuleType rule : rules) {
+          if (rule.getPresence() == PresenceT.REQUIRED) {
+            return String.format("required when %s", rule.getWhen());
+          }
+        }
         return "optional";
       case REQUIRED:
         return "required";

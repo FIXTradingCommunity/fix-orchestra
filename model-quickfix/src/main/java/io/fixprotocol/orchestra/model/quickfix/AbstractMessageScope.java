@@ -17,7 +17,6 @@ package io.fixprotocol.orchestra.model.quickfix;
 
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -51,8 +50,8 @@ abstract class AbstractMessageScope {
   private final Evaluator evaluator;
   private final FieldMap fieldMap;
   private final RepositoryAdapter repository;
-
   private final SymbolResolver symbolResolver;
+  
   protected AbstractMessageScope(FieldMap fieldMap, RepositoryAdapter repository,
       SymbolResolver symbolResolver, Evaluator evaluator) {
     this.fieldMap = fieldMap;
@@ -132,11 +131,11 @@ abstract class AbstractMessageScope {
   
   @SuppressWarnings("unchecked")
   protected FixNode resolveField(FieldRefType fieldRefType) {
-    String name = fieldRefType.getName();
+    int id = fieldRefType.getId().intValue();
+    String name = repository.getFieldName(id);
     @SuppressWarnings("rawtypes")
-    FixValue fixValue = null;
-    BigInteger id = fieldRefType.getId();
-    String dataTypeString = repository.getFieldDatatype(id.intValue());
+    FixValue fixValue = null;   
+    String dataTypeString = repository.getFieldDatatype(id);
     CodeSetType codeSet = repository.getCodeset(dataTypeString);
     if (codeSet != null) {
       dataTypeString = codeSet.getType();
@@ -156,15 +155,15 @@ abstract class AbstractMessageScope {
         case XMLData:
         case Language:
           fixValue = new FixValue<String>(name, dataType);
-          ((FixValue<String>) fixValue).setValue(fieldMap.getString(id.intValue()));
+          ((FixValue<String>) fixValue).setValue(fieldMap.getString(id));
           break;
         case BooleanType:
           fixValue = new FixValue<Boolean>(name, dataType);
-          ((FixValue<Boolean>) fixValue).setValue(fieldMap.getBoolean(id.intValue()));
+          ((FixValue<Boolean>) fixValue).setValue(fieldMap.getBoolean(id));
           break;
         case charType:
           fixValue = new FixValue<Character>(name, dataType);
-          ((FixValue<Character>) fixValue).setValue(fieldMap.getChar(id.intValue()));
+          ((FixValue<Character>) fixValue).setValue(fieldMap.getChar(id));
           break;
         case intType:
         case Length:
@@ -173,7 +172,7 @@ abstract class AbstractMessageScope {
         case NumInGroup:
         case DayOfMonth:
           fixValue = new FixValue<Integer>(name, dataType);
-          ((FixValue<Integer>) fixValue).setValue(fieldMap.getInt(id.intValue()));
+          ((FixValue<Integer>) fixValue).setValue(fieldMap.getInt(id));
           break;
         case Amt:
         case floatType:
@@ -182,30 +181,30 @@ abstract class AbstractMessageScope {
         case PriceOffset:
         case Percentage:
           fixValue = new FixValue<BigDecimal>(name, dataType);
-          ((FixValue<BigDecimal>) fixValue).setValue(fieldMap.getDecimal(id.intValue()));
+          ((FixValue<BigDecimal>) fixValue).setValue(fieldMap.getDecimal(id));
           break;
         case UTCTimestamp:
         case TZTimestamp:
           fixValue = new FixValue<LocalDateTime>(name, dataType);
           ((FixValue<LocalDateTime>) fixValue)
-              .setValue(fieldMap.getUtcTimeStamp(id.intValue()));
+              .setValue(fieldMap.getUtcTimeStamp(id));
           break;
         case UTCTimeOnly:
         case TZTimeOnly:
         case LocalMktTime:
           fixValue = new FixValue<LocalTime>(name, dataType);
           ((FixValue<LocalTime>) fixValue)
-              .setValue(LocalTime.from(fieldMap.getUtcTimeOnly(id.intValue())));
+              .setValue(LocalTime.from(fieldMap.getUtcTimeOnly(id)));
           break;
         case UTCDateOnly:
         case LocalMktDate:
           fixValue = new FixValue<LocalDate>(name, dataType);
           ((FixValue<LocalDate>) fixValue)
-              .setValue(LocalDate.from(fieldMap.getUtcTimeOnly(id.intValue())));
+              .setValue(LocalDate.from(fieldMap.getUtcTimeOnly(id)));
           break;
         case data:
           fixValue = new FixValue<byte[]>(name, dataType);
-          BytesField bytesField = new BytesField(id.intValue());
+          BytesField bytesField = new BytesField(id);
           fieldMap.getField(bytesField);
           ((FixValue<byte[]>) fixValue).setValue(bytesField.getValue());
           break;

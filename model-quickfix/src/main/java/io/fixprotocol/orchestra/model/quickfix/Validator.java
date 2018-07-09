@@ -138,16 +138,6 @@ public class Validator implements io.fixprotocol.orchestra.model.Validator<Messa
     boolean isPresentInMessage = fieldMap.isSetField(id);
 
     switch (presence) {
-      case CONDITIONAL:
-        // Evaluate rules if present
-        List<FieldRuleType> rules = fieldRefType.getRule();
-        for (FieldRuleType rule : rules) {
-          String when = rule.getWhen();
-          if (predicateEvaluator.test(when, testException) && !isPresentInMessage) {
-            testException.addDetail("Missing required field " + id, "REQUIRED", "(not present)");
-          }
-        }
-        break;
       case CONSTANT:
         break;
       case FORBIDDEN:
@@ -158,6 +148,14 @@ public class Validator implements io.fixprotocol.orchestra.model.Validator<Messa
       case IGNORED:
         break;
       case OPTIONAL:
+        // Evaluate rules if present
+        List<FieldRuleType> rules = fieldRefType.getRule();
+        for (FieldRuleType rule : rules) {
+          String when = rule.getWhen();
+          if (predicateEvaluator.test(when, testException) && !isPresentInMessage) {
+            testException.addDetail("Missing required field " + id, "REQUIRED", "(not present)");
+          }
+        }
         break;
       case REQUIRED:
         if (!isPresentInMessage) {

@@ -569,7 +569,6 @@
 		<xs:complexContent>
 			<xs:extension base="fixr:componentType">
 				<xs:attribute name="numInGroupId" type="fixr:id_t" use="required"/>
-				<xs:attribute name="numInGroupName" type="fixr:Name_t" use="required"/>
 				<xs:attribute name="implMinOccurs" type="xs:nonNegativeInteger"/>
 				<xs:attribute name="implMaxOccurs" type="fixr:unboundedIntType" default="unbounded"/>
 			</xs:extension>
