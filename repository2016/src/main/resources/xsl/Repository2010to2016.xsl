@@ -213,19 +213,19 @@
 		<xsl:choose>
 			<xsl:when test="//component[@id=current()/@id]/repeatingGroup">
 				<fixr:groupRef>
-					<xsl:apply-templates select="@*"/>
+					<xsl:apply-templates select="@*[name()!='name']"/>
 				</fixr:groupRef>
 			</xsl:when>
 			<xsl:otherwise>
 				<fixr:componentRef>
-					<xsl:apply-templates select="@*"/>
+					<xsl:apply-templates select="@*[name()!='name']"/>
 				</fixr:componentRef>
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
 	<xsl:template match="fieldRef">
 		<fixr:fieldRef>
-			<xsl:apply-templates select="@*"/>
+			<xsl:apply-templates select="@*[name()!='name']"/>
 		</fixr:fieldRef>
 	</xsl:template>
 	<xsl:template match="@enumDatatype">

@@ -23,6 +23,11 @@ Public Orchestra files for service offerings
 
 ## Versions
 
+### Working version: Release Candidate 4
+Themes:
+* Tool development
+* Schema refinements as needed
+
 ### Current approved version: Release Candidate 3
 Release Candidate 2 was approved by the Global Technical Committee on March 8, 2018 for 90 day public review.
 Themes:

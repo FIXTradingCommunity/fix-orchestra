@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:fixr="http://fixprotocol.io/2016/fixrepository" targetNamespace="http://fixprotocol.io/2016/fixrepository" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0-rc3">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:fixr="http://fixprotocol.io/2016/fixrepository" targetNamespace="http://fixprotocol.io/2016/fixrepository" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0-rc4">
 	<xs:annotation>
 		<xs:documentation>
-			© Copyright 2016-2017 FIX Protocol Limited Creative
+			© Copyright 2016-2018 FIX Protocol Limited Creative
 			Commons Attribution-NoDerivatives 4.0
 			International Public License
 		</xs:documentation>
@@ -196,7 +196,7 @@
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
-		<xs:attributeGroup ref="fixr:oidGrp"/>
+		<xs:attribute name="id" type="fixr:id_t" use="required"/>
 		<xs:attribute name="presence" type="fixr:presence_t" default="optional"/>
 		<xs:attribute name="instanceName" type="fixr:ComponentName_t">
 			<xs:annotation>
@@ -214,9 +214,6 @@
 				<xs:element name="componentRef" type="fixr:componentRefType"/>
 				<xs:element name="groupRef" type="fixr:groupRefType"/>
 				<xs:element name="fieldRef" type="fixr:fieldRefType"/>
-				<xs:element name="component" type="fixr:componentType"/>
-				<xs:element name="group" type="fixr:groupType"/>
-				<xs:element name="field" type="fixr:fieldType"/>
 			</xs:choice>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
@@ -254,7 +251,6 @@
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
-		<xs:attribute name="oid" type="fixr:oidOrUri_t"/>
 	</xs:complexType>
 	<xs:attributeGroup name="containerAttribGrp">
 		<xs:attribute name="latestEP" type="fixr:EP_t"/>
@@ -424,7 +420,7 @@
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
-		<xs:attributeGroup ref="fixr:oidGrp"/>
+		<xs:attribute name="id" type="fixr:id_t" use="required"/>
 		<xs:attribute name="lengthId" type="fixr:id_t">
 			<xs:annotation>
 				<xs:documentation>Identifies a field used as a length prefix
@@ -618,11 +614,8 @@
 			<xs:element name="structure">
 				<xs:complexType>
 					<xs:choice maxOccurs="unbounded">
-						<xs:element name="component" type="fixr:componentType"/>
 						<xs:element name="componentRef" type="fixr:componentRefType"/>
-						<xs:element name="group" type="fixr:groupType"/>
 						<xs:element name="groupRef" type="fixr:groupRefType"/>
-						<xs:element name="field" type="fixr:fieldType"/>
 						<xs:element name="fieldRef" type="fixr:fieldRefType"/>
 					</xs:choice>
 					<!-- message elements may be by reference or inline -->
@@ -675,35 +668,38 @@
 			<xs:pattern value="([A-Z]|[a-z]|_)([0-9]|[A-Z]|[a-z]|_)*"/>
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:simpleType name="oid_t">
-		<xs:annotation>
-			<xs:documentation>Object identifier (OID) in ASN.1 or dotted notation</xs:documentation>
-		</xs:annotation>
-		<xs:restriction base="xs:string">
-			<xs:pattern value="\{?[a-zA-Z0-9()\-\.]+\}?"/>
-		</xs:restriction>
-	</xs:simpleType>
 	<xs:attributeGroup name="oidGrp">
 		<xs:attribute name="id" type="fixr:id_t" use="required"/>
 		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
 		<xs:attribute name="abbrName" type="fixr:Abbreviation_t"/>
-		<xs:attribute name="oid" type="fixr:oidOrUri_t">
-			<xs:annotation>
-				<xs:documentation>An object ID or URI</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
 	</xs:attributeGroup>
-	<xs:simpleType name="oidOrUri_t">
-		<xs:union memberTypes="xs:anyURI fixr:oid_t"/>
-	</xs:simpleType>
 	<xs:simpleType name="presence_t">
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="optional"/>
-			<xs:enumeration value="required"/>
-			<xs:enumeration value="conditional"/>
-			<xs:enumeration value="forbidden"/>
-			<xs:enumeration value="ignored"/>
-			<xs:enumeration value="constant"/>
+			<xs:enumeration value="optional">
+				<xs:annotation>
+					<xs:documentation>The field or component MAY be present; it may be conditionally required based on a rule.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="required">
+				<xs:annotation>
+					<xs:documentation>The field or component MUST be present.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="forbidden">
+				<xs:annotation>
+					<xs:documentation>The field or component MUST NOT be present.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ignored">
+				<xs:annotation>
+					<xs:documentation>The field or component MAY be present but is not validated.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="constant">
+				<xs:annotation>
+					<xs:documentation>The field has a constant value; in some encodings it need not be sent on the wire.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="purpose_enum">
