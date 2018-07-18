@@ -26,7 +26,7 @@ import javax.xml.transform.TransformerException;
 import java.io.File;
 import java.io.IOException;
 
-@Ignore
+
 public class RepositoryXslTransformerTest {
   
     @Test

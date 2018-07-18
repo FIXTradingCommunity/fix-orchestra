@@ -350,9 +350,8 @@ $documentation(object=component)$
 <th class="major">ID</th>
 <th class="major">Abbr</th>
 <th class="major">NumInGroup ID</th>
-<th class="major">NumInGroup Name</th>
 </tr>
-<tr><td class="major">$component.id$</td><td class="major">$component.abbrName$</td><td class="major">$component.numInGroupId$</td><td class="major"><a href="../fields/$component.numInGroupName$.html">$component.numInGroupName$</a></td></tr>
+<tr><td class="major">$component.id$</td><td class="major">$component.abbrName$</td><td class="major">$component.numInGroupId$</td></tr>
 </table>
 $pedigree(object=component)$
 <h2>Members</h2>

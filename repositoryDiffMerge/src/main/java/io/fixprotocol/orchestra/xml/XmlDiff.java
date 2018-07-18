@@ -306,8 +306,8 @@ public class XmlDiff {
       selectElements(nodeList1, elementsArray1);
       selectElements(nodeList2, elementsArray2);
     } else {
-      sortElements(nodeList1, elementsArray1);
-      sortElements(nodeList2, elementsArray2);
+      selectElements(nodeList1, elementsArray1).sort(elementComparator);
+      selectElements(nodeList2, elementsArray2).sort(elementComparator);
     }
 
     int index1 = 0;
@@ -422,19 +422,6 @@ public class XmlDiff {
       nodeArray.add((Attr) attributes.item(i));
     }
     nodeArray.sort((n1, n2) -> n1.getNodeName().compareTo(n2.getNodeName()));
-    return nodeArray;
-  }
-
-  private ArrayList<Element> sortElements(NodeList nodeList, ArrayList<Element> nodeArray) {
-    nodeArray.clear();
-
-    for (int i = 0; i < nodeList.getLength(); i++) {
-      Node node = nodeList.item(i);
-      if (Node.ELEMENT_NODE == node.getNodeType()) {
-        nodeArray.add((Element) node);
-      }
-    }
-    nodeArray.sort(elementComparator);
     return nodeArray;
   }
 

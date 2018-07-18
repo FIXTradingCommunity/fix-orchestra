@@ -98,7 +98,7 @@ public class RepositoryCompressor {
     List<MessageType> messageList = inMessages.getMessage();
     List<MessageType> messagesWithFlow =
         messageList.stream().filter(m -> m.getFlow() != null).collect(Collectors.toList());
-    messagesWithFlow.forEach(m -> walk(m.getStructure().getComponentOrComponentRefOrGroup()));
+    messagesWithFlow.forEach(m -> walk(m.getStructure().getComponentRefOrGroupRefOrFieldRef()));
 
     List<BigInteger> distinctFieldIds =
         fieldIdList.stream().distinct().collect(Collectors.toList());

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fixr="http://fixprotocol.io/2016/fixrepository" xmlns:dcterms="http://purl.org/dc/terms/" targetNamespace="http://fixprotocol.io/2016/fixrepository" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0-rc3">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fixr="http://fixprotocol.io/2016/fixrepository" xmlns:dcterms="http://purl.org/dc/terms/" targetNamespace="http://fixprotocol.io/2016/fixrepository" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0-rc4">
 	<xs:annotation>
 		<xs:documentation>
 			FIX Repository standard structure of messages with workflow
@@ -197,6 +197,11 @@
 				</xs:annotation>
 			</xs:attribute>
 			<xs:attribute name="applVerId" type="xs:string"/>
+			<xs:attribute name="expressionLanguage" type="xs:string" default="Score">
+				<xs:annotation>
+					<xs:documentation>The syntax of 'expressionType'</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
 		</xs:complexType>
 		<xs:key name="typeKey">
 			<xs:selector xpath="fixr:codeSets/fixr:codeSet|fixr:datatypes/fixr:datatype"/>

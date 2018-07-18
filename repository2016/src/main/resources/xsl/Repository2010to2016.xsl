@@ -187,7 +187,6 @@
 			<xsl:attribute name="id" select="../@id"/>
 			<xsl:attribute name="name" select="../@name"/>
 			<xsl:attribute name="numInGroupId" select="@id"/>
-			<xsl:attribute name="numInGroupName" select="(//field[@id = current()/@id])[fn:last()]/@name"/>
 			<xsl:attribute name="category" select="../@category"/>
 			<xsl:attribute name="abbrName" select="../@abbrName"/>
 			<xsl:apply-templates/>
@@ -213,19 +212,19 @@
 		<xsl:choose>
 			<xsl:when test="//component[@id=current()/@id]/repeatingGroup">
 				<fixr:groupRef>
-					<xsl:apply-templates select="@*"/>
+					<xsl:apply-templates select="@*[name()!='name']"/>
 				</fixr:groupRef>
 			</xsl:when>
 			<xsl:otherwise>
 				<fixr:componentRef>
-					<xsl:apply-templates select="@*"/>
+					<xsl:apply-templates select="@*[name()!='name']"/>
 				</fixr:componentRef>
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
 	<xsl:template match="fieldRef">
 		<fixr:fieldRef>
-			<xsl:apply-templates select="@*"/>
+			<xsl:apply-templates select="@*[name()!='name']"/>
 		</fixr:fieldRef>
 	</xsl:template>
 	<xsl:template match="@enumDatatype">

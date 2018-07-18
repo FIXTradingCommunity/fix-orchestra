@@ -265,7 +265,7 @@ public class CodeGeneratorJ {
       writeSerializationVersion(writer, SERIALIZATION_VERSION);
       writeMsgType(writer, messageType.getMsgType());
 
-      List<Object> members = messageType.getStructure().getComponentOrComponentRefOrGroup();
+      List<Object> members = messageType.getStructure().getComponentRefOrGroupRefOrFieldRef();
       writeMessageNoArgConstructor(writer, messageClassname);
 
       writeMemberAccessors(writer, members, messagePackage, componentPackage);
@@ -502,9 +502,9 @@ public class CodeGeneratorJ {
     return writer;
   }
 
-  private Writer writeComponentAccessors(Writer writer, ComponentRefType member, String packageName)
+  private Writer writeComponentAccessors(Writer writer, ComponentType component, String packageName)
       throws IOException {
-    String className = getQualifiedClassName(packageName, member.getName());
+    String className = getQualifiedClassName(packageName, component.getName());
     writer.write(
         String.format("%n%spublic void set(%s component) {%n%ssetComponent(component);%n%s}%n",
             indent(1), className, indent(2), indent(1)));
@@ -513,7 +513,7 @@ public class CodeGeneratorJ {
         indent(1), className, className, indent(2), indent(2), indent(1)));
     writer.write(String.format(
         "%n%spublic %s get%s() throws FieldNotFound {%n%sreturn get(new %s());%n%s}%n", indent(1),
-        className, member.getName(), indent(2), className, indent(1)));
+        className, component.getName(), indent(2), className, indent(1)));
     return writer;
   }
 
@@ -636,11 +636,14 @@ public class CodeGeneratorJ {
 
   private void writeGroupCreateCase(Writer writer, String parentQualifiedName, GroupType groupType)
       throws IOException {
+    FieldType numInGroupField = fields.get(groupType.getNumInGroupId().intValue());
+    String numInGroupFieldName = numInGroupField.getName();
+
     String numInGroupFieldClassname =
-        getQualifiedClassName(FIELD_PACKAGE, groupType.getNumInGroupName());
+        getQualifiedClassName(FIELD_PACKAGE, numInGroupFieldName);
     writer.write(String.format("%scase %s.FIELD:%n", indent(3), numInGroupFieldClassname));
     writer.write(String.format("%sreturn new %s.%s();%n", indent(4), parentQualifiedName,
-        groupType.getNumInGroupName()));
+        numInGroupFieldName));
     List<Object> members = groupType.getComponentRefOrGroupRefOrFieldRef();
     for (Object member : members) {
       if (member instanceof GroupRefType) {
@@ -648,7 +651,7 @@ public class CodeGeneratorJ {
         GroupType nestedGroupType = groups.get(id);
         if (groupType != null) {
           writeGroupCreateCase(writer,
-              String.format("%s.%s", parentQualifiedName, groupType.getNumInGroupName()),
+              String.format("%s.%s", parentQualifiedName, numInGroupFieldName),
               nestedGroupType);
         } else {
           System.err.format("Group missing from repository; id=%d%n", id);
@@ -674,7 +677,7 @@ public class CodeGeneratorJ {
           .write(String.format("%scase %s.%s.MSGTYPE:%n", indent(1), messagePackage, messageName));
       writer.write(String.format("%sswitch (correspondingFieldID) {%n", indent(2)));
 
-      List<Object> members = messageType.getStructure().getComponentOrComponentRefOrGroup();
+      List<Object> members = messageType.getStructure().getComponentRefOrGroupRefOrFieldRef();
       for (Object member : members) {
         if (member instanceof GroupRefType) {
           int id = ((GroupRefType) member).getId().intValue();
@@ -711,7 +714,8 @@ public class CodeGeneratorJ {
   private void writeGroupInnerClass(FileWriter writer, GroupType groupType, String packageName,
       String componentPackage) throws IOException {
     int numInGroupId = groupType.getNumInGroupId().intValue();
-    String numInGroupFieldName = groupType.getNumInGroupName();
+    String numInGroupFieldName =fields.get(groupType.getNumInGroupId().intValue()).getName();
+
     writeStaticClassDeclaration(writer, numInGroupFieldName, "Group");
     writeSerializationVersion(writer, SERIALIZATION_VERSION);
 
@@ -747,22 +751,24 @@ public class CodeGeneratorJ {
     for (Object member : members) {
       if (member instanceof FieldRefType) {
         FieldRefType fieldRefType = (FieldRefType) member;
-        writeFieldAccessors(writer, fieldRefType.getName(), fieldRefType.getId().intValue());
+        FieldType field = fields.get(fieldRefType.getId().intValue());
+        writeFieldAccessors(writer, field.getName(), fieldRefType.getId().intValue());
       } else if (member instanceof GroupRefType) {
-        writeComponentAccessors(writer, (ComponentRefType) member, componentPackage);
         int id = ((GroupRefType) member).getId().intValue();
         GroupType groupType = groups.get(id);
         if (groupType != null) {
+          writeComponentAccessors(writer, groupType, componentPackage);
           int numInGroupId = groupType.getNumInGroupId().intValue();
-          String numInGroupName = groupType.getNumInGroupName();
+          FieldType numInGroupField = fields.get(numInGroupId);
+          String numInGroupName = numInGroupField.getName();
           writeFieldAccessors(writer, numInGroupName, numInGroupId);
           writeGroupInnerClass(writer, groupType, packageName, componentPackage);
         } else {
           System.err.format("Group missing from repository; id=%d%n", id);
         }
-
       } else if (member instanceof ComponentRefType) {
-        writeComponentAccessors(writer, (ComponentRefType) member, componentPackage);
+        ComponentType component = components.get(((ComponentRefType) member).getId().intValue());
+        writeComponentAccessors(writer, component, componentPackage);
       }
     }
   }

@@ -18,6 +18,7 @@ import java.util.List;
 
 import io.fixprotocol._2016.fixrepository.FieldRefType;
 import io.fixprotocol._2016.fixrepository.GroupRefType;
+import io.fixprotocol._2016.fixrepository.GroupType;
 import io.fixprotocol._2016.fixrepository.MessageType;
 import io.fixprotocol.orchestra.dsl.antlr.Evaluator;
 import io.fixprotocol.orchestra.model.FixNode;
@@ -110,12 +111,14 @@ public class MessageScope extends AbstractMessageScope implements Scope {
     for (Object member : members) {
       if (member instanceof FieldRefType) {
         FieldRefType fieldRefType = (FieldRefType) member;
-        if (fieldRefType.getName().equals(name)) {
+        String fieldName = getRepository().getFieldName(fieldRefType.getId().intValue());
+        if (name.equals(fieldName)) {
           return resolveField(fieldRefType);
         }
       } else if (member instanceof GroupRefType) {
         GroupRefType groupRefType = (GroupRefType) member;
-        if (groupRefType.getName().equals(name)) {
+        GroupType group = getRepository().getGroup(groupRefType);
+        if (name.equals(group.getName())) {
           return resolveGroup(pathStep, groupRefType);
         }
       }
@@ -148,7 +151,8 @@ public class MessageScope extends AbstractMessageScope implements Scope {
     for (Object member : members) {
       if (member instanceof FieldRefType) {
         FieldRefType fieldRefType = (FieldRefType) member;
-        if (fieldRefType.getName().equals(name)) {
+        String fieldName = getRepository().getFieldName(fieldRefType.getId().intValue());
+        if (name.equals(fieldName)) {
           assignField(fieldRefType, value);
           return value;
         }

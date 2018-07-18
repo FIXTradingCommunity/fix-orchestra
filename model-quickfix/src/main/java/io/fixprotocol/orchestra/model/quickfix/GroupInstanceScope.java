@@ -58,7 +58,8 @@ class GroupInstanceScope extends AbstractMessageScope implements Scope {
     for (Object member : members) {
       if (member instanceof FieldRefType) {
         FieldRefType fieldRefType = (FieldRefType) member;
-        if (fieldRefType.getName().equals(pathStep.getName())) {
+        String fieldName = getRepository().getFieldName(fieldRefType.getId().intValue());
+        if (fieldName.equals(pathStep.getName())) {
           assignField(fieldRefType, fixValue);
           return fixValue;
         }
@@ -106,12 +107,14 @@ class GroupInstanceScope extends AbstractMessageScope implements Scope {
     for (Object member : members) {
       if (member instanceof FieldRefType) {
         FieldRefType fieldRefType = (FieldRefType) member;
-        if (fieldRefType.getName().equals(unqualified)) {
+        String fieldName = getRepository().getFieldName(fieldRefType.getId().intValue());
+        if (fieldName.equals(unqualified)) {
           return resolveField(fieldRefType);
         }
       } else if (member instanceof GroupRefType) {
         GroupRefType groupRefType = (GroupRefType) member;
-        if (groupRefType.getName().equals(unqualified)) {
+        GroupType group = getRepository().getGroup(groupRefType);
+        if (group.getName().equals(unqualified)) {
           return resolveGroup(pathStep, groupRefType);
         }
       }

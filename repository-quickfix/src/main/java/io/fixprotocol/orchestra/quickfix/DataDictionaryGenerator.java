@@ -83,6 +83,7 @@ public class DataDictionaryGenerator {
   private final Map<String, CodeSetType> codeSets = new HashMap<>();
   private final Map<Integer, ComponentType> components = new HashMap<>();
   private final Map<Integer, GroupType> groups = new HashMap<>();
+  private final Map<Integer, FieldType> fields = new HashMap<>();
 
   public void generate(InputStream inputFile, File outputDir) throws JAXBException, IOException {
     final Repository repository = unmarshal(inputFile);
@@ -103,6 +104,11 @@ public class DataDictionaryGenerator {
         components.put(component.getId().intValue(), component);
       }
     }
+    final List<FieldType> fieldList = repository.getFields().getField();
+    for (FieldType fieldType : fieldList) {
+      fields.put(fieldType.getId().intValue(), fieldType);
+    }
+
     String version = repository.getVersion();
     // Split off EP portion of version in the form "FIX.5.0SP2_EP216"
     String[] parts = version.split("_");
@@ -142,7 +148,6 @@ public class DataDictionaryGenerator {
         }
         writeElementEnd(writer, "components", 1);
         writeElement(writer, "fields", 1, false);
-        final List<FieldType> fieldList = repository.getFields().getField();
         for (FieldType fieldType : fieldList) {
           writeField(writer, fieldType);
         }
@@ -199,8 +204,9 @@ public class DataDictionaryGenerator {
 
   private Writer writeComponent(Writer writer, ComponentRefType componentRefType)
       throws IOException {
+    ComponentType component = components.get(componentRefType.getId().intValue());
     writeElement(writer, "component", 3, true,
-        new KeyValue<String>("name", componentRefType.getName()), new KeyValue<String>("required",
+        new KeyValue<String>("name", component.getName()), new KeyValue<String>("required",
             componentRefType.getPresence().equals(PresenceT.REQUIRED) ? "Y" : "N"));
     return writer;
   }
@@ -256,7 +262,8 @@ public class DataDictionaryGenerator {
   }
 
   private Writer writeField(Writer writer, FieldRefType fieldRefType) throws IOException {
-    writeElement(writer, "field", 3, true, new KeyValue<String>("name", fieldRefType.getName()),
+    FieldType field = fields.get(fieldRefType.getId().intValue());
+    writeElement(writer, "field", 3, true, new KeyValue<String>("name", field.getName()),
         new KeyValue<String>("required",
             fieldRefType.getPresence().equals(PresenceT.REQUIRED) ? "Y" : "N"));
     return writer;
@@ -280,16 +287,18 @@ public class DataDictionaryGenerator {
   }
 
   private Writer writeGroup(Writer writer, GroupRefType componentRefType) throws IOException {
+    GroupType group = groups.get(componentRefType.getId().intValue());
     writeElement(writer, "component", 3, true,
-        new KeyValue<String>("name", componentRefType.getName()), new KeyValue<String>("required",
+        new KeyValue<String>("name", group.getName()), new KeyValue<String>("required",
             componentRefType.getPresence().equals(PresenceT.REQUIRED) ? "Y" : "N"));
     return writer;
   }
 
   private Writer writeGroup(Writer writer, GroupType groupType) throws IOException {
     writeElement(writer, "component", 2, false, new KeyValue<String>("name", groupType.getName()));
+    FieldType numInGroupField = fields.get(groupType.getNumInGroupId().intValue());
     writeElement(writer, "group", 3, false,
-        new KeyValue<String>("name", groupType.getNumInGroupName()));
+        new KeyValue<String>("name", numInGroupField.getName()));
     List<Object> members = groupType.getComponentRefOrGroupRefOrFieldRef();
     for (Object member : members) {
       if (member instanceof FieldRefType) {
@@ -315,7 +324,7 @@ public class DataDictionaryGenerator {
         new KeyValue<String>("msgtype", messageType.getMsgType()),
         new KeyValue<String>("msgcat", msgcat));
 
-    List<Object> members = messageType.getStructure().getComponentOrComponentRefOrGroup();
+    List<Object> members = messageType.getStructure().getComponentRefOrGroupRefOrFieldRef();
     for (Object member : members) {
       if (member instanceof FieldRefType) {
         FieldRefType fieldRefType = (FieldRefType) member;
