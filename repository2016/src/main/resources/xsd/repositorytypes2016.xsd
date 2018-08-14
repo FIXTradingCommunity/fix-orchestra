@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2018 rel. 2 sp1 (x64) (http://www.altova.com) by Don Mendelson (FIX Protocol Ltd. (FPL)) -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:fixr="http://fixprotocol.io/2016/fixrepository" targetNamespace="http://fixprotocol.io/2016/fixrepository" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0-rc4">
 	<xs:annotation>
 		<xs:documentation>
@@ -77,7 +78,6 @@
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
-		<xs:attribute name="extends" type="xs:string"/>
 	</xs:complexType>
 	<xs:complexType name="annotation">
 		<xs:choice maxOccurs="unbounded">
@@ -195,8 +195,8 @@
 			</xs:element>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
+		<xs:attributeGroup ref="fixr:refidGrp"/>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
-		<xs:attribute name="id" type="fixr:id_t" use="required"/>
 		<xs:attribute name="presence" type="fixr:presence_t" default="optional"/>
 		<xs:attribute name="instanceName" type="fixr:ComponentName_t">
 			<xs:annotation>
@@ -206,7 +206,6 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="scenario" type="xs:string" default="base"/>
 	</xs:complexType>
 	<xs:complexType name="componentType">
 		<xs:sequence>
@@ -217,20 +216,6 @@
 			</xs:choice>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
-		<xs:attribute name="scenario" type="xs:string" default="base">
-			<xs:annotation>
-				<xs:documentation>The name of one use case of this component. 
-				Each scenario of a component must have a unique numeric id.
-				The default scenario name is 'base'.</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
-		<xs:attribute name="extends" type="xs:string">
-			<xs:annotation>
-				<xs:documentation>If present, refers to another scenario, assuming
-					the same component name
-				</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 		<xs:attributeGroup ref="fixr:oidGrp"/>
 		<xs:attribute name="category" type="fixr:CategoryID_t"/>
@@ -393,15 +378,6 @@
 	</xs:attributeGroup>
 	<xs:complexType name="fieldRefType">
 		<xs:sequence>
-			<xs:element name="codeSet" type="fixr:codeSetType" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>CodeSet may be specified inline or referenced by
-						type attribute, but not both. Not currently enforced by this
-						schema.
-						Consider XML schema assertion in future.
-					</xs:documentation>
-				</xs:annotation>
-			</xs:element>
 			<xs:element name="rule" type="fixr:fieldRuleType" minOccurs="0" maxOccurs="unbounded">
 				<xs:annotation>
 					<xs:documentation>Rule to tell when a conditionally require field
@@ -419,8 +395,8 @@
 			</xs:element>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
+		<xs:attributeGroup ref="fixr:refidGrp"/>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
-		<xs:attribute name="id" type="fixr:id_t" use="required"/>
 		<xs:attribute name="lengthId" type="fixr:id_t">
 			<xs:annotation>
 				<xs:documentation>Identifies a field used as a length prefix
@@ -478,15 +454,6 @@
 	</xs:complexType>
 	<xs:complexType name="fieldType">
 		<xs:sequence>
-			<xs:element name="codeSet" type="fixr:codeSetType" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>CodeSet may be specified inline or referenced by
-						type attribute, but not both. Not currently enforced by this
-						schema.
-						Consider XML schema assertion in future.
-					</xs:documentation>
-				</xs:annotation>
-			</xs:element>
 			<xs:element name="rule" type="fixr:fieldRuleType" minOccurs="0" maxOccurs="unbounded">
 				<xs:annotation>
 					<xs:documentation>Rule to tell when a conditionally require field
@@ -504,8 +471,8 @@
 			</xs:element>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
-		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 		<xs:attributeGroup ref="fixr:oidGrp"/>
+		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 		<xs:attribute name="type" type="xs:string" use="required">
 			<xs:annotation>
 				<xs:documentation>Attribute type refers to either a datatype or a
@@ -600,7 +567,7 @@
 	<xs:complexType name="messageRefType">
 		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
 		<xs:attribute name="msgType" type="fixr:MsgType_t"/>
-		<xs:attribute name="scenario" type="xs:string" default="base"/>
+		<xs:attributeGroup ref="fixr:refidGrp"/>
 		<xs:attribute name="implMinOccurs" type="xs:positiveInteger" default="1"/>
 		<xs:attribute name="implMaxOccurs" type="fixr:unboundedIntType" default="unbounded">
 			<xs:annotation>
@@ -617,7 +584,6 @@
 						<xs:element name="groupRef" type="fixr:groupRefType"/>
 						<xs:element name="fieldRef" type="fixr:fieldRefType"/>
 					</xs:choice>
-					<!-- message elements may be by reference or inline -->
 				</xs:complexType>
 			</xs:element>
 			<xs:element name="responses" minOccurs="0">
@@ -638,20 +604,6 @@
 		<xs:attribute name="category" type="fixr:CategoryID_t"/>
 		<xs:attributeGroup ref="fixr:oidGrp"/>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
-		<xs:attribute name="scenario" type="xs:string" default="base">
-			<xs:annotation>
-				<xs:documentation>The name of one use case of this message type. 
-				Each scenario of a message must have a unique numeric id.
-				The default scenario name is 'base'.</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
-		<xs:attribute name="extends" type="xs:string">
-			<xs:annotation>
-				<xs:documentation>If present, refers to another scenario, assuming
-					the same message name
-				</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
 		<xs:attribute name="flow" type="fixr:Name_t"/>
 	</xs:complexType>
 	<xs:simpleType name="MsgType_t">
@@ -668,9 +620,21 @@
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:attributeGroup name="oidGrp">
-		<xs:attribute name="id" type="fixr:id_t" use="required"/>
+		<xs:annotation>
+			<xs:documentation>The identifiers of a message element</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="id" type="fixr:id_t" use="required">
+			<xs:annotation>
+				<xs:documentation>Numeric identifier generally must be unique within a file for an element type, e.g. unique field tag</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
 		<xs:attribute name="abbrName" type="fixr:Abbreviation_t"/>
+		<xs:attribute name="scenario" type="xs:string" default="base">
+			<xs:annotation>
+				<xs:documentation>The use case of an element, distinguished by workflow, asset class, etc.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 	</xs:attributeGroup>
 	<xs:simpleType name="presence_t">
 		<xs:restriction base="xs:string">
@@ -724,6 +688,21 @@
 		</xs:annotation>
 		<xs:union memberTypes="fixr:purpose_enum xs:string"/>
 	</xs:simpleType>
+	<xs:attributeGroup name="refidGrp">
+		<xs:annotation>
+			<xs:documentation>A reference to a message element by its key identifiers</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="id" type="fixr:id_t" use="required">
+			<xs:annotation>
+				<xs:documentation>Numeric identifier generally must be unique within a file for an element type, e.g. unique field tag</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="scenario" type="xs:string" default="base">
+			<xs:annotation>
+				<xs:documentation>The use case of an element, distinguished by workflow, asset class, etc.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:attributeGroup>
 	<xs:simpleType name="reliability_t">
 		<xs:annotation>
 			<xs:documentation>Message delivery gurantee</xs:documentation>
