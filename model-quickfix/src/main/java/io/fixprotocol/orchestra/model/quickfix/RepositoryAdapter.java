@@ -165,13 +165,6 @@ public class RepositoryAdapter {
     elements.addAll(
         messageType.getStructure().getComponentRefOrGroupRefOrFieldRef());
 
-    String baseScenario = messageType.getExtends();
-    while (baseScenario != null) {
-      MessageType baseMessageType = getMessage(messageType.getName(), baseScenario);
-      elements.addAll(
-          baseMessageType.getStructure().getComponentRefOrGroupRefOrFieldRef());
-      baseScenario = baseMessageType.getExtends();
-    }
     return elements;
   }
 

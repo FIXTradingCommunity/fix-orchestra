@@ -38,10 +38,6 @@
 			<xs:selector xpath="fixr:actor"/>
 			<xs:field xpath="@name"/>
 		</xs:key>
-		<xs:keyref name="actorKeyRef" refer="fixr:actorKey">
-			<xs:selector xpath="fixr:actor"/>
-			<xs:field xpath="@extends"/>
-		</xs:keyref>
 		<xs:keyref name="producerKeyRef" refer="fixr:actorKey">
 			<xs:selector xpath="fixr:flow"/>
 			<xs:field xpath="@source"/>
@@ -75,6 +71,16 @@
 			</xs:sequence>
 			<xs:attribute name="name" type="fixr:Name_t"/>
 		</xs:complexType>
+		<xs:key name="codeSetNameKey">
+			<xs:selector xpath="fixr:codeSet"/>
+			<xs:field xpath="@name"/>
+			<xs:field xpath="@scenario"/>
+		</xs:key>
+		<xs:key name="codeSetIdKey">
+			<xs:selector xpath="fixr:codeSet"/>
+			<xs:field xpath="@id"/>
+			<xs:field xpath="@scenario"/>
+		</xs:key>
 	</xs:element>
 	<xs:element name="components">
 		<xs:complexType>
@@ -84,9 +90,15 @@
 			</xs:choice>
 			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
 		</xs:complexType>
-		<xs:key name="componentKey">
+		<xs:key name="componentNameKey">
+			<xs:selector xpath="fixr:component|fixr:group"/>
+			<xs:field xpath="@name"/>
+			<xs:field xpath="@scenario"/>
+		</xs:key>
+		<xs:key name="componentIdKey">
 			<xs:selector xpath="fixr:component|fixr:group"/>
 			<xs:field xpath="@id"/>
+			<xs:field xpath="@scenario"/>
 		</xs:key>
 	</xs:element>
 	<xs:element name="concepts">
@@ -126,9 +138,15 @@
 			</xs:sequence>
 			<xs:attribute name="latestEP" type="fixr:EP_t"/>
 		</xs:complexType>
-		<xs:key name="fieldKey">
+		<xs:key name="fieldNameKey">
+			<xs:selector xpath="fixr:field"/>
+			<xs:field xpath="@name"/>
+			<xs:field xpath="@scenario"/>
+		</xs:key>
+		<xs:key name="fieldIdKey">
 			<xs:selector xpath="fixr:field"/>
 			<xs:field xpath="@id"/>
+			<xs:field xpath="@scenario"/>
 		</xs:key>
 	</xs:element>
 	<xs:element name="mappedDatatype">
@@ -151,13 +169,22 @@
 			</xs:sequence>
 			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
 		</xs:complexType>
-		<xs:key name="messageId">
+		<xs:key name="messageNameKey">
 			<xs:annotation>
 				<xs:documentation>Combination of message name and scenario name must be
 					unique</xs:documentation>
 			</xs:annotation>
 			<xs:selector xpath="fixr:message"/>
 			<xs:field xpath="@name"/>
+			<xs:field xpath="@scenario"/>
+		</xs:key>
+		<xs:key name="messageIdKey">
+			<xs:annotation>
+				<xs:documentation>Combination of message id and scenario name must be
+					unique</xs:documentation>
+			</xs:annotation>
+			<xs:selector xpath="fixr:message"/>
+			<xs:field xpath="@id"/>
 			<xs:field xpath="@scenario"/>
 		</xs:key>
 	</xs:element>
@@ -207,6 +234,10 @@
 			<xs:selector xpath="fixr:codeSets/fixr:codeSet|fixr:datatypes/fixr:datatype"/>
 			<xs:field xpath="@name"/>
 		</xs:key>
+		<xs:keyref name="typeKeyref" refer="fixr:typeKey">
+			<xs:selector xpath="fixr:fields/fixr:field"></xs:selector>
+			<xs:field xpath="@type"></xs:field>
+		</xs:keyref>
 	</xs:element>
 	<xs:element name="sections">
 		<xs:complexType>
