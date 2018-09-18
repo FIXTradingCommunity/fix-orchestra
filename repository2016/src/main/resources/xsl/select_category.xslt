@@ -23,6 +23,7 @@ exclude-result-prefixes="fn">
 			<xsl:apply-templates select="fixr:fields"/>
 			<xsl:copy-of select="fixr:actors"/>
 			<xsl:apply-templates select="fixr:components"/>
+			<xsl:apply-templates select="fixr:groups"/>
 			<xsl:apply-templates select="fixr:messages"/>
 		</xsl:copy>
 	</xsl:template>
@@ -72,10 +73,23 @@ exclude-result-prefixes="fn">
 			<xsl:copy-of select="@*"/>
 			<xsl:choose>
 				<xsl:when test="$operation='+'">
-					<xsl:apply-templates select="fixr:component[@category=$category]|fixr:group[@category=$category]"/>
+					<xsl:apply-templates select="fixr:component[@category=$category]"/>
 				</xsl:when>
 				<xsl:when test="$operation='-'">
-					<xsl:apply-templates select="fixr:component[not(@category=$category)]|fixr:group[not(@category=$category)]"/>
+					<xsl:apply-templates select="fixr:component[not(@category=$category)]"/>
+				</xsl:when>
+			</xsl:choose>
+		</xsl:copy>
+	</xsl:template>
+	<xsl:template match="fixr:groups">
+		<xsl:copy>
+			<xsl:copy-of select="@*"/>
+			<xsl:choose>
+				<xsl:when test="$operation='+'">
+					<xsl:apply-templates select="fixr:group[@category=$category]"/>
+				</xsl:when>
+				<xsl:when test="$operation='-'">
+					<xsl:apply-templates select="fixr:group[not(@category=$category)]"/>
 				</xsl:when>
 			</xsl:choose>
 		</xsl:copy>
