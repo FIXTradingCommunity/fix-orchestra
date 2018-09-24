@@ -96,14 +96,16 @@ public class DataDictionaryGenerator {
       codeSets.put(codeSet.getName(), codeSet);
     }
 
-    final List<ComponentType> componentList = repository.getComponents().getComponentOrGroup();
+    final List<ComponentType> componentList = repository.getComponents().getComponent();
     for (ComponentType component : componentList) {
-      if (component instanceof GroupType) {
-        groups.put(component.getId().intValue(), (GroupType) component);
-      } else {
-        components.put(component.getId().intValue(), component);
-      }
+      components.put(component.getId().intValue(), component);
     }
+
+    final List<GroupType> groupList = repository.getGroups().getGroup();
+    for (GroupType group : groupList) {
+      groups.put(group.getId().intValue(), group);
+    }
+
     final List<FieldType> fieldList = repository.getFields().getField();
     for (FieldType fieldType : fieldList) {
       fields.put(fieldType.getId().intValue(), fieldType);
@@ -139,13 +141,15 @@ public class DataDictionaryGenerator {
         }
         writeElementEnd(writer, "messages", 1);
         writeElement(writer, "components", 1, false);
+
         for (ComponentType componentType : componentList) {
-          if (componentType instanceof GroupType) {
-            writeGroup(writer, (GroupType) componentType);
-          } else if (repository.isHasComponents()) {
-            writeComponent(writer, componentType);
-          }
+          writeComponent(writer, componentType);
         }
+
+        for (GroupType groupType : groupList) {
+          writeGroup(writer, groupType);
+        }
+
         writeElementEnd(writer, "components", 1);
         writeElement(writer, "fields", 1, false);
         for (FieldType fieldType : fieldList) {
@@ -205,8 +209,8 @@ public class DataDictionaryGenerator {
   private Writer writeComponent(Writer writer, ComponentRefType componentRefType)
       throws IOException {
     ComponentType component = components.get(componentRefType.getId().intValue());
-    writeElement(writer, "component", 3, true,
-        new KeyValue<String>("name", component.getName()), new KeyValue<String>("required",
+    writeElement(writer, "component", 3, true, new KeyValue<String>("name", component.getName()),
+        new KeyValue<String>("required",
             componentRefType.getPresence().equals(PresenceT.REQUIRED) ? "Y" : "N"));
     return writer;
   }
@@ -288,8 +292,8 @@ public class DataDictionaryGenerator {
 
   private Writer writeGroup(Writer writer, GroupRefType componentRefType) throws IOException {
     GroupType group = groups.get(componentRefType.getId().intValue());
-    writeElement(writer, "component", 3, true,
-        new KeyValue<String>("name", group.getName()), new KeyValue<String>("required",
+    writeElement(writer, "component", 3, true, new KeyValue<String>("name", group.getName()),
+        new KeyValue<String>("required",
             componentRefType.getPresence().equals(PresenceT.REQUIRED) ? "Y" : "N"));
     return writer;
   }

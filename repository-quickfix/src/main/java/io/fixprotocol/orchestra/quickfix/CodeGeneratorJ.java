@@ -113,20 +113,20 @@ public class CodeGeneratorJ {
       final String componentPackage = getPackage("quickfix", versionPath, "component");
       final File componentDir = getPackagePath(outputDir, componentPackage);
       componentDir.mkdirs();
-      final List<ComponentType> componentList = repository.getComponents().getComponentOrGroup();
+      final List<ComponentType> componentList = repository.getComponents().getComponent();
       for (ComponentType component : componentList) {
-        if (component instanceof GroupType) {
-          groups.put(component.getId().intValue(), (GroupType) component);
-        } else {
           components.put(component.getId().intValue(), component);
-        }
+      }
+      final List<GroupType> groupList = repository.getGroups().getGroup();
+      for (GroupType group : groupList) {
+        groups.put(group.getId().intValue(), group);
+      }
+      
+      for (GroupType group : groupList) {
+          generateGroup(outputDir, group, componentPackage);
       }
       for (ComponentType component : componentList) {
-        if (component instanceof GroupType) {
-          generateGroup(outputDir, (GroupType) component, componentPackage);
-        } else if (repository.isHasComponents()) {
           generateComponent(outputDir, component, componentPackage);
-        }
       }
       final String messagePackage = getPackage("quickfix", versionPath);
       final File messageDir = getPackagePath(outputDir, messagePackage);

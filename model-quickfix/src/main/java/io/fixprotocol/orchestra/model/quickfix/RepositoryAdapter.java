@@ -66,7 +66,7 @@ public class RepositoryAdapter {
    */ 
   ComponentType getComponent(ComponentRefType componentRefType) {
     List<ComponentType> components =
-        repository.getComponents().getComponentOrGroup();
+        repository.getComponents().getComponent();
     for (ComponentType component : components) {
       if (component.getId().equals(componentRefType.getId())) {
         return component;
@@ -127,11 +127,11 @@ public class RepositoryAdapter {
    * @return a group or {@code null} if not found
    */
   GroupType getGroup(GroupRefType groupRefType) {
-    List<ComponentType> components =
-        repository.getComponents().getComponentOrGroup();
-    for (ComponentType component : components) {
-      if (component.getId().equals(groupRefType.getId())) {
-        return (GroupType) component;
+    List<GroupType> groups =
+        repository.getGroups().getGroup();
+    for (GroupType group : groups) {
+      if (group.getId().equals(groupRefType.getId())) {
+        return group;
       }
     }
     return null;

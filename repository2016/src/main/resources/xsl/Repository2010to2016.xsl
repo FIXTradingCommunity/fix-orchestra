@@ -12,7 +12,7 @@
 	<xsl:template match="fixRepository">
 		<fixr:repository>
 			<xsl:attribute name="name"><xsl:value-of select="functx:substring-before-if-contains(//fix[fn:last()]/@version, '_')"/></xsl:attribute>
-			<xsl:apply-templates select="//fix[fn:last()]/@* except hasComponents"/>
+			<xsl:apply-templates select="//fix[fn:last()]/@* except @components"/>
 			<metadata>
 				<dc:title>Orchestra</dc:title>
 				<dc:creator>Repository2010to2016.xsl script</dc:creator>
@@ -53,7 +53,8 @@
 			<xsl:apply-templates select="//fix[last()]/categories"/>
 			<xsl:apply-templates select="//fix[last()]/sections"/>
 			<xsl:apply-templates select="//fix[last()]/fields"/>
-			<xsl:apply-templates select="//fix[last()]/components"/>
+			<xsl:apply-templates select="//fix[last()]/components" mode="component"/>
+			<xsl:apply-templates select="//fix[last()]/components" mode="group"/>
 			<xsl:apply-templates select="//fix[last()]/messages"/>
 		</fixr:repository>
 	</xsl:template>
@@ -161,11 +162,17 @@
 			<xsl:apply-templates select="@textId"/>
 		</fixr:field>
 	</xsl:template>
-	<xsl:template match="components">
+	<xsl:template match="components" mode="component">
 		<fixr:components>
 			<xsl:apply-templates select="@*"/>
-			<xsl:apply-templates/>
+			<xsl:apply-templates select="component[@repeating='0']"/>
 		</fixr:components>
+	</xsl:template>
+	<xsl:template match="components" mode="group">
+		<fixr:groups>
+			<xsl:apply-templates select="@*"/>
+			<xsl:apply-templates select="component[@repeating='1']"/>
+		</fixr:groups>
 	</xsl:template>
 	<xsl:template match="component">
 		<xsl:choose>
@@ -231,10 +238,6 @@
 		<xsl:variable name="fieldName" select="(//field[@id=fn:current()]/@name)[fn:last()]"/>
 		<xsl:attribute name="type" select="concat($fieldName, 'CodeSet')"/>
 	</xsl:template>
-	<!-- name changes -->
-	<xsl:template match="@components">
-		<xsl:attribute name="hasComponents"><xsl:value-of select="current()"/></xsl:attribute>
-	</xsl:template>
 	<xsl:template match="@addedEP">
 		<xsl:if test="current() != '-1'">
 			<xsl:copy/>
@@ -248,9 +251,6 @@
 	<!-- don't copy deprecated attributes -->
 	<xsl:template match="@elaborationTextId"/>
 	<xsl:template match="@fixml"/>
-	<xsl:template match="@hasComponents">
-		<xsl:copy/>
-	</xsl:template>
 	<xsl:template match="@notReqXML"/>
 	<xsl:template match="@generateImplFile"/>
 	<xsl:template match="@legacyIndent"/>
