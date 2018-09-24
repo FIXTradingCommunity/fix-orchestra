@@ -35,6 +35,7 @@ import io.fixprotocol._2016.fixrepository.FieldType;
 import io.fixprotocol._2016.fixrepository.Fields;
 import io.fixprotocol._2016.fixrepository.GroupRefType;
 import io.fixprotocol._2016.fixrepository.GroupType;
+import io.fixprotocol._2016.fixrepository.Groups;
 import io.fixprotocol._2016.fixrepository.MessageType;
 import io.fixprotocol._2016.fixrepository.Messages;
 import io.fixprotocol._2016.fixrepository.Repository;
@@ -130,6 +131,8 @@ public class RepositoryCompressor {
   private List<ComponentType> componentList;
 
   private final List<BigInteger> fieldIdList = new ArrayList<>();
+  private final List<BigInteger> groupIdList = new ArrayList<>();
+  private List<GroupType> groupList;
 
   public void compress(InputStream is, OutputStream os,
       Predicate<? super MessageType> messagePredicate) throws JAXBException {
@@ -151,7 +154,9 @@ public class RepositoryCompressor {
     outRepository.setDatatypes((Datatypes) inRepository.getDatatypes().clone());
     outRepository.setActors((Actors) inRepository.getActors().clone());
     Components inComponents = (Components) inRepository.getComponents().clone();
-    componentList = inComponents.getComponentOrGroup();
+    componentList = inComponents.getComponent();
+    Groups inGroups = (Groups) inRepository.getGroups().clone();
+    groupList = inGroups.getGroup();
 
     Messages inMessages = (Messages) inRepository.getMessages().clone();
     List<MessageType> messageList = inMessages.getMessage();
@@ -182,8 +187,16 @@ public class RepositoryCompressor {
     List<ComponentType> componentsWithFlow = componentList.stream()
         .filter(c -> distinctComponentsIds.contains(c.getId())).collect(Collectors.toList());
     Components outComponents = new Components();
-    outComponents.getComponentOrGroup().addAll(componentsWithFlow);
+    outComponents.getComponent().addAll(componentsWithFlow);
     outRepository.setComponents(outComponents);
+
+    List<BigInteger> distinctGroupIds =
+        groupIdList.stream().distinct().collect(Collectors.toList());
+    List<GroupType> groupWithFlow = groupList.stream()
+        .filter(c -> distinctGroupIds.contains(c.getId())).collect(Collectors.toList());
+    Groups outGroups = new Groups();
+    outGroups.getGroup().addAll(groupWithFlow);
+    outRepository.setGroups(outGroups);
 
     Messages outMessages = new Messages();
     outMessages.getMessage().addAll(filteredMessages);
@@ -209,6 +222,26 @@ public class RepositoryCompressor {
     }
   }
 
+
+
+  private ComponentType getGroup(BigInteger id) {
+    for (GroupType group : groupList) {
+      if (group.getId().equals(id)) {
+        return group;
+      }
+    }
+    return null;
+  }
+
+  private List<Object> getGroupMembers(BigInteger id) {
+    ComponentType component = getGroup(id);
+    if (component != null) {
+      return component.getComponentRefOrGroupRefOrFieldRef();
+    } else {
+      return null;
+    }
+  }
+
   private void marshal(Repository jaxbElement, OutputStream os) throws JAXBException {
     final JAXBContext jaxbContext = JAXBContext.newInstance(Repository.class);
     final Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
@@ -226,11 +259,11 @@ public class RepositoryCompressor {
     for (Object obj : list) {
       if (obj instanceof GroupRefType) {
         GroupRefType groupRef = (GroupRefType) obj;
-        GroupType group = (GroupType) getComponent(groupRef.getId());
+        GroupType group = (GroupType) getGroup(groupRef.getId());
         fieldIdList.add(group.getNumInGroupId());
-        componentIdList.add(groupRef.getId());
+        groupIdList.add(groupRef.getId());
         // recursion on referenced component
-        walk(getComponentMembers(groupRef.getId()));
+        walk(getGroupMembers(groupRef.getId()));
       } else if (obj instanceof ComponentRefType) {
         ComponentRefType componentRef = (ComponentRefType) obj;
         componentIdList.add(componentRef.getId());

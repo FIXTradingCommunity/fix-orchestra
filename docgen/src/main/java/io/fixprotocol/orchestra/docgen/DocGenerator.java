@@ -58,6 +58,7 @@ import io.fixprotocol._2016.fixrepository.FieldRefType;
 import io.fixprotocol._2016.fixrepository.FieldRuleType;
 import io.fixprotocol._2016.fixrepository.FieldType;
 import io.fixprotocol._2016.fixrepository.FlowType;
+import io.fixprotocol._2016.fixrepository.GroupRefType;
 import io.fixprotocol._2016.fixrepository.GroupType;
 import io.fixprotocol._2016.fixrepository.MessageRefType;
 import io.fixprotocol._2016.fixrepository.MessageType;
@@ -293,11 +294,14 @@ public class DocGenerator {
         }
       });
 
+      List<ComponentType> componentList = repository.getComponents().getComponent();
+      List<GroupType> groupList = repository.getGroups().getGroup();
+      componentList.addAll(groupList);
       List<ComponentType> sortedComponentList =
-          repository.getComponents().getComponentOrGroup().stream()
+          componentList.stream()
               .sorted(Comparator.comparing(ComponentType::getName)).collect(Collectors.toList());
       generateAllComponentsList(messagesDocDir, sortedComponentList);
-      repository.getComponents().getComponentOrGroup().forEach(c -> {
+      componentList.forEach(c -> {
         try {
           generateComponentDetail(messagesDocDir, c);
         } catch (IOException e) {
@@ -515,6 +519,17 @@ public class DocGenerator {
         }
         stField.add("assign", ((FieldRefType) member).getAssign());
         stField.write(writer, templateErrorListener);
+      } else if (member instanceof GroupRefType) {
+        GroupType component = getGroup(((GroupRefType) member).getId().intValue());
+        ST stComponent = stGroup.getInstanceOf("componentMember");
+        stComponent.add("component", component);
+        if (((ComponentRefType) member).getSupported() == SupportType.SUPPORTED) {
+          stComponent.add("presence",
+              ((ComponentRefType) member).getPresence().value().toLowerCase());
+        } else {
+          stComponent.add("presence", supportedMap.get(((ComponentRefType) member).getSupported()));
+        }
+        stComponent.write(writer, templateErrorListener);
       } else if (member instanceof ComponentRefType) {
         ComponentType component = getComponent(((ComponentRefType) member).getId().intValue());
         ST stComponent = stGroup.getInstanceOf("componentMember");
@@ -617,10 +632,20 @@ public class DocGenerator {
   }
 
   private ComponentType getComponent(int componentId) {
-    List<ComponentType> components = repository.getComponents().getComponentOrGroup();
+    List<ComponentType> components = repository.getComponents().getComponent();
     for (ComponentType component : components) {
       if (component.getId().intValue() == componentId) {
         return component;
+      }
+    }
+    return null;
+  }
+  
+  private GroupType getGroup(int componentId) {
+    List<GroupType> groups = repository.getGroups().getGroup();
+    for (GroupType group : groups) {
+      if (group.getId().intValue() == componentId) {
+        return group;
       }
     }
     return null;

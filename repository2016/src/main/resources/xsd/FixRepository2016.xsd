@@ -84,19 +84,18 @@
 	</xs:element>
 	<xs:element name="components">
 		<xs:complexType>
-			<xs:choice maxOccurs="unbounded">
-				<xs:element name="component" type="fixr:componentType"/>
-				<xs:element name="group" type="fixr:groupType"/>
-			</xs:choice>
+			<xs:sequence>
+				<xs:element name="component" type="fixr:componentType" maxOccurs="unbounded"/>
+			</xs:sequence>
 			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
 		</xs:complexType>
 		<xs:key name="componentNameKey">
-			<xs:selector xpath="fixr:component|fixr:group"/>
+			<xs:selector xpath="fixr:component"/>
 			<xs:field xpath="@name"/>
 			<xs:field xpath="@scenario"/>
 		</xs:key>
 		<xs:key name="componentIdKey">
-			<xs:selector xpath="fixr:component|fixr:group"/>
+			<xs:selector xpath="fixr:component"/>
 			<xs:field xpath="@id"/>
 			<xs:field xpath="@scenario"/>
 		</xs:key>
@@ -149,6 +148,24 @@
 			<xs:field xpath="@scenario"/>
 		</xs:key>
 	</xs:element>
+	<xs:element name="groups">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="group" type="fixr:groupType" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
+		</xs:complexType>
+		<xs:key name="groupNameKey">
+			<xs:selector xpath="fixr:group"/>
+			<xs:field xpath="@name"/>
+			<xs:field xpath="@scenario"/>
+		</xs:key>
+		<xs:key name="groupIdKey">
+			<xs:selector xpath="fixr:group"/>
+			<xs:field xpath="@id"/>
+			<xs:field xpath="@scenario"/>
+		</xs:key>
+	</xs:element>
 	<xs:element name="mappedDatatype">
 		<xs:complexType>
 			<xs:sequence>
@@ -194,7 +211,8 @@
 				<xs:element ref="fixr:codeSets"/>
 				<xs:element ref="fixr:fields"/>
 				<xs:element ref="fixr:actors" minOccurs="0"/>
-				<xs:element ref="fixr:components"/>
+				<xs:element ref="fixr:components" minOccurs="0"/>
+				<xs:element ref="fixr:groups" minOccurs="0"/>
 				<xs:element ref="fixr:messages"/>
 				<xs:element ref="fixr:concepts" minOccurs="0"/>
 				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
@@ -207,7 +225,6 @@
 			<xs:attribute name="version" type="fixr:Version_t" use="required"/>
 			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
 			<xs:attribute name="guid" type="xs:string"/>
-			<xs:attribute name="hasComponents" type="xs:boolean" use="required"/>
 			<xs:attribute name="specUrl" type="xs:anyURI">
 				<xs:annotation>
 					<xs:documentation>Reference documentation</xs:documentation>
@@ -230,8 +247,8 @@
 			<xs:field xpath="@name"/>
 		</xs:key>
 		<xs:keyref name="typeKeyref" refer="fixr:typeKey">
-			<xs:selector xpath="fixr:fields/fixr:field"></xs:selector>
-			<xs:field xpath="@type"></xs:field>
+			<xs:selector xpath="fixr:fields/fixr:field"/>
+			<xs:field xpath="@type"/>
 		</xs:keyref>
 	</xs:element>
 	<xs:element name="sections">
