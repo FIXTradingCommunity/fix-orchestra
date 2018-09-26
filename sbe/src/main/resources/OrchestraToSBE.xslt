@@ -66,6 +66,7 @@
 		<xsl:variable name="field" select="//fixr:field[@id=fn:current()/@id]"/>
 		<xsl:choose>
 			<xsl:when test="$field/@type='data'"></xsl:when>
+			<xsl:when test="$field/@type='XMLData'"></xsl:when>
 			<xsl:when test="$field/@type='Length'"></xsl:when>
 			<xsl:otherwise>
 			<field>
@@ -81,7 +82,7 @@
 	<xsl:template match="fixr:fieldRef" mode="data">
 		<xsl:variable name="field" select="//fixr:field[@id=fn:current()/@id]"/>
 		<xsl:choose>
-			<xsl:when test="$field/@type='data'">
+			<xsl:when test="$field/@type='data' or $field/@type='XMLData'">
 			<data>
 				<xsl:attribute name="id"><xsl:value-of select="@id"/></xsl:attribute>
 				<xsl:attribute name="name"><xsl:value-of select="$field/@name"/></xsl:attribute>
@@ -98,7 +99,7 @@
 			<xsl:apply-templates select="$component" mode="#current"/>
 		</xsl:if>
 	</xsl:template>
-	<xsl:template match="fixr:groupRef" name="group">
+	<xsl:template match="fixr:groupRef" mode="group">
 		<xsl:variable name="group" select="//fixr:group[@id=fn:current()/@id]"/>
 		<group>
 			<xsl:attribute name="id"><xsl:value-of select="@id"/></xsl:attribute>
@@ -109,5 +110,14 @@
 			<xsl:apply-templates select="$group" mode="data"/>
 		</group>
 	</xsl:template>
-	<xsl:template match="fixr:annotation"/>
+	<xsl:template match="fixr:groupRef" mode="field"/>
+	<xsl:template match="fixr:groupRef" mode="data"/>
+	<xsl:template match="fixr:group" mode="#all">
+		<xsl:apply-templates mode="#current"/>
+	</xsl:template>
+	<xsl:template match="fixr:component" mode="#all">
+		<xsl:apply-templates mode="#current"/>
+	</xsl:template>
+	<xsl:template match="fixr:annotation" mode="#all"/>
+	<xsl:template match="text()|@*" mode="#all"/>
 </xsl:stylesheet>

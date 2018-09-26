@@ -62,6 +62,7 @@
 		<module>interfaces2016</module>
 		<module>docgen</module>
 		<module>testgen</module>
+		<module>sbe</module>
 	</modules>
 
 	<properties>

@@ -15,7 +15,7 @@ import java.io.StringWriter;
  */
 public class RepositoryXslTransformer {
     public static void main(String[] args) throws TransformerException, IOException {
-        if (args.length < 4) {
+        if (args.length < 3) {
             System.out.println(
                 "Usage : $<application> [xsl_file_path] [input_xml_file_path] [output_file_path] [param=value]");
             return;
