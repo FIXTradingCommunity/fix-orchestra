@@ -62,6 +62,7 @@
 		<module>interfaces2016</module>
 		<module>docgen</module>
 		<module>testgen</module>
+		<module>sbe</module>
 	</modules>
 
 	<properties>
@@ -70,8 +71,8 @@
 		<cucumber.version>1.2.5</cucumber.version>
 		<java.version>1.8</java.version>
 		<junit.version>4.11</junit.version>
-		<quickfixj.version>2.0.0</quickfixj.version>
-		<saxon.version>9.8.0-8</saxon.version>
+		<quickfixj.version>2.1.0</quickfixj.version>
+		<saxon.version>9.9.0-1</saxon.version>
 		<slf4j.version>1.7.22</slf4j.version>
 		<stringtemplate.version>4.0.2</stringtemplate.version>
 	</properties>
@@ -91,7 +92,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.7.0</version>
+					<version>3.8.0</version>
 					<configuration>
 						<source>${java.version}</source>
 						<target>${java.version}</target>

@@ -169,12 +169,7 @@
 	<xs:element name="mappedDatatype">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="fixr:mappedDatatype" minOccurs="0" maxOccurs="unbounded">
-					<xs:annotation>
-						<xs:documentation>Nesting supports composite types</xs:documentation>
-					</xs:annotation>
-				</xs:element>
-				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
+				<xs:any processContents="skip" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attributeGroup ref="fixr:datatypeGrp"/>
 		</xs:complexType>

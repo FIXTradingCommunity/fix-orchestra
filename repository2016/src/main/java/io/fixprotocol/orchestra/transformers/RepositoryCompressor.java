@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBContext;
@@ -41,10 +42,15 @@ import io.fixprotocol._2016.fixrepository.Repository;
 import io.fixprotocol._2016.fixrepository.Sections;
 
 /**
- * Selectively compresses a Repository 2016 Edition file <br>
+ * Selectively compresses an Orchestra file <br>
  * Copies selected elements to a new file.
  * <ul>
- * <li>Only messages with a flow are retained.</li>
+ * <li>Only selected messages are retained with one of the following filters</li>
+ * <ul>
+ * <li>Messages that have a flow</li>
+ * <li>Messages that have a specified category</li>
+ * <li>Messages that <em>not</em> in a specified category</li>
+ * </ul>
  * <li>Field and components are copied only if they are contained by the selected messages.</li>
  * <li>Abbreviations, categories, sections, actors, datatypes, and metadata are copied as-is (not
  * compressed).</li>
@@ -56,27 +62,80 @@ import io.fixprotocol._2016.fixrepository.Sections;
  */
 public class RepositoryCompressor {
 
+  static class HasCategory implements Predicate<MessageType> {
+
+    private String category;
+
+    public HasCategory(String category) {
+      this.category = category;
+    }
+
+    @Override
+    public boolean test(MessageType m) {
+      return category.equals(m.getCategory());
+    }
+
+  }
+
+  static class NotCategory implements Predicate<MessageType> {
+
+    private String category;
+
+    public NotCategory(String category) {
+      this.category = category;
+    }
+
+    @Override
+    public boolean test(MessageType m) {
+      return !category.equals(m.getCategory());
+    }
+
+  }
+
   public static void main(String[] args) throws IOException, JAXBException {
     if (args.length < 2) {
-      System.err.println(
-          "Usage: java io.fixprotocol.orchestra.transformers.Compressor <input-filename> <output-filename>");
+      usage();
     } else {
       try (InputStream is = new FileInputStream(args[0]);
           OutputStream os = new FileOutputStream(args[1])) {
 
         RepositoryCompressor compressor = new RepositoryCompressor();
-        compressor.compress(is, os);
+
+        if (args.length < 3) {
+          compressor.compress(is, os, hasFlow());
+        } else if (args[2].startsWith("+")) {
+          String category = args[2].substring(1);
+          compressor.compress(is, os, new HasCategory(category));
+        } else if (args[2].startsWith("-")) {
+          String category = args[2].substring(1);
+          compressor.compress(is, os, new NotCategory(category));
+        } else {
+          usage();
+          throw new IllegalArgumentException();
+        }
       }
     }
   }
 
+  public static void usage() {
+    System.err.println(
+        "Usage: java io.fixprotocol.orchestra.transformers.RepositoryCompressor <input-filename> <output-filename> [+|-]<category>");
+  }
+
+  static Predicate<? super MessageType> hasFlow() {
+    return m -> m.getFlow() != null;
+  }
+
   private final List<BigInteger> componentIdList = new ArrayList<>();
+
   private List<ComponentType> componentList;
+
   private final List<BigInteger> fieldIdList = new ArrayList<>();
   private final List<BigInteger> groupIdList = new ArrayList<>();
   private List<GroupType> groupList;
 
-  public void compress(InputStream is, OutputStream os) throws JAXBException {
+  public void compress(InputStream is, OutputStream os,
+      Predicate<? super MessageType> messagePredicate) throws JAXBException {
     final Repository inRepository = unmarshal(is);
     final Repository outRepository = new Repository();
     inRepository.copyTo(null, outRepository, AttributeCopyStrategy.INSTANCE);
@@ -101,9 +160,9 @@ public class RepositoryCompressor {
 
     Messages inMessages = (Messages) inRepository.getMessages().clone();
     List<MessageType> messageList = inMessages.getMessage();
-    List<MessageType> messagesWithFlow =
-        messageList.stream().filter(m -> m.getFlow() != null).collect(Collectors.toList());
-    messagesWithFlow.forEach(m -> walk(m.getStructure().getComponentRefOrGroupRefOrFieldRef()));
+    List<MessageType> filteredMessages =
+        messageList.stream().filter(messagePredicate).collect(Collectors.toList());
+    filteredMessages.forEach(m -> walk(m.getStructure().getComponentRefOrGroupRefOrFieldRef()));
 
     List<BigInteger> distinctFieldIds =
         fieldIdList.stream().distinct().collect(Collectors.toList());
@@ -140,7 +199,7 @@ public class RepositoryCompressor {
     outRepository.setGroups(outGroups);
 
     Messages outMessages = new Messages();
-    outMessages.getMessage().addAll(messagesWithFlow);
+    outMessages.getMessage().addAll(filteredMessages);
     outRepository.setMessages(outMessages);
     marshal(outRepository, os);
   }
