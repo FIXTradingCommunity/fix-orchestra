@@ -236,13 +236,13 @@ abstract class AbstractMessageScope {
       Group group;
       try {
         // Both PathStep and QuickFIX use one-based index for group entries
-        group = fieldMap.getGroup(index, (groupType.getNumInGroupId().intValue()));
+        group = fieldMap.getGroup(index, (groupType.getNumInGroup().getId().intValue()));
       } catch (FieldNotFound e) {
         return null;
       }
       return new GroupInstanceScope(group, groupType, repository, symbolResolver, evaluator);
     } else if (predicate != null) {
-      List<Group> groups = fieldMap.getGroups(groupType.getNumInGroupId().intValue());
+      List<Group> groups = fieldMap.getGroups(groupType.getNumInGroup().getId().intValue());
       for (Group group : groups) {
         GroupInstanceScope scope =
             new GroupInstanceScope(group, groupType, repository, symbolResolver, evaluator);

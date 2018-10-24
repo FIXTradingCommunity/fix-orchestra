@@ -109,7 +109,7 @@ public class Populator implements io.fixprotocol.orchestra.model.Populator<Messa
         GroupType groupType = repositoryAdapter.getGroup(groupRefType);
 
         for (int i = 0; i < blockAssignments.size(); i++) {
-          Group group = groupFactory.apply(groupType.getNumInGroupId().intValue());
+          Group group = groupFactory.apply(groupType.getNumInGroup().getId().intValue());
           try (GroupInstanceScope groupScope =
               new GroupInstanceScope(group, groupType, repositoryAdapter, symbolResolver, evaluator)) {
             try (Scope local = (Scope) symbolResolver.resolve(SymbolResolver.LOCAL_ROOT)) {

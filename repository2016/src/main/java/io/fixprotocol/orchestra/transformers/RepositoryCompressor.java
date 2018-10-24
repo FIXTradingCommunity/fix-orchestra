@@ -224,7 +224,7 @@ public class RepositoryCompressor {
 
 
 
-  private ComponentType getGroup(BigInteger id) {
+  private GroupType getGroup(BigInteger id) {
     for (GroupType group : groupList) {
       if (group.getId().equals(id)) {
         return group;
@@ -234,7 +234,7 @@ public class RepositoryCompressor {
   }
 
   private List<Object> getGroupMembers(BigInteger id) {
-    ComponentType component = getGroup(id);
+    GroupType component = getGroup(id);
     if (component != null) {
       return component.getComponentRefOrGroupRefOrFieldRef();
     } else {
@@ -259,8 +259,8 @@ public class RepositoryCompressor {
     for (Object obj : list) {
       if (obj instanceof GroupRefType) {
         GroupRefType groupRef = (GroupRefType) obj;
-        GroupType group = (GroupType) getGroup(groupRef.getId());
-        fieldIdList.add(group.getNumInGroupId());
+        GroupType group = getGroup(groupRef.getId());  
+        fieldIdList.add(group.getNumInGroup().getId());
         groupIdList.add(groupRef.getId());
         // recursion on referenced component
         walk(getGroupMembers(groupRef.getId()));

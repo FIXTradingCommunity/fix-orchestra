@@ -12,7 +12,7 @@
 	<xsl:template match="fixRepository">
 		<fixr:repository>
 			<xsl:attribute name="name"><xsl:value-of select="functx:substring-before-if-contains(//fix[fn:last()]/@version, '_')"/></xsl:attribute>
-			<xsl:apply-templates select="//fix[fn:last()]/@* except @components"/>
+			<xsl:apply-templates select="//fix[fn:last()]/@* except //fix[fn:last()]/@components"/>
 			<metadata>
 				<dc:title>Orchestra</dc:title>
 				<dc:creator>Repository2010to2016.xsl script</dc:creator>
@@ -193,9 +193,11 @@
 			<xsl:apply-templates select="@* except @required except @textId"/>
 			<xsl:attribute name="id" select="../@id"/>
 			<xsl:attribute name="name" select="../@name"/>
-			<xsl:attribute name="numInGroupId" select="@id"/>
 			<xsl:attribute name="category" select="../@category"/>
 			<xsl:attribute name="abbrName" select="../@abbrName"/>
+			<xsl:element name="fixr:numInGroup">
+				<xsl:attribute name="id" select="@id"/>
+			</xsl:element>
 			<xsl:apply-templates/>
 			<xsl:apply-templates select="@textId"/>
 		</group>
