@@ -537,7 +537,7 @@
 			<xs:documentation>A repeating group. Logically, groupType is a subclass of componentType, but to make numInGroup first in the sequence, it cannot be an extension.</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="numInGroup" type="fixr:fieldRefType" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="numInGroup" type="fixr:fieldRefType" minOccurs="0"/>
 			<xs:choice maxOccurs="unbounded">
 				<xs:element name="componentRef" type="fixr:componentRefType"/>
 				<xs:element name="groupRef" type="fixr:groupRefType"/>
