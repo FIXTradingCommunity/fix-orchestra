@@ -290,17 +290,17 @@ public class DataDictionaryGenerator {
     return writer;
   }
 
-  private Writer writeGroup(Writer writer, GroupRefType componentRefType) throws IOException {
-    GroupType group = groups.get(componentRefType.getId().intValue());
+  private Writer writeGroup(Writer writer, GroupRefType groupRefType) throws IOException {
+    GroupType group = groups.get(groupRefType.getId().intValue());
     writeElement(writer, "component", 3, true, new KeyValue<String>("name", group.getName()),
         new KeyValue<String>("required",
-            componentRefType.getPresence().equals(PresenceT.REQUIRED) ? "Y" : "N"));
+            groupRefType.getPresence().equals(PresenceT.REQUIRED) ? "Y" : "N"));
     return writer;
   }
 
   private Writer writeGroup(Writer writer, GroupType groupType) throws IOException {
     writeElement(writer, "component", 2, false, new KeyValue<String>("name", groupType.getName()));
-    FieldType numInGroupField = fields.get(groupType.getNumInGroupId().intValue());
+    FieldType numInGroupField = fields.get(groupType.getNumInGroup().getId().intValue());
     writeElement(writer, "group", 3, false,
         new KeyValue<String>("name", numInGroupField.getName()));
     List<Object> members = groupType.getComponentRefOrGroupRefOrFieldRef();

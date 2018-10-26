@@ -40,7 +40,7 @@ public class RepositoryXslTransformerTest {
         // send output to target so it will get cleaned
         arr[2] = "target/test/FixRepository2016.xml";
         // document function in XSLT expects a URI, not a file name (Saxon does not convert) 
-        arr[3] = String.format("phrases-files=file:///%s/FIX.5.0SP2_EP216_en_phrases.xml", sourceDir.replace('\\', '/'));
+        arr[3] = String.format("phrases-files=file:///%s/FIX.5.0SP2_EP245_en_phrases.xml", sourceDir.replace('\\', '/'));
         RepositoryXslTransformer.main(arr);
         File outFile = new File(arr[2]);
         Assert.assertTrue(outFile.exists());

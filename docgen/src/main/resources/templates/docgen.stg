@@ -90,7 +90,6 @@ actorStart(actor) ::= <<
 </head>
 <body>
 <h1>Actor $actor.name$</h1>
-$if(actor.extends)$<h1>extends scenario <a href="$actor.name$-$actor.extends$.html">$actor.extends$</a></h1>$endif$
 $documentation(object=actor)$
 <h2>State Variables</h2>
 $if(actor.fieldOrFieldRefOrComponent)$
@@ -230,7 +229,6 @@ messageStart(message) ::= <<
 </head>
 <body>
 <h1>Message $message.name$ Scenario $message.scenario$</h1>
-$if(message.extends)$<h1>extends scenario <a href="$message.name$-$message.extends$.html">$message.extends$</a></h1>$endif$
 $documentation(object=message)$
 <br>
 <table class="major">
@@ -262,7 +260,6 @@ messageResponse(message, scenario, when) ::= <<
 messagePart2(message) ::= <<
 $if(message.responses.response)$</table>$endif$
 <h2><a>Members</a></h2>
-$if(message.extends)$<a href="$message.name$-$message.extends$.html#Members">Scenario $message.extends$ members</a><br>$endif$
 $message.name$ $message.scenario$ members
 <table class="members">
 <tr>
@@ -290,7 +287,7 @@ componentMember(component, presence) ::= <<
 <tr><td class="members-id-hilite">$component.id$</td><td class="members-hilite"><a href="$component.name$.html">$component.name$</a></td><td class="members-hilite">$component.abbrName$</td><td class="members-hilite">$presence$</td><td class="members-hilite">$documentation(object=component)$</td></tr>
 >>
 
-components(components, title) ::= <<
+components(componentNames, title) ::= <<
 <!DOCTYPE html>
 <html>
 <head>
@@ -299,7 +296,7 @@ components(components, title) ::= <<
 <body>
 <ul class="minor">
 <li class="minor-title">$title$</li>
-$components:{component|<li><a href="$component.name$.html" target="contentFrame" class="minor">$component.name$</a></li>
+$componentNames:{componentName|<li><a href="$componentName$.html" target="contentFrame" class="minor">$componentName$</a></li>
 }$
 </ul>
 </body>
@@ -335,15 +332,15 @@ $pedigree(object=component)$
 </tr>
 >>
 
-groupStart(component) ::= <<
+groupStart(groupType) ::= <<
 <!DOCTYPE html>
 <html>
 <head>
 <link rel="stylesheet" href="../orchestra.css">
 </head>
 <body>
-<h1>Group $component.name$</h1>
-$documentation(object=component)$
+<h1>Group $groupType.name$</h1>
+$documentation(object=group)$
 <br>
 <table class="major">
 <tr>
@@ -351,9 +348,9 @@ $documentation(object=component)$
 <th class="major">Abbr</th>
 <th class="major">NumInGroup ID</th>
 </tr>
-<tr><td class="major">$component.id$</td><td class="major">$component.abbrName$</td><td class="major">$component.numInGroupId$</td></tr>
+<tr><td class="major">$groupType.id$</td><td class="major">$groupType.abbrName$</td><td class="major">$groupType.numInGroup.id$</td></tr>
 </table>
-$pedigree(object=component)$
+$pedigree(object=groupType)$
 <h2>Members</h2>
 <table class="members">
 <tr>
@@ -365,7 +362,7 @@ $pedigree(object=component)$
 </tr>
 >>
 
-componentEnd(component) ::= <<
+componentEnd() ::= <<
 </table>
 </body>
 </html>

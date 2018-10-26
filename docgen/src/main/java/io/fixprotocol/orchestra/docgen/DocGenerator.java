@@ -296,14 +296,22 @@ public class DocGenerator {
 
       List<ComponentType> componentList = repository.getComponents().getComponent();
       List<GroupType> groupList = repository.getGroups().getGroup();
-      componentList.addAll(groupList);
-      List<ComponentType> sortedComponentList =
-          componentList.stream()
-              .sorted(Comparator.comparing(ComponentType::getName)).collect(Collectors.toList());
-      generateAllComponentsList(messagesDocDir, sortedComponentList);
+      List<String> componentsAndGroupsList = componentList.stream().map(g -> g.getName()).collect(Collectors.toList());
+      componentsAndGroupsList.addAll(groupList.stream().map(g -> g.getName()).collect(Collectors.toList()));
+      List<String> sortedComponentNameList =
+          componentsAndGroupsList.stream()
+              .sorted().collect(Collectors.toList());
+      generateAllComponentsList(messagesDocDir, sortedComponentNameList);
       componentList.forEach(c -> {
         try {
           generateComponentDetail(messagesDocDir, c);
+        } catch (IOException e) {
+          throw new RuntimeException(e);
+        }
+      });
+      groupList.forEach(c -> {
+        try {
+          generateGroupDetail(messagesDocDir, c);
         } catch (IOException e) {
           throw new RuntimeException(e);
         }
@@ -371,10 +379,10 @@ public class DocGenerator {
     st.write(outputFile, templateErrorListener, encoding);
   }
 
-  private void generateAllComponentsList(File outputDir, List<ComponentType> componentList)
+  private void generateAllComponentsList(File outputDir, List<String> componentNameList)
       throws IOException {
     ST st = stGroup.getInstanceOf("components");
-    st.add("components", componentList);
+    st.add("componentNames", componentNameList);
     st.add("title", "All Components");
     File outputFile = new File(outputDir, "AllComponents.html");
     st.write(outputFile, templateErrorListener, encoding);
@@ -424,14 +432,9 @@ public class DocGenerator {
 
   private void generateComponentDetail(File outputDir, ComponentType component) throws IOException {
     ST stComponentStart;
-    if (component instanceof GroupType) {
-      stComponentStart = stGroup.getInstanceOf("groupStart");
-    } else {
-      stComponentStart = stGroup.getInstanceOf("componentStart");
-    }
+    stComponentStart = stGroup.getInstanceOf("componentStart");
     stComponentStart.add("component", component);
     ST stComponentEnd = stGroup.getInstanceOf("componentEnd");
-    stComponentEnd.add("component", component);
     File outputFile = new File(outputDir, String.format("%s.html", component.getName()));
     List<Object> members = component.getComponentRefOrGroupRefOrFieldRef();
 
@@ -439,6 +442,24 @@ public class DocGenerator {
         new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8")) {
       NoIndentWriter writer = new NoIndentWriter(fileWriter);
       stComponentStart.write(writer, templateErrorListener);
+      generateMembers(members, writer);
+      stComponentEnd.write(writer, templateErrorListener);
+    }
+  }
+  
+  private void generateGroupDetail(File outputDir, GroupType group) throws IOException {
+    ST stGroupStart;
+    stGroupStart = stGroup.getInstanceOf("groupStart");
+    stGroupStart.add("groupType", group);
+    
+    ST stComponentEnd = stGroup.getInstanceOf("componentEnd");
+    File outputFile = new File(outputDir, String.format("%s.html", group.getName()));
+    List<Object> members = group.getComponentRefOrGroupRefOrFieldRef();
+
+    try (OutputStreamWriter fileWriter =
+        new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8")) {
+      NoIndentWriter writer = new NoIndentWriter(fileWriter);
+      stGroupStart.write(writer, templateErrorListener);
       generateMembers(members, writer);
       stComponentEnd.write(writer, templateErrorListener);
     }

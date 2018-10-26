@@ -199,7 +199,7 @@ public class Validator implements io.fixprotocol.orchestra.model.Validator<Messa
       } else if (member instanceof GroupRefType) {
         GroupRefType groupRefType = (GroupRefType) member;
         GroupType groupType = repositoryAdapter.getGroup(groupRefType);       
-        List<Group> groups = fieldMap.getGroups(groupType.getNumInGroupId().intValue());
+        List<Group> groups = fieldMap.getGroups(groupType.getNumInGroup().getId().intValue());
         for (Group group : groups) {
           validateFieldMap(group, testException,
               groupType.getComponentRefOrGroupRefOrFieldRef());
