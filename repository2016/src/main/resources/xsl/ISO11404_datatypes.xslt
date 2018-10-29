@@ -12,16 +12,19 @@ xmlns:fn="http://www.w3.org/2005/xpath-functions"
     </xsl:template>
     <xsl:template match="fixr:repository">
 		<xsl:copy>
+			<xsl:copy-of select="@*"/>
 			<xsl:copy-of select="fixr:metadata"/>
 			<xsl:copy-of select="fixr:codeSets"/>
 			<xsl:copy-of select="fixr:abbreviations"/>
 			<xsl:apply-templates select="fixr:datatypes"/>
 			<xsl:copy-of select="fixr:categories"/>
+			<xsl:copy-of select="fixr:groups"/>
 			<xsl:copy-of select="fixr:sections"/>
 			<xsl:copy-of select="fixr:fields"/>
 			<xsl:copy-of select="fixr:actors"/>
 			<xsl:copy-of select="fixr:components"/>
 			<xsl:copy-of select="fixr:messages"/>
+			<xsl:copy-of select="fixr:concepts"/>
 		</xsl:copy>
     </xsl:template>
     <xsl:template match="fixr:datatypes">
