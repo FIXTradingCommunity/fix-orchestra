@@ -1,3 +1,6 @@
+
+![](FIXorchestraLogo.png)
+
 # FIX Orchestra Resources
 
 This project contains resources and sample code for FIX Orchestra and FIX Repository 2016 Edition. Technical specifications for FIX Orchestra are in project [fix-orchestra-spec](https://github.com/FIXTradingCommunity/fix-orchestra-spec).
@@ -80,6 +83,12 @@ This module is a demonstration of acceptance test generation from an Orchestra f
 
 ## Experimental Modules
 This following modules are **experimental**. Requirements are still being gathered and discussed by the FIX Orchestra working group. Participation in the working group is encouraged by FIX Trading Community members, and more broadly, feedback is welcome from interested GitHub users.
+
+### Code Generation for Encoding
+
+#### sbe
+
+This utility creates a [Simple Binary Encoding](https://github.com/FIXTradingCommunity/fix-simple-binary-encoding) message schema from an Orchestra file.
 
 ### FIX Engine Provisioning
 
