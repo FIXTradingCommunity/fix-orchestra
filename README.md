@@ -86,9 +86,10 @@ This following modules are **experimental**. Requirements are still being gather
 
 ### Code Generation for Encoding
 
-#### sbe
+#### orchestra2sbe
 
-This utility creates a [Simple Binary Encoding](https://github.com/FIXTradingCommunity/fix-simple-binary-encoding) message schema from an Orchestra file.
+This utility has been moved to repository [FIXTradingCommunity/fix-sbe-utilities](https://github.com/FIXTradingCommunity/fix-sbe-utilities).
+It creates a [Simple Binary Encoding](https://github.com/FIXTradingCommunity/fix-simple-binary-encoding) message schema from an Orchestra file.
 
 ### FIX Engine Provisioning
 
