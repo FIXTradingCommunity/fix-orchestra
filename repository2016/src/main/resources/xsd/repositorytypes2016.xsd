@@ -299,6 +299,7 @@
 		</xs:sequence>
 		<xs:attribute name="langId" type="fixr:language_t"/>
 		<xs:attribute name="purpose" type="fixr:purpose_t"/>
+		<xs:attribute name="contentType" type="fixr:mime_t" default="text/plain"/>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 	</xs:complexType>
 	<xs:simpleType name="Edition_t">
@@ -559,6 +560,35 @@
 	<xs:simpleType name="id_t">
 		<xs:restriction base="xs:positiveInteger"/>
 	</xs:simpleType>
+	<xs:complexType name="identifiersType">
+		<xs:sequence>
+			<xs:choice maxOccurs="unbounded">
+				<xs:element name="correlate" type="fixr:identifierType">
+					<xs:annotation>
+						<xs:documentation>Correlated field IDs between two message types</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="assign" type="fixr:identifierType">
+					<xs:annotation>
+						<xs:documentation>Field ID assigned</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:choice>
+			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="identifierType">
+		<xs:attribute name="id" type="fixr:id_t" use="required">
+			<xs:annotation>
+				<xs:documentation>Field ID assigned or correlated in a message reference</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="sourceId" type="fixr:id_t">
+			<xs:annotation>
+				<xs:documentation>Field ID correlated from source message. If not present, assumed to be same tag as 'id'.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
 	<xs:simpleType name="IncludeFile_t">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="components"/>
@@ -580,6 +610,9 @@
 		</xs:attribute>
 	</xs:attributeGroup>
 	<xs:complexType name="messageRefType">
+		<xs:sequence>
+			<xs:element name="identifiers" type="fixr:identifiersType" minOccurs="0"/>
+		</xs:sequence>
 		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
 		<xs:attribute name="msgType" type="fixr:MsgType_t"/>
 		<xs:attributeGroup ref="fixr:refidGrp"/>
@@ -621,6 +654,14 @@
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 		<xs:attribute name="flow" type="fixr:Name_t"/>
 	</xs:complexType>
+	<xs:simpleType name="mime_t">
+		<xs:annotation>
+			<xs:documentation>Multipurpose Internet Mail Extensions (MIME) media type</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="3"/>
+		</xs:restriction>
+	</xs:simpleType>
 	<xs:simpleType name="MsgType_t">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="1"/>
