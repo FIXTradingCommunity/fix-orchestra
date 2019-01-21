@@ -127,9 +127,7 @@ public class RepositoryCompressor {
   }
 
   private final List<BigInteger> componentIdList = new ArrayList<>();
-
-  private List<ComponentType> componentList;
-
+  private List<ComponentType> componentList = new ArrayList<>();
   private final List<BigInteger> fieldIdList = new ArrayList<>();
   private final List<BigInteger> groupIdList = new ArrayList<>();
   private List<GroupType> groupList;
@@ -152,9 +150,11 @@ public class RepositoryCompressor {
     outRepository.setCategories((Categories) inRepository.getCategories().clone());
     outRepository.setSections((Sections) inRepository.getSections().clone());
     outRepository.setDatatypes((Datatypes) inRepository.getDatatypes().clone());
-    outRepository.setActors((Actors) inRepository.getActors().clone());
-    Components inComponents = (Components) inRepository.getComponents().clone();
-    componentList = inComponents.getComponent();
+    final Components components = inRepository.getComponents();
+    if (components != null) {
+      Components inComponents = (Components) components.clone();
+      componentList = inComponents.getComponent();
+    }
     Groups inGroups = (Groups) inRepository.getGroups().clone();
     groupList = inGroups.getGroup();
 
@@ -259,7 +259,7 @@ public class RepositoryCompressor {
     for (Object obj : list) {
       if (obj instanceof GroupRefType) {
         GroupRefType groupRef = (GroupRefType) obj;
-        GroupType group = getGroup(groupRef.getId());  
+        GroupType group = getGroup(groupRef.getId());
         fieldIdList.add(group.getNumInGroup().getId());
         groupIdList.add(groupRef.getId());
         // recursion on referenced component

@@ -15,12 +15,17 @@
 package io.fixprotocol.orchestra.docgen;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStreamWriter;
+import java.io.PrintStream;
+import java.io.Reader;
+import java.io.Writer;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -42,6 +47,7 @@ import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STErrorListener;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
+import org.stringtemplate.v4.STWriter;
 import org.stringtemplate.v4.misc.STMessage;
 
 import io.fixprotocol._2016.fixrepository.ActorType;
@@ -75,67 +81,108 @@ import io.fixprotocol._2016.fixrepository.SupportType;
  */
 public class DocGenerator {
 
+  private class STWriterWrapper extends NoIndentWriter implements AutoCloseable {
+
+    public STWriterWrapper(Writer out) {
+      super(out);
+    }
+
+    @Override
+    public void close() throws Exception {
+      this.out.flush();
+    }
+
+  }
+
+  private final static Map<SupportType, String> supportedMap = new HashMap<>();
+
+  static {
+    supportedMap.put(SupportType.SUPPORTED, "&#10003;"); // check mark
+    supportedMap.put(SupportType.FORBIDDEN, "&#10007;"); // ballot x
+    supportedMap.put(SupportType.IGNORED, "&ndash;");
+  }
+
   /**
    * Generates documentation
    * 
    * @param args command line arguments
    *        <ol>
-   *        <li>Name of Orchestra input file in Repository 2016 Edition format
-   *        <li>Name of base output directory--will be created if it does not exist, defaults to
-   *        "doc"</li>
+   *        <li>Name of an Orchestra input file.
+   *        <li>URI of root output directory. It will be created if it does not exist. Defaults to
+   *        <code>file:./doc</code>. Any file system with a FileSystemProvider is supported. Use
+   *        <code>jar:file:</code> scheme for a .zip or .jar archive file.</li>
+   *        <li>Path of error file. If not provided, outputs to <code>System.err</code></li>
    *        </ol>
-   * @throws JAXBException if XML file unmarshaling fails
+   * @throws JAXBException if XML file unmarshalling fails
    * @throws IOException if input file is not found or cannot be read
+   * @throws URISyntaxException if URI format is invalid
    */
-  public static void main(String[] args) throws JAXBException, IOException {
+  public static void main(String[] args) throws Exception {
     if (args.length < 1) {
       System.err.println(
-          "Usage: java io.fixprotocol.orchestra.docgen.DocGenerator <input-filename> [output-dir]");
+          "Usage: java io.fixprotocol.orchestra.docgen.DocGenerator <input-file> [output-uri] [error-path]");
     } else {
-      try (InputStream is = new FileInputStream(args[0])) {
+      Reader inputReader = new FileReader(args[0]);
 
-        File outputDir;
-        if (args.length > 1) {
-          outputDir = new File(args[1]);
-        } else {
-          outputDir = new File("doc");
-        }
-        DocGenerator gen = new DocGenerator(is, outputDir);
-        gen.generate();
+      URI outputRootUri;
+      if (args.length > 1) {
+        outputRootUri = new URI(args[1]);
+      } else {
+        outputRootUri = new URI("file:./doc");
       }
+
+      PrintStream errorStream;
+      if (args.length > 2) {
+        errorStream = new PrintStream(new File(args[2]));
+      } else {
+        errorStream = System.err;
+      }
+
+      DocGenerator gen = new DocGenerator(inputReader, outputRootUri, errorStream);
+      gen.generate();
     }
   }
 
-  private final File baseOutputDir;
-  private final String encoding = "UTF-8";
+  private PrintStream errorStream;
   private final ImgGenerator imgGenerator = new ImgGenerator();
+  private URI outputRootUri;
+  private final Repository repository;
+  private final STGroup stGroup;
+
 
   private final STErrorListener templateErrorListener = new STErrorListener() {
 
     @Override
     public void compileTimeError(STMessage msg) {
-      System.err.println(msg.toString());
+      errorStream.println(msg.toString());
     }
 
     @Override
     public void internalError(STMessage msg) {
-      System.err.println(msg.toString());
+      errorStream.println(msg.toString());
     }
 
     @Override
     public void IOError(STMessage msg) {
-      System.err.println(msg.toString());
+      errorStream.println(msg.toString());
     }
 
     @Override
     public void runTimeError(STMessage msg) {
-      System.err.println(msg.toString());
+      errorStream.println(msg.toString());
     }
 
   };
-  private final Repository repository;
-  private final STGroup stGroup;
+
   private ValidationEventHandler unmarshallerErrorHandler = new ValidationEventHandler() {
+
+    @Override
+    public boolean handleEvent(ValidationEvent event) {
+      errorStream.print(String.format("%s line %d col %d %s", severityToString(event.getSeverity()),
+          event.getLocator().getLineNumber(), event.getLocator().getColumnNumber(),
+          event.getMessage()));
+      return event.getSeverity() == ValidationEvent.WARNING;
+    }
 
     private String severityToString(int severity) {
       switch (severity) {
@@ -148,86 +195,73 @@ public class DocGenerator {
       }
     }
 
-    @Override
-    public boolean handleEvent(ValidationEvent event) {
-      System.err.print(String.format("%s line %d col %d %s", severityToString(event.getSeverity()),
-          event.getLocator().getLineNumber(), event.getLocator().getColumnNumber(),
-          event.getMessage()));
-      return event.getSeverity() == ValidationEvent.WARNING;
-    }
-
   };
-
-
-  private final static Map<SupportType, String> supportedMap = new HashMap<>();
-
-  static {
-    supportedMap.put(SupportType.SUPPORTED, "&#10003;"); // check mark
-    supportedMap.put(SupportType.FORBIDDEN, "&#10007;"); // ballot x
-    supportedMap.put(SupportType.IGNORED, "&ndash;");
-  }
 
   /**
    * Constructs a DocGenerator
    * 
-   * @param is an input stream to consume a Repository
-   * @param baseOutputDir directory to write documentation files
+   * @param reader of input Orchestra file
+   * @param outputRootUri root of file system to write documentation files
+   * @param errorStream output stream for errors
    * @throws JAXBException if a parsing error occurs
    * @throws IOException if a file cannot be accessed
    */
-  public DocGenerator(InputStream is, File baseOutputDir) throws JAXBException, IOException {
-    this.baseOutputDir = makeDirectory(baseOutputDir);
+  public DocGenerator(Reader inputReader, URI outputRootUri, PrintStream errorStream)
+      throws JAXBException, IOException {
+    this.outputRootUri = outputRootUri;
     this.stGroup = new STGroupFile("templates/docgen.stg", '$', '$');
     // STGroup.verbose = true;
-    this.repository = unmarshal(is);
+    this.repository = unmarshal(inputReader);
+    this.errorStream = errorStream;
   }
 
   /**
    * Generates documentation
    * 
-   * @throws IOException if documentation cannot be written to a file
+   * @throws Exception if documentation cannot be written to a file
    */
-  public void generate() throws IOException {
+  public void generate() throws Exception {
     try {
-      createCss(baseOutputDir);
+      Path baseOutputPath = makeDirectory(new File(this.outputRootUri).toPath());
+      createCss(baseOutputPath);
 
-      generateMain(baseOutputDir, getTitle());
-      generateMetadata(baseOutputDir, repository, repository.getMetadata().getAny());
+      generateMain(baseOutputPath, getTitle());
+      generateMetadata(baseOutputPath, repository, repository.getMetadata().getAny());
 
-      File datatypesOutputDir = makeDirectory(new File(baseOutputDir, "datatypes"));
-      generateDatatypeList(datatypesOutputDir, repository.getDatatypes().getDatatype());
+      Path datatypesOutputPath = makeDirectory(baseOutputPath.resolve("datatypes"));
+      generateDatatypeList(datatypesOutputPath, repository.getDatatypes().getDatatype());
       repository.getDatatypes().getDatatype().forEach(d -> {
         try {
-          generateDatatype(datatypesOutputDir, d);
-        } catch (IOException e) {
+          generateDatatype(datatypesOutputPath, d);
+        } catch (Exception e) {
           throw new RuntimeException(e);
         }
       });
-      File fieldsOutputDir = makeDirectory(new File(baseOutputDir, "fields"));
+      Path fieldsOutputPath = makeDirectory(baseOutputPath.resolve("fields"));
       List<FieldType> sortedFieldList = repository.getFields().getField().stream()
           .sorted(Comparator.comparing(FieldType::getName)).collect(Collectors.toList());
-      generateFieldsList(fieldsOutputDir, sortedFieldList);
+      generateFieldsList(fieldsOutputPath, sortedFieldList);
       repository.getFields().getField().forEach(f -> {
         try {
-          generateFieldDetail(fieldsOutputDir, f);
-        } catch (IOException e) {
+          generateFieldDetail(fieldsOutputPath, f);
+        } catch (Exception e) {
           throw new RuntimeException(e);
         }
       });
 
       List<CodeSetType> allCodeSets = repository.getCodeSets().getCodeSet();
-      generateCodeSetList(datatypesOutputDir, allCodeSets.stream()
+      generateCodeSetList(datatypesOutputPath, allCodeSets.stream()
           .sorted(Comparator.comparing(CodeSetType::getName)).collect(Collectors.toList()));
       repository.getCodeSets().getCodeSet().forEach(cs -> {
         try {
-          generateCodeSetDetail(datatypesOutputDir, cs);
-        } catch (IOException e) {
+          generateCodeSetDetail(datatypesOutputPath, cs);
+        } catch (Exception e) {
           throw new RuntimeException(e);
         }
       });
 
-      File messagesDocDir = makeDirectory(new File(baseOutputDir, "messages"));
-      File messagesImgDir = makeDirectory(new File(messagesDocDir, "img"));
+      Path messagesDocPath = makeDirectory(baseOutputPath.resolve("messages"));
+      Path messagesImgPath = makeDirectory(messagesDocPath.resolve("img"));
 
       final Optional<Categories> optCategories = Optional.ofNullable(repository.getCategories());
 
@@ -243,7 +277,7 @@ public class DocGenerator {
                 return retv;
               }).collect(Collectors.toList());
 
-      generateCategories(messagesDocDir, "Message Categories", sortedCategoryList);
+      generateCategories(messagesDocPath, "Message Categories", sortedCategoryList);
 
       List<MessageType> sortedMessageList =
           repository.getMessages().getMessage().stream().sorted((o1, o2) -> {
@@ -259,11 +293,11 @@ public class DocGenerator {
       final List<ActorType> actorList = actors.orElse(new Actors()).getActorOrFlow().stream()
           .filter(af -> af instanceof ActorType).map(af -> (ActorType) af)
           .collect(Collectors.toList());
-      generateActorsList(messagesDocDir, actorList);
+      generateActorsList(messagesDocPath, actorList);
       actorList.forEach(a -> {
         try {
-          generateActorDetail(messagesDocDir, messagesImgDir, a);
-        } catch (IOException e) {
+          generateActorDetail(messagesDocPath, messagesImgPath, a);
+        } catch (Exception e) {
           throw new RuntimeException(e);
         }
       });
@@ -272,54 +306,55 @@ public class DocGenerator {
       final List<FlowType> flowList =
           actors.orElse(new Actors()).getActorOrFlow().stream().filter(af -> af instanceof FlowType)
               .map(af -> (FlowType) af).collect(Collectors.toList());
-      generateFlowsList(messagesDocDir, flowList);
+      generateFlowsList(messagesDocPath, flowList);
       flowList.forEach(f -> {
         try {
-          generateFlowDetail(messagesDocDir, f);
+          generateFlowDetail(messagesDocPath, f);
 
-          generateMessageListByFlow(messagesDocDir, f, sortedMessageList);
-        } catch (IOException e) {
+          generateMessageListByFlow(messagesDocPath, f, sortedMessageList);
+        } catch (Exception e) {
           throw new RuntimeException(e);
         }
       });
 
 
-      generateAllMessageList(messagesDocDir, sortedMessageList);
+      generateAllMessageList(messagesDocPath, sortedMessageList);
 
       sortedCategoryList.forEach(c -> {
         try {
-          generateMessageListByCategory(messagesDocDir, c, sortedMessageList);
-        } catch (IOException e) {
+          generateMessageListByCategory(messagesDocPath, c, sortedMessageList);
+        } catch (Exception e) {
           throw new RuntimeException(e);
         }
       });
 
       List<ComponentType> componentList = repository.getComponents().getComponent();
       List<GroupType> groupList = repository.getGroups().getGroup();
-      List<String> componentsAndGroupsList = componentList.stream().map(g -> g.getName()).collect(Collectors.toList());
-      componentsAndGroupsList.addAll(groupList.stream().map(g -> g.getName()).collect(Collectors.toList()));
+      List<String> componentsAndGroupsList =
+          componentList.stream().map(g -> g.getName()).collect(Collectors.toList());
+      componentsAndGroupsList
+          .addAll(groupList.stream().map(g -> g.getName()).collect(Collectors.toList()));
       List<String> sortedComponentNameList =
-          componentsAndGroupsList.stream()
-              .sorted().collect(Collectors.toList());
-      generateAllComponentsList(messagesDocDir, sortedComponentNameList);
+          componentsAndGroupsList.stream().sorted().collect(Collectors.toList());
+      generateAllComponentsList(messagesDocPath, sortedComponentNameList);
       componentList.forEach(c -> {
         try {
-          generateComponentDetail(messagesDocDir, c);
-        } catch (IOException e) {
+          generateComponentDetail(messagesDocPath, c);
+        } catch (Exception e) {
           throw new RuntimeException(e);
         }
       });
       groupList.forEach(c -> {
         try {
-          generateGroupDetail(messagesDocDir, c);
-        } catch (IOException e) {
+          generateGroupDetail(messagesDocPath, c);
+        } catch (Exception e) {
           throw new RuntimeException(e);
         }
       });
       repository.getMessages().getMessage().forEach(m -> {
         try {
-          generateMessageDetail(messagesDocDir, messagesImgDir, m);
-        } catch (IOException e) {
+          generateMessageDetail(messagesDocPath, messagesImgPath, m);
+        } catch (Exception e) {
           throw new RuntimeException(e);
         }
       });
@@ -332,21 +367,17 @@ public class DocGenerator {
     }
   }
 
-  private void createCss(File outputDir) throws IOException {
+  private void createCss(Path outputDir) throws IOException {
     ClassLoader classLoader = getClass().getClassLoader();
     try (InputStream in = classLoader.getResourceAsStream("orchestra.css")) {
-      Files.copy(in, new File(outputDir, "orchestra.css").toPath(),
-          StandardCopyOption.REPLACE_EXISTING);
+      Files.copy(in, outputDir.resolve("orchestra.css"), StandardCopyOption.REPLACE_EXISTING);
     }
   }
 
-  private void generateActorDetail(File docDir, File imgDir, ActorType actor) throws IOException {
-    File outputFile = new File(docDir, String.format("%s.html", actor.getName()));
-
-    try (OutputStreamWriter fileWriter =
-        new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8")) {
-      NoIndentWriter writer = new NoIndentWriter(fileWriter);
-
+  private void generateActorDetail(Path messagesDocPath, Path messagesImgPath, ActorType actor)
+      throws Exception {
+    Path path = messagesDocPath.resolve(String.format("%s.html", actor.getName()));
+    try (STWriterWrapper writer = getWriter(path)) {
       ST stActor = stGroup.getInstanceOf("actorStart");
       stActor.add("actor", actor);
       stActor.write(writer, templateErrorListener);
@@ -365,44 +396,60 @@ public class DocGenerator {
         ST stStates = stGroup.getInstanceOf("stateMachine");
         stStates.add("states", stateMachine);
         stStates.write(writer, templateErrorListener);
-        imgGenerator.generateUMLStateMachine(imgDir, (StateMachineType) stateMachine,
+        imgGenerator.generateUMLStateMachine(messagesImgPath, (StateMachineType) stateMachine,
             templateErrorListener);
       }
     }
   }
 
-  private void generateActorsList(File outputDir, List<ActorType> actorList) throws IOException {
+  private void generateActorsList(Path messagesDocPath, List<ActorType> actorList)
+      throws Exception {
     ST st = stGroup.getInstanceOf("actors");
     st.add("actors", actorList);
     st.add("title", "All Actors");
-    File outputFile = new File(outputDir, "AllActors.html");
-    st.write(outputFile, templateErrorListener, encoding);
+    Path path = messagesDocPath.resolve("AllActors.html");
+    try (STWriterWrapper writer = getWriter(path)) {
+      st.write(writer, templateErrorListener);
+    }
   }
 
-  private void generateAllComponentsList(File outputDir, List<String> componentNameList)
-      throws IOException {
+  private void generateAllComponentsList(Path messagesDocPath, List<String> componentNameList)
+      throws Exception {
     ST st = stGroup.getInstanceOf("components");
     st.add("componentNames", componentNameList);
     st.add("title", "All Components");
-    File outputFile = new File(outputDir, "AllComponents.html");
-    st.write(outputFile, templateErrorListener, encoding);
+    Path path = messagesDocPath.resolve("AllComponents.html");
+    try (STWriterWrapper writer = getWriter(path)) {
+      st.write(writer, templateErrorListener);
+    }
   }
 
-  private void generateAllMessageList(File outputDir, List<MessageType> messageList)
-      throws IOException {
+  private void generateAllMessageList(Path messagesDocPath, List<MessageType> messageList)
+      throws Exception {
     ST st = stGroup.getInstanceOf("messages");
     st.add("messages", messageList);
     st.add("title", "All Messages");
-    File outputFile = new File(outputDir, "AllMessages.html");
-    st.write(outputFile, templateErrorListener, encoding);
+    Path path = messagesDocPath.resolve("AllMessages.html");
+    try (STWriterWrapper writer = getWriter(path)) {
+      st.write(writer, templateErrorListener);
+    }
   }
 
-  private void generateCodeSetDetail(File outputDir, CodeSetType codeSet) throws IOException {
-    File outputFile = new File(outputDir, String.format("%s.html", codeSet.getName()));
+  private void generateCategories(Path messagesDocPath, String title,
+      List<CategoryType> categoriesList) throws Exception {
+    ST st = stGroup.getInstanceOf("categories");
+    st.add("title", title);
+    st.add("categories", categoriesList);
+    Path path = messagesDocPath.resolve("MessageCategories.html");
+    try (STWriterWrapper writer = getWriter(path)) {
+      st.write(writer, templateErrorListener);
+    }
+  }
 
-    try (OutputStreamWriter fileWriter =
-        new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8")) {
-      NoIndentWriter writer = new NoIndentWriter(fileWriter);
+  private void generateCodeSetDetail(Path datatypesOutputPath, CodeSetType codeSet)
+      throws Exception {
+    Path path = datatypesOutputPath.resolve(String.format("%s.html", codeSet.getName()));
+    try (STWriterWrapper writer = getWriter(path)) {
       ST stCodesetStart = stGroup.getInstanceOf("codeSetStart");
       stCodesetStart.add("codeSet", codeSet);
       stCodesetStart.write(writer, templateErrorListener);
@@ -421,113 +468,118 @@ public class DocGenerator {
     }
   }
 
-  private void generateCodeSetList(File outputDir, List<CodeSetType> codeSetList)
-      throws IOException {
+  private void generateCodeSetList(Path datatypesOutputPath, List<CodeSetType> codeSetList)
+      throws Exception {
     ST st = stGroup.getInstanceOf("codeSets");
     st.add("codeSets", codeSetList);
     st.add("title", "All Code Sets");
-    File outputFile = new File(outputDir, "AllCodeSets.html");
-    st.write(outputFile, templateErrorListener, encoding);
+    Path path = datatypesOutputPath.resolve("AllCodeSets.html");
+    try (STWriterWrapper writer = getWriter(path)) {
+      st.write(writer, templateErrorListener);
+    }
   }
 
-  private void generateComponentDetail(File outputDir, ComponentType component) throws IOException {
+  private void generateComponentDetail(Path messagesDocPath, ComponentType component)
+      throws Exception {
     ST stComponentStart;
     stComponentStart = stGroup.getInstanceOf("componentStart");
     stComponentStart.add("component", component);
     ST stComponentEnd = stGroup.getInstanceOf("componentEnd");
-    File outputFile = new File(outputDir, String.format("%s.html", component.getName()));
     List<Object> members = component.getComponentRefOrGroupRefOrFieldRef();
 
-    try (OutputStreamWriter fileWriter =
-        new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8")) {
-      NoIndentWriter writer = new NoIndentWriter(fileWriter);
+    Path path = messagesDocPath.resolve(String.format("%s.html", component.getName()));
+    try (STWriterWrapper writer = getWriter(path)) {
       stComponentStart.write(writer, templateErrorListener);
       generateMembers(members, writer);
       stComponentEnd.write(writer, templateErrorListener);
     }
   }
-  
-  private void generateGroupDetail(File outputDir, GroupType group) throws IOException {
+
+  private void generateDatatype(Path datatypesOutputPath, Datatype datatype) throws Exception {
+    ST st = stGroup.getInstanceOf("datatype");
+    st.add("datatype", datatype);
+    Path path = datatypesOutputPath.resolve(String.format("%s.html", datatype.getName()));
+    try (STWriterWrapper writer = getWriter(path)) {
+      st.write(writer, templateErrorListener);
+    }
+  }
+
+  private void generateDatatypeList(Path datatypesOutputPath, List<Datatype> datatypeList)
+      throws Exception {
+    ST st = stGroup.getInstanceOf("datatypes");
+    st.add("datatypes", datatypeList);
+    st.add("title", "All Datatypes");
+    Path path = datatypesOutputPath.resolve("AllDatatypes.html");
+    try (STWriterWrapper writer = getWriter(path)) {
+      st.write(writer, templateErrorListener);
+    }
+  }
+
+  private void generateFieldDetail(Path fieldsOutputPath, FieldType field) throws Exception {
+    ST st = stGroup.getInstanceOf("field");
+    st.add("field", field);
+    Path path = fieldsOutputPath.resolve(String.format("%s.html", field.getName()));
+    try (STWriterWrapper writer = getWriter(path)) {
+      st.write(writer, templateErrorListener);
+    }
+  }
+
+  private void generateFieldsList(Path fieldsOutputPath, List<FieldType> fieldList)
+      throws Exception {
+    ST st = stGroup.getInstanceOf("fields");
+    st.add("fields", fieldList);
+    st.add("title", "All Fields");
+    Path path = fieldsOutputPath.resolve("AllFields.html");
+    try (STWriterWrapper writer = getWriter(path)) {
+      st.write(writer, templateErrorListener);
+    }
+  }
+
+  private void generateFlowDetail(Path messagesDocPath, FlowType flow) throws Exception {
+    ST st = stGroup.getInstanceOf("flow");
+    st.add("flow", flow);
+    Path path = messagesDocPath.resolve(String.format("%s.html", flow.getName()));
+    try (STWriterWrapper writer = getWriter(path)) {
+      st.write(writer, templateErrorListener);
+    }
+  }
+
+  private void generateFlowsList(Path messagesDocPath, List<FlowType> flowList) throws Exception {
+    ST st = stGroup.getInstanceOf("flows");
+    st.add("flows", flowList);
+    st.add("title", "All Flows");
+    Path path = messagesDocPath.resolve("AllFlows.html");
+    try (STWriterWrapper writer = getWriter(path)) {
+      st.write(writer, templateErrorListener);
+    }
+  }
+
+  private void generateGroupDetail(Path messagesDocPath, GroupType group) throws Exception {
     ST stGroupStart;
     stGroupStart = stGroup.getInstanceOf("groupStart");
     stGroupStart.add("groupType", group);
-    
+
     ST stComponentEnd = stGroup.getInstanceOf("componentEnd");
-    File outputFile = new File(outputDir, String.format("%s.html", group.getName()));
     List<Object> members = group.getComponentRefOrGroupRefOrFieldRef();
 
-    try (OutputStreamWriter fileWriter =
-        new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8")) {
-      NoIndentWriter writer = new NoIndentWriter(fileWriter);
+    Path path = messagesDocPath.resolve(String.format("%s.html", group.getName()));
+    try (STWriterWrapper writer = getWriter(path)) {
       stGroupStart.write(writer, templateErrorListener);
       generateMembers(members, writer);
       stComponentEnd.write(writer, templateErrorListener);
     }
   }
 
-  private void generateDatatype(File outputDir, Datatype datatype) throws IOException {
-    ST st = stGroup.getInstanceOf("datatype");
-    st.add("datatype", datatype);
-    File outputFile = new File(outputDir, String.format("%s.html", datatype.getName()));
-    st.write(outputFile, templateErrorListener, encoding);
-  }
-
-  private void generateDatatypeList(File outputDir, List<Datatype> datatypeList)
-      throws IOException {
-    ST st = stGroup.getInstanceOf("datatypes");
-    st.add("datatypes", datatypeList);
-    st.add("title", "All Datatypes");
-    File outputFile = new File(outputDir, "AllDatatypes.html");
-    st.write(outputFile, templateErrorListener, encoding);
-  }
-
-  private void generateFieldDetail(File outputDir, FieldType field) throws IOException {
-    ST st = stGroup.getInstanceOf("field");
-    st.add("field", field);
-    File outputFile = new File(outputDir, String.format("%s.html", field.getName()));
-    st.write(outputFile, templateErrorListener, encoding);
-  }
-
-  private void generateFieldsList(File outputDir, List<FieldType> fieldList) throws IOException {
-    ST st = stGroup.getInstanceOf("fields");
-    st.add("fields", fieldList);
-    st.add("title", "All Fields");
-    File outputFile = new File(outputDir, "AllFields.html");
-    st.write(outputFile, templateErrorListener, encoding);
-  }
-
-  private void generateFlowDetail(File outputDir, FlowType flow) throws IOException {
-    ST st = stGroup.getInstanceOf("flow");
-    st.add("flow", flow);
-    File outputFile = new File(outputDir, String.format("%s.html", flow.getName()));
-    st.write(outputFile, templateErrorListener, encoding);
-  }
-
-  private void generateFlowsList(File outputDir, List<FlowType> flowList) throws IOException {
-    ST st = stGroup.getInstanceOf("flows");
-    st.add("flows", flowList);
-    st.add("title", "All Flows");
-    File outputFile = new File(outputDir, "AllFlows.html");
-    st.write(outputFile, templateErrorListener, encoding);
-  }
-
-  private void generateMain(File outputDir, String title) throws IOException {
+  private void generateMain(Path baseOutputPath, String title) throws Exception {
     ST st = stGroup.getInstanceOf("main");
     st.add("title", title);
-    File outputFile = new File(outputDir, "index.html");
-    st.write(outputFile, templateErrorListener, encoding);
+    Path path = baseOutputPath.resolve("index.html");
+    try (STWriterWrapper writer = getWriter(path)) {
+      st.write(writer, templateErrorListener);
+    }
   }
 
-  private void generateCategories(File outputDir, String title, List<CategoryType> categoriesList)
-      throws IOException {
-    ST st = stGroup.getInstanceOf("categories");
-    st.add("title", title);
-    st.add("categories", categoriesList);
-    File outputFile = new File(outputDir, "MessageCategories.html");
-    st.write(outputFile, templateErrorListener, encoding);
-  }
-
-  private void generateMembers(List<Object> members, NoIndentWriter writer) {
+  private void generateMembers(List<Object> members, STWriter writer) {
     for (Object member : members) {
       if (member instanceof FieldRefType) {
         FieldType field = getField(((FieldRefType) member).getId().intValue());
@@ -566,16 +618,14 @@ public class DocGenerator {
     }
   }
 
-  private void generateMessageDetail(File messagesDocDir, File messagesImgDir, MessageType message)
-      throws IOException {
+  private void generateMessageDetail(Path messagesDocPath, Path messagesImgPath,
+      MessageType message) throws Exception {
     ST stMessageStart = stGroup.getInstanceOf("messageStart");
     ST stMessagePart2 = stGroup.getInstanceOf("messagePart2");
     ST stMessageEnd = stGroup.getInstanceOf("messageEnd");
     stMessageStart.add("message", message);
     stMessagePart2.add("message", message);
     stMessageEnd.add("message", message);
-    File outputFile = new File(messagesDocDir,
-        String.format("%s-%s.html", message.getName(), message.getScenario()));
 
     List<ResponseType> responses = null;
     final Responses responses2 = message.getResponses();
@@ -584,59 +634,61 @@ public class DocGenerator {
     }
     List<Object> members = message.getStructure().getComponentRefOrGroupRefOrFieldRef();
 
-    try (OutputStreamWriter fileWriter =
-        new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8")) {
-      NoIndentWriter writer = new NoIndentWriter(fileWriter);
+    Path path = messagesDocPath
+        .resolve(String.format("%s-%s.html", message.getName(), message.getScenario()));
+    try (STWriterWrapper writer = getWriter(path)) {
       stMessageStart.write(writer, templateErrorListener);
       if (responses != null) {
         generateResponses(responses, writer);
-        File imgFile = new File(messagesImgDir,
-            String.format("%s-%s.png", message.getName(), message.getScenario()));
-        try (OutputStreamWriter imgFileWriter =
-            new OutputStreamWriter(new FileOutputStream(imgFile), "UTF-8")) {
-          FlowType flow = getFlow(message.getFlow());
-          imgGenerator.generateUMLSequence(messagesImgDir, message, flow, responses,
-              templateErrorListener);
-        }
+        FlowType flow = getFlow(message.getFlow());
+        imgGenerator.generateUMLSequence(messagesImgPath, message, flow, responses,
+            templateErrorListener);
       }
+
       stMessagePart2.write(writer, templateErrorListener);
       generateMembers(members, writer);
       stMessageEnd.write(writer, templateErrorListener);
     }
   }
 
-  private void generateMessageListByCategory(File outputDir, CategoryType category,
-      List<MessageType> messageList) throws IOException {
+  private void generateMessageListByCategory(Path messagesDocPath, CategoryType category,
+      List<MessageType> messageList) throws Exception {
     ST st = stGroup.getInstanceOf("messages");
     final List<MessageType> filteredMessageList = messageList.stream()
         .filter(m -> category.getId().equals(m.getCategory())).collect(Collectors.toList());
     st.add("messages", filteredMessageList);
     st.add("title", String.format("%s Messages", category.getId()));
-    File outputFile = new File(outputDir, String.format("%sMessages.html", category.getId()));
-    st.write(outputFile, templateErrorListener, encoding);
+    Path path = messagesDocPath.resolve(String.format("%sMessages.html", category.getId()));
+    try (STWriterWrapper writer = getWriter(path)) {
+      st.write(writer, templateErrorListener);
+    }
   }
 
-  private void generateMessageListByFlow(File outputDir, FlowType flow,
-      List<MessageType> messageList) throws IOException {
+  private void generateMessageListByFlow(Path messagesDocPath, FlowType flow,
+      List<MessageType> messageList) throws Exception {
     ST st = stGroup.getInstanceOf("messages");
     final List<MessageType> filteredMessageList = messageList.stream()
         .filter(m -> flow.getName().equals(m.getFlow())).collect(Collectors.toList());
     st.add("messages", filteredMessageList);
     st.add("title", String.format("%s Messages", flow.getName()));
-    File outputFile = new File(outputDir, String.format("%sMessages.html", flow.getName()));
-    st.write(outputFile, templateErrorListener, encoding);
+    Path path = messagesDocPath.resolve(String.format("%sMessages.html", flow.getName()));
+    try (STWriterWrapper writer = getWriter(path)) {
+      st.write(writer, templateErrorListener);
+    }
   }
 
-  private void generateMetadata(File outputDir, Repository repository,
-      List<JAXBElement<SimpleLiteral>> elementList) throws IOException {
+  private void generateMetadata(Path baseOutputPath, Repository repository,
+      List<JAXBElement<SimpleLiteral>> elementList) throws Exception {
     ST st = stGroup.getInstanceOf("metadata");
     st.add("repository", repository);
     st.add("elementList", elementList);
-    File outputFile = new File(outputDir, "metadata.html");
-    st.write(outputFile, templateErrorListener, encoding);
+    Path path = baseOutputPath.resolve("metadata.html");
+    try (STWriterWrapper writer = getWriter(path)) {
+      st.write(writer, templateErrorListener);
+    }
   }
 
-  private void generateResponses(List<ResponseType> responseList, NoIndentWriter writer) {
+  private void generateResponses(List<ResponseType> responseList, STWriter writer) {
     for (ResponseType response : responseList) {
       List<Object> responses = response.getMessageRefOrAssignOrTrigger();
       for (Object responseRef : responses) {
@@ -657,29 +709,6 @@ public class DocGenerator {
     for (ComponentType component : components) {
       if (component.getId().intValue() == componentId) {
         return component;
-      }
-    }
-    return null;
-  }
-  
-  private GroupType getGroup(int componentId) {
-    List<GroupType> groups = repository.getGroups().getGroup();
-    for (GroupType group : groups) {
-      if (group.getId().intValue() == componentId) {
-        return group;
-      }
-    }
-    return null;
-  }
-
-  private FlowType getFlow(String name) {
-    List<Object> afList = repository.getActors().getActorOrFlow();
-    for (Object obj : afList) {
-      if (obj instanceof FlowType) {
-        FlowType flow = (FlowType) obj;
-        if (flow.getName().equals(name)) {
-          return flow;
-        }
       }
     }
     return null;
@@ -717,6 +746,29 @@ public class DocGenerator {
     return "";
   }
 
+  private FlowType getFlow(String name) {
+    List<Object> afList = repository.getActors().getActorOrFlow();
+    for (Object obj : afList) {
+      if (obj instanceof FlowType) {
+        FlowType flow = (FlowType) obj;
+        if (flow.getName().equals(name)) {
+          return flow;
+        }
+      }
+    }
+    return null;
+  }
+
+  private GroupType getGroup(int componentId) {
+    List<GroupType> groups = repository.getGroups().getGroup();
+    for (GroupType group : groups) {
+      if (group.getId().intValue() == componentId) {
+        return group;
+      }
+    }
+    return null;
+  }
+
   private String getTitle() {
     String title = "Orchestra";
     List<JAXBElement<SimpleLiteral>> metadata = repository.getMetadata().getAny();
@@ -729,18 +781,19 @@ public class DocGenerator {
     return title;
   }
 
-  private File makeDirectory(File dir) throws IOException {
-    dir.mkdirs();
-    if (!dir.isDirectory()) {
-      throw new IOException(dir.toString() + " not a directory or is inaccessible");
-    }
-    return dir;
+  private STWriterWrapper getWriter(Path path) throws IOException {
+    return new STWriterWrapper(new FileWriter(path.toString()));
   }
 
-  private Repository unmarshal(InputStream is) throws JAXBException {
+  private Path makeDirectory(Path dir) throws IOException {
+    // default file attributes
+    return Files.createDirectories(dir);
+  }
+
+  private Repository unmarshal(Reader reader) throws JAXBException {
     JAXBContext jaxbContext = JAXBContext.newInstance(Repository.class);
     Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
     jaxbUnmarshaller.setEventHandler(unmarshallerErrorHandler);
-    return (Repository) jaxbUnmarshaller.unmarshal(is);
+    return (Repository) jaxbUnmarshaller.unmarshal(reader);
   }
 }

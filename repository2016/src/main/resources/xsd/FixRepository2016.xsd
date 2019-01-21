@@ -3,7 +3,7 @@
 	<xs:annotation>
 		<xs:documentation>
 			FIX Repository standard structure of messages with workflow
-			© Copyright 2016-2018 FIX Protocol Limited
+			© Copyright 2016-2019 FIX Protocol Limited
 			Creative Commons Attribution-NoDerivatives 4.0
 			International Public License
 		</xs:documentation>
