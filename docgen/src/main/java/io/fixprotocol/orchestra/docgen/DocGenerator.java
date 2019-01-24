@@ -23,6 +23,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -131,7 +132,9 @@ public class DocGenerator {
 
       PrintStream errorStream;
       if (args.length > 2) {
-        errorStream = new PrintStream(new File(args[2]));
+        File errFile = new File(args[2]);
+        Files.createDirectories(errFile.toPath().getParent());
+        errorStream = new PrintStream(errFile);
       } else {
         errorStream = System.err;
       }
