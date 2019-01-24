@@ -1,11 +1,11 @@
 package io.fixprotocol.orchestra.docgen;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.StringWriter;
 import java.nio.file.Path;
 import java.util.List;
+
 import org.stringtemplate.v4.NoIndentWriter;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STErrorListener;
@@ -28,7 +28,7 @@ public class ImgGenerator {
     this.stGroup = new STGroupFile("templates/imggen.stg", '$', '$');
   }
 
-  public void generateUMLStateMachine(Path messagesImgPath, StateMachineType stateMachine,
+  public void generateUMLStateMachine(Path messagesImgPath, FileSystemManager fileSystemManager, StateMachineType stateMachine,
       STErrorListener errorListener) throws IOException {
     StringWriter stringWriter = new StringWriter();
     NoIndentWriter writer = new NoIndentWriter(stringWriter);
@@ -40,12 +40,13 @@ public class ImgGenerator {
     String umlString = stringWriter.toString();
 
     SourceStringReader reader = new SourceStringReader(umlString);
-    File outputFile = new File(messagesImgPath.toFile(), String.format("%s.png", stateMachine.getName()));
-    FileOutputStream png = new FileOutputStream(outputFile);
-    reader.generateImage(png);
+    Path path = messagesImgPath.resolve(String.format("%s.png", stateMachine.getName()));
+    OutputStream out = fileSystemManager.getOutputStream(path);
+    reader.generateImage(out);
+    out.flush();
   }
 
-  public void generateUMLSequence(Path messagesImgPath, MessageType message, FlowType flow,
+  public void generateUMLSequence(Path messagesImgPath, FileSystemManager fileSystemManager, MessageType message, FlowType flow,
       List<ResponseType> responseList, STErrorListener errorListener) throws IOException {
     StringWriter stringWriter = new StringWriter();
     NoIndentWriter writer = new NoIndentWriter(stringWriter);
@@ -62,10 +63,10 @@ public class ImgGenerator {
     String umlString = stringWriter.toString();
 
     SourceStringReader reader = new SourceStringReader(umlString);
-    File outputFile =
-        new File(messagesImgPath.toFile(), String.format("%s-%s.png", message.getName(), message.getScenario()));
-    FileOutputStream png = new FileOutputStream(outputFile);
-    reader.generateImage(png);
+    Path path = messagesImgPath.resolve(String.format("%s-%s.png", message.getName(), message.getScenario()));
+    OutputStream out = fileSystemManager.getOutputStream(path);
+    reader.generateImage(out);
+    out.flush();
   }
 
   private void generateResponses(List<ResponseType> responseList, STWriter writer,

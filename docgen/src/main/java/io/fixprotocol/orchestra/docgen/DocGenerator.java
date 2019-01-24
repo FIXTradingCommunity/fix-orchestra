@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2017 FIX Protocol Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
@@ -16,7 +16,6 @@ package io.fixprotocol.orchestra.docgen;
 
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -24,9 +23,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -81,9 +78,10 @@ import io.fixprotocol._2016.fixrepository.SupportType;
  */
 public class DocGenerator {
 
+  // without this, output was not getting flushed since ST was not closing the file
   private class STWriterWrapper extends NoIndentWriter implements AutoCloseable {
 
-    public STWriterWrapper(Writer out) {
+    STWriterWrapper(Writer out) {
       super(out);
     }
 
@@ -109,8 +107,8 @@ public class DocGenerator {
    *        <ol>
    *        <li>Name of an Orchestra input file.
    *        <li>URI of root output directory. It will be created if it does not exist. Defaults to
-   *        <code>file:./doc</code>. Any file system with a FileSystemProvider is supported. Use
-   *        <code>jar:file:</code> scheme for a .zip or .jar archive file.</li>
+   *        <code>file:./doc</code>. If the URI path ends in <code>.zip</code>, then a zip archive
+   *        is created.</li>
    *        <li>Path of error file. If not provided, outputs to <code>System.err</code></li>
    *        </ol>
    * @throws JAXBException if XML file unmarshalling fails
@@ -147,8 +145,9 @@ public class DocGenerator {
   private final ImgGenerator imgGenerator = new ImgGenerator();
   private URI outputRootUri;
   private final Repository repository;
-  private final STGroup stGroup;
 
+
+  private final STGroup stGroup;
 
   private final STErrorListener templateErrorListener = new STErrorListener() {
 
@@ -174,7 +173,7 @@ public class DocGenerator {
 
   };
 
-  private ValidationEventHandler unmarshallerErrorHandler = new ValidationEventHandler() {
+  private final ValidationEventHandler unmarshallerErrorHandler = new ValidationEventHandler() {
 
     @Override
     public boolean handleEvent(ValidationEvent event) {
@@ -196,11 +195,12 @@ public class DocGenerator {
     }
 
   };
+  private FileSystemManager fileSystemManager = new FileSystemManager();
 
   /**
    * Constructs a DocGenerator
    * 
-   * @param reader of input Orchestra file
+   * @param inputReader of input Orchestra file
    * @param outputRootUri root of file system to write documentation files
    * @param errorStream output stream for errors
    * @throws JAXBException if a parsing error occurs
@@ -222,13 +222,16 @@ public class DocGenerator {
    */
   public void generate() throws Exception {
     try {
-      Path baseOutputPath = makeDirectory(new File(this.outputRootUri).toPath());
+      // Implementation note: consideration was given to supporting "jar:file:" scheme, but the
+      // supporting FileSystem is not guaranteed to be installed.
+
+      Path baseOutputPath = this.fileSystemManager.makeDirectory(new File(this.outputRootUri).toPath());
       createCss(baseOutputPath);
 
       generateMain(baseOutputPath, getTitle());
       generateMetadata(baseOutputPath, repository, repository.getMetadata().getAny());
 
-      Path datatypesOutputPath = makeDirectory(baseOutputPath.resolve("datatypes"));
+      Path datatypesOutputPath = this.fileSystemManager.makeDirectory(baseOutputPath.resolve("datatypes"));
       generateDatatypeList(datatypesOutputPath, repository.getDatatypes().getDatatype());
       repository.getDatatypes().getDatatype().forEach(d -> {
         try {
@@ -237,7 +240,7 @@ public class DocGenerator {
           throw new RuntimeException(e);
         }
       });
-      Path fieldsOutputPath = makeDirectory(baseOutputPath.resolve("fields"));
+      Path fieldsOutputPath = this.fileSystemManager.makeDirectory(baseOutputPath.resolve("fields"));
       List<FieldType> sortedFieldList = repository.getFields().getField().stream()
           .sorted(Comparator.comparing(FieldType::getName)).collect(Collectors.toList());
       generateFieldsList(fieldsOutputPath, sortedFieldList);
@@ -260,8 +263,8 @@ public class DocGenerator {
         }
       });
 
-      Path messagesDocPath = makeDirectory(baseOutputPath.resolve("messages"));
-      Path messagesImgPath = makeDirectory(messagesDocPath.resolve("img"));
+      Path messagesDocPath = this.fileSystemManager.makeDirectory(baseOutputPath.resolve("messages"));
+      Path messagesImgPath = this.fileSystemManager.makeDirectory(messagesDocPath.resolve("img"));
 
       final Optional<Categories> optCategories = Optional.ofNullable(repository.getCategories());
 
@@ -331,9 +334,9 @@ public class DocGenerator {
       List<ComponentType> componentList = repository.getComponents().getComponent();
       List<GroupType> groupList = repository.getGroups().getGroup();
       List<String> componentsAndGroupsList =
-          componentList.stream().map(g -> g.getName()).collect(Collectors.toList());
+          componentList.stream().map(ComponentType::getName).collect(Collectors.toList());
       componentsAndGroupsList
-          .addAll(groupList.stream().map(g -> g.getName()).collect(Collectors.toList()));
+          .addAll(groupList.stream().map(GroupType::getName).collect(Collectors.toList()));
       List<String> sortedComponentNameList =
           componentsAndGroupsList.stream().sorted().collect(Collectors.toList());
       generateAllComponentsList(messagesDocPath, sortedComponentNameList);
@@ -366,16 +369,21 @@ public class DocGenerator {
       }
     }
   }
-
-  private void createCss(Path outputDir) throws IOException {
+  
+  private void createCss(Path baseOutputPath) throws IOException {
+    Path pathCss = baseOutputPath.resolve("orchestra.css");
     ClassLoader classLoader = getClass().getClassLoader();
     try (InputStream in = classLoader.getResourceAsStream("orchestra.css")) {
-      Files.copy(in, outputDir.resolve("orchestra.css"), StandardCopyOption.REPLACE_EXISTING);
+      this.fileSystemManager.copyStreamToPath(in, pathCss);
     }
   }
 
   private void generateActorDetail(Path messagesDocPath, Path messagesImgPath, ActorType actor)
       throws Exception {
+
+    List<Object> stateMachines = actor.getFieldOrFieldRefOrComponent().stream()
+        .filter(o -> o instanceof StateMachineType).collect(Collectors.toList());
+
     Path path = messagesDocPath.resolve(String.format("%s.html", actor.getName()));
     try (STWriterWrapper writer = getWriter(path)) {
       ST stActor = stGroup.getInstanceOf("actorStart");
@@ -389,16 +397,16 @@ public class DocGenerator {
       stActor2.add("actor", actor);
       stActor2.write(writer, templateErrorListener);
 
-      List<Object> stateMachines = actor.getFieldOrFieldRefOrComponent().stream()
-          .filter(o -> o instanceof StateMachineType).collect(Collectors.toList());
-
       for (Object stateMachine : stateMachines) {
         ST stStates = stGroup.getInstanceOf("stateMachine");
         stStates.add("states", stateMachine);
         stStates.write(writer, templateErrorListener);
-        imgGenerator.generateUMLStateMachine(messagesImgPath, (StateMachineType) stateMachine,
-            templateErrorListener);
       }
+    }
+
+    for (Object stateMachine : stateMachines) {
+      imgGenerator.generateUMLStateMachine(messagesImgPath, fileSystemManager,
+          (StateMachineType) stateMachine, templateErrorListener);
     }
   }
 
@@ -640,14 +648,17 @@ public class DocGenerator {
       stMessageStart.write(writer, templateErrorListener);
       if (responses != null) {
         generateResponses(responses, writer);
-        FlowType flow = getFlow(message.getFlow());
-        imgGenerator.generateUMLSequence(messagesImgPath, message, flow, responses,
-            templateErrorListener);
       }
 
       stMessagePart2.write(writer, templateErrorListener);
       generateMembers(members, writer);
       stMessageEnd.write(writer, templateErrorListener);
+    }
+
+    if (responses != null) {
+      FlowType flow = getFlow(message.getFlow());
+      imgGenerator.generateUMLSequence(messagesImgPath, fileSystemManager, message, flow, responses,
+          templateErrorListener);
     }
   }
 
@@ -780,20 +791,14 @@ public class DocGenerator {
     }
     return title;
   }
-
-  private STWriterWrapper getWriter(Path path) throws IOException {
-    return new STWriterWrapper(new FileWriter(path.toString()));
-  }
-
-  private Path makeDirectory(Path dir) throws IOException {
-    // default file attributes
-    return Files.createDirectories(dir);
-  }
-
   private Repository unmarshal(Reader reader) throws JAXBException {
     JAXBContext jaxbContext = JAXBContext.newInstance(Repository.class);
     Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
     jaxbUnmarshaller.setEventHandler(unmarshallerErrorHandler);
     return (Repository) jaxbUnmarshaller.unmarshal(reader);
+  }
+  
+  private STWriterWrapper getWriter(Path path) throws IOException {
+    return new STWriterWrapper(this.fileSystemManager.getWriter(path));
   }
 }
