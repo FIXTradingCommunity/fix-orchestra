@@ -109,7 +109,8 @@ public class DocGenerator {
    *        <li>Name of an Orchestra input file.
    *        <li>URI of root output directory. It will be created if it does not exist. Defaults to
    *        <code>file:./doc</code>. If the URI path ends in <code>.zip</code>, then a zip archive
-   *        is created.</li>
+   *        is created. If the URI path contains <code>temp</code>, then a temporary file is
+   *        created.</li>
    *        <li>Path of error file. If not provided, outputs to <code>System.err</code></li>
    *        </ol>
    * @throws JAXBException if XML file unmarshalling fails
@@ -147,8 +148,10 @@ public class DocGenerator {
   private PrintStream errorStream;
   private final ImgGenerator imgGenerator = new ImgGenerator();
   private URI outputRootUri;
-  private final Repository repository;
+  private PathManager pathManager;
 
+
+  private final Repository repository;
 
   private final STGroup stGroup;
 
@@ -175,7 +178,6 @@ public class DocGenerator {
     }
 
   };
-
   private final ValidationEventHandler unmarshallerErrorHandler = new ValidationEventHandler() {
 
     @Override
@@ -198,13 +200,14 @@ public class DocGenerator {
     }
 
   };
-  private FileSystemManager fileSystemManager = new FileSystemManager();
 
   /**
    * Constructs a DocGenerator
    * 
    * @param inputReader of input Orchestra file
-   * @param outputRootUri root of file system to write documentation files
+   * @param outputRootUri root of file system to write documentation files. If the URI path ends in
+   *        <code>.zip</code>, then a zip archive is created. If the URI path contains
+   *        <code>temp</code>, then a temporary file is created.
    * @param errorStream output stream for errors
    * @throws JAXBException if a parsing error occurs
    * @throws IOException if a file cannot be accessed
@@ -224,160 +227,163 @@ public class DocGenerator {
    * @throws Exception if documentation cannot be written to a file
    */
   public void generate() throws Exception {
-    try {
-      // Implementation note: consideration was given to supporting "jar:file:" scheme, but the
-      // supporting FileSystem is not guaranteed to be installed.
 
-      Path baseOutputPath = this.fileSystemManager.makeDirectory(new File(this.outputRootUri).toPath());
-      createCss(baseOutputPath);
+    // Implementation note: consideration was given to supporting "jar:file:" scheme, but the
+    // supporting FileSystem is not guaranteed to be installed.
 
-      generateMain(baseOutputPath, getTitle());
-      generateMetadata(baseOutputPath, repository, repository.getMetadata().getAny());
+    final Path rootPath = new File(this.outputRootUri).toPath();
+    pathManager = getPathManager(rootPath);
 
-      Path datatypesOutputPath = this.fileSystemManager.makeDirectory(baseOutputPath.resolve("datatypes"));
-      generateDatatypeList(datatypesOutputPath, repository.getDatatypes().getDatatype());
-      repository.getDatatypes().getDatatype().forEach(d -> {
-        try {
-          generateDatatype(datatypesOutputPath, d);
-        } catch (Exception e) {
-          throw new RuntimeException(e);
-        }
-      });
-      Path fieldsOutputPath = this.fileSystemManager.makeDirectory(baseOutputPath.resolve("fields"));
-      List<FieldType> sortedFieldList = repository.getFields().getField().stream()
-          .sorted(Comparator.comparing(FieldType::getName)).collect(Collectors.toList());
-      generateFieldsList(fieldsOutputPath, sortedFieldList);
-      repository.getFields().getField().forEach(f -> {
-        try {
-          generateFieldDetail(fieldsOutputPath, f);
-        } catch (Exception e) {
-          throw new RuntimeException(e);
-        }
-      });
+    Path baseOutputPath = pathManager.makeRootPath(rootPath);
+    createCss(baseOutputPath);
 
-      List<CodeSetType> allCodeSets = repository.getCodeSets().getCodeSet();
-      generateCodeSetList(datatypesOutputPath, allCodeSets.stream()
-          .sorted(Comparator.comparing(CodeSetType::getName)).collect(Collectors.toList()));
-      repository.getCodeSets().getCodeSet().forEach(cs -> {
-        try {
-          generateCodeSetDetail(datatypesOutputPath, cs);
-        } catch (Exception e) {
-          throw new RuntimeException(e);
-        }
-      });
+    generateMain(baseOutputPath, getTitle());
+    generateMetadata(baseOutputPath, repository, repository.getMetadata().getAny());
 
-      Path messagesDocPath = this.fileSystemManager.makeDirectory(baseOutputPath.resolve("messages"));
-      Path messagesImgPath = this.fileSystemManager.makeDirectory(messagesDocPath.resolve("img"));
-
-      final Optional<Categories> optCategories = Optional.ofNullable(repository.getCategories());
-
-      final List<CategoryType> sortedCategoryList =
-          optCategories.orElse(new Categories()).getCategory().stream()
-              .filter(c -> c.getComponentType() == CatComponentTypeT.MESSAGE).sorted((o1, o2) -> {
-                final String sectionValue1 = o1.getSection() != null ? o1.getSection().value() : "";
-                final String sectionValue2 = o2.getSection() != null ? o2.getSection().value() : "";
-                int retv = sectionValue1.compareTo(sectionValue2);
-                if (retv == 0) {
-                  retv = o1.getId().compareTo(o2.getId());
-                }
-                return retv;
-              }).collect(Collectors.toList());
-
-      generateCategories(messagesDocPath, "Message Categories", sortedCategoryList);
-
-      List<MessageType> sortedMessageList =
-          repository.getMessages().getMessage().stream().sorted((o1, o2) -> {
-            int retv = o1.getName().compareTo(o2.getName());
-            if (retv == 0) {
-              retv = o1.getScenario().compareTo(o2.getScenario());
-            }
-            return retv;
-          }).collect(Collectors.toList());
-
-      final Optional<Actors> actors = Optional.ofNullable(repository.getActors());
-
-      final List<ActorType> actorList = actors.orElse(new Actors()).getActorOrFlow().stream()
-          .filter(af -> af instanceof ActorType).map(af -> (ActorType) af)
-          .collect(Collectors.toList());
-      generateActorsList(messagesDocPath, actorList);
-      actorList.forEach(a -> {
-        try {
-          generateActorDetail(messagesDocPath, messagesImgPath, a);
-        } catch (Exception e) {
-          throw new RuntimeException(e);
-        }
-      });
-
-
-      final List<FlowType> flowList =
-          actors.orElse(new Actors()).getActorOrFlow().stream().filter(af -> af instanceof FlowType)
-              .map(af -> (FlowType) af).collect(Collectors.toList());
-      generateFlowsList(messagesDocPath, flowList);
-      flowList.forEach(f -> {
-        try {
-          generateFlowDetail(messagesDocPath, f);
-
-          generateMessageListByFlow(messagesDocPath, f, sortedMessageList);
-        } catch (Exception e) {
-          throw new RuntimeException(e);
-        }
-      });
-
-
-      generateAllMessageList(messagesDocPath, sortedMessageList);
-
-      sortedCategoryList.forEach(c -> {
-        try {
-          generateMessageListByCategory(messagesDocPath, c, sortedMessageList);
-        } catch (Exception e) {
-          throw new RuntimeException(e);
-        }
-      });
-
-      List<ComponentType> componentList = repository.getComponents().getComponent();
-      List<GroupType> groupList = repository.getGroups().getGroup();
-      List<String> componentsAndGroupsList =
-          componentList.stream().map(ComponentType::getName).collect(Collectors.toList());
-      componentsAndGroupsList
-          .addAll(groupList.stream().map(GroupType::getName).collect(Collectors.toList()));
-      List<String> sortedComponentNameList =
-          componentsAndGroupsList.stream().sorted().collect(Collectors.toList());
-      generateAllComponentsList(messagesDocPath, sortedComponentNameList);
-      componentList.forEach(c -> {
-        try {
-          generateComponentDetail(messagesDocPath, c);
-        } catch (Exception e) {
-          throw new RuntimeException(e);
-        }
-      });
-      groupList.forEach(c -> {
-        try {
-          generateGroupDetail(messagesDocPath, c);
-        } catch (Exception e) {
-          throw new RuntimeException(e);
-        }
-      });
-      repository.getMessages().getMessage().forEach(m -> {
-        try {
-          generateMessageDetail(messagesDocPath, messagesImgPath, m);
-        } catch (Exception e) {
-          throw new RuntimeException(e);
-        }
-      });
-    } catch (RuntimeException e) {
-      if (e.getCause() instanceof IOException) {
-        throw (IOException) e.getCause();
-      } else {
-        throw e;
+    Path datatypesOutputPath = pathManager.makeDirectory(baseOutputPath.resolve("datatypes"));
+    generateDatatypeList(datatypesOutputPath, repository.getDatatypes().getDatatype());
+    repository.getDatatypes().getDatatype().forEach(d -> {
+      try {
+        generateDatatype(datatypesOutputPath, d);
+      } catch (Exception e) {
+        throw new RuntimeException(e);
       }
-    }
+    });
+    Path fieldsOutputPath = pathManager.makeDirectory(baseOutputPath.resolve("fields"));
+    List<FieldType> sortedFieldList = repository.getFields().getField().stream()
+        .sorted(Comparator.comparing(FieldType::getName)).collect(Collectors.toList());
+    generateFieldsList(fieldsOutputPath, sortedFieldList);
+    repository.getFields().getField().forEach(f -> {
+      try {
+        generateFieldDetail(fieldsOutputPath, f);
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    });
+
+    List<CodeSetType> allCodeSets = repository.getCodeSets().getCodeSet();
+    generateCodeSetList(datatypesOutputPath, allCodeSets.stream()
+        .sorted(Comparator.comparing(CodeSetType::getName)).collect(Collectors.toList()));
+    repository.getCodeSets().getCodeSet().forEach(cs -> {
+      try {
+        generateCodeSetDetail(datatypesOutputPath, cs);
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    });
+
+    Path messagesDocPath = pathManager.makeDirectory(baseOutputPath.resolve("messages"));
+    Path messagesImgPath = pathManager.makeDirectory(messagesDocPath.resolve("img"));
+
+    final Optional<Categories> optCategories = Optional.ofNullable(repository.getCategories());
+
+    final List<CategoryType> sortedCategoryList =
+        optCategories.orElse(new Categories()).getCategory().stream()
+            .filter(c -> c.getComponentType() == CatComponentTypeT.MESSAGE).sorted((o1, o2) -> {
+              final String sectionValue1 = o1.getSection() != null ? o1.getSection().value() : "";
+              final String sectionValue2 = o2.getSection() != null ? o2.getSection().value() : "";
+              int retv = sectionValue1.compareTo(sectionValue2);
+              if (retv == 0) {
+                retv = o1.getId().compareTo(o2.getId());
+              }
+              return retv;
+            }).collect(Collectors.toList());
+
+    generateCategories(messagesDocPath, "Message Categories", sortedCategoryList);
+
+    List<MessageType> sortedMessageList =
+        repository.getMessages().getMessage().stream().sorted((o1, o2) -> {
+          int retv = o1.getName().compareTo(o2.getName());
+          if (retv == 0) {
+            retv = o1.getScenario().compareTo(o2.getScenario());
+          }
+          return retv;
+        }).collect(Collectors.toList());
+
+    final Optional<Actors> actors = Optional.ofNullable(repository.getActors());
+
+    final List<ActorType> actorList =
+        actors.orElse(new Actors()).getActorOrFlow().stream().filter(af -> af instanceof ActorType)
+            .map(af -> (ActorType) af).collect(Collectors.toList());
+    generateActorsList(messagesDocPath, actorList);
+    actorList.forEach(a -> {
+      try {
+        generateActorDetail(messagesDocPath, messagesImgPath, a);
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    });
+
+
+    final List<FlowType> flowList = actors.orElse(new Actors()).getActorOrFlow().stream()
+        .filter(af -> af instanceof FlowType).map(af -> (FlowType) af).collect(Collectors.toList());
+    generateFlowsList(messagesDocPath, flowList);
+    flowList.forEach(f -> {
+      try {
+        generateFlowDetail(messagesDocPath, f);
+
+        generateMessageListByFlow(messagesDocPath, f, sortedMessageList);
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    });
+
+
+    generateAllMessageList(messagesDocPath, sortedMessageList);
+
+    sortedCategoryList.forEach(c -> {
+      try {
+        generateMessageListByCategory(messagesDocPath, c, sortedMessageList);
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    });
+
+    List<ComponentType> componentList = repository.getComponents().getComponent();
+    List<GroupType> groupList = repository.getGroups().getGroup();
+    List<String> componentsAndGroupsList =
+        componentList.stream().map(ComponentType::getName).collect(Collectors.toList());
+    componentsAndGroupsList
+        .addAll(groupList.stream().map(GroupType::getName).collect(Collectors.toList()));
+    List<String> sortedComponentNameList =
+        componentsAndGroupsList.stream().sorted().collect(Collectors.toList());
+    generateAllComponentsList(messagesDocPath, sortedComponentNameList);
+    componentList.forEach(c -> {
+      try {
+        generateComponentDetail(messagesDocPath, c);
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    });
+    groupList.forEach(c -> {
+      try {
+        generateGroupDetail(messagesDocPath, c);
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    });
+    repository.getMessages().getMessage().forEach(m -> {
+      try {
+        generateMessageDetail(messagesDocPath, messagesImgPath, m);
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    });
+    pathManager.close();
   }
-  
+
+  /**
+   * @return
+   */
+  public File getRootPath() {
+    return this.pathManager.getRootPath();
+  }
+
   private void createCss(Path baseOutputPath) throws IOException {
     Path pathCss = baseOutputPath.resolve("orchestra.css");
     ClassLoader classLoader = getClass().getClassLoader();
     try (InputStream in = classLoader.getResourceAsStream("orchestra.css")) {
-      this.fileSystemManager.copyStreamToPath(in, pathCss);
+      this.pathManager.copyStreamToPath(in, pathCss);
     }
   }
 
@@ -408,7 +414,7 @@ public class DocGenerator {
     }
 
     for (Object stateMachine : stateMachines) {
-      imgGenerator.generateUMLStateMachine(messagesImgPath, fileSystemManager,
+      imgGenerator.generateUMLStateMachine(messagesImgPath, pathManager,
           (StateMachineType) stateMachine, templateErrorListener);
     }
   }
@@ -660,7 +666,7 @@ public class DocGenerator {
 
     if (responses != null) {
       FlowType flow = getFlow(message.getFlow());
-      imgGenerator.generateUMLSequence(messagesImgPath, fileSystemManager, message, flow, responses,
+      imgGenerator.generateUMLSequence(messagesImgPath, pathManager, message, flow, responses,
           templateErrorListener);
     }
   }
@@ -783,6 +789,15 @@ public class DocGenerator {
     return null;
   }
 
+  private PathManager getPathManager(Path path) {
+    ZipFileManager zipFileManager = new ZipFileManager();
+    if (zipFileManager.isSupported(path)) {
+      return zipFileManager;
+    } else {
+      return new FileManager();
+    }
+  }
+
   private String getTitle() {
     String title = "Orchestra";
     List<JAXBElement<SimpleLiteral>> metadata = repository.getMetadata().getAny();
@@ -794,14 +809,15 @@ public class DocGenerator {
     }
     return title;
   }
+
+  private STWriterWrapper getWriter(Path path) throws IOException {
+    return new STWriterWrapper(this.pathManager.getWriter(path));
+  }
+
   private Repository unmarshal(Reader reader) throws JAXBException {
     JAXBContext jaxbContext = JAXBContext.newInstance(Repository.class);
     Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
     jaxbUnmarshaller.setEventHandler(unmarshallerErrorHandler);
     return (Repository) jaxbUnmarshaller.unmarshal(reader);
-  }
-  
-  private STWriterWrapper getWriter(Path path) throws IOException {
-    return new STWriterWrapper(this.fileSystemManager.getWriter(path));
   }
 }

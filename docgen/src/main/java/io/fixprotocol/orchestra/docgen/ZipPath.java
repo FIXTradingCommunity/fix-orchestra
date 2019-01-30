@@ -37,9 +37,9 @@ import java.util.Objects;
  */
 class ZipPath implements Path {
 
-  private final static String separator = "/";
+  private final static String SEPARATOR = "/";
 
-  public final static ZipPath ROOT = new ZipPath(separator);
+  public final static ZipPath ROOT = new ZipPath(SEPARATOR);
 
   private final String str;
 
@@ -78,7 +78,7 @@ class ZipPath implements Path {
 
   @Override
   public Path getFileName() {
-    return new ZipPath(this.str.substring(this.str.lastIndexOf(separator) + 1));
+    return new ZipPath(this.str.substring(this.str.lastIndexOf(SEPARATOR) + 1));
   }
 
   @Override
@@ -88,19 +88,19 @@ class ZipPath implements Path {
 
   @Override
   public Path getName(int index) {
-    return new ZipPath(this.str.split(separator)[index]);
+    return new ZipPath(this.str.split(SEPARATOR)[index]);
   }
 
   public int getNameCount() {
-    return this.str.split(separator).length;
+    return this.str.split(SEPARATOR).length;
   }
 
   @Override
   public Path getParent() {
-    if (this.str.equals(separator)) {
+    if (this.str.equals(SEPARATOR)) {
       return null;
     } else {
-      return new ZipPath(this.str.substring(0, this.str.lastIndexOf(separator)));
+      return new ZipPath(this.str.substring(0, this.str.lastIndexOf(SEPARATOR)));
     }
   }
 
@@ -128,7 +128,7 @@ class ZipPath implements Path {
 
   @Override
   public Iterator<Path> iterator() {
-    String[] names = this.str.split(separator);
+    String[] names = this.str.split(SEPARATOR);
     return new Iterator<Path>() {
       private int index = 0;
 
@@ -179,10 +179,10 @@ class ZipPath implements Path {
       return other;
     } else if (other.toString().isEmpty()) {
       return this;
-    } else if (this.str.equals(separator)) {
+    } else if (this.str.equals(SEPARATOR)) {
       return new ZipPath(this.str + other.toString());
     } else {
-      return new ZipPath(String.join(separator, this.str, other.toString()));
+      return new ZipPath(String.join(SEPARATOR, this.str, other.toString()));
     }
   }
 
@@ -220,8 +220,8 @@ class ZipPath implements Path {
 
   @Override
   public Path subpath(int beginIndex, int endIndex) {
-    String[] names = this.str.split(separator);
-    return new ZipPath(String.join(separator, Arrays.copyOfRange(names, beginIndex, endIndex)));
+    String[] names = this.str.split(SEPARATOR);
+    return new ZipPath(String.join(SEPARATOR, Arrays.copyOfRange(names, beginIndex, endIndex)));
   }
 
   @Override

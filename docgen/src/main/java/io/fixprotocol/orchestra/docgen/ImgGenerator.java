@@ -28,7 +28,7 @@ public class ImgGenerator {
     this.stGroup = new STGroupFile("templates/imggen.stg", '$', '$');
   }
 
-  public void generateUMLStateMachine(Path messagesImgPath, FileSystemManager fileSystemManager, StateMachineType stateMachine,
+  public void generateUMLStateMachine(Path messagesImgPath, PathManager fileSystemManager, StateMachineType stateMachine,
       STErrorListener errorListener) throws IOException {
     StringWriter stringWriter = new StringWriter();
     NoIndentWriter writer = new NoIndentWriter(stringWriter);
@@ -46,7 +46,7 @@ public class ImgGenerator {
     out.flush();
   }
 
-  public void generateUMLSequence(Path messagesImgPath, FileSystemManager fileSystemManager, MessageType message, FlowType flow,
+  public void generateUMLSequence(Path messagesImgPath, PathManager fileSystemManager, MessageType message, FlowType flow,
       List<ResponseType> responseList, STErrorListener errorListener) throws IOException {
     StringWriter stringWriter = new StringWriter();
     NoIndentWriter writer = new NoIndentWriter(stringWriter);
