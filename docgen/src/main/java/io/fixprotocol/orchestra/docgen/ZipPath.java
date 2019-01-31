@@ -70,7 +70,7 @@ class ZipPath implements Path {
       return false;
     if (getClass() != obj.getClass())
       return false;
-    ZipPath other = (ZipPath) obj;
+    final ZipPath other = (ZipPath) obj;
     if (str == null) {
       return other.str == null;
     } else return str.equals(other.str);
@@ -128,7 +128,7 @@ class ZipPath implements Path {
 
   @Override
   public Iterator<Path> iterator() {
-    String[] names = this.str.split(SEPARATOR);
+    final String[] names = this.str.split(SEPARATOR);
     return new Iterator<Path>() {
       private int index = 0;
 
@@ -164,8 +164,8 @@ class ZipPath implements Path {
 
   @Override
   public Path relativize(Path other) {
-    String otherStr = other.toString();
-    int beginIndex = otherStr.indexOf(this.str);
+    final String otherStr = other.toString();
+    final int beginIndex = otherStr.indexOf(this.str);
     if (beginIndex == -1) {
       return null;
     } else {
@@ -193,7 +193,7 @@ class ZipPath implements Path {
 
   @Override
   public Path resolveSibling(Path other) {
-    Path parent = getParent();
+    final Path parent = getParent();
     if (parent == null || other.isAbsolute()) {
       return other;
     } else if (other.toString().isEmpty()) {
@@ -220,7 +220,7 @@ class ZipPath implements Path {
 
   @Override
   public Path subpath(int beginIndex, int endIndex) {
-    String[] names = this.str.split(SEPARATOR);
+    final String[] names = this.str.split(SEPARATOR);
     return new ZipPath(String.join(SEPARATOR, Arrays.copyOfRange(names, beginIndex, endIndex)));
   }
 

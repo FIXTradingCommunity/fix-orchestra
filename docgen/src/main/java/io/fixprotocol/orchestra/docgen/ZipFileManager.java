@@ -39,7 +39,7 @@ class ZipFileManager implements PathManager {
 
   private static long copyStreamToStream(InputStream source, OutputStream sink) throws IOException {
     long nread = 0L;
-    byte[] buf = new byte[8192];
+    final byte[] buf = new byte[8192];
     int n;
     while ((n = source.read(buf)) > 0) {
       sink.write(buf, 0, n);
@@ -60,8 +60,7 @@ class ZipFileManager implements PathManager {
 
   public long copyStreamToPath(InputStream in, Path path) throws IOException {
     this.zipOutputStream.putNextEntry(createZipEntry((ZipPath) path));
-    OutputStream out = this.zipOutputStream;
-    return copyStreamToStream(in, out);
+    return copyStreamToStream(in, this.zipOutputStream);
   }
 
   public OutputStream getOutputStream(Path path) throws IOException {
@@ -105,7 +104,7 @@ class ZipFileManager implements PathManager {
   }
 
   private File createZipFile(Path path) throws IOException {
-    File file;
+    final File file;
     if (path.getFileName().toString().contains(TEMP_PREFIX)) {
       file = File.createTempFile(TEMP_PREFIX, ZIP_EXTENSION);
     } else {
