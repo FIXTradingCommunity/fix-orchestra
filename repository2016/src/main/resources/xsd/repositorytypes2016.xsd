@@ -672,7 +672,7 @@
 		<xs:restriction base="xs:string">
 			<xs:minLength value="1"/>
 			<xs:maxLength value="255"/>
-			<xs:pattern value="([A-Z]|[a-z]|_)([0-9]|[A-Z]|[a-z]|_)*"/>
+			<xs:pattern value="([A-Z]|[a-z])([0-9]|[A-Z]|[a-z]|_)*"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:attributeGroup name="oidGrp">
@@ -686,7 +686,7 @@
 		</xs:attribute>
 		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
 		<xs:attribute name="abbrName" type="fixr:Abbreviation_t"/>
-		<xs:attribute name="scenario" type="xs:string" default="base">
+		<xs:attribute name="scenario" type="fixr:Scenario_t" default="base">
 			<xs:annotation>
 				<xs:documentation>The use case of an element, distinguished by workflow, asset class, etc.</xs:documentation>
 			</xs:annotation>
@@ -753,7 +753,7 @@
 				<xs:documentation>Numeric identifier generally must be unique within a file for an element type, e.g. unique field tag</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="scenario" type="xs:string" default="base">
+		<xs:attribute name="scenario" type="fixr:Scenario_t" default="base">
 			<xs:annotation>
 				<xs:documentation>The use case of an element, distinguished by workflow, asset class, etc.</xs:documentation>
 			</xs:annotation>
@@ -791,6 +791,13 @@
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
+	<xs:simpleType name="Scenario_t">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="255"/>
+			<xs:pattern value="([A-Z]|[a-z])([0-9]|[A-Z]|[a-z]|_|-)*"/>
+		</xs:restriction>
+	</xs:simpleType>
 	<xs:simpleType name="SectionID_t">
 		<xs:restriction base="fixr:Name_t">
 			<xs:enumeration value="Session"/>
