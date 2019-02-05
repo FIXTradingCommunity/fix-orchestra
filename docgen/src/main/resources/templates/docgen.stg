@@ -47,6 +47,7 @@ topMenu(title) ::= <<
 <li class="major"><a href="messages/AllFlows.html" target="listFrame" class="major">Flows</a></li>
 <li class="major"><a href="messages/MessageCategories.html" target="listFrame" class="major">Messages</a></li>
 <li class="major"><a href="messages/AllComponents.html" target="listFrame" class="major">Components</a></li>
+<li class="major"><a href="messages/AllGroups.html" target="listFrame" class="major">Groups</a></li>
 <li class="major"><a href="fields/AllFields.html" target="listFrame" class="major">Fields</a></li>
 <li class="major"><a href="datatypes/AllCodeSets.html" target="listFrame" class="major">Code sets</a></li>
 <li class="major"><a href="datatypes/AllDatatypes.html" target="listFrame" class="major">Datatypes</a></li>
@@ -198,7 +199,7 @@ codeSets(codeSets, title) ::= <<
 <body>
 <ul class="minor">
 <li class="minor-title">$title$</li>
-$codeSets:{codeSet|<li><a href="$codeSet.name$.html" target="contentFrame" class="minor">$codeSet.name$</a></li>
+$codeSets:{codeSet|<li><a href="$codeSet.name$-$codeSet.scenario$.html" target="contentFrame" class="minor">$codeSet.name$-$codeSet.scenario$</a></li>
 }$
 </ul>
 </body>
@@ -214,7 +215,7 @@ fields(fields, title) ::= <<
 <body>
 <ul class="minor">
 <li class="minor-title">$title$</li>
-$fields:{field|<li><a href="$field.name$.html" target="contentFrame" class="minor">$field.name$</a></li>}$
+$fields:{field|<li><a href="$field.name$-$field.scenario$.html" target="contentFrame" class="minor">$field.name$-$field.scenario$</a></li>}$
 </ul>
 </body>
 </html>
@@ -254,7 +255,7 @@ $else$None$endif$
 >>
 
 messageResponse(message, scenario, when) ::= <<
-<tr><td class="mid"><a href="$message$-$scenario$.html">$message$</a></td><td class="mid"><a href="$message$-$scenario$.html">$scenario$</a></td><td class="code">$when$</td></tr>
+<tr><td class="mid"><a href="$message$-$scenario$.html">$message$-$scenario$</a></td><td class="mid"><a href="$message$-$scenario$.html">$scenario$-$scenario$</a></td><td class="code">$when$</td></tr>
 >>
 
 messagePart2(message) ::= <<
@@ -278,16 +279,16 @@ messageEnd(message) ::= <<
 >>
 
 fieldMember(field, presence, assign) ::= <<
-<tr><td class="members-id">$field.id$</td><td class="members"><a href="../fields/$field.name$.html">$field.name$</a></td><td class="members">$field.abbrName$</td>
+<tr><td class="members-id">$field.id$</td><td class="members"><a href="../fields/$field.name$-$field.scenario$.html">$field.name$</a></td><td class="members">$field.abbrName$</td>
 <td class="members">$if(assign)$<b>Assign: </b>$assign$$else$$presence$$endif$</td>
 <td class="members">$documentation(object=field)$</td></tr>
 >>
 
 componentMember(component, presence) ::= <<
-<tr><td class="members-id-hilite">$component.id$</td><td class="members-hilite"><a href="$component.name$.html">$component.name$</a></td><td class="members-hilite">$component.abbrName$</td><td class="members-hilite">$presence$</td><td class="members-hilite">$documentation(object=component)$</td></tr>
+<tr><td class="members-id-hilite">$component.id$</td><td class="members-hilite"><a href="$component.name$-$component.scenario$.html">$component.name$</a></td><td class="members-hilite">$component.abbrName$</td><td class="members-hilite">$presence$</td><td class="members-hilite">$documentation(object=component)$</td></tr>
 >>
 
-components(componentNames, title) ::= <<
+components(components, title) ::= <<
 <!DOCTYPE html>
 <html>
 <head>
@@ -296,7 +297,23 @@ components(componentNames, title) ::= <<
 <body>
 <ul class="minor">
 <li class="minor-title">$title$</li>
-$componentNames:{componentName|<li><a href="$componentName$.html" target="contentFrame" class="minor">$componentName$</a></li>
+$components:{component|<li><a href="$component.name$-$component.scenario$.html" target="contentFrame" class="minor">$component.name$-$component.scenario$</a></li>
+}$
+</ul>
+</body>
+</html>
+>>
+
+groups(groups, title) ::= <<
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="../orchestra.css">
+</head>
+<body>
+<ul class="minor">
+<li class="minor-title">$title$</li>
+$groups:{group|<li><a href="$group.name$-$group.scenario$.html" target="contentFrame" class="minor">$group.name$-$group.scenario$</a></li>
 }$
 </ul>
 </body>
@@ -310,7 +327,7 @@ componentStart(component) ::= <<
 <link rel="stylesheet" href="../orchestra.css">
 </head>
 <body>
-<h1>Component $component.name$</h1>
+<h1>Component $component.name$ Scenario $component.scenario$</h1>
 $documentation(object=component)$
 <br>
 <table class="major">
@@ -332,14 +349,14 @@ $pedigree(object=component)$
 </tr>
 >>
 
-groupStart(groupType) ::= <<
+groupStart(groupType, fieldType) ::= <<
 <!DOCTYPE html>
 <html>
 <head>
 <link rel="stylesheet" href="../orchestra.css">
 </head>
 <body>
-<h1>Group $groupType.name$</h1>
+<h1>Group $groupType.name$ Scenario $groupType.scenario$</h1>
 $documentation(object=group)$
 <br>
 <table class="major">
@@ -347,8 +364,9 @@ $documentation(object=group)$
 <th class="major">ID</th>
 <th class="major">Abbr</th>
 <th class="major">NumInGroup ID</th>
+<th class="major">NumInGroup name</th>
 </tr>
-<tr><td class="major">$groupType.id$</td><td class="major">$groupType.abbrName$</td><td class="major">$groupType.numInGroup.id$</td></tr>
+<tr><td class="major">$groupType.id$</td><td class="major">$groupType.abbrName$</td><td class="major">$fieldType.id$</td><td class="major"><a href="../fields/$fieldType.name$-$fieldType.scenario$.html">$fieldType.name$</a></td></tr>
 </table>
 $pedigree(object=groupType)$
 <h2>Members</h2>
@@ -368,14 +386,14 @@ componentEnd() ::= <<
 </html>
 >>
 
-field(field) ::= <<
+field(field, typeLink) ::= <<
 <!DOCTYPE html>
 <html>
 <head>
 <link rel="stylesheet" href="../orchestra.css">
 </head>
 <body>
-<h1>Field $field.name$</h1>
+<h1>Field $field.name$ Scenario $field.scenario$</h1>
 $documentation(object=field)$
 <br>
 <table class="major">
@@ -384,7 +402,7 @@ $documentation(object=field)$
 <th class="major">Abbr</th>
 <th class="major">Datatype</th>
 </tr>
-<tr><td class="major">$field.id$</td><td class="major">$field.abbrName$</td><td class="major"><a href="../datatypes/$field.type$.html">$field.type$</a></td></tr>
+<tr><td class="major">$field.id$</td><td class="major">$field.abbrName$</td><td class="major"><a href="$typeLink$">$field.type$</a></td></tr>
 </table>
 $pedigree(object=field)$
 </body>
@@ -427,7 +445,7 @@ codeSetStart(codeSet) ::= <<
 <link rel="stylesheet" href="../orchestra.css">
 </head>
 <body>
-<h1>Code Set $codeSet.name$</h1>
+<h1>Code Set $codeSet.name$ Scenario $codeSet.scenario$</h1>
 $documentation(object=codeSet)$
 <br>
 <table class="major">

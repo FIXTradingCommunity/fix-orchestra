@@ -146,11 +146,12 @@ public class DocGenerator {
 
   private final PrintStream errorStream;
   private final ImgGenerator imgGenerator = new ImgGenerator();
+  private final InputStream inputStream;
   private final URI outputRootUri;
   private PathManager pathManager;
   private Repository repository;
-  private final STGroup stGroup;
 
+  private final STGroup stGroup;
   private final STErrorListener templateErrorListener = new STErrorListener() {
 
     @Override
@@ -196,7 +197,6 @@ public class DocGenerator {
     }
 
   };
-  private final InputStream inputStream;
 
   /**
    * Constructs a DocGenerator
@@ -335,14 +335,20 @@ public class DocGenerator {
     });
 
     final List<ComponentType> componentList = repository.getComponents().getComponent();
-    final List<GroupType> groupList = repository.getGroups().getGroup();
-    final List<String> componentsAndGroupsList =
-        componentList.stream().map(ComponentType::getName).collect(Collectors.toList());
-    componentsAndGroupsList
-        .addAll(groupList.stream().map(GroupType::getName).collect(Collectors.toList()));
-    final List<String> sortedComponentNameList =
-        componentsAndGroupsList.stream().sorted().collect(Collectors.toList());
-    generateAllComponentsList(messagesDocPath, sortedComponentNameList);
+    final List<ComponentType> sortedComponentList =
+        componentList.stream().sorted(new Comparator<ComponentType>() {
+
+          @Override
+          public int compare(ComponentType o1, ComponentType o2) {
+            int retv = o1.getName().compareTo(o2.getName());
+            if (retv == 0) {
+              retv = o1.getScenario().compareTo(o2.getScenario());
+            }
+            return retv;
+          }
+        }).collect(Collectors.toList());
+
+    generateAllComponentsList(messagesDocPath, sortedComponentList);
     componentList.forEach(c -> {
       try {
         generateComponentDetail(messagesDocPath, c);
@@ -350,6 +356,21 @@ public class DocGenerator {
         throw new RuntimeException(e);
       }
     });
+
+    final List<GroupType> groupList = repository.getGroups().getGroup();
+    final List<GroupType> sortedGroupList = groupList.stream().sorted(new Comparator<GroupType>() {
+
+      @Override
+      public int compare(GroupType o1, GroupType o2) {
+        int retv = o1.getName().compareTo(o2.getName());
+        if (retv == 0) {
+          retv = o1.getScenario().compareTo(o2.getScenario());
+        }
+        return retv;
+      }
+    }).collect(Collectors.toList());
+    generateAllGroupsList(messagesDocPath, sortedGroupList);
+
     groupList.forEach(c -> {
       try {
         generateGroupDetail(messagesDocPath, c);
@@ -425,12 +446,23 @@ public class DocGenerator {
     }
   }
 
-  private void generateAllComponentsList(final Path messagesDocPath, final List<String> componentNameList)
+  private void generateAllComponentsList(final Path messagesDocPath, final List<ComponentType> componentList)
       throws Exception {
     final ST st = stGroup.getInstanceOf("components");
-    st.add("componentNames", componentNameList);
+    st.add("components", componentList);
     st.add("title", "All Components");
     final Path path = messagesDocPath.resolve("AllComponents.html");
+    try (final STWriterWrapper writer = getWriter(path)) {
+      st.write(writer, templateErrorListener);
+    }
+  }
+  
+  private void generateAllGroupsList(final Path messagesDocPath, final List<GroupType> componentList)
+      throws Exception {
+    final ST st = stGroup.getInstanceOf("groups");
+    st.add("groups", componentList);
+    st.add("title", "All Groups");
+    final Path path = messagesDocPath.resolve("AllGroups.html");
     try (final STWriterWrapper writer = getWriter(path)) {
       st.write(writer, templateErrorListener);
     }
@@ -460,7 +492,7 @@ public class DocGenerator {
 
   private void generateCodeSetDetail(final Path datatypesOutputPath, final CodeSetType codeSet)
       throws Exception {
-    final Path path = datatypesOutputPath.resolve(String.format("%s.html", codeSet.getName()));
+    final Path path = datatypesOutputPath.resolve(String.format("%s-%s.html", codeSet.getName(), codeSet.getScenario()));
     try (final STWriterWrapper writer = getWriter(path)) {
       final ST stCodesetStart = stGroup.getInstanceOf("codeSetStart");
       stCodesetStart.add("codeSet", codeSet);
@@ -499,7 +531,7 @@ public class DocGenerator {
     final ST stComponentEnd = stGroup.getInstanceOf("componentEnd");
     final List<Object> members = component.getComponentRefOrGroupRefOrFieldRef();
 
-    final Path path = messagesDocPath.resolve(String.format("%s.html", component.getName()));
+    final Path path = messagesDocPath.resolve(String.format("%s-%s.html", component.getName(), component.getScenario()));
     try (final STWriterWrapper writer = getWriter(path)) {
       stComponentStart.write(writer, templateErrorListener);
       generateMembers(members, writer);
@@ -530,7 +562,8 @@ public class DocGenerator {
   private void generateFieldDetail(final Path fieldsOutputPath, final FieldType field) throws Exception {
     final ST st = stGroup.getInstanceOf("field");
     st.add("field", field);
-    final Path path = fieldsOutputPath.resolve(String.format("%s.html", field.getName()));
+    st.add("typeLink", getTypeLink(field.getType(), field.getScenario()));
+    final Path path = fieldsOutputPath.resolve(String.format("%s-%s.html", field.getName(), field.getScenario()));
     try (final STWriterWrapper writer = getWriter(path)) {
       st.write(writer, templateErrorListener);
     }
@@ -570,11 +603,13 @@ public class DocGenerator {
     final ST stGroupStart;
     stGroupStart = stGroup.getInstanceOf("groupStart");
     stGroupStart.add("groupType", group);
+    final FieldType field = getField(group.getNumInGroup().getId().intValue());
+    stGroupStart.add("fieldType", field);
 
     final ST stComponentEnd = stGroup.getInstanceOf("componentEnd");
     final List<Object> members = group.getComponentRefOrGroupRefOrFieldRef();
 
-    final Path path = messagesDocPath.resolve(String.format("%s.html", group.getName()));
+    final Path path = messagesDocPath.resolve(String.format("%s-%s.html", group.getName(), group.getScenario()));
     try (final STWriterWrapper writer = getWriter(path)) {
       stGroupStart.write(writer, templateErrorListener);
       generateMembers(members, writer);
@@ -738,7 +773,7 @@ public class DocGenerator {
     }
     return null;
   }
-
+  
   private String getFieldPresence(final FieldRefType fieldRef) {
     switch (fieldRef.getPresence()) {
       case CONSTANT:
@@ -803,6 +838,16 @@ public class DocGenerator {
       }
     }
     return title;
+  }
+
+  private String getTypeLink(String type, String scenario) {
+    List<Datatype> datatypes = repository.getDatatypes().getDatatype();
+    for (final Datatype datatype : datatypes) {
+      if (datatype.getName().equals(type)) {
+        return String.format("../datatypes/%s.html", type);
+      }
+    }
+    return String.format("../datatypes/%s-%s.html", type, scenario);
   }
 
   private STWriterWrapper getWriter(final Path path) throws IOException {

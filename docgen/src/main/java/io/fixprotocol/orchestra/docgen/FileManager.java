@@ -24,6 +24,7 @@ import java.io.OutputStream;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 
 
 /**
@@ -41,7 +42,7 @@ class FileManager implements PathManager {
   }
 
   public long copyStreamToPath(InputStream in, Path path) throws IOException {
-    return Files.copy(in, path);
+    return Files.copy(in, path, StandardCopyOption.REPLACE_EXISTING);
   }
 
   public OutputStream getOutputStream(Path path) throws IOException {
