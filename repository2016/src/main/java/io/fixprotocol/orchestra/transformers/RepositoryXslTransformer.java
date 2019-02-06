@@ -1,15 +1,20 @@
 package io.fixprotocol.orchestra.transformers;
 
+import java.io.File;
+import java.io.IOException;
+
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+
 import net.sf.saxon.TransformerFactoryImpl;
 
-import javax.xml.transform.*;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.StringWriter;
-
 /**
- * Simple transformer application to convert 2010 repositories to 2016 version
+ * Invokes XSL Transform
+ * May be used to convert FIX Repository 2010 Edition unified repositories to Orchestra schema by
+ * invoking script unified2orchestra.xslt
  *
  * @author Uditha Wijerathna
  */
