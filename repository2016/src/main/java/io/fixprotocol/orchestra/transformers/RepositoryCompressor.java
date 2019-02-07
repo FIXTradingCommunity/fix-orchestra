@@ -44,13 +44,13 @@ import io.fixprotocol._2016.fixrepository.Sections;
 /**
  * Selectively compresses an Orchestra file <br>
  * Copies selected elements to a new file.
- * <ul>
- * <li>Only selected messages are retained with one of the following filters</li>
+ * Only selected messages are retained with one of the following filters
  * <ul>
  * <li>Messages that have a flow</li>
  * <li>Messages that have a specified category</li>
  * <li>Messages that <em>not</em> in a specified category</li>
  * </ul>
+ * <ul>
  * <li>Field and components are copied only if they are contained by the selected messages.</li>
  * <li>Abbreviations, categories, sections, actors, datatypes, and metadata are copied as-is (not
  * compressed).</li>

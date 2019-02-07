@@ -201,7 +201,7 @@ public class DocGenerator {
   /**
    * Constructs a DocGenerator
    * 
-   * @param inputReader of input Orchestra file
+   * @param inputStream input Orchestra file
    * @param outputRootUri root of file system to write documentation files. If the URI path ends in
    *        <code>.zip</code>, then a zip archive is created. If the URI path contains
    *        <code>temp</code>, then a temporary file is created.
