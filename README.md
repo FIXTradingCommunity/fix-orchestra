@@ -26,13 +26,14 @@ Public Orchestra files for service offerings
 
 ## Versions
 
-### Working version: Release Candidate 4
+### Current version: Release Candidate 4
+Release Candidate 4 was approved by the Global Technical Committee on Feb. 21, 2019 for 90 day public review.
 Themes:
 * Tool development
 * Schema refinements as needed
 
-### Current approved version: Release Candidate 3
-Release Candidate 2 was approved by the Global Technical Committee on March 8, 2018 for 90 day public review.
+### Release Candidate 3
+Release Candidate 3 was approved by the Global Technical Committee on March 8, 2018 for 90 day public review.
 Themes:
 * Semantic concepts
 * Additional demonstration applications: documentation generator, test generator
@@ -49,7 +50,7 @@ Version 1.0 RC1 standardized the XML schema for FIX Orchestra and FIX Repository
 
 
 ## Normative Modules
-The following modules are **normative** for Orchestra Release Candidate 2.
+The following modules are **normative**.
 
 ### repository2016
 This module contains an XML schema for Orchestra, also known as FIX Repository 2016 Edition. It is used to convey message structures and their components, as well as FIX application behaviors. Users may express workflow as responses to messages under different scenarios, as well as external state information that may influence behaviors.
@@ -111,7 +112,7 @@ Data files in this project under `test/resources` are strictly for testing and t
 See [FIX Standards](https://www.fixtrading.org/standards/) for normative standards documents and [FIX Repository](https://www.fixtrading.org/standards/fix-repository/) for latest Repository extension packs.
 
 ## License
-© Copyright 2016-2018 FIX Protocol Limited
+© Copyright 2016-2019 FIX Protocol Limited
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.fixprotocol.orchestra</groupId>
 	<artifactId>parent</artifactId>
-	<version>1.3.0-RC4-SNAPSHOT</version>
+	<version>1.3.0-RC4</version>
 	<packaging>pom</packaging>
 	<name>${project.groupId}:${project.artifactId}</name>
 	<description>Parent project for FIX Orchestra</description>
@@ -27,7 +27,7 @@
 	<developers>
 		<developer>
 			<name>Don Mendelson</name>
-			<email>donmendelson@silverflash.net</email>
+			<email>donmendelson@silver-flash.net</email>
 			<organization>FIX Trading Community</organization>
 			<organizationUrl>https://www.fixtrading.org/</organizationUrl>
 		</developer>

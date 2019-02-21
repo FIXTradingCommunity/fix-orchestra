@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>io.fixprotocol.orchestra</groupId>
 		<artifactId>parent</artifactId>
-		<version>1.3.0-RC4-SNAPSHOT</version>
+		<version>1.3.0-RC4</version>
 	</parent>
 	<artifactId>repositoryDiffMerge</artifactId>
 	<description>Diff/merge tool for repository files</description>
