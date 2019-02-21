@@ -13,6 +13,6 @@ In addition to providing the XML schema as a resource, this module builds Java b
 <dependency>
   <groupId>io.fixprotocol.orchestra</groupId>
   <artifactId>interfaces2016</artifactId>
-  <version>1.2.0-RC3</version>
+  <version>1.3.0-RC4</version>
 </dependency>
 ```
