@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>io.fixprotocol.orchestra</groupId>
 		<artifactId>parent</artifactId>
-		<version>1.3.0-RC4</version>
+		<version>1.4.0-RC5-SNAPSHOT</version>
 	</parent>
 	<artifactId>model-quickfix</artifactId>
 	<description>Message validation</description>
