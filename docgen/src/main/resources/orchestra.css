@@ -32,6 +32,11 @@ p {
 	font-size: x-small;
 }
 
+input[type=search] {
+	display: block; 
+	width: 100%; 
+}
+
 img {
     border-style: solid;
     border-width: 1px;

@@ -61,10 +61,12 @@ datatypes(datatypes, title) ::= <<
 <link rel="stylesheet" href="../orchestra.css">
 </head>
 <body>
-<ul class="minor">
-<li class="minor-title">$title$</li>
+<input type="search" placeholder="Search $title$" id="searchBox" onkeyup="filterList()" onsearch="filterList()"/>
+<ul id="list" class="minor">
 $datatypes:{datatype|<li><a href="$datatype.name$.html" target="contentFrame" class="minor">$datatype.name$</a></li>}$
 </ul>
+
+$scripts()$
 </body>
 </html>
 >>
@@ -181,11 +183,12 @@ messages(messages, title) ::= <<
 <link rel="stylesheet" href="../orchestra.css">
 </head>
 <body>
-<ul class="minor">
-<li class="minor-title">$title$</li>
-$messages:{message|<li><a href="$message.name$-$message.scenario$.html" target="contentFrame" class="minor">$message.name$-$message.scenario$</a></li>
-}$
+<input type="search" placeholder="Search $title$" id="searchBox" onkeyup="filterList()" onsearch="filterList()"/>
+<ul id="list" class="minor">
+$messages:{message|<li><a href="$message.name$-$message.scenario$.html" target="contentFrame" class="minor">$message.name$-$message.scenario$</a></li>}$
 </ul>
+
+$scripts()$
 </body>
 </html>
 >>
@@ -197,13 +200,34 @@ codeSets(codeSets, title) ::= <<
 <link rel="stylesheet" href="../orchestra.css">
 </head>
 <body>
-<ul class="minor">
-<li class="minor-title">$title$</li>
-$codeSets:{codeSet|<li><a href="$codeSet.name$-$codeSet.scenario$.html" target="contentFrame" class="minor">$codeSet.name$-$codeSet.scenario$</a></li>
-}$
+<input type="search" placeholder="Search $title$" id="searchBox" onkeyup="filterList()" onsearch="filterList()"/>
+<ul id="list" class="minor">
+$codeSets:{codeSet|<li><a href="$codeSet.name$-$codeSet.scenario$.html" target="contentFrame" class="minor">$codeSet.name$-$codeSet.scenario$</a></li>}$
 </ul>
+
+$scripts()$
 </body>
 </html>
+>>
+
+scripts() ::= <<
+<script>
+function filterList() {
+  var input = document.getElementById("searchBox");
+  var filter = input.value.toUpperCase();
+  var ul = document.getElementById("list");
+  var li = ul.getElementsByTagName("li");
+  for (var i = 0; i < li.length; i++) {
+  	var a = li[i].getElementsByTagName("a");
+    var txtValue = a[0].text;
+    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+      li[i].style.display = "";
+    } else {
+      li[i].style.display = "none";
+    }
+  }
+}
+</script>
 >>
 
 fields(fields, title) ::= <<
@@ -213,11 +237,13 @@ fields(fields, title) ::= <<
 <link rel="stylesheet" href="../orchestra.css">
 </head>
 <body>
-<ul class="minor">
-<li class="minor-title">$title$</li>
+<input type="search" placeholder="Search $title$" id="searchBox" onkeyup="filterList()" onsearch="filterList()"/>
+<ul id="list" class="minor">
 $fields:{field|<li><a href="$field.name$-$field.scenario$.html" target="contentFrame" class="minor">$field.name$-$field.scenario$</a></li>}$
 </ul>
 </body>
+
+$scripts()$
 </html>
 >>
 
@@ -295,11 +321,12 @@ components(components, title) ::= <<
 <link rel="stylesheet" href="../orchestra.css">
 </head>
 <body>
-<ul class="minor">
-<li class="minor-title">$title$</li>
-$components:{component|<li><a href="$component.name$-$component.scenario$.html" target="contentFrame" class="minor">$component.name$-$component.scenario$</a></li>
-}$
+<input type="search" placeholder="Search $title$" id="searchBox" onkeyup="filterList()" onsearch="filterList()"/>
+<ul id="list" class="minor">
+$components:{component|<li><a href="$component.name$-$component.scenario$.html" target="contentFrame" class="minor">$component.name$-$component.scenario$</a></li>}$
 </ul>
+
+$scripts()$
 </body>
 </html>
 >>
@@ -311,11 +338,12 @@ groups(groups, title) ::= <<
 <link rel="stylesheet" href="../orchestra.css">
 </head>
 <body>
-<ul class="minor">
-<li class="minor-title">$title$</li>
-$groups:{group|<li><a href="$group.name$-$group.scenario$.html" target="contentFrame" class="minor">$group.name$-$group.scenario$</a></li>
-}$
+<input type="search" placeholder="Search $title$" id="searchBox" onkeyup="filterList()" onsearch="filterList()"/>
+<ul id="list" class="minor">
+$groups:{group|<li><a href="$group.name$-$group.scenario$.html" target="contentFrame" class="minor">$group.name$-$group.scenario$</a></li>}$
 </ul>
+
+$scripts()$
 </body>
 </html>
 >>
