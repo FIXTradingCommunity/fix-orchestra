@@ -239,7 +239,7 @@ fields(fields, title) ::= <<
 <body>
 <input type="search" placeholder="Search $title$" id="searchBox" onkeyup="filterList()" onsearch="filterList()"/>
 <ul id="list" class="minor">
-$fields:{field|<li><a href="$field.name$-$field.scenario$.html" target="contentFrame" class="minor">$field.name$-$field.scenario$</a></li>}$
+$fields:{field|<li><a href="$field.name$-$field.scenario$.html" target="contentFrame" class="minor">$field.name$-$field.scenario$ $field.id$</a></li>}$
 </ul>
 </body>
 
