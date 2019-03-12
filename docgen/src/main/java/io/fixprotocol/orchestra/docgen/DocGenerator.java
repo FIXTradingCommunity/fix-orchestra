@@ -20,8 +20,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.io.Writer;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
@@ -123,11 +121,11 @@ public class DocGenerator {
     } else {
       final InputStream inputStream = new FileInputStream(args[0]);
 
-      final URI outputRootUri;
+      final String outputRootDir;
       if (args.length > 1) {
-        outputRootUri = new URI(args[1]);
+        outputRootDir = args[1];
       } else {
-        outputRootUri = new URI("file:./doc");
+        outputRootDir = "./doc";
       }
 
       final PrintStream errorStream;
@@ -139,7 +137,7 @@ public class DocGenerator {
         errorStream = System.err;
       }
 
-      final DocGenerator gen = new DocGenerator(inputStream, outputRootUri, errorStream);
+      final DocGenerator gen = new DocGenerator(inputStream, outputRootDir, errorStream);
       gen.generate();
     }
   }
@@ -147,7 +145,7 @@ public class DocGenerator {
   private final PrintStream errorStream;
   private final ImgGenerator imgGenerator = new ImgGenerator();
   private final InputStream inputStream;
-  private final URI outputRootUri;
+  private final String outputRootDir;
   private PathManager pathManager;
   private Repository repository;
 
@@ -207,8 +205,8 @@ public class DocGenerator {
    *        <code>temp</code>, then a temporary file is created.
    * @param errorStream output stream for errors
    */
-  public DocGenerator(final InputStream inputStream, final URI outputRootUri, final PrintStream errorStream) {
-    this.outputRootUri = outputRootUri;
+  public DocGenerator(final InputStream inputStream, final String outputRootDir, final PrintStream errorStream) {
+    this.outputRootDir = outputRootDir;
     this.stGroup = new STGroupFile("templates/docgen.stg", '$', '$');
     // STGroup.verbose = true;
     this.inputStream = inputStream;
@@ -226,10 +224,9 @@ public class DocGenerator {
     // Implementation note: consideration was given to supporting "jar:file:" scheme, but the
     // supporting FileSystem is not guaranteed to be installed.
 
-    final Path rootPath = new File(this.outputRootUri).toPath();
-    pathManager = getPathManager(rootPath);
+    pathManager = getPathManager(outputRootDir);
 
-    final Path baseOutputPath = pathManager.makeRootPath(rootPath);
+    final Path baseOutputPath = pathManager.makeRootPath(outputRootDir);
     createCss(baseOutputPath);
 
     generateMain(baseOutputPath, getTitle());
@@ -386,13 +383,6 @@ public class DocGenerator {
       }
     });
     pathManager.close();
-  }
-
-  /**
-   * @return root directory
-   */
-  public File getRootPath() {
-    return this.pathManager.getRootPath();
   }
 
   private void createCss(final Path baseOutputPath) throws IOException {
@@ -819,7 +809,7 @@ public class DocGenerator {
     return null;
   }
 
-  private PathManager getPathManager(final Path path) {
+  private PathManager getPathManager(final String path) {
     final ZipFileManager zipFileManager = new ZipFileManager();
     if (zipFileManager.isSupported(path)) {
       return zipFileManager;

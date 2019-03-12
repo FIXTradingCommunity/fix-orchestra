@@ -1,41 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fn="http://www.w3.org/2005/xpath-functions" xmlns:functx="http://www.functx.com" xmlns:fixr="http://fixprotocol.io/2016/fixrepository" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0" exclude-result-prefixes="fn">
-	<!-- argument is a delimited string of phrase file URLs -->
-	<xsl:param name="phrases-files"/>
-	<xsl:variable name="phrases-files-seq" select="fn:tokenize($phrases-files, '[,\s]')"/>
-	<xsl:key name="phrases-key" match="phrase" use="@textId"/>
+	<!-- argument is phrase file URL, e.g. file://FIX.5.0SP2_en_phrases.xml" -->
+	<xsl:param name="phrases-file"/>
 	<xsl:output method="xml" encoding="UTF-8" indent="yes"/>
 	<xsl:namespace-alias stylesheet-prefix="#default" result-prefix="fixr"/>
+	<xsl:variable name="phrases-doc" select="fn:document($phrases-file)"/>
+	<xsl:variable name="version" select="$phrases-doc/phrases/@version"/>
+	<xsl:key name="phrases-key" match="phrase" use="@textId"/>
 	<xsl:template match="/">
 		<xsl:apply-templates/>
 	</xsl:template>
 	<xsl:template match="fixRepository">
 		<fixr:repository>
-			<xsl:attribute name="name"><xsl:value-of select="functx:substring-before-if-contains(//fix[fn:last()]/@version, '_')"/></xsl:attribute>
-			<xsl:apply-templates select="//fix[fn:last()]/@* except //fix[fn:last()]/@components"/>
+			<xsl:attribute name="name"><xsl:value-of select="functx:substring-before-if-contains(//fix[@version=$version]/@version, '_')"/></xsl:attribute>
+			<xsl:apply-templates select="//fix[@version=$version]/@* except //fix[@version=$version]/@components"/>
 			<metadata>
 				<dc:title>Orchestra</dc:title>
-				<dc:creator>Repository2010to2016.xsl script</dc:creator>
+				<dc:creator>unified2orchestra.xslt script</dc:creator>
 				<dc:publisher>FIX Trading Community</dc:publisher>
 				<dc:date>
 					<xsl:value-of select="fn:current-dateTime()"/>
 				</dc:date>
-				<dc:format>Repository 2016 Edition</dc:format>
+				<dc:format>Orchestra schema</dc:format>
+				<dc:source>FIX Unified Repository</dc:source>
 			</metadata>
 			<codeSets>
 				<!-- Need to store context outside of for-each loop -->
 				<xsl:variable name="doc" select="/"/>
 				<!-- Add codesets for fields that have enums from latest fix version to contain it -->
-				<xsl:for-each select="fn:distinct-values(/fixRepository/fix/fields/field[enum]/@name)">
+				<xsl:for-each select="fn:distinct-values(/fixRepository/fix[@version=$version]/fields/field[enum]/@name)">
 					<xsl:variable name="fieldName" select="."/>
-					<xsl:variable name="field" select="($doc/fixRepository/fix/fields/field[@name=$fieldName])[last()]"/>
+					<xsl:variable name="field" select="($doc/fixRepository/fix[@version=$version]/fields/field[@name=$fieldName])"/>
 					<xsl:variable name="fieldId" select="$field/@id"/>
 					<xsl:variable name="fieldType" select="$field/@type"/>
 					<xsl:element name="fixr:codeSet">
 						<xsl:attribute name="name"><xsl:value-of select="concat($fieldName, 'CodeSet')"/></xsl:attribute>
 						<xsl:attribute name="id"><xsl:value-of select="$fieldId"/></xsl:attribute>
 						<xsl:attribute name="type"><xsl:value-of select="$fieldType"/></xsl:attribute>
-						<xsl:for-each select="($doc//field[@name = $fieldName])[fn:last()]/enum">
+						<xsl:for-each select="$field/enum">
 							<xsl:element name="fixr:code">
 								<xsl:attribute name="name"><xsl:value-of select="current()/@symbolicName"/></xsl:attribute>
 								<xsl:attribute name="id"><xsl:value-of select="concat($fieldId, 
@@ -47,15 +49,14 @@
 					</xsl:element>
 				</xsl:for-each>
 			</codeSets>
-			<!-- Assumption: protocols are listed in the original file in version order, so last() picks latest. -->
-			<xsl:apply-templates select="//fix[last()]/abbreviations"/>
-			<xsl:apply-templates select="//fix[last()]/datatypes"/>
-			<xsl:apply-templates select="//fix[last()]/categories"/>
-			<xsl:apply-templates select="//fix[last()]/sections"/>
-			<xsl:apply-templates select="//fix[last()]/fields"/>
-			<xsl:apply-templates select="//fix[last()]/components" mode="component"/>
-			<xsl:apply-templates select="//fix[last()]/components" mode="group"/>
-			<xsl:apply-templates select="//fix[last()]/messages"/>
+			<xsl:apply-templates select="//fix[@version=$version]/abbreviations"/>
+			<xsl:apply-templates select="//fix[@version=$version]/datatypes"/>
+			<xsl:apply-templates select="//fix[@version=$version]/categories"/>
+			<xsl:apply-templates select="//fix[@version=$version]/sections"/>
+			<xsl:apply-templates select="//fix[@version=$version]/fields"/>
+			<xsl:apply-templates select="//fix[@version=$version]/components" mode="component"/>
+			<xsl:apply-templates select="//fix[@version=$version]/components" mode="group"/>
+			<xsl:apply-templates select="//fix[@version=$version]/messages"/>
 		</fixr:repository>
 	</xsl:template>
 	<xsl:template match="abbreviations">
@@ -80,8 +81,6 @@
 			<xsl:apply-templates select="@* except @textId"/>
 			<xsl:apply-templates select="XML"/>
 			<fixr:annotation>
-				<xsl:variable name="phrases-file" select="$phrases-files-seq[fn:last()]"/>
-				<xsl:variable name="phrases-doc" select="fn:document($phrases-file)"/>
 				<xsl:for-each select="fn:key('phrases-key', @textId, $phrases-doc)//text">
 					<xsl:element name="fixr:documentation">
 						<xsl:apply-templates select="@purpose"/>
@@ -142,9 +141,9 @@
 	</xsl:template>
 	<xsl:template match="field">
 		<fixr:field>
-			<xsl:apply-templates select="@* except @textId"/>			
+			<xsl:apply-templates select="@* except @textId"/>
 			<!-- Assumes that discriminator for field X follows naming convention XSource -->
-			<xsl:variable name="discriminator" select="//field[@name = fn:concat(current()/@name, 'Source')]"/>
+			<xsl:variable name="discriminator" select="ancestor::field[@name = fn:concat(current()/@name, 'Source')]"/>
 			<xsl:if test="$discriminator">
 				<xsl:attribute name="discriminatorId" select="$discriminator/@id"/>
 				<xsl:attribute name="discriminatorName" select="$discriminator/@name"/>
@@ -154,7 +153,7 @@
 					<xsl:attribute name="type" select="concat(@name, 'CodeSet')"/>
 				</xsl:when>
 				<xsl:when test="@type = 'data' or @type = 'XMLData'">
-					<xsl:variable name="length" select="//field[@associatedDataTag = current()/@id][fn:last()]"/>
+					<xsl:variable name="length" select="ancestor::field[@associatedDataTag = current()/@id]"/>
 					<xsl:attribute name="lengthId" select="$length/@id"/>
 					<xsl:attribute name="lengthName" select="$length/@name"/>
 				</xsl:when>
@@ -165,13 +164,22 @@
 	<xsl:template match="components" mode="component">
 		<fixr:components>
 			<xsl:apply-templates select="@*"/>
-			<xsl:apply-templates select="component[@repeating='0']"/>
+			<!-- repeating attribute not always present; assume its a component rather than a group then -->
+			<xsl:apply-templates select="component[not(@repeating='1')]"/>
 		</fixr:components>
 	</xsl:template>
 	<xsl:template match="components" mode="group">
 		<fixr:groups>
 			<xsl:apply-templates select="@*"/>
-			<xsl:apply-templates select="component[@repeating='1']"/>
+			<!-- FIX 4.4 or later -->
+			<xsl:apply-templates select="component[@repeating='1']" mode="group"/>
+			<!-- FIX 4.2 -->
+			<!-- Need to store context outside of for-each loop -->
+			<xsl:variable name="fix" select="ancestor::fix"/>
+			<xsl:for-each select="fn:distinct-values(ancestor::fix//repeatingGroup[not(name(parent::*)='component')]/@id)">
+				<xsl:variable name="id" select="."/>
+				<xsl:apply-templates select="($fix//repeatingGroup[@id=$id])[last()]" mode="group"/>
+			</xsl:for-each>
 		</fixr:groups>
 	</xsl:template>
 	<xsl:template match="component">
@@ -182,25 +190,55 @@
 			<xsl:otherwise>
 				<fixr:component>
 					<xsl:apply-templates select="@* except @type except @textId"/>
-					<xsl:apply-templates/>
+					<xsl:apply-templates mode="member"/>
 					<xsl:apply-templates select="@textId"/>
 				</fixr:component>
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
-	<xsl:template match="repeatingGroup">
+	<xsl:template match="repeatingGroup" mode="group">
 		<group>
 			<xsl:apply-templates select="@* except @required except @textId"/>
-			<xsl:attribute name="id" select="../@id"/>
-			<xsl:attribute name="name" select="../@name"/>
-			<xsl:attribute name="category" select="../@category"/>
-			<xsl:attribute name="abbrName" select="../@abbrName"/>
+			<!-- Find component for this repeating group. If FIX 4.4 or later, it will be the parent element. Otherwise, search for last component with matching NumInGroup id. -->
+			<xsl:choose>
+				<xsl:when test="name(..)='component'">
+					<xsl:variable name="parentComponent" select=".."/>
+					<xsl:attribute name="id" select="$parentComponent/@id"/>
+					<xsl:attribute name="name" select="$parentComponent/@name"/>
+					<xsl:attribute name="category" select="$parentComponent/@category"/>
+					<xsl:attribute name="abbrName" select="$parentComponent/@abbrName"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:variable name="parentComponent" select="(//component[repeatingGroup/@id=current()/@id])[last()]"/>
+					<xsl:attribute name="id" select="$parentComponent/@id"/>
+					<xsl:attribute name="name" select="$parentComponent/@name"/>
+					<xsl:attribute name="category" select="$parentComponent/@category"/>
+					<xsl:attribute name="abbrName" select="$parentComponent/@abbrName"/>
+				</xsl:otherwise>
+			</xsl:choose>
 			<xsl:element name="fixr:numInGroup">
 				<xsl:attribute name="id" select="@id"/>
 			</xsl:element>
-			<xsl:apply-templates/>
+			<xsl:apply-templates mode="member"/>
 			<xsl:apply-templates select="@textId"/>
 		</group>
+	</xsl:template>
+	<xsl:template match="repeatingGroup" mode="member">
+		<fixr:groupRef>
+			<xsl:apply-templates select="@* except @name except @id except @textId"/>
+			<!-- id is the NumInGroup tag, not the group id -->
+			<xsl:choose>
+				<xsl:when test="name(..)='component'">
+					<xsl:variable name="parentComponent" select=".."/>
+					<xsl:attribute name="id" select="$parentComponent/@id"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:variable name="parentComponent" select="(//component[repeatingGroup/@id=current()/@id])[last()]"/>
+					<xsl:attribute name="id" select="$parentComponent/@id"/>
+				</xsl:otherwise>
+			</xsl:choose>
+			<xsl:apply-templates select="@textId"/>
+		</fixr:groupRef>
 	</xsl:template>
 	<xsl:template match="messages">
 		<fixr:messages>
@@ -212,32 +250,35 @@
 		<fixr:message>
 			<xsl:apply-templates select="@* except @textId except @section"/>
 			<fixr:structure>
-				<xsl:apply-templates/>
+				<xsl:apply-templates mode="member"/>
 			</fixr:structure>
 			<xsl:apply-templates select="@textId"/>
 		</fixr:message>
 	</xsl:template>
-	<xsl:template match="componentRef">
+	<xsl:template match="componentRef" mode="#all">
 		<xsl:choose>
-			<xsl:when test="//component[@id=current()/@id]/repeatingGroup">
+			<xsl:when test="//component[@id=current()/@id and @repeating='1']">
 				<fixr:groupRef>
-					<xsl:apply-templates select="@*[name()!='name']"/>
+					<xsl:apply-templates select="@* except @name except @textId"/>
+					<xsl:apply-templates select="@textId"/>
 				</fixr:groupRef>
 			</xsl:when>
 			<xsl:otherwise>
 				<fixr:componentRef>
-					<xsl:apply-templates select="@*[name()!='name']"/>
+					<xsl:apply-templates select="@* except @name except @textId"/>
+					<xsl:apply-templates select="@textId"/>
 				</fixr:componentRef>
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
-	<xsl:template match="fieldRef">
+	<xsl:template match="fieldRef" mode="#all">
 		<fixr:fieldRef>
-			<xsl:apply-templates select="@*[name()!='name']"/>
+			<xsl:apply-templates select="@* except @name except @textId"/>
+			<xsl:apply-templates select="@textId"/>
 		</fixr:fieldRef>
 	</xsl:template>
 	<xsl:template match="@enumDatatype">
-		<xsl:variable name="fieldName" select="(//field[@id=fn:current()]/@name)[fn:last()]"/>
+		<xsl:variable name="fieldName" select="(ancestor::field[@id=fn:current()]/@name)"/>
 		<xsl:attribute name="type" select="concat($fieldName, 'CodeSet')"/>
 	</xsl:template>
 	<xsl:template match="@addedEP">
@@ -270,8 +311,6 @@
 	</xsl:template>
 	<xsl:template match="@textId">
 		<xsl:variable name="index" select="index-of(/fixRepository/fix, current()/ancestor::fix)"/>
-		<xsl:variable name="phrases-file" select="fn:subsequence($phrases-files-seq, $index, 1)"/>
-		<xsl:variable name="phrases-doc" select="fn:document($phrases-file)"/>
 		<xsl:element name="fixr:annotation">
 			<xsl:for-each select="fn:key('phrases-key', ../@textId, $phrases-doc)/text">
 				<xsl:element name="fixr:documentation">

@@ -15,10 +15,6 @@
 
 package io.fixprotocol.orchestra.docgen;
 
-import java.net.URI;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 import org.junit.Test;
 
 /**
@@ -30,16 +26,12 @@ public class DocGeneratorTest {
  
   @Test
   public void generateFile() throws Exception {
-    Path path = Paths.get("").toAbsolutePath().resolve("target").resolve("test").resolve("doc");
-    URI uri = path.toUri();
-    DocGenerator.main(new String[] {"mit_2016.xml", uri.toString(), "target/test/doc-err.txt"});
+    DocGenerator.main(new String[] {"mit_2016.xml", "target/test/doc", "target/test/doc-err.txt"});
   }
   
   @Test
   public void generateZip() throws Exception {
-    Path path = Paths.get("").toAbsolutePath().resolve("target").resolve("test").resolve("doc.zip");
-    URI uri = path.toUri();
-    DocGenerator.main(new String[] {"mit_2016.xml", uri.toString(), "target/test/zip-err.txt"});
+    DocGenerator.main(new String[] {"mit_2016.xml", "target/test/doc.zip", "target/test/zip-err.txt"});
   }
 
 }

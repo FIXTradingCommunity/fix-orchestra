@@ -29,7 +29,7 @@ public class RepositoryXslTransformerTest {
 
   /**
    * 
-   * Transform FIX Repository 2010 Edition unified repositories to Orchestra schema
+   * Transform FIX Repository 2010 Edition unified repositories to Orchestra schema for FIX 5.0SP2
    */
   @Test
   public void transformEP() throws IOException, TransformerException {
@@ -37,12 +37,79 @@ public class RepositoryXslTransformerTest {
     arr[0] = Thread.currentThread().getContextClassLoader()
         .getResource("xsl/unified2orchestra.xslt").getFile();
     arr[1] =
-        Thread.currentThread().getContextClassLoader().getResource("FixRepository.xml").getFile();
+        Thread.currentThread().getContextClassLoader().getResource("FixRepositoryUnifiedEP247.xml").getFile();
     String sourceDir = new File(arr[1]).getParent();
     // send output to target so it will get cleaned
-    arr[2] = "target/test/FixRepository2016.xml";
+    arr[2] = "target/test/FixRepository50SP2EP247.xml";
     // document function in XSLT expects a URI, not a file name (Saxon does not convert)
-    arr[3] = String.format("phrases-files=file:///%s/FIX.5.0SP2_EP245_en_phrases.xml",
+    arr[3] = String.format("phrases-file=file:///%s/FIX.5.0SP2_EP247_en_phrases.xml",
+        sourceDir.replace('\\', '/'));
+    RepositoryXslTransformer.main(arr);
+    File outFile = new File(arr[2]);
+    Assert.assertTrue(outFile.exists());
+  }
+  
+  /**
+   * 
+   * Transform FIX Repository 2010 Edition unified repositories to Orchestra schema for FIX 5.0SP2
+   */
+  @Ignore
+  @Test
+  public void transform50() throws IOException, TransformerException {
+    String[] arr = new String[4];
+    arr[0] = Thread.currentThread().getContextClassLoader()
+        .getResource("xsl/unified2orchestra.xslt").getFile();
+    arr[1] =
+        Thread.currentThread().getContextClassLoader().getResource("FixRepositoryUnified.xml").getFile();
+    String sourceDir = new File(arr[1]).getParent();
+    // send output to target so it will get cleaned
+    arr[2] = "target/test/FixRepository50SP2.xml";
+    // document function in XSLT expects a URI, not a file name (Saxon does not convert)
+    arr[3] = String.format("phrases-file=file:///%s/FIX.5.0SP2_en_phrases.xml",
+        sourceDir.replace('\\', '/'));
+    RepositoryXslTransformer.main(arr);
+    File outFile = new File(arr[2]);
+    Assert.assertTrue(outFile.exists());
+  }
+  
+  /**
+   * 
+   * Transform FIX Repository 2010 Edition unified repositories to Orchestra schema for FIX 4.4
+   */
+  @Test
+  public void transform44() throws IOException, TransformerException {
+    String[] arr = new String[4];
+    arr[0] = Thread.currentThread().getContextClassLoader()
+        .getResource("xsl/unified2orchestra.xslt").getFile();
+    arr[1] =
+        Thread.currentThread().getContextClassLoader().getResource("FixRepositoryUnified.xml").getFile();
+    String sourceDir = new File(arr[1]).getParent();
+    // send output to target so it will get cleaned
+    arr[2] = "target/test/FixRepository44.xml";
+    // document function in XSLT expects a URI, not a file name (Saxon does not convert)
+    arr[3] = String.format("phrases-file=file:///%s/FIX.4.4_en_phrases.xml",
+        sourceDir.replace('\\', '/'));
+    RepositoryXslTransformer.main(arr);
+    File outFile = new File(arr[2]);
+    Assert.assertTrue(outFile.exists());
+  }
+  
+  /**
+   * 
+   * Transform FIX Repository 2010 Edition unified repositories to Orchestra schema for FIX 4.2
+   */
+  @Test
+  public void transform42() throws IOException, TransformerException {
+    String[] arr = new String[4];
+    arr[0] = Thread.currentThread().getContextClassLoader()
+        .getResource("xsl/unified2orchestra.xslt").getFile();
+    arr[1] =
+        Thread.currentThread().getContextClassLoader().getResource("FixRepositoryUnified.xml").getFile();
+    String sourceDir = new File(arr[1]).getParent();
+    // send output to target so it will get cleaned
+    arr[2] = "target/test/FixRepository42.xml";
+    // document function in XSLT expects a URI, not a file name (Saxon does not convert)
+    arr[3] = String.format("phrases-file=file:///%s/FIX.4.2_en_phrases.xml",
         sourceDir.replace('\\', '/'));
     RepositoryXslTransformer.main(arr);
     File outFile = new File(arr[2]);

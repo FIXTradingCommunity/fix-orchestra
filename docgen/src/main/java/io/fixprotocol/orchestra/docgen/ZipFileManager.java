@@ -48,7 +48,6 @@ class ZipFileManager implements PathManager {
     return nread;
   }
 
-  private File zipFile;
   private ZipOutputStream zipOutputStream;
   private OutputStreamWriter zipWriter;
 
@@ -68,19 +67,14 @@ class ZipFileManager implements PathManager {
     return this.zipOutputStream;
   }
 
-  @Override
-  public File getRootPath() {
-    return this.zipFile;
-  }
-
   public Writer getWriter(Path path) throws IOException {
     this.zipOutputStream.putNextEntry(createZipEntry((ZipPath) path));
     return this.zipWriter;
   }
 
   @Override
-  public boolean isSupported(Path path) {
-    return path.getFileName().toString().endsWith(ZIP_EXTENSION);
+  public boolean isSupported(String path) {
+    return path.endsWith(ZIP_EXTENSION);
   }
 
   public Path makeDirectory(Path path) throws IOException {
@@ -89,8 +83,8 @@ class ZipFileManager implements PathManager {
   }
 
   @Override
-  public ZipPath makeRootPath(Path path) throws IOException {
-    this.zipFile = createZipFile(path);
+  public ZipPath makeRootPath(String path) throws IOException {
+    createZipFile(path);
     return ZipPath.ROOT;
   }
 
@@ -103,12 +97,12 @@ class ZipFileManager implements PathManager {
     return new ZipEntry(name);
   }
 
-  private File createZipFile(Path path) throws IOException {
+  private File createZipFile(String path) throws IOException {
     final File file;
-    if (path.getFileName().toString().contains(TEMP_PREFIX)) {
+    if (path.contains(TEMP_PREFIX)) {
       file = File.createTempFile(TEMP_PREFIX, ZIP_EXTENSION);
     } else {
-      file = path.toFile();
+      file = new File(path);
     }
     this.zipOutputStream = new ZipOutputStream(new FileOutputStream(file));
     this.zipWriter = new OutputStreamWriter(this.zipOutputStream);

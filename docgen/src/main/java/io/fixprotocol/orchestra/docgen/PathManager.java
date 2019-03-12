@@ -15,7 +15,6 @@
 
 package io.fixprotocol.orchestra.docgen;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -23,6 +22,8 @@ import java.io.Writer;
 import java.nio.file.Path;
 
 /**
+ * Abstracts file systems
+ * 
  * @author Don Mendelson
  *
  */
@@ -31,14 +32,12 @@ interface PathManager extends AutoCloseable {
   long copyStreamToPath(InputStream in, Path path) throws IOException;
   
   OutputStream getOutputStream(Path path) throws IOException;
-  
-  File getRootPath();
-  
+    
   Writer getWriter(Path path) throws IOException;
   
-  boolean isSupported(Path path);
+  boolean isSupported(String path);
   
   Path makeDirectory(Path path) throws IOException;
   
-  Path makeRootPath(Path path) throws IOException;
+  Path makeRootPath(String path) throws IOException;
 }

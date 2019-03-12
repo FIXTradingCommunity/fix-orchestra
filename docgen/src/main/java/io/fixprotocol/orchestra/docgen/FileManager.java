@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -49,16 +50,11 @@ class FileManager implements PathManager {
     return new FileOutputStream(path.toFile());
   }
 
-  @Override
-  public File getRootPath() {
-    return rootPath.toFile();
-  }
-
   public Writer getWriter(Path path) throws IOException {
     return new FileWriter(path.toString());
   }
 
-  public boolean isSupported(Path path) {
+  public boolean isSupported(String path) {
     return true;
   }
 
@@ -68,8 +64,9 @@ class FileManager implements PathManager {
   }
 
   @Override
-  public Path makeRootPath(Path path) throws IOException {
-    this.rootPath = makeDirectory(path);
+  public Path makeRootPath(String path) throws IOException {
+	// assumes default file system
+    this.rootPath = makeDirectory(new File(path).toPath());
     return rootPath;
   }
 
