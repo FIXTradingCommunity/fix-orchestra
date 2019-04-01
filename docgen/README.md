@@ -2,6 +2,15 @@
 
 This utility generates documentation for an Orchestra file that can be view in any web browser. The output of the generator may be used locally or from a web server.
 
+## Prerequisite
+
+### Graphviz
+
+To generate state machine diagrams, the documentation generator requires the Graphviz executable. (Sequence diagrams do not require it.)
+
+[Graphviz download page](`https://graphviz.gitlab.io/download/)
+
+
 ## Usage
 
 To run the documentation generator, enter this command line:

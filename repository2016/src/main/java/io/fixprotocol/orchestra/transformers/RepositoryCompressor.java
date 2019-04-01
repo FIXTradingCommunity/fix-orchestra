@@ -259,6 +259,10 @@ public class RepositoryCompressor {
       if (obj instanceof GroupRefType) {
         GroupRefType groupRef = (GroupRefType) obj;
         GroupType group = getGroup(groupRef.getId());
+        if (group == null) {
+          System.err.format("Group missing for groupRef; ID=%d%n", groupRef.getId().intValue());
+          return;
+        }
         fieldIdList.add(group.getNumInGroup().getId());
         groupIdList.add(groupRef.getId());
         // recursion on referenced component
