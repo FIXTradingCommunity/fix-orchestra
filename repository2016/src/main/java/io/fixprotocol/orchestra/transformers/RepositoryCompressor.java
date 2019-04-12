@@ -22,6 +22,7 @@ import org.purl.dc.elements._1.SimpleLiteral;
 import org.purl.dc.terms.ElementOrRefinementContainer;
 
 import io.fixprotocol._2016.fixrepository.Abbreviations;
+import io.fixprotocol._2016.fixrepository.Actors;
 import io.fixprotocol._2016.fixrepository.Categories;
 import io.fixprotocol._2016.fixrepository.CodeSetType;
 import io.fixprotocol._2016.fixrepository.CodeSets;
@@ -149,6 +150,7 @@ public class RepositoryCompressor {
     outRepository.setCategories((Categories) inRepository.getCategories().clone());
     outRepository.setSections((Sections) inRepository.getSections().clone());
     outRepository.setDatatypes((Datatypes) inRepository.getDatatypes().clone());
+    outRepository.setActors((Actors) inRepository.getActors().clone());
     final Components components = inRepository.getComponents();
     if (components != null) {
       Components inComponents = (Components) components.clone();
