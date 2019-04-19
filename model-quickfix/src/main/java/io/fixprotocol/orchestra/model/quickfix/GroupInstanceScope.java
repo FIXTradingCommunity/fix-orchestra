@@ -28,6 +28,7 @@ import io.fixprotocol.orchestra.model.ModelException;
 import io.fixprotocol.orchestra.model.PathStep;
 import io.fixprotocol.orchestra.model.Scope;
 import io.fixprotocol.orchestra.model.SymbolResolver;
+import io.fixprotocol.orchestra.repository.RepositoryAccessor;
 import quickfix.Group;
 
 /**
@@ -40,7 +41,7 @@ class GroupInstanceScope extends AbstractMessageScope implements Scope {
   private final GroupType groupType;
   private Scope parent;
 
-  public GroupInstanceScope(Group group, GroupType groupType, RepositoryAdapter repository, SymbolResolver symbolResolver, Evaluator evaluator) {
+  public GroupInstanceScope(Group group, GroupType groupType, RepositoryAccessor repository, SymbolResolver symbolResolver, Evaluator evaluator) {
     super(group, repository, symbolResolver, evaluator);
     this.groupType = groupType;
   }
@@ -58,7 +59,7 @@ class GroupInstanceScope extends AbstractMessageScope implements Scope {
     for (Object member : members) {
       if (member instanceof FieldRefType) {
         FieldRefType fieldRefType = (FieldRefType) member;
-        String fieldName = getRepository().getFieldName(fieldRefType.getId().intValue());
+        String fieldName = getRepository().getFieldName(fieldRefType.getId().intValue(), fieldRefType.getScenario());
         if (fieldName.equals(pathStep.getName())) {
           assignField(fieldRefType, fixValue);
           return fixValue;
@@ -107,7 +108,7 @@ class GroupInstanceScope extends AbstractMessageScope implements Scope {
     for (Object member : members) {
       if (member instanceof FieldRefType) {
         FieldRefType fieldRefType = (FieldRefType) member;
-        String fieldName = getRepository().getFieldName(fieldRefType.getId().intValue());
+        String fieldName = getRepository().getFieldName(fieldRefType.getId().intValue(), fieldRefType.getScenario());
         if (fieldName.equals(unqualified)) {
           return resolveField(fieldRefType);
         }

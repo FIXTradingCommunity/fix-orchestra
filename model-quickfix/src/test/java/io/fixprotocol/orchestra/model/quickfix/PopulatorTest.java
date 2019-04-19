@@ -31,6 +31,7 @@ import io.fixprotocol._2016.fixrepository.MessageType;
 import io.fixprotocol._2016.fixrepository.Repository;
 import io.fixprotocol.orchestra.model.ModelException;
 import io.fixprotocol.orchestra.model.SymbolResolver;
+import io.fixprotocol.orchestra.repository.RepositoryAccessor;
 import quickfix.Group;
 import quickfix.field.Account;
 import quickfix.field.ClOrdID;
@@ -53,8 +54,8 @@ public class PopulatorTest {
     repository = unmarshal(Thread.currentThread().getContextClassLoader().getResourceAsStream("mit_2016.xml"));
   }
 
-  private RepositoryAdapter repositoryAdapter;
-  private Populator populator;
+  private RepositoryAccessor repositoryAdapter;
+  private QuickfixPopulator populator;
   
   /**
    * QuickFIXJ can only instantiate repeating groups with their generated classes.
@@ -77,10 +78,10 @@ public class PopulatorTest {
 
   @Before
   public void setUp() throws Exception {
-    repositoryAdapter = new RepositoryAdapter(repository);
+    repositoryAdapter = new RepositoryAccessor(repository);
     final SymbolResolver symbolResolver = new SymbolResolver();
     //symbolResolver.setTrace(true);
-    populator = new Populator(repositoryAdapter, symbolResolver, groupFactory );
+    populator = new QuickfixPopulator(repositoryAdapter, symbolResolver, groupFactory );
   }
 
   /**

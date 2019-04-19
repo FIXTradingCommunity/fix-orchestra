@@ -27,6 +27,7 @@ import io.fixprotocol.orchestra.model.ModelException;
 import io.fixprotocol.orchestra.model.PathStep;
 import io.fixprotocol.orchestra.model.Scope;
 import io.fixprotocol.orchestra.model.SymbolResolver;
+import io.fixprotocol.orchestra.repository.RepositoryAccessor;
 import quickfix.Message;
 
 /**
@@ -47,7 +48,7 @@ public class MessageScope extends AbstractMessageScope implements Scope {
    * @param symbolResolver used by DSL to resolve symbols
    * @param evaluator evalutes DSL expressions
    */
-  public MessageScope(Message message, MessageType messageType, RepositoryAdapter repository,
+  public MessageScope(Message message, MessageType messageType, RepositoryAccessor repository,
       SymbolResolver symbolResolver, Evaluator evaluator) {
     super(message, repository, symbolResolver, evaluator);
     this.messageType = messageType;
@@ -111,7 +112,7 @@ public class MessageScope extends AbstractMessageScope implements Scope {
     for (Object member : members) {
       if (member instanceof FieldRefType) {
         FieldRefType fieldRefType = (FieldRefType) member;
-        String fieldName = getRepository().getFieldName(fieldRefType.getId().intValue());
+        String fieldName = getRepository().getFieldName(fieldRefType.getId().intValue(), fieldRefType.getScenario());
         if (name.equals(fieldName)) {
           return resolveField(fieldRefType);
         }
@@ -151,7 +152,7 @@ public class MessageScope extends AbstractMessageScope implements Scope {
     for (Object member : members) {
       if (member instanceof FieldRefType) {
         FieldRefType fieldRefType = (FieldRefType) member;
-        String fieldName = getRepository().getFieldName(fieldRefType.getId().intValue());
+        String fieldName = getRepository().getFieldName(fieldRefType.getId().intValue(), fieldRefType.getScenario());
         if (name.equals(fieldName)) {
           assignField(fieldRefType, value);
           return value;

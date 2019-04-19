@@ -28,6 +28,7 @@ import io.fixprotocol._2016.fixrepository.GroupRefType;
 import io.fixprotocol._2016.fixrepository.GroupType;
 import io.fixprotocol.orchestra.dsl.antlr.Evaluator;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreException;
+import io.fixprotocol.orchestra.message.CodeSetScope;
 import io.fixprotocol.orchestra.model.FixNode;
 import io.fixprotocol.orchestra.model.FixType;
 import io.fixprotocol.orchestra.model.FixValue;
@@ -36,6 +37,7 @@ import io.fixprotocol.orchestra.model.ModelException;
 import io.fixprotocol.orchestra.model.PathStep;
 import io.fixprotocol.orchestra.model.Scope;
 import io.fixprotocol.orchestra.model.SymbolResolver;
+import io.fixprotocol.orchestra.repository.RepositoryAccessor;
 import quickfix.BytesField;
 import quickfix.FieldMap;
 import quickfix.FieldNotFound;
@@ -49,10 +51,10 @@ abstract class AbstractMessageScope {
 
   private final Evaluator evaluator;
   private final FieldMap fieldMap;
-  private final RepositoryAdapter repository;
+  private final RepositoryAccessor repository;
   private final SymbolResolver symbolResolver;
   
-  protected AbstractMessageScope(FieldMap fieldMap, RepositoryAdapter repository,
+  protected AbstractMessageScope(FieldMap fieldMap, RepositoryAccessor repository,
       SymbolResolver symbolResolver, Evaluator evaluator) {
     this.fieldMap = fieldMap;
     this.repository = repository;
@@ -62,8 +64,9 @@ abstract class AbstractMessageScope {
 
   protected void assignField(FieldRefType fieldRefType, FixValue fixValue) {
     int id = fieldRefType.getId().intValue();
-    String dataTypeString = repository.getFieldDatatype(id);
-    CodeSetType codeSet = repository.getCodeset(dataTypeString);
+    String scenario = fieldRefType.getScenario();
+    String dataTypeString = repository.getFieldDatatype(id, scenario);
+    CodeSetType codeSet = repository.getCodeset(dataTypeString, scenario);
     if (codeSet != null) {
       dataTypeString = codeSet.getType();
     }
@@ -125,18 +128,19 @@ abstract class AbstractMessageScope {
     }
   }
 
-  protected RepositoryAdapter getRepository() {
+  protected RepositoryAccessor getRepository() {
     return repository;
   }
   
   @SuppressWarnings("unchecked")
   protected FixNode resolveField(FieldRefType fieldRefType) {
     int id = fieldRefType.getId().intValue();
-    String name = repository.getFieldName(id);
+    String scenario = fieldRefType.getScenario();
+    String name = repository.getFieldName(id, scenario);
     @SuppressWarnings("rawtypes")
     FixValue fixValue = null;   
-    String dataTypeString = repository.getFieldDatatype(id);
-    CodeSetType codeSet = repository.getCodeset(dataTypeString);
+    String dataTypeString = repository.getFieldDatatype(id, scenario);
+    CodeSetType codeSet = repository.getCodeset(dataTypeString, scenario);
     if (codeSet != null) {
       dataTypeString = codeSet.getType();
       symbolResolver.nest(new PathStep("^"), new CodeSetScope(codeSet));

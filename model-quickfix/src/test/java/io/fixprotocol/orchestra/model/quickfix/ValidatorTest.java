@@ -16,8 +16,9 @@ import org.junit.Test;
 
 import io.fixprotocol._2016.fixrepository.MessageType;
 import io.fixprotocol._2016.fixrepository.Repository;
+import io.fixprotocol.orchestra.message.TestException;
 import io.fixprotocol.orchestra.model.SymbolResolver;
-import io.fixprotocol.orchestra.model.TestException;
+import io.fixprotocol.orchestra.repository.RepositoryAccessor;
 import quickfix.SessionID;
 import quickfix.field.TradSesStatus;
 import quickfix.field.TradingSessionID;
@@ -25,9 +26,9 @@ import quickfix.fix50sp2.TradingSessionStatus;
 
 public class ValidatorTest {
 
-  private Validator validator;
+  private QuickfixValidator validator;
   private static Repository repository;
-  private RepositoryAdapter repositoryAdapter;
+  private RepositoryAccessor repositoryAdapter;
   private SessionID sessionID;
 
   @BeforeClass
@@ -38,10 +39,10 @@ public class ValidatorTest {
   @Before
   public void setUp() throws Exception {
     sessionID = new SessionID("FIXT.1.1", "sender", "target");
-    repositoryAdapter = new RepositoryAdapter(repository);
+    repositoryAdapter = new RepositoryAccessor(repository);
     final SymbolResolver symbolResolver = new SymbolResolver();
     //symbolResolver.setTrace(true);
-    validator = new Validator(repositoryAdapter, symbolResolver);
+    validator = new QuickfixValidator(repositoryAdapter, symbolResolver);
   }
 
   private static Repository unmarshal(InputStream inputFile) throws JAXBException {

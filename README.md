@@ -26,6 +26,9 @@ Public Orchestra files for service offerings
 
 ## Versions
 
+### Working version: Release Candidate 5
+Further refinement and additional demonstrations and tooling
+
 ### Current version: Release Candidate 4
 Release Candidate 4 was approved by the Global Technical Committee on Feb. 21, 2019 for 90 day public review.
 Themes:
@@ -92,11 +95,18 @@ This following modules are **experimental**. Requirements are still being gather
 This utility has been moved to repository [FIXTradingCommunity/fix-sbe-utilities](https://github.com/FIXTradingCommunity/fix-sbe-utilities).
 It creates a [Simple Binary Encoding](https://github.com/FIXTradingCommunity/fix-simple-binary-encoding) message schema from an Orchestra file.
 
+#### fix-orchestra-protobuf
+See repository [FIXTradingCommunity/fix-orchestra-protobuf](https://github.com/FIXTradingCommunity/fix-orchestra-protobuf) for utilities to generate
+Google Protocol Buffers schemas from an Orchestra file.
+
 ### FIX Engine Provisioning
 
 #### repository-quickfix
 
 This module generates a QuickFIX data dictionary from a FIX Repository 2016 or Orchestra file. The format can be consumed by the C++, Java and .NET versions. Additionally, the module generates message classes for QuickFIX/J directly from an Orchestra file. Although the QuickFIX data dictionary format is not as richly featured as Orchestra, it is hoped that this utility will help with Orchestra adoption. In future, message validation will be able to take advantage of conditional expressions in Orchestra.
+
+#### message-model
+Generic interfaces for message validators and populators not specific to a FIX engine implementation.
 
 #### model-quickfix
 This module generates code that is conformant to the QuickFIX/J API for validating and populating messages. It is dependent on `repository-quickfix`.
@@ -105,6 +115,9 @@ This module generates code that is conformant to the QuickFIX/J API for validati
 A demonstration of session configuration for QuickFIX open-source FIX engine. It consumes an XML file in the `interfaces2016` schema.
 
 A module like this needs to be developed to support each FIX engine that uses a proprietary configuration format. The demonstration provides an example to follow for that work.
+
+### state-machine
+A demonstration of state machine code generation from an Orchestra file.
 
 ### Data Files
 Data files in this project under `test/resources` are strictly for testing and to serve as examples for format. They are non-normative for FIX standards and may not be up to date.

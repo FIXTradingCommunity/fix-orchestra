@@ -35,6 +35,7 @@ import io.fixprotocol.orchestra.model.FixValue;
 import io.fixprotocol.orchestra.model.PathStep;
 import io.fixprotocol.orchestra.model.Scope;
 import io.fixprotocol.orchestra.model.SymbolResolver;
+import io.fixprotocol.orchestra.repository.RepositoryAccessor;
 import quickfix.field.MDEntryPx;
 import quickfix.field.MDEntrySize;
 import quickfix.field.MDEntryType;
@@ -59,7 +60,7 @@ public class MessageScopeTest {
    */
   @Before
   public void setUp() throws Exception {
-    final RepositoryAdapter repositoryAdapter = new RepositoryAdapter(repository);
+    final RepositoryAccessor repositoryAdapter = new RepositoryAccessor(repository);
     final MessageType messageType =
         repositoryAdapter.getMessage("MarketDataIncrementalRefresh", "base");
     final SymbolResolver symbolResolver = new SymbolResolver();
