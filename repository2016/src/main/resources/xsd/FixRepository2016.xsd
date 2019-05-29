@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fixr="http://fixprotocol.io/2016/fixrepository" xmlns:dcterms="http://purl.org/dc/terms/" targetNamespace="http://fixprotocol.io/2016/fixrepository" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0-rc4">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fixr="http://fixprotocol.io/2016/fixrepository" xmlns:dcterms="http://purl.org/dc/terms/" targetNamespace="http://fixprotocol.io/2016/fixrepository" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0-rc5">
 	<xs:annotation>
 		<xs:documentation>
 			FIX Repository standard structure of messages with workflow
@@ -8,20 +8,10 @@
 			International Public License
 		</xs:documentation>
 	</xs:annotation>
+	<!-- includes xml:base to support XInclude -->
+	<xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="http://www.w3.org/2001/03/xml.xsd"/>
 	<xs:include schemaLocation="repositorytypes2016.xsd"/>
 	<xs:import namespace="http://purl.org/dc/terms/" schemaLocation="dcterms.xsd"/>
-	<xs:element name="abbreviations">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="abbreviation" type="fixr:abbreviationType" maxOccurs="unbounded"/>
-			</xs:sequence>
-			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
-		</xs:complexType>
-		<xs:key name="abbreviationKey">
-			<xs:selector xpath="fixr:abbreviation"/>
-			<xs:field xpath="@name"/>
-		</xs:key>
-	</xs:element>
 	<xs:element name="actors">
 		<xs:annotation>
 			<xs:documentation>Participants and the message flows between them</xs:documentation>
@@ -33,6 +23,7 @@
 					<xs:element name="flow" type="fixr:flowType"/>
 				</xs:choice>
 			</xs:sequence>
+			<xs:attribute ref="xml:base"/>
 		</xs:complexType>
 		<xs:key name="actorKey">
 			<xs:selector xpath="fixr:actor"/>
@@ -47,16 +38,30 @@
 			<xs:field xpath="@destination"/>
 		</xs:keyref>
 	</xs:element>
+	<xs:element name="businessAreas">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="businessArea" type="fixr:businessAreaType" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>A large-grained business process category (formerly called 'section')</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
+			<xs:attribute ref="xml:base"/>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="categories">
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="category" type="fixr:categoryType" maxOccurs="unbounded">
 					<xs:annotation>
-						<xs:documentation>A business area category, usually a subcategory of a section</xs:documentation>
+						<xs:documentation>A business process category, a subcategory of a businessArea</xs:documentation>
 					</xs:annotation>
 				</xs:element>
 			</xs:sequence>
 			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
+			<xs:attribute ref="xml:base"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="codeSets">
@@ -70,6 +75,7 @@
 				</xs:element>
 			</xs:sequence>
 			<xs:attribute name="name" type="fixr:Name_t"/>
+			<xs:attribute ref="xml:base"/>
 		</xs:complexType>
 		<xs:key name="codeSetNameKey">
 			<xs:selector xpath="fixr:codeSet"/>
@@ -88,6 +94,7 @@
 				<xs:element name="component" type="fixr:componentType" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
+			<xs:attribute ref="xml:base"/>
 		</xs:complexType>
 		<xs:key name="componentNameKey">
 			<xs:selector xpath="fixr:component"/>
@@ -105,6 +112,7 @@
 			<xs:sequence>
 				<xs:element name="concept" type="fixr:conceptType" maxOccurs="unbounded"/>
 			</xs:sequence>
+			<xs:attribute ref="xml:base"/>
 		</xs:complexType>
 		<xs:key name="conceptKey">
 			<xs:selector xpath="fixr:concept"/>
@@ -128,6 +136,7 @@
 				<xs:element ref="fixr:datatype" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
+			<xs:attribute ref="xml:base"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="fields">
@@ -136,6 +145,7 @@
 				<xs:element name="field" type="fixr:fieldType" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="latestEP" type="fixr:EP_t"/>
+			<xs:attribute ref="xml:base"/>
 		</xs:complexType>
 		<xs:key name="fieldNameKey">
 			<xs:selector xpath="fixr:field"/>
@@ -154,6 +164,7 @@
 				<xs:element name="group" type="fixr:groupType" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
+			<xs:attribute ref="xml:base"/>
 		</xs:complexType>
 		<xs:key name="groupNameKey">
 			<xs:selector xpath="fixr:group"/>
@@ -180,6 +191,7 @@
 				<xs:element name="message" type="fixr:messageType" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
+			<xs:attribute ref="xml:base"/>
 		</xs:complexType>
 		<xs:key name="messageNameKey">
 			<xs:annotation>
@@ -204,9 +216,8 @@
 		<xs:complexType>
 			<xs:all>
 				<xs:element name="metadata" type="dcterms:elementOrRefinementContainer"/>
-				<xs:element ref="fixr:abbreviations" minOccurs="0"/>
 				<xs:element ref="fixr:categories" minOccurs="0"/>
-				<xs:element ref="fixr:sections" minOccurs="0"/>
+				<xs:element ref="fixr:businessAreas" minOccurs="0"/>
 				<xs:element ref="fixr:datatypes"/>
 				<xs:element ref="fixr:codeSets"/>
 				<xs:element ref="fixr:fields"/>
@@ -250,17 +261,5 @@
 			<xs:selector xpath="fixr:fields/fixr:field"/>
 			<xs:field xpath="@type"/>
 		</xs:keyref>
-	</xs:element>
-	<xs:element name="sections">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="section" type="fixr:sectionType" maxOccurs="unbounded">
-					<xs:annotation>
-						<xs:documentation>A large-grained business process category</xs:documentation>
-					</xs:annotation>
-				</xs:element>
-			</xs:sequence>
-			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
-		</xs:complexType>
 	</xs:element>
 </xs:schema>

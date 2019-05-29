@@ -49,7 +49,6 @@
 					</xsl:element>
 				</xsl:for-each>
 			</codeSets>
-			<xsl:apply-templates select="//fix[@version=$version]/abbreviations"/>
 			<xsl:apply-templates select="//fix[@version=$version]/datatypes"/>
 			<xsl:apply-templates select="//fix[@version=$version]/categories"/>
 			<xsl:apply-templates select="//fix[@version=$version]/sections"/>
@@ -58,18 +57,6 @@
 			<xsl:apply-templates select="//fix[@version=$version]/components" mode="group"/>
 			<xsl:apply-templates select="//fix[@version=$version]/messages"/>
 		</fixr:repository>
-	</xsl:template>
-	<xsl:template match="abbreviations">
-		<fixr:abbreviations>
-			<xsl:apply-templates/>
-		</fixr:abbreviations>
-	</xsl:template>
-	<xsl:template match="abbreviation">
-		<fixr:abbreviation>
-			<xsl:attribute name="name"><xsl:value-of select="current()/@abbrTerm"/></xsl:attribute>
-			<xsl:apply-templates select="@* except @textId except @abbrTerm"/>
-			<xsl:apply-templates select="@textId"/>
-		</fixr:abbreviation>
 	</xsl:template>
 	<xsl:template match="datatypes">
 		<fixr:datatypes>
@@ -117,21 +104,26 @@
 	</xsl:template>
 	<xsl:template match="category">
 		<fixr:category>
-			<xsl:apply-templates select="@* except @textId"/>
+			<xsl:apply-templates select="@* except @textId except @volume except @id except @section"/>
+			<xsl:attribute name="name" select="@id"/>
+			<xsl:if test="@section">
+				<xsl:attribute name="businessArea" select="@section"/>
+			</xsl:if>
 			<xsl:apply-templates select="@textId"/>
 		</fixr:category>
 	</xsl:template>
 	<xsl:template match="sections">
-		<fixr:sections>
+		<fixr:businessAreas>
 			<xsl:apply-templates/>
-		</fixr:sections>
+		</fixr:businessAreas>
 	</xsl:template>
 	<xsl:template match="section">
-		<fixr:section>
-			<xsl:apply-templates select="@* except @textId"/>
+		<fixr:businessArea>
+			<xsl:apply-templates select="@* except @textId except @volume except @id"/>
+			<xsl:attribute name="name" select="@id"/>
 			<xsl:apply-templates/>
 			<xsl:apply-templates select="@textId"/>
-		</fixr:section>
+		</fixr:businessArea>
 	</xsl:template>
 	<xsl:template match="fields">
 		<fixr:fields>

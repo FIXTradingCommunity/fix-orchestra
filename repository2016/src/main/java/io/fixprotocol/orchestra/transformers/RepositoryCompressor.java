@@ -21,8 +21,8 @@ import org.purl.dc.elements._1.ObjectFactory;
 import org.purl.dc.elements._1.SimpleLiteral;
 import org.purl.dc.terms.ElementOrRefinementContainer;
 
-import io.fixprotocol._2016.fixrepository.Abbreviations;
 import io.fixprotocol._2016.fixrepository.Actors;
+import io.fixprotocol._2016.fixrepository.BusinessAreas;
 import io.fixprotocol._2016.fixrepository.Categories;
 import io.fixprotocol._2016.fixrepository.CodeSetType;
 import io.fixprotocol._2016.fixrepository.CodeSets;
@@ -39,7 +39,6 @@ import io.fixprotocol._2016.fixrepository.Groups;
 import io.fixprotocol._2016.fixrepository.MessageType;
 import io.fixprotocol._2016.fixrepository.Messages;
 import io.fixprotocol._2016.fixrepository.Repository;
-import io.fixprotocol._2016.fixrepository.Sections;
 
 /**
  * Selectively compresses an Orchestra file <br>
@@ -146,9 +145,8 @@ public class RepositoryCompressor {
     contributor.getContent().add("RepositoryCompressor");
     literals.add(objectFactory.createContributor(contributor));
     outRepository.setMetadata(metadata);
-    outRepository.setAbbreviations((Abbreviations) inRepository.getAbbreviations().clone());
     outRepository.setCategories((Categories) inRepository.getCategories().clone());
-    outRepository.setSections((Sections) inRepository.getSections().clone());
+    outRepository.setBusinessAreas((BusinessAreas) inRepository.getBusinessAreas().clone());
     outRepository.setDatatypes((Datatypes) inRepository.getDatatypes().clone());
     outRepository.setActors((Actors) inRepository.getActors().clone());
     final Components components = inRepository.getComponents();
