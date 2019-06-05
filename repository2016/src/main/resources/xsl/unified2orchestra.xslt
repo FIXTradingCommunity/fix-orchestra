@@ -104,26 +104,23 @@
 	</xsl:template>
 	<xsl:template match="category">
 		<fixr:category>
-			<xsl:apply-templates select="@* except @textId except @volume except @id except @section"/>
+			<xsl:apply-templates select="@* except @textId except @volume except @id"/>
 			<xsl:attribute name="name" select="@id"/>
-			<xsl:if test="@section">
-				<xsl:attribute name="businessArea" select="@section"/>
-			</xsl:if>
 			<xsl:apply-templates select="@textId"/>
 		</fixr:category>
 	</xsl:template>
 	<xsl:template match="sections">
-		<fixr:businessAreas>
+		<fixr:sections>
 			<xsl:apply-templates/>
-		</fixr:businessAreas>
+		</fixr:sections>
 	</xsl:template>
 	<xsl:template match="section">
-		<fixr:businessArea>
+		<fixr:section>
 			<xsl:apply-templates select="@* except @textId except @volume except @id"/>
 			<xsl:attribute name="name" select="@id"/>
 			<xsl:apply-templates/>
 			<xsl:apply-templates select="@textId"/>
-		</fixr:businessArea>
+		</fixr:section>
 	</xsl:template>
 	<xsl:template match="fields">
 		<fixr:fields>

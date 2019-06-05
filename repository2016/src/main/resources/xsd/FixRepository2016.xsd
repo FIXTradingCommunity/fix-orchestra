@@ -38,19 +38,6 @@
 			<xs:field xpath="@destination"/>
 		</xs:keyref>
 	</xs:element>
-	<xs:element name="businessAreas">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="businessArea" type="fixr:businessAreaType" maxOccurs="unbounded">
-					<xs:annotation>
-						<xs:documentation>A large-grained business process category (formerly called 'section')</xs:documentation>
-					</xs:annotation>
-				</xs:element>
-			</xs:sequence>
-			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
-			<xs:attribute ref="xml:base"/>
-		</xs:complexType>
-	</xs:element>
 	<xs:element name="categories">
 		<xs:complexType>
 			<xs:sequence>
@@ -217,7 +204,7 @@
 			<xs:all>
 				<xs:element name="metadata" type="dcterms:elementOrRefinementContainer"/>
 				<xs:element ref="fixr:categories" minOccurs="0"/>
-				<xs:element ref="fixr:businessAreas" minOccurs="0"/>
+				<xs:element ref="fixr:sections" minOccurs="0"/>
 				<xs:element ref="fixr:datatypes"/>
 				<xs:element ref="fixr:codeSets"/>
 				<xs:element ref="fixr:fields"/>
@@ -261,5 +248,18 @@
 			<xs:selector xpath="fixr:fields/fixr:field"/>
 			<xs:field xpath="@type"/>
 		</xs:keyref>
+	</xs:element>
+	<xs:element name="sections">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="section" type="fixr:sectionType" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>A large-grained business process category</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
+			<xs:attribute ref="xml:base"/>
+		</xs:complexType>
 	</xs:element>
 </xs:schema>

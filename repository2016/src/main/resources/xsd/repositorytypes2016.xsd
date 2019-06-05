@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- edited with XMLSpy v2018 rel. 2 sp1 (x64) (http://www.altova.com) by Don Mendelson (FIX Protocol Ltd. (FPL)) -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:fixr="http://fixprotocol.io/2016/fixrepository" targetNamespace="http://fixprotocol.io/2016/fixrepository" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0-rc4">
 	<xs:annotation>
 		<xs:documentation>
@@ -119,7 +118,7 @@
 		<xs:attribute name="name" type="fixr:Name_t"/>
 		<xs:attribute name="FIXMLFileName" type="fixr:Name_t"/>
 		<xs:attribute name="componentType" type="fixr:CatComponentType_t"/>
-		<xs:attribute name="businessArea" type="fixr:Name_t"/>
+		<xs:attribute name="section" type="fixr:Name_t"/>
 		<xs:attribute name="includeFile" type="fixr:CatIncludeFile_t"/>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 	</xs:complexType>
@@ -789,7 +788,7 @@
 			<xs:pattern value="([A-Z]|[a-z])([0-9]|[A-Z]|[a-z]|_|-)*"/>
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:complexType name="businessAreaType">
+	<xs:complexType name="sectionType">
 		<xs:sequence>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>

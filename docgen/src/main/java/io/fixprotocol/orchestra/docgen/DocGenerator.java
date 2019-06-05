@@ -272,8 +272,8 @@ public class DocGenerator {
     final List<CategoryType> sortedCategoryList =
         optCategories.orElse(new Categories()).getCategory().stream()
             .filter(c -> c.getComponentType() == CatComponentTypeT.MESSAGE).sorted((o1, o2) -> {
-              final String sectionValue1 = o1.getBusinessArea() != null ? o1.getBusinessArea() : "";
-              final String sectionValue2 = o2.getBusinessArea() != null ? o2.getBusinessArea() : "";
+              final String sectionValue1 = o1.getSection() != null ? o1.getSection() : "";
+              final String sectionValue2 = o2.getSection() != null ? o2.getSection() : "";
               int retv = sectionValue1.compareTo(sectionValue2);
               if (retv == 0) {
                 retv = o1.getName().compareTo(o2.getName());
