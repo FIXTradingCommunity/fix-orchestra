@@ -61,7 +61,6 @@
 					</xs:key>
 				</xs:element>
 			</xs:sequence>
-			<xs:attribute name="name" type="fixr:Name_t"/>
 			<xs:attribute ref="xml:base"/>
 		</xs:complexType>
 		<xs:key name="codeSetNameKey">
