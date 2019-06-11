@@ -14,7 +14,6 @@ import io.fixprotocol.orchestra.dsl.antlr.SemanticErrorListener;
 import io.fixprotocol.orchestra.model.FixNode;
 import io.fixprotocol.orchestra.model.FixType;
 import io.fixprotocol.orchestra.model.FixValue;
-import io.fixprotocol.orchestra.model.LocalScope;
 import io.fixprotocol.orchestra.model.ModelException;
 import io.fixprotocol.orchestra.model.PathStep;
 import io.fixprotocol.orchestra.model.Scope;

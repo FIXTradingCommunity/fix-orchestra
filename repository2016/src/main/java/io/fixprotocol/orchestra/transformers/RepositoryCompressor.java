@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -21,7 +20,6 @@ import org.purl.dc.elements._1.ObjectFactory;
 import org.purl.dc.elements._1.SimpleLiteral;
 import org.purl.dc.terms.ElementOrRefinementContainer;
 
-import io.fixprotocol._2016.fixrepository.Abbreviations;
 import io.fixprotocol._2016.fixrepository.Actors;
 import io.fixprotocol._2016.fixrepository.Categories;
 import io.fixprotocol._2016.fixrepository.CodeSetType;
@@ -146,7 +144,6 @@ public class RepositoryCompressor {
     contributor.getContent().add("RepositoryCompressor");
     literals.add(objectFactory.createContributor(contributor));
     outRepository.setMetadata(metadata);
-    outRepository.setAbbreviations((Abbreviations) inRepository.getAbbreviations().clone());
     outRepository.setCategories((Categories) inRepository.getCategories().clone());
     outRepository.setSections((Sections) inRepository.getSections().clone());
     outRepository.setDatatypes((Datatypes) inRepository.getDatatypes().clone());

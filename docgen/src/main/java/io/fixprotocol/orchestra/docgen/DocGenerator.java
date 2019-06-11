@@ -272,11 +272,11 @@ public class DocGenerator {
     final List<CategoryType> sortedCategoryList =
         optCategories.orElse(new Categories()).getCategory().stream()
             .filter(c -> c.getComponentType() == CatComponentTypeT.MESSAGE).sorted((o1, o2) -> {
-              final String sectionValue1 = o1.getSection() != null ? o1.getSection().value() : "";
-              final String sectionValue2 = o2.getSection() != null ? o2.getSection().value() : "";
+              final String sectionValue1 = o1.getSection() != null ? o1.getSection() : "";
+              final String sectionValue2 = o2.getSection() != null ? o2.getSection() : "";
               int retv = sectionValue1.compareTo(sectionValue2);
               if (retv == 0) {
-                retv = o1.getId().compareTo(o2.getId());
+                retv = o1.getName().compareTo(o2.getName());
               }
               return retv;
             }).collect(Collectors.toList());
@@ -695,10 +695,10 @@ public class DocGenerator {
                                              final List<MessageType> messageList) throws Exception {
     final ST st = stGroup.getInstanceOf("messages");
     final List<MessageType> filteredMessageList = messageList.stream()
-        .filter(m -> category.getId().equals(m.getCategory())).collect(Collectors.toList());
+        .filter(m -> category.getName().equals(m.getCategory())).collect(Collectors.toList());
     st.add("messages", filteredMessageList);
-    st.add("title", String.format("%s Messages", category.getId()));
-    final Path path = messagesDocPath.resolve(String.format("%sMessages.html", category.getId()));
+    st.add("title", String.format("%s Messages", category.getName()));
+    final Path path = messagesDocPath.resolve(String.format("%sMessages.html", category.getName()));
     try (final STWriterWrapper writer = getWriter(path)) {
       st.write(writer, templateErrorListener);
     }
