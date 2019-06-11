@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- edited with XMLSpy v2018 rel. 2 sp1 (x64) (http://www.altova.com) by Don Mendelson (FIX Protocol Ltd. (FPL)) -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:fixr="http://fixprotocol.io/2016/fixrepository" targetNamespace="http://fixprotocol.io/2016/fixrepository" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0-rc4">
 	<xs:annotation>
 		<xs:documentation>
@@ -11,14 +10,6 @@
 	<xs:simpleType name="Abbreviation_t">
 		<xs:restriction base="xs:string"/>
 	</xs:simpleType>
-	<xs:complexType name="abbreviationType">
-		<xs:sequence>
-			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
-		</xs:sequence>
-		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
-		<xs:attribute name="name" type="xs:string"/>
-		<!-- was abbrTerm -->
-	</xs:complexType>
 	<xs:complexType name="actionType">
 		<xs:sequence>
 			<xs:choice id="parameters" minOccurs="0" maxOccurs="unbounded">
@@ -120,18 +111,14 @@
 			<xs:enumeration value="Message"/>
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:simpleType name="CategoryID_t">
-		<xs:restriction base="fixr:Name_t"/>
-	</xs:simpleType>
 	<xs:complexType name="categoryType">
 		<xs:sequence>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
-		<xs:attribute name="id" type="fixr:CategoryID_t"/>
+		<xs:attribute name="name" type="fixr:Name_t"/>
 		<xs:attribute name="FIXMLFileName" type="fixr:Name_t"/>
 		<xs:attribute name="componentType" type="fixr:CatComponentType_t"/>
-		<xs:attribute name="section" type="fixr:SectionID_t"/>
-		<xs:attribute name="volume" type="fixr:Volume_t"/>
+		<xs:attribute name="section" type="fixr:Name_t"/>
 		<xs:attribute name="includeFile" type="fixr:CatIncludeFile_t"/>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 	</xs:complexType>
@@ -218,7 +205,7 @@
 		</xs:sequence>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 		<xs:attributeGroup ref="fixr:oidGrp"/>
-		<xs:attribute name="category" type="fixr:CategoryID_t"/>
+		<xs:attribute name="category" type="fixr:Name_t"/>
 		<xs:attribute name="rendering" type="xs:string">
 			<xs:annotation>
 				<xs:documentation>A hint to processes about how to interpret the element. Not validated.</xs:documentation>
@@ -283,6 +270,11 @@
 			<xs:enumeration value="XML">
 				<xs:annotation>
 					<xs:documentation>XML Schema and FIXML</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TAG_VALUE">
+				<xs:annotation>
+					<xs:documentation>FIX classic encoding</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
 		</xs:restriction>
@@ -496,7 +488,7 @@
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attribute name="discriminatorName" type="fixr:Name_t"/>
-		<xs:attribute name="baseCategory" type="fixr:CategoryID_t"/>
+		<xs:attribute name="baseCategory" type="fixr:Name_t"/>
 		<xs:attribute name="baseCategoryAbbrName" type="fixr:Name_t"/>
 		<xs:attribute name="unionDataType" type="fixr:UnionDataType_t"/>
 	</xs:complexType>
@@ -548,7 +540,7 @@
 		</xs:sequence>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 		<xs:attributeGroup ref="fixr:oidGrp"/>
-		<xs:attribute name="category" type="fixr:CategoryID_t"/>
+		<xs:attribute name="category" type="fixr:Name_t"/>
 		<xs:attribute name="rendering" type="xs:string">
 			<xs:annotation>
 				<xs:documentation>A hint to processes about how to interpret the element. Not validated.</xs:documentation>
@@ -600,8 +592,7 @@
 	</xs:simpleType>
 	<xs:attributeGroup name="messageAttribGrp">
 		<xs:attribute name="msgType" type="fixr:MsgType_t"/>
-		<xs:attribute name="category" type="fixr:CategoryID_t"/>
-		<xs:attribute name="section" type="fixr:SectionID_t"/>
+		<xs:attribute name="category" type="fixr:Name_t"/>
 		<xs:attribute name="abbrName" type="fixr:Abbreviation_t"/>
 		<xs:attribute name="rendering" type="xs:string">
 			<xs:annotation>
@@ -648,8 +639,7 @@
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attribute name="msgType" type="fixr:MsgType_t"/>
-		<xs:attribute name="section" type="fixr:SectionID_t"/>
-		<xs:attribute name="category" type="fixr:CategoryID_t"/>
+		<xs:attribute name="category" type="fixr:Name_t"/>
 		<xs:attributeGroup ref="fixr:oidGrp"/>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 		<xs:attribute name="flow" type="fixr:Name_t"/>
@@ -798,24 +788,12 @@
 			<xs:pattern value="([A-Z]|[a-z])([0-9]|[A-Z]|[a-z]|_|-)*"/>
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:simpleType name="SectionID_t">
-		<xs:restriction base="fixr:Name_t">
-			<xs:enumeration value="Session"/>
-			<xs:enumeration value="PreTrade"/>
-			<xs:enumeration value="Trade"/>
-			<xs:enumeration value="PostTrade"/>
-			<xs:enumeration value="Infrastructure"/>
-			<xs:enumeration value="Other"/>
-		</xs:restriction>
-	</xs:simpleType>
 	<xs:complexType name="sectionType">
 		<xs:sequence>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
-		<xs:attribute name="id" type="fixr:SectionID_t"/>
 		<xs:attribute name="name" type="fixr:Name_t"/>
 		<xs:attribute name="displayOrder" type="xs:int"/>
-		<xs:attribute name="volume" type="fixr:Volume_t"/>
 		<xs:attribute name="FIXMLFileName" type="fixr:Name_t"/>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 	</xs:complexType>
@@ -995,18 +973,6 @@
 				</xs:documentation>
 			</xs:annotation>
 			<xs:pattern value="(FIX.2.7)|(FIX.3.0)|(FIX\.4\.[0-4])|(FIX\.5\.0(SP\d{1,2})?(_EP((9[8-9])|([1-9][0-9][0-9])))?)|(FIXT.1.1)|([0-9]+)\.([0-9]+)|(\d{8})"/>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="Volume_t">
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="1"/>
-			<xs:enumeration value="2"/>
-			<xs:enumeration value="3"/>
-			<xs:enumeration value="4"/>
-			<xs:enumeration value="5"/>
-			<xs:enumeration value="6"/>
-			<xs:enumeration value="FIXT.1.1"/>
-			<xs:enumeration value="7"/>
 		</xs:restriction>
 	</xs:simpleType>
 </xs:schema>

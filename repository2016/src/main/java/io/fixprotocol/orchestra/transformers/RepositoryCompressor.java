@@ -153,8 +153,8 @@ public class RepositoryCompressor {
     options.addOption(Option.builder("c").desc("select messages by category").longOpt("category").numberOfArgs(1).build());
     options.addOption(Option.builder("s").desc("select messages by section").longOpt("section").numberOfArgs(1).build());
     options.addOption(Option.builder("f").desc("select messages by flow").longOpt("flow").numberOfArgs(1).build());
-    options.addOption(Option.builder().desc("select messages except category").longOpt("notcategory").numberOfArgs(1).build());
-    options.addOption(Option.builder().desc("select messages except section").longOpt("notsection").numberOfArgs(1).build());
+    options.addOption(Option.builder("n").desc("select messages except category").longOpt("notcategory").numberOfArgs(1).build());
+    options.addOption(Option.builder("x").desc("select messages except section").longOpt("notsection").numberOfArgs(1).build());
     options.addOption(Option.builder("?").desc("display usage").longOpt("help").numberOfArgs(1).build());
     
     DefaultParser parser = new DefaultParser();
@@ -175,11 +175,7 @@ public class RepositoryCompressor {
 
       if (cmd.hasOption("c")) {
         String category = cmd.getOptionValue("c");
-        if (messagePredicate == null) {
-          messagePredicate = new HasCategory(category);
-        } else {
-          messagePredicate = messagePredicate.and(new HasCategory(category));
-        }
+        messagePredicate = new HasCategory(category);
       }
       
       if (cmd.hasOption("notcategory")) {
@@ -275,7 +271,10 @@ public class RepositoryCompressor {
     outRepository.setCategories((Categories) inRepository.getCategories().clone());
     outRepository.setSections((Sections) inRepository.getSections().clone());
     outRepository.setDatatypes((Datatypes) inRepository.getDatatypes().clone());
-    outRepository.setActors((Actors) inRepository.getActors().clone());
+    final Actors actors = inRepository.getActors();
+    if (actors != null) {
+      outRepository.setActors((Actors) actors.clone());
+    }
     final Components components = inRepository.getComponents();
     if (components != null) {
       Components inComponents = (Components) components.clone();
@@ -409,7 +408,7 @@ public class RepositoryCompressor {
   private BiPredicate<String,String> isCategoryInSection = (String category, String section) -> {
     List<CategoryType> categories = this.inRepository.getCategories().getCategory();
     for (CategoryType categoryType : categories) {
-      if (categoryType.getId().equals(category) && categoryType.getSection().equals(section)) {
+      if (categoryType.getName().equals(category) && categoryType.getSection().equals(section)) {
         return true;
       }
     }
