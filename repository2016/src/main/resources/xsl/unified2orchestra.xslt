@@ -132,7 +132,7 @@
 		<fixr:field>
 			<xsl:apply-templates select="@* except @textId"/>
 			<!-- Assumes that discriminator for field X follows naming convention XSource -->
-			<xsl:variable name="discriminator" select="ancestor::field[@name = fn:concat(current()/@name, 'Source')]"/>
+			<xsl:variable name="discriminator" select="../field[@name = fn:concat(current()/@name, 'Source')]"/>
 			<xsl:if test="$discriminator">
 				<xsl:attribute name="discriminatorId" select="$discriminator/@id"/>
 				<xsl:attribute name="discriminatorName" select="$discriminator/@name"/>
@@ -142,7 +142,7 @@
 					<xsl:attribute name="type" select="concat(@name, 'CodeSet')"/>
 				</xsl:when>
 				<xsl:when test="@type = 'data' or @type = 'XMLData'">
-					<xsl:variable name="length" select="ancestor::field[@associatedDataTag = current()/@id]"/>
+					<xsl:variable name="length" select="../field[@associatedDataTag = current()/@id]"/>
 					<xsl:attribute name="lengthId" select="$length/@id"/>
 					<xsl:attribute name="lengthName" select="$length/@name"/>
 				</xsl:when>
@@ -267,7 +267,7 @@
 		</fixr:fieldRef>
 	</xsl:template>
 	<xsl:template match="@enumDatatype">
-		<xsl:variable name="fieldName" select="(ancestor::field[@id=fn:current()]/@name)"/>
+		<xsl:variable name="fieldName" select="../../field[@id=current()]/@name"/>
 		<xsl:attribute name="type" select="concat($fieldName, 'CodeSet')"/>
 	</xsl:template>
 	<xsl:template match="@addedEP">
