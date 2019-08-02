@@ -134,6 +134,9 @@ public class RepositoryDiffReporter extends XmlDiff {
                     XpathUtil.getElementLocalName(t.getXpath()),
                     XpathUtil.getElementPredicate(t.getXpath())));
             break;
+          case EQUAL:
+            // no change
+            break;
         }
 
       } catch (IOException e) {

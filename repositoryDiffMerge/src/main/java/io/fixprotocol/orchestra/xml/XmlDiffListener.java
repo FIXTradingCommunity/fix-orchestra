@@ -13,6 +13,7 @@
  */
 package io.fixprotocol.orchestra.xml;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import org.w3c.dom.Node;
@@ -45,8 +46,8 @@ public interface XmlDiffListener extends Consumer<XmlDiffListener.Event>, AutoCl
     /**
      * Constructor for REMOVE event
      * 
-     * @param difference type of event
-     * @param xpath node to remove
+     * @param difference type of event; must not be null
+     * @param xpath node to remove; must not be null
      */
     Event(Difference difference, String xpath) {
       this(difference, xpath, null, null);
@@ -55,23 +56,26 @@ public interface XmlDiffListener extends Consumer<XmlDiffListener.Event>, AutoCl
     /**
      * Constructor for ADD event
      * 
-     * @param difference type of event
-     * @param xpath parent of the added node
-     * @param value node value of element or attribute
+     * @param difference type of event; must not be null
+     * @param xpath parent of the added node; must not be null
+     * @param value node value of element or attribute; must not be null
      */
     Event(Difference difference, String xpath, Node value) {
       this(difference, xpath, value, null);
+      Objects.requireNonNull(value, "Node to add missing");
     }
 
     /**
      * Constructor for REPLACE event
      * 
-     * @param difference type of event
-     * @param xpath node to replace
+     * @param difference type of event; must not be null
+     * @param xpath node target of change; must not be null
      * @param value node new value of element or attribute
      * @param oldValue previous node value
      */
     Event(Difference difference, String xpath, Node value, Node oldValue) {
+      Objects.requireNonNull(difference, "Difference type missing");
+      Objects.requireNonNull(xpath, "Xpath missing");
       this.difference = difference;
       this.xpath = xpath;
       this.value = value;

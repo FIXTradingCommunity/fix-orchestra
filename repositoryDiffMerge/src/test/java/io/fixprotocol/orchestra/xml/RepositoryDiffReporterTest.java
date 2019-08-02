@@ -16,14 +16,8 @@ package io.fixprotocol.orchestra.xml;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.InputStream;
-import java.io.PrintStream;
-
 import org.junit.Before;
 import org.junit.Test;
-
-import io.fixprotocol.orchestra.xml.RepositoryDiffReporter.HtmlDiffListener;
 
 public class RepositoryDiffReporterTest {
 

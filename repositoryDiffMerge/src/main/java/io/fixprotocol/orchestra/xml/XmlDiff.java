@@ -217,23 +217,23 @@ public class XmlDiff {
       throws DOMException, UnsupportedEncodingException, TransformerException {
     final String xpath = XpathUtil.getFullXPath(element);
 
-    // Copies an element with its attributes but not child text node or elements
-    Node elementCopy = element.cloneNode(false);
+    // Copies an element with its attributes (deep copy)
+    Node elementCopy = element.cloneNode(true);
 
     // Add text to copy if it exists
-    Node child = element.getFirstChild();
+   /* Node child = element.getFirstChild();
     if (child != null && Node.TEXT_NODE == child.getNodeType()) {
       elementCopy.appendChild(child.cloneNode(false));
-    }
+    }*/
 
     listener.accept(new Event(ADD, XpathUtil.getParentPath(xpath), elementCopy));
 
-    NodeList children = element.getChildNodes();
+  /*  NodeList children = element.getChildNodes();
     for (int i = 0; i < children.getLength(); i++) {
       if (Node.ELEMENT_NODE == children.item(i).getNodeType()) {
         addElement((Element) children.item(i));
       }
-    }
+    }*/
   }
 
   private boolean diffAttributes(NamedNodeMap attributes1, NamedNodeMap attributes2) {

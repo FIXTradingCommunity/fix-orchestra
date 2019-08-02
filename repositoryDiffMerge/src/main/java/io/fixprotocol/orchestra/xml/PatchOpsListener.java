@@ -85,13 +85,13 @@ public class PatchOpsListener implements XmlDiffListener {
         if (t.getValue() instanceof Attr) {
           // add attribute
           addElement.setAttribute("sel", t.getXpath());
-          addElement.setAttribute("type", t.getValue().getNodeName());
+          addElement.setAttribute("type", "@" + t.getValue().getNodeName());
           Text textNode = document.createTextNode(t.getValue().getNodeValue());
           addElement.appendChild(textNode);
         } else if (t.getValue() instanceof Element) {
           // add element
           addElement.setAttribute("sel", t.getXpath());
-          // will import child text node if it exists
+          // will import child text node if it exists (deep copy)
           Element newValue = (Element) document.importNode(t.getValue(), true);
           addElement.appendChild(newValue);
         }

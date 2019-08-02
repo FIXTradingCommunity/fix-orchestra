@@ -35,6 +35,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
@@ -88,7 +89,7 @@ public class XmlMerge {
     }
 
     // This method isn't necessary for XPath processing either.
-    public Iterator getPrefixes(String uri) {
+    public Iterator<?> getPrefixes(String uri) {
       throw new UnsupportedOperationException();
     }
 
@@ -147,8 +148,11 @@ public class XmlMerge {
     // processor through its own API. Go figure.
     for (int i = 0; i < rootAttributes.getLength(); i++) {
       final Attr attr = (Attr) rootAttributes.item(i);
-      if (attr.getPrefix().equals("xmlns")) {
+      final String prefix = attr.getPrefix();
+      if ("xmlns".equals(prefix)) {
         nsContext.register(attr.getLocalName(), attr.getValue());
+      } else if ("xmlns".equals(attr.getLocalName())) {
+        nsContext.register(XMLConstants.DEFAULT_NS_PREFIX, attr.getValue());
       }
     }
     xpathEvaluator.setNamespaceContext(nsContext);
@@ -188,9 +192,13 @@ public class XmlMerge {
     String xpathExpression = patchOpElement.getAttribute("sel");
     String attribute = patchOpElement.getAttribute("type");
 
+    final XPathExpression compiled = xpathEvaluator.compile(xpathExpression);
     Node parent =
-        (Node) xpathEvaluator.compile(xpathExpression).evaluate(doc, XPathConstants.NODE);
-
+        (Node) compiled.evaluate(doc, XPathConstants.NODE);
+    if (parent == null) {
+      throw new XPathExpressionException("No target for Xpath expression in 'sel' for add; " + xpathExpression);
+    }
+    
     if (attribute.length() > 0) {
       String value = null;
       NodeList children = patchOpElement.getChildNodes();
@@ -215,10 +223,7 @@ public class XmlMerge {
       Node imported = doc.importNode(value, true);
       parent.appendChild(imported);
     }
-
   }
-
-
 
   private Document parse(InputStream is)
       throws ParserConfigurationException, SAXException, IOException {
@@ -252,6 +257,10 @@ public class XmlMerge {
     String value = patchOpElement.getFirstChild().getNodeValue();
 
     Node node = (Node) xpathEvaluator.compile(xpathExpression).evaluate(doc, XPathConstants.NODE);
+    if (node == null) {
+      throw new XPathExpressionException("No target for Xpath expression in 'sel' for replace; " + xpathExpression);
+    }
+    
     switch (node.getNodeType()) {
       case Node.ELEMENT_NODE:
         NodeList children = node.getChildNodes();
