@@ -65,14 +65,14 @@ public class XmlDiff {
     public int compare(Element n1, Element n2) {
       int retv = n1.getNodeName().compareTo(n2.getNodeName());
       if (retv == 0) {
-        String id1 = n1.getAttribute("id");
-        String id2 = n2.getAttribute("id");
+        String id1 = XpathUtil.getAttributeCaseInsensitiveValue(n1, "id");
+        String id2 = XpathUtil.getAttributeCaseInsensitiveValue(n2, "id");
         if (id1.length() > 0 && id2.length() > 0) {
           retv = id1.compareTo(id2);
         }
         if (retv == 0) {
-          String name1 = n1.getAttribute("name");
-          String name2 = n2.getAttribute("name");
+          String name1 = XpathUtil.getAttributeCaseInsensitiveValue(n1, "name");
+          String name2 = XpathUtil.getAttributeCaseInsensitiveValue(n2, "name");
           if (name1.length() > 0 && name2.length() > 0) {
             retv = name1.compareTo(name2);
           }
@@ -215,25 +215,11 @@ public class XmlDiff {
 
   private void addElement(Element element)
       throws DOMException, UnsupportedEncodingException, TransformerException {
-    final String xpath = XpathUtil.getFullXPath(element);
+    final String xpath = XpathUtil.getFullXPath(element.getParentNode());
 
     // Copies an element with its attributes (deep copy)
     Node elementCopy = element.cloneNode(true);
-
-    // Add text to copy if it exists
-   /* Node child = element.getFirstChild();
-    if (child != null && Node.TEXT_NODE == child.getNodeType()) {
-      elementCopy.appendChild(child.cloneNode(false));
-    }*/
-
-    listener.accept(new Event(ADD, XpathUtil.getParentPath(xpath), elementCopy));
-
-  /*  NodeList children = element.getChildNodes();
-    for (int i = 0; i < children.getLength(); i++) {
-      if (Node.ELEMENT_NODE == children.item(i).getNodeType()) {
-        addElement((Element) children.item(i));
-      }
-    }*/
+    listener.accept(new Event(ADD, xpath, elementCopy));
   }
 
   private boolean diffAttributes(NamedNodeMap attributes1, NamedNodeMap attributes2) {
@@ -269,7 +255,7 @@ public class XmlDiff {
       switch (difference) {
         case ADD:
           listener.accept(new Event(ADD,
-              XpathUtil.getParentPath(XpathUtil.getFullXPath(attributesArray2.get(index2))),
+              XpathUtil.getFullXPath(attributesArray2.get(index2).getOwnerElement()),
               attributesArray2.get(index2)));
           index2 = Math.min(index2 + 1, attributesArray2.size());
           isEqual = false;
@@ -421,7 +407,7 @@ public class XmlDiff {
     for (int i = 0; i < attributes.getLength(); i++) {
       nodeArray.add((Attr) attributes.item(i));
     }
-    nodeArray.sort((n1, n2) -> n1.getNodeName().compareTo(n2.getNodeName()));
+    nodeArray.sort(Comparator.comparing(Node::getNodeName));
     return nodeArray;
   }
 

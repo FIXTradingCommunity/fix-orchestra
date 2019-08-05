@@ -14,19 +14,22 @@
  */
 package io.fixprotocol.orchestra.xml;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class RepositoryDiffReporterTest {
 
-  /**
-   * 
-   */
-  private static final String DIFF_FILENAME = "testdiff.html";
+  private static final String DIFF_FILENAME = "target/test/testdiff.html";
   private RepositoryDiffReporter tool;
 
+  @BeforeClass
+  public static void setupOnce() throws Exception {
+    new File("target/test").mkdirs();
+  }
 
   /**
    * @throws java.lang.Exception

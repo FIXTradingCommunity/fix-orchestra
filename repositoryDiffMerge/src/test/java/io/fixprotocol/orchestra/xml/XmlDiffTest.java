@@ -66,6 +66,14 @@ public class XmlDiffTest {
     assertEquals(2, doc.getElementsByTagName("add").getLength());
     assertEquals(2, doc.getElementsByTagName("replace").getLength());
     assertEquals(2, doc.getElementsByTagName("remove").getLength());
+    
+    try (
+        final FileInputStream is1Baseline = new FileInputStream(Thread.currentThread()
+            .getContextClassLoader().getResource("DiffTest1.xml").getFile());
+        final FileInputStream isDiff = new FileInputStream(DIFF_FILENAME);
+        final FileOutputStream osMerge = new FileOutputStream(MERGED_FILENAME)) {
+      xmlMerge.merge(is1Baseline, isDiff, osMerge);
+    }
   }
 
   @Test
@@ -86,13 +94,6 @@ public class XmlDiffTest {
     assertEquals(3, doc.getElementsByTagName("add").getLength());
     assertEquals(1, doc.getElementsByTagName("replace").getLength());
     assertEquals(3, doc.getElementsByTagName("remove").getLength());
-  }
-
-  @Ignore
-  @Test
-  public void mainDiff() throws Exception {
-    String[] args = {"DiffTest1.xml", "DiffTest2.xml", DIFF_FILENAME};
-    XmlDiff.main(args);
   }
 
   @Test
@@ -117,15 +118,15 @@ public class XmlDiffTest {
   @Ignore
   @Test
   public void diffAndMergeFIXatdl() throws Exception {
-    try (final FileInputStream is1 = new FileInputStream("SampleStrategiesFor-v1.1 rev1.xml");
+    try (final FileInputStream is1 = new FileInputStream("SampleStrategiesFor-v1.1 rev1-diff1.xml");
         final FileInputStream is2 =
-            new FileInputStream("SampleStrategiesFor-v1.1 rev1-diff1.xml")) {
+            new FileInputStream("SampleStrategiesFor-v1.1 rev1-diff2.xml")) {
       xmlDiff.setAreElementsOrdered(false);
       xmlDiff.diff(is1, is2);
     }
 
     try (
-        final FileInputStream isBaseline = new FileInputStream("SampleStrategiesFor-v1.1 rev1.xml");
+        final FileInputStream isBaseline = new FileInputStream("SampleStrategiesFor-v1.1 rev1-diff1.xml");
         final FileInputStream isDiff = new FileInputStream(DIFF_FILENAME);
         final FileOutputStream osMerge = new FileOutputStream(MERGED_FILENAME)) {
       xmlMerge.merge(isBaseline, isDiff, osMerge);

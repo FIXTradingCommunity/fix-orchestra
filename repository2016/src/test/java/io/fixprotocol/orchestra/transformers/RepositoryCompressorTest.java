@@ -38,4 +38,13 @@ public class RepositoryCompressorTest {
         "--section", "PostTrade"});
     Assert.assertTrue(new File(outfile).exists());
   }
+  
+  @Test
+  public void session() throws Exception {
+    final String outfile = "target/test/fixt.xml";
+    // Include every category in the "Trade" section except "CrossOrders"
+    RepositoryCompressor.main(new String [] {"-i", "src/test/resources/FixRepository50SP2EP247.xml", "-o", outfile, 
+        "--section", "Session"});
+    Assert.assertTrue(new File(outfile).exists());
+  }
 }

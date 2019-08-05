@@ -16,13 +16,17 @@ The planned lifecycle of this project is to roll out new features in a series of
 Issues may be entered here in GitHub or in a discussion forum on the [FIX Trading Community site](http://www.fixtradingcommunity.org/). In GitHub, anyone may enter issues or pull requests for the next release candidate. 
 
 ### References
-Specifications for Orchestra are available in GitHub.
+Specifications for Orchestra in GitHub.
 
 [Orchestra specifications](https://github.com/FIXTradingCommunity/fix-orchestra-spec)
 
 Public Orchestra files for service offerings
 
 [Orchestrations](https://github.com/FIXTradingCommunity/orchestrations)
+
+All FIX standards specifications
+
+[FIX Standards](https://www.fixtrading.org/standards/)
 
 ## Versions
 

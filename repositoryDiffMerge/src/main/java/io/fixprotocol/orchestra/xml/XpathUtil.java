@@ -18,6 +18,7 @@ import java.util.Stack;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 /**
@@ -102,8 +103,6 @@ public final class XpathUtil {
         parent = ((Attr) n).getOwnerElement();
         break;
       case Node.ELEMENT_NODE:
-        parent = n.getParentNode();
-        break;
       case Node.DOCUMENT_NODE:
         parent = n.getParentNode();
         break;
@@ -111,7 +110,7 @@ public final class XpathUtil {
         throw new IllegalStateException("Unexpected Node type" + n.getNodeType());
     }
 
-    while (null != parent && parent.getNodeType() != Node.DOCUMENT_NODE) {
+    while (null != parent) {
       // push on stack
       hierarchy.push(parent);
 
@@ -120,57 +119,77 @@ public final class XpathUtil {
     }
 
     // construct xpath
-    Object obj = null;
-    while (!hierarchy.isEmpty() && null != (obj = hierarchy.pop())) {
-      Node node = (Node) obj;
+    Node node = null;
+    while (!hierarchy.isEmpty() && null != (node = hierarchy.pop())) {
       boolean handled = false;
 
-      if (node.getNodeType() == Node.ELEMENT_NODE) {
-        Element e = (Element) node;
-
-        // is this the root element?
-        if (buffer.length() == 0) {
-          // root element - simply append element name
-          buffer.append(node.getNodeName());
-        } else {
-          // child element - append slash and element name
+      switch (node.getNodeType()) {
+        case Node.DOCUMENT_NODE:
           buffer.append("/");
-          buffer.append(node.getNodeName());
+          break;
+        case Node.ELEMENT_NODE:
+          Element e = (Element) node;
 
-          if (node.hasAttributes()) {
-            // prioritize name over id as predicate
-            if (e.hasAttribute("name")) {
-              // name attribute found - use that
-              buffer.append("[@name=\"").append(e.getAttribute("name")).append("\"]");
-              handled = true;
-            } else if (e.hasAttribute("id")) {
-              buffer.append("[@id=\"").append(e.getAttribute("id")).append("\"]");
-              handled = true;
-            }
-          }
+          // is this the root element?
+          if ("/".equals(buffer.toString())) {
+            buffer.append(getQualifiedNodeName(node));
+          } else {
+            // child element - append slash and element name
+            buffer.append("/");
+            buffer.append(getQualifiedNodeName(node));
 
-          if (!handled) {
-            // no known attribute we could use - get sibling index
-            int prev_siblings = 1;
-            Node prev_sibling = node.getPreviousSibling();
-            while (null != prev_sibling) {
-              if (prev_sibling.getNodeType() == node.getNodeType()) {
-                if (prev_sibling.getNodeName().equalsIgnoreCase(node.getNodeName())) {
-                  prev_siblings++;
-                }
+            if (node.hasAttributes()) {
+              // prioritize name over id as predicate
+              Attr key = getAttributeCaseInsensitive(e, "name");
+              if (key == null) {
+                key = getAttributeCaseInsensitive(e, "id");
               }
-              prev_sibling = prev_sibling.getPreviousSibling();
+              if (key != null) {
+                buffer.append("[@").append(key.getNodeName()).append("=\"").append(key.getValue())
+                    .append("\"]");
+                handled = true;
+              }
             }
-            buffer.append("[").append(prev_siblings).append("]");
+
+            if (!handled) {
+              // no known attribute we could use - get sibling index
+              int prev_siblings = 1;
+              Node prev_sibling = node.getPreviousSibling();
+              while (null != prev_sibling) {
+                if (prev_sibling.getNodeType() == node.getNodeType()) {
+                  if (prev_sibling.getNodeName().equalsIgnoreCase(node.getNodeName())) {
+                    prev_siblings++;
+                  }
+                }
+                prev_sibling = prev_sibling.getPreviousSibling();
+              }
+              buffer.append("[").append(prev_siblings).append("]");
+            }
           }
-        }
-      } else if (node.getNodeType() == Node.ATTRIBUTE_NODE) {
-        buffer.append("/@");
-        buffer.append(node.getNodeName());
+          break;
+        case Node.ATTRIBUTE_NODE:
+          buffer.append("/@");
+          buffer.append(node.getNodeName());
+          break;
       }
     }
     // return buffer
     return buffer.toString();
+  }
+
+  static String getQualifiedNodeName(Node node) {
+    String prefix = node.getPrefix();
+    String uri = node.getNamespaceURI();
+    if (prefix == null && uri != null) {
+      StringBuilder buffer = new StringBuilder();
+      buffer.append("Q{");
+      buffer.append(uri);
+      buffer.append("}");
+      buffer.append(node.getLocalName());
+      return buffer.toString();
+    } else {
+    return node.getNodeName();
+    }
   }
 
   public static String getParentLocalName(String xpath) {
@@ -193,15 +212,6 @@ public final class XpathUtil {
       return fields[i].substring(colon, bracket == -1 ? fields[i].length() : bracket);
     }
     return "";
-  }
-  /**
-   * Returns the XPath of the parent node
-   * @param xpath an XPath expression
-   * @return an XPath expression of the parent
-   */
-  public static String getParentPath(String xpath) {
-    Objects.requireNonNull(xpath, "Xpath cannot be null");
-    return xpath.substring(0, xpath.lastIndexOf('/'));
   }
 
   public static String getParentPredicate(String xpath) {
@@ -234,6 +244,28 @@ public final class XpathUtil {
     Objects.requireNonNull(xpath, "Xpath cannot be null");
     String[] fields = xpath.split("/");
     return !(fields == null || fields.length == 0) && fields[fields.length - 1].startsWith("@");
+  }
+  
+  
+  public static Attr getAttributeCaseInsensitive(Element element, String attributeName) {
+    NamedNodeMap attributes = element.getAttributes();
+    for (int i =0; i < attributes.getLength(); i++) {
+      Node attribute = attributes.item(i);
+      if (attribute.getNodeName().equalsIgnoreCase(attributeName)) {
+        return (Attr)attribute;
+      }
+    }
+    
+    return null;
+  }
+
+  public static String getAttributeCaseInsensitiveValue(Element element, String attributeName) {
+    Attr attr = getAttributeCaseInsensitive(element, attributeName);
+    if (attr != null) {
+      return attr.getValue();
+    } else {
+      return "";
+    }
   }
 
 }

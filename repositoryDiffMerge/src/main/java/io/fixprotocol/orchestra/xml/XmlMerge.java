@@ -18,13 +18,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.Objects;
 
 import javax.xml.XMLConstants;
-import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -62,43 +58,6 @@ import org.xml.sax.SAXException;
  *
  */
 public class XmlMerge {
-  private class CustomNamespaceContext implements NamespaceContext {
-    private final Map<String, String> namespaces = new HashMap<>();
-
-    public CustomNamespaceContext() {
-      namespaces.put("xmlns", XMLConstants.XMLNS_ATTRIBUTE_NS_URI);
-      namespaces.put("xml", XMLConstants.XML_NS_URI);
-      namespaces.put("xsi", XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
-    }
-
-    public String getNamespaceURI(String prefix) {
-      if (prefix == null) {
-        throw new NullPointerException("Null prefix");
-      }
-      String uri = namespaces.get(prefix);
-      if (uri != null) {
-        return uri;
-      } else {
-        return XMLConstants.NULL_NS_URI;
-      }
-    }
-
-    // This method isn't necessary for XPath processing.
-    public String getPrefix(String uri) {
-      throw new UnsupportedOperationException();
-    }
-
-    // This method isn't necessary for XPath processing either.
-    public Iterator<?> getPrefixes(String uri) {
-      throw new UnsupportedOperationException();
-    }
-
-    public void register(String prefix, String uri) {
-      namespaces.put(prefix, uri);
-    }
-
-  }
-
   /**
    * Merges a baseline XML file with a differences file to produce a second XML file
    * 
@@ -137,24 +96,12 @@ public class XmlMerge {
     Objects.requireNonNull(out, "Output stream cannot be null");
 
     final Document baselineDoc = parse(baseline);
-    final Element baselineRoot = baselineDoc.getDocumentElement();
-    final NamedNodeMap rootAttributes = baselineRoot.getAttributes();
-
+    
     // XPath implementation supplied with Java 8 fails so using Saxon
     final XPathFactory factory = new net.sf.saxon.xpath.XPathFactoryImpl();
     final XPath xpathEvaluator = factory.newXPath();
     final CustomNamespaceContext nsContext = new CustomNamespaceContext();
-    // Namespaces are declared in the root element, but this info needs to be passed to the XPath
-    // processor through its own API. Go figure.
-    for (int i = 0; i < rootAttributes.getLength(); i++) {
-      final Attr attr = (Attr) rootAttributes.item(i);
-      final String prefix = attr.getPrefix();
-      if ("xmlns".equals(prefix)) {
-        nsContext.register(attr.getLocalName(), attr.getValue());
-      } else if ("xmlns".equals(attr.getLocalName())) {
-        nsContext.register(XMLConstants.DEFAULT_NS_PREFIX, attr.getValue());
-      }
-    }
+    nsContext.populate(baselineDoc);
     xpathEvaluator.setNamespaceContext(nsContext);
 
     final Document diffDoc = parse(diff);
