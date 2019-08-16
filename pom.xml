@@ -61,7 +61,6 @@
 		<module>message-model</module>
 		<module>repository-quickfix</module>
 		<module>model-quickfix</module>
-		<module>repositoryDiffMerge</module>
 		<module>docgen</module>
 		<module>testgen</module>
 		<module>state-machine</module>

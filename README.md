@@ -7,6 +7,11 @@ This project contains resources and sample code for FIX Orchestra and FIX Reposi
 
 FIX Orchestra is intended to provide a standard and some reference implementation for *machine readable rules of engagement* between counterparties. The goal is to reduce the time to get counterparties trading, and improve accuracy of implementations.
 
+### News
+
+* The repositoryDiffMerge module was promoted to its own [xml-diff-merge project](https://github.com/FIXTradingCommunity/xml-diff-merge) since it has uses aside from Orchestra.
+* See new [Orchestra tutorials](https://github.com/FIXTradingCommunity/fix-orchestra/wiki) and FAQ.
+
 ### Planned Lifecycle
 
 The planned lifecycle of this project is to roll out new features in a series of release candidates. After each release candidate is approved, it will be exposed to public review.  When version 1 is considered complete, the last release candidate will be promoted to Draft Standard.
@@ -79,9 +84,6 @@ The Score grammar is provided in the notation of ANTLR4, and the project builds 
 
 ### repository2010
 Repository 2010 Edition was the version of the FIX Repository prior to FIX Orchestra. This module provides a parser for its XML schema. It may be used to process existing Repository files and to convert their message structures to Orchestra format.
-
-### repositoryDiffMerge
-These utilities extract incremental changes to XML files and selectively apply changes to a base file. The difference format is conformant to standard [IETF RFC 5261](https://tools.ietf.org/html/rfc5261). A benefit of these utilities, aside from editing Orchestra files, is that they can be used for HTTP PATCH operations with Orchestra XML payloads.
 
 ### docgen
 This utility generates documentation for an Orchestra file that can be view in any web browser. The output of the generator may be used locally or from a web server.
