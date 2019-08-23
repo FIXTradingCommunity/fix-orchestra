@@ -15,7 +15,7 @@
 	<xsl:template match="fixr:repository">
 		<fixRepository edition="2010">
 			<xsl:attribute name="generated"><xsl:value-of select="fn:current-dateTime()"/></xsl:attribute>
-			<xsl:attribute name="copyright"><xsl:value-of select="./fixr:metadata/dc:rights"/></xsl:attribute>
+			<xsl:attribute name="copyright"><xsl:value-of select="/fixr:repository/fixr:metadata/dc:rights"/></xsl:attribute>
 			<fix fixml="1">
 				<xsl:attribute name="version"><xsl:value-of select="./@version"/></xsl:attribute>
 				<xsl:attribute name="hasComponents"><xsl:choose><xsl:when test="./fixr:components">1</xsl:when><xsl:otherwise>0</xsl:otherwise></xsl:choose></xsl:attribute>
@@ -48,7 +48,7 @@
 	</xsl:template>
 	<xsl:template match="fixr:mappedDatatype">
 		<XML>
-			<xsl:apply-templates select="@*"/>
+			<xsl:apply-templates select="@* except @standard"/>
 		</XML>
 	</xsl:template>
 	<xsl:template match="fixr:categories">
@@ -84,7 +84,7 @@
 	</xsl:template>
 	<xsl:template match="fixr:field">
 		<field>
-			<xsl:apply-templates select="@* except (@type, @discriminatorId, @discriminatorName, @scenario, @presence, @supported)"/>
+			<xsl:apply-templates select="@* except (@type, @discriminatorId, @discriminatorName, @lengthId, @lengthName, @scenario, @presence, @supported)"/>
 			<xsl:if test="fixr:annotation/fixr:documentation">
 				<xsl:attribute name="textId" select="fn:concat('FIELD_', @id)"/>
 			</xsl:if>
@@ -99,6 +99,9 @@
 					<xsl:apply-templates select="@type"/>
 				</xsl:otherwise>
 			</xsl:choose>
+			<xsl:if test="@type='Length'">
+				<xsl:attribute name="associatedDataTag" select="/fixr:repository/fixr:fields/fixr:field[@lengthId=current()/@id]/@id"/>
+			</xsl:if>
 		</field>
 	</xsl:template>
 	<xsl:template name="enums">
@@ -140,6 +143,11 @@
 			</xsl:if>
 			<repeatingGroup>
 				<xsl:attribute name="id" select="current()/fixr:numInGroup/@id"/>
+				<!-- required attribute but it always was empty -->
+				<xsl:attribute name="name"/>
+				<!-- Have no source for old but required attributes -->
+				<xsl:attribute name="legacyIndent">0</xsl:attribute>
+				<xsl:attribute name="legacyPosition">0</xsl:attribute>
 				<xsl:apply-templates/>
 			</repeatingGroup>
 		</component>
@@ -152,13 +160,16 @@
 	</xsl:template>
 	<xsl:template match="fixr:message">
 		<message>
-			<xsl:apply-templates select="@* except (@scenario, @supported)"/>
+			<xsl:apply-templates select="@* except (@scenario, @supported, @flow)"/>
 			<xsl:if test="fixr:annotation/fixr:documentation">
 				<xsl:attribute name="textId" select="fn:concat('MSG_', @id, '_TITLE')"/>
 			</xsl:if>
+			<xsl:attribute name="section" select="/fixr:repository/fixr:categories/fixr:category[@name=current()/@category]/@section"/>
+			<xsl:attribute name="notReqXML">0</xsl:attribute>
 			<xsl:apply-templates/>
 		</message>
 	</xsl:template>
+	<xsl:template match="fixr:responses"/>
 	<xsl:template match="fixr:fieldRef">
 		<fieldRef>
 			<xsl:apply-templates select="@* except (@scenario, @supported, @presence)"/>
@@ -185,6 +196,9 @@
 					</xsl:when>
 				</xsl:choose>
 			</xsl:if>
+			<!-- Have no source for old but required attributes -->
+			<xsl:attribute name="legacyIndent">0</xsl:attribute>
+			<xsl:attribute name="legacyPosition">0</xsl:attribute>
 		</fieldRef>
 	</xsl:template>
 	<xsl:template match="fixr:componentRef">
@@ -214,11 +228,14 @@
 					</xsl:when>
 				</xsl:choose>
 			</xsl:if>
+			<!-- Have no source for old but required attributes -->
+			<xsl:attribute name="legacyIndent">0</xsl:attribute>
+			<xsl:attribute name="legacyPosition">0</xsl:attribute>
 		</componentRef>
 	</xsl:template>
 	<xsl:template match="fixr:groupRef">
 		<componentRef>
-			<xsl:apply-templates select="@* except (@scenario, @supported, @presence)"/>
+			<xsl:apply-templates select="@* except (@scenario, @supported, @presence, @implMaxOccurs)"/>
 			<xsl:variable name="name" select="/fixr:repository/fixr:groups/fixr:group[@id = current()/@id]/@name"/>
 			<xsl:attribute name="name" select="$name"/>
 			<xsl:choose>
@@ -243,8 +260,15 @@
 					</xsl:when>
 				</xsl:choose>
 			</xsl:if>
+			<xsl:if test="not(fn:string(@implMaxOccurs) = 'unbounded')">
+				<xsl:attribute name="implMaxOccurs" select="@implMaxOccurs"/>
+			</xsl:if>
+			<!-- Have no source for old but required attributes -->
+			<xsl:attribute name="legacyIndent">0</xsl:attribute>
+			<xsl:attribute name="legacyPosition">0</xsl:attribute>
 		</componentRef>
 	</xsl:template>
+	<xsl:template match="fixr:annotation" mode="#default"/>
 	<xsl:template match="fixr:annotation" mode="phrases">
 		<phrase>
 			<xsl:variable name="parent" select=".."/>
@@ -274,14 +298,12 @@
 				<xsl:when test="fn:local-name($parent)='fieldRef' and (fn:local-name($grandParent)='component' or fn:local-name($grandParent)='group')">
 					<xsl:attribute name="textId" select="fn:concat('CMP_', $grandParent/@id, '_REF_', $parent/@id)"/>
 				</xsl:when>
-				
 				<xsl:when test="fn:local-name($parent)='componentRef' and fn:local-name($grandParent)='structure'">
 					<xsl:attribute name="textId" select="fn:concat('MSG_', $grandParent/../@id, '_REF_', /fixr:repository/fixr:components/fixr:component[@id = $parent/@id]/@name)"/>
 				</xsl:when>
 				<xsl:when test="fn:local-name($parent)='componentRef' and (fn:local-name($grandParent)='component' or fn:local-name($grandParent)='group')">
 					<xsl:attribute name="textId" select="fn:concat('CMP_', $parent/@id, '_REF_', /fixr:repository/fixr:components/fixr:component[@id = $parent/@id]/@name)"/>
 				</xsl:when>
-				
 				<xsl:when test="fn:local-name($parent)='groupRef' and fn:local-name($grandParent)='structure'">
 					<xsl:attribute name="textId" select="fn:concat('MSG_', $grandParent/../@id, '_REF_', /fixr:repository/fixr:groups/fixr:group[@id = $parent/@id]/@name)"/>
 				</xsl:when>
