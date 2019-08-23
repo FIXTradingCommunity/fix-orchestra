@@ -23,6 +23,9 @@
 				</dc:date>
 				<dc:format>Orchestra schema</dc:format>
 				<dc:source>FIX Unified Repository</dc:source>
+				<xsl:if test="./@copyright">
+				<dc:rights><xsl:value-of select="./@copyright"/></dc:rights>
+				</xsl:if>
 			</metadata>
 			<codeSets>
 				<!-- Need to store context outside of for-each loop -->

@@ -79,7 +79,9 @@
 	<xsl:template match="fixr:fields">
 		<fields>
 			<xsl:apply-templates select="@*"/>
-			<xsl:apply-templates/>
+			<xsl:for-each-group select="fixr:field" group-by="@id">
+				<xsl:apply-templates select="fn:current-group()[1]"/>
+			</xsl:for-each-group>
 		</fields>
 	</xsl:template>
 	<xsl:template match="fixr:field">
@@ -106,18 +108,25 @@
 	</xsl:template>
 	<xsl:template name="enums">
 		<xsl:param name="codeSetName"/>
-		<xsl:for-each select="/fixr:repository/fixr:codeSets/fixr:codeSet[@name = $codeSetName]">
-			<xsl:apply-templates/>
-		</xsl:for-each>
+		<!-- gather codes from all scenarios of a codeSet -->
+		<xsl:for-each-group select="/fixr:repository/fixr:codeSets/fixr:codeSet[@name = $codeSetName]/fixr:code" group-by="@value">
+			<xsl:call-template name="code">
+				<xsl:with-param name="code" select="fn:current-group()[1]"/>
+				<!-- is supported if supported in any scenario -->
+				<xsl:with-param name="supported" select="fn:count(fn:current-group()/@supported='supported') > 0"/>
+			</xsl:call-template>
+		</xsl:for-each-group>
 	</xsl:template>
-	<xsl:template match="fixr:code">
+	<xsl:template name="code">
+		<xsl:param name="code"/>
+		<xsl:param name="supported" as="xs:boolean"/>
 		<enum>
-			<xsl:apply-templates select="@* except (@name, @id, @scenario, @supported)"/>
-			<xsl:attribute name="symbolicName" select="@name"/>
-			<xsl:if test="fixr:annotation/fixr:documentation">
-				<xsl:attribute name="textId" select="fn:concat('ENUM_', ../@id, '_', @value)"/>
+			<xsl:apply-templates select="$code/@* except (@name, @id, @scenario, @supported)"/>
+			<xsl:attribute name="symbolicName" select="$code/@name"/>
+			<xsl:if test="$code/fixr:annotation/fixr:documentation">
+				<xsl:attribute name="textId" select="fn:concat('ENUM_', $code/../@id, '_', $code/@value)"/>
 			</xsl:if>
-			<xsl:if test="not(@supported='supported')">
+			<xsl:if test="not($supported)">
 				<xsl:attribute name="supported">0</xsl:attribute>
 			</xsl:if>
 		</enum>
@@ -130,7 +139,9 @@
 			<xsl:if test="fixr:annotation/fixr:documentation">
 				<xsl:attribute name="textId" select="fn:concat('COMP_', @name, '_TITLE')"/>
 			</xsl:if>
-			<xsl:apply-templates/>
+			<xsl:for-each-group select="/fixr:repository/fixr:components/fixr:component[@id=current()/@id]/*" group-by="fn:concat(fn:local-name(), @id)">
+				<xsl:apply-templates select="fn:current-group()[1]"/>
+			</xsl:for-each-group>
 		</component>
 	</xsl:template>
 	<xsl:template match="fixr:group">
@@ -148,14 +159,18 @@
 				<!-- Have no source for old but required attributes -->
 				<xsl:attribute name="legacyIndent">0</xsl:attribute>
 				<xsl:attribute name="legacyPosition">0</xsl:attribute>
-				<xsl:apply-templates/>
+				<xsl:for-each-group select="/fixr:repository/fixr:groups/fixr:group[@id=current()/@id]/*" group-by="fn:concat(fn:local-name(), @id)">
+					<xsl:apply-templates select="fn:current-group()[1]"/>
+				</xsl:for-each-group>
 			</repeatingGroup>
 		</component>
 	</xsl:template>
 	<xsl:template match="fixr:messages">
 		<messages>
 			<xsl:apply-templates select="@*"/>
-			<xsl:apply-templates/>
+			<xsl:for-each-group select="fixr:message" group-by="@id">
+				<xsl:apply-templates select="fn:current-group()[1]"/>
+			</xsl:for-each-group>
 		</messages>
 	</xsl:template>
 	<xsl:template match="fixr:message">
@@ -166,10 +181,11 @@
 			</xsl:if>
 			<xsl:attribute name="section" select="/fixr:repository/fixr:categories/fixr:category[@name=current()/@category]/@section"/>
 			<xsl:attribute name="notReqXML">0</xsl:attribute>
-			<xsl:apply-templates/>
+			<xsl:for-each-group select="/fixr:repository/fixr:messages/fixr:message[@id=current()/@id]/fixr:structure/*" group-by="fn:concat(fn:local-name(), @id)">
+				<xsl:apply-templates select="fn:current-group()[1]"/>
+			</xsl:for-each-group>
 		</message>
 	</xsl:template>
-	<xsl:template match="fixr:responses"/>
 	<xsl:template match="fixr:fieldRef">
 		<fieldRef>
 			<xsl:apply-templates select="@* except (@scenario, @supported, @presence)"/>
