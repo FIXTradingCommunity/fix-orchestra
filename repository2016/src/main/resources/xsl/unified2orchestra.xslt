@@ -138,7 +138,6 @@
 			<xsl:variable name="discriminator" select="../field[@name = fn:concat(current()/@name, 'Source')]"/>
 			<xsl:if test="$discriminator">
 				<xsl:attribute name="discriminatorId" select="$discriminator/@id"/>
-				<xsl:attribute name="discriminatorName" select="$discriminator/@name"/>
 			</xsl:if>
 			<xsl:choose>
 				<xsl:when test="current()/enum">
@@ -147,7 +146,6 @@
 				<xsl:when test="@type = 'data' or @type = 'XMLData'">
 					<xsl:variable name="length" select="../field[@associatedDataTag = current()/@id]"/>
 					<xsl:attribute name="lengthId" select="$length/@id"/>
-					<xsl:attribute name="lengthName" select="$length/@name"/>
 				</xsl:when>
 			</xsl:choose>
 			<xsl:apply-templates select="@textId"/>
