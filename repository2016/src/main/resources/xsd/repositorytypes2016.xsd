@@ -211,7 +211,22 @@
 				<xs:documentation>A hint to processes about how to interpret the element. Not validated.</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
+		<xs:attribute name="which" type="fixr:memberType"/>
 	</xs:complexType>
+	<xs:simpleType name="memberType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="oneOf">
+				<xs:annotation>
+					<xs:documentation>Members are mutually exclusive; exactly one must be present.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="anyOf">
+				<xs:annotation>
+					<xs:documentation>At least one of the members must be present.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
 	<xs:complexType name="conceptType">
 		<xs:sequence>
 			<xs:choice maxOccurs="unbounded">
@@ -544,8 +559,21 @@
 				<xs:documentation>A hint to processes about how to interpret the element. Not validated.</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="implMinOccurs" type="xs:nonNegativeInteger"/>
-		<xs:attribute name="implMaxOccurs" type="fixr:unboundedIntType" default="unbounded"/>
+		<xs:attribute name="implMinOccurs" type="xs:nonNegativeInteger">
+			<xs:annotation>
+				<xs:documentation>Lower bound of group instances (numInGroup)</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="implMaxOccurs" type="fixr:unboundedIntType" default="unbounded">
+			<xs:annotation>
+				<xs:documentation>Upper bound of group instances (numInGroup)</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="which" type="fixr:memberType">
+			<xs:annotation>
+				<xs:documentation>Member selection within each group instance</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 	</xs:complexType>
 	<xs:simpleType name="id_t">
 		<xs:restriction base="xs:positiveInteger"/>
@@ -621,6 +649,7 @@
 						<xs:element name="groupRef" type="fixr:groupRefType"/>
 						<xs:element name="fieldRef" type="fixr:fieldRefType"/>
 					</xs:choice>
+					<xs:attribute name="which" type="fixr:memberType"/>
 				</xs:complexType>
 			</xs:element>
 			<xs:element name="responses" minOccurs="0">

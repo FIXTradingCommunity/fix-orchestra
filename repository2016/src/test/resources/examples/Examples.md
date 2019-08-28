@@ -12,10 +12,5 @@ Some features to note:
 * A value in an outgoing message can be set by the expression in an `assign` element. For example, the value of ClOrdID in an ExecutionReport is assigned the value of the incoming order field of the same name.
 * Workflow is represented by the `responses` element under a message definition. See the possible responses to a NewOrderSingle message. Each `response` element has a `when` element that contains a Score DSL expression. When the expression evaluates to true, then its response is triggered.
 * The `states` element represents a state machine. See MarketPhase state machine that belongs to the Market actor.
-
-### Status
-
-March 29, 2017
-
-The XML file was updated to the XML schema as of Release Candidate 2, and the conditional expressions conform to the DSL grammar.
+* The attribute `which="oneOf"` on a component indicates that exactly one of its members must be present.
 
