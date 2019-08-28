@@ -86,7 +86,7 @@
 	</xsl:template>
 	<xsl:template match="fixr:field">
 		<field>
-			<xsl:apply-templates select="@* except (@type, @discriminatorId, @discriminatorName, @lengthId, @lengthName, @scenario, @presence, @supported)"/>
+			<xsl:apply-templates select="@* except (@type, @discriminatorId, @lengthId, @scenario, @presence, @supported)"/>
 			<xsl:if test="fixr:annotation/fixr:documentation">
 				<xsl:attribute name="textId" select="fn:concat('FIELD_', @id)"/>
 			</xsl:if>

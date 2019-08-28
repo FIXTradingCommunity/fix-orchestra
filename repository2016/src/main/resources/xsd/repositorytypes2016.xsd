@@ -480,14 +480,12 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="lengthName" type="fixr:Name_t"/>
 		<xs:attribute name="discriminatorId" type="fixr:id_t">
 			<xs:annotation>
 				<xs:documentation>Identifies a field used as a discriminator for this field's domain
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="discriminatorName" type="fixr:Name_t"/>
 		<xs:attribute name="baseCategory" type="fixr:Name_t"/>
 		<xs:attribute name="baseCategoryAbbrName" type="fixr:Name_t"/>
 		<xs:attribute name="unionDataType" type="fixr:UnionDataType_t"/>
