@@ -112,7 +112,6 @@ public class DocGenerator {
    *        </ol>
    * @throws JAXBException if XML file unmarshalling fails
    * @throws IOException if input file is not found or cannot be read
-   * @throws URISyntaxException if URI format is invalid
    */
   public static void main(final String[] args) throws Exception {
     if (args.length < 1) {
@@ -200,8 +199,8 @@ public class DocGenerator {
    * Constructs a DocGenerator
    * 
    * @param inputStream input Orchestra file
-   * @param outputRootUri root of file system to write documentation files. If the URI path ends in
-   *        <code>.zip</code>, then a zip archive is created. If the URI path contains
+   * @param outputRootDir root of file system to write documentation files. If the path ends in
+   *        <code>.zip</code>, then a zip archive is created. If the path contains
    *        <code>temp</code>, then a temporary file is created.
    * @param errorStream output stream for errors
    */

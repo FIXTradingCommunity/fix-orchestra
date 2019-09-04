@@ -62,7 +62,7 @@ public class RepositoryAccessor {
 
   /**
    * Get a component by a reference to it
-   * @param name component name
+   * @param componentRefType reference to a component
    * @return A component or {@code null} if not found
    */ 
   public ComponentType getComponent(ComponentRefType componentRefType) {
