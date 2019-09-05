@@ -15,6 +15,9 @@
 
 package io.fixprotocol.orchestra.docgen;
 
+import java.io.File;
+import java.io.PrintStream;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -23,15 +26,25 @@ import org.junit.Test;
  */
 public class DocGeneratorTest {
 
- 
+  @BeforeClass
+  public static void setupOnce() {
+    new File(("target/test")).mkdirs();
+  }
+
   @Test
   public void generateFile() throws Exception {
-    DocGenerator.main(new String[] {"mit_2016.xml", "target/test/doc", "target/test/doc-err.txt"});
+    DocGenerator generator = new DocGenerator(
+        Thread.currentThread().getContextClassLoader().getResourceAsStream("mit_2016.xml"),
+        "target/test/doc", new PrintStream("target/test/doc-err.txt"));
+    generator.generate();
   }
-  
+
   @Test
   public void generateZip() throws Exception {
-    DocGenerator.main(new String[] {"mit_2016.xml", "target/test/doc.zip", "target/test/zip-err.txt"});
+    DocGenerator generator = new DocGenerator(
+        Thread.currentThread().getContextClassLoader().getResourceAsStream("mit_2016.xml"),
+        "target/test/doc.zip", new PrintStream("target/test/zip-err.txt"));
+    generator.generate();
   }
 
 }
