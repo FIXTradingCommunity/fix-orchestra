@@ -15,16 +15,16 @@
 package io.fixprotocol.orchestra.session.quickfix;
 
 import static org.junit.Assert.assertNotNull;
-
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.time.ZonedDateTime;
-
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
-
 import io.fixprotocol.orchestra.session.quickfix.QuickFixSessionConfigurer;
 
 /**
@@ -35,20 +35,23 @@ public class QuickFixSessionConfigurerTest {
 
   private QuickFixSessionConfigurer tool;
 
+  @BeforeClass
+  public static void setupOnce() {
+    new File(("target/test")).mkdirs();
+  }
+
   @Before
   public void setUp() throws Exception {
     tool = new QuickFixSessionConfigurer();
   }
 
-  @After
-  public void tearDown() throws Exception {}
-
-
   @Test
   public void testCreateFixSession() throws Exception {
-
-    tool.configure(Thread.currentThread().getContextClassLoader().getResourceAsStream("SampleInterfaces.xml"), 
-        new FileOutputStream("QuickFixConfiguration.ini"));
+    final String outfile = "target/test/QuickFixConfiguration.ini";
+    tool.configure(
+        Thread.currentThread().getContextClassLoader().getResourceAsStream("SampleInterfaces.xml"),
+        new FileOutputStream(outfile));
+    Assert.assertTrue(new File(outfile).exists());
   }
 
 }
