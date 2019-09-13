@@ -33,7 +33,7 @@ import io.fixprotocol._2016.fixrepository.TransitionType;
 public class StateGenerator {
 
   // without this, output was not getting flushed since ST was not closing the file
-  private class STWriterWrapper extends AutoIndentWriter implements AutoCloseable {
+  private static class STWriterWrapper extends AutoIndentWriter implements AutoCloseable {
 
     STWriterWrapper(final Writer out) {
       super(out);
@@ -78,14 +78,14 @@ public class StateGenerator {
     }
   }
 
-  private PrintStream errorStream;
+  private final PrintStream errorStream;
 
-  private InputStream inputStream;
+  private final InputStream inputStream;
 
   private Repository repository;
-  private String srcPackage;
+  private final String srcPackage;
   private Path srcPath;
-  private STGroupFile stGroup;
+  private final STGroupFile stGroup;
   private final STErrorListener templateErrorListener = new STErrorListener() {
 
     @Override

@@ -39,7 +39,7 @@ import io.fixprotocol._2016.fixrepository.Repository;
  */
 public class DataDictionaryGenerator {
 
-  private class KeyValue<T> {
+  private static class KeyValue<T> {
     final String key;
     final T value;
 
@@ -131,7 +131,7 @@ public class DataDictionaryGenerator {
       outputDir.mkdirs();
       try (FileWriter writer = new FileWriter(file)) {
         writeElement(writer, "fix", 0, false, new KeyValue<Integer>("major", major),
-            new KeyValue<Integer>("minor", minor));
+                new KeyValue<Integer>("minor", minor));
         writeElement(writer, "header", 1, true);
         writeElement(writer, "trailer", 1, true);
         writeElement(writer, "messages", 1, false);
@@ -202,7 +202,7 @@ public class DataDictionaryGenerator {
 
   private Writer writeCode(Writer writer, CodeType code) throws IOException {
     writeElement(writer, "value", 3, true, new KeyValue<String>("enum", code.getValue()),
-        new KeyValue<String>("description", toConstantName(code.getName())));
+            new KeyValue<String>("description", toConstantName(code.getName())));
     return writer;
   }
 
@@ -210,14 +210,14 @@ public class DataDictionaryGenerator {
       throws IOException {
     ComponentType component = components.get(componentRefType.getId().intValue());
     writeElement(writer, "component", 3, true, new KeyValue<String>("name", component.getName()),
-        new KeyValue<String>("required",
-            componentRefType.getPresence().equals(PresenceT.REQUIRED) ? "Y" : "N"));
+            new KeyValue<String>("required",
+                    componentRefType.getPresence().equals(PresenceT.REQUIRED) ? "Y" : "N"));
     return writer;
   }
 
   private Writer writeComponent(Writer writer, ComponentType componentType) throws IOException {
     writeElement(writer, "component", 2, false,
-        new KeyValue<String>("name", componentType.getName()));
+            new KeyValue<String>("name", componentType.getName()));
     List<Object> members = componentType.getComponentRefOrGroupRefOrFieldRef();
     for (Object member : members) {
       if (member instanceof FieldRefType) {
@@ -268,8 +268,8 @@ public class DataDictionaryGenerator {
   private Writer writeField(Writer writer, FieldRefType fieldRefType) throws IOException {
     FieldType field = fields.get(fieldRefType.getId().intValue());
     writeElement(writer, "field", 3, true, new KeyValue<String>("name", field.getName()),
-        new KeyValue<String>("required",
-            fieldRefType.getPresence().equals(PresenceT.REQUIRED) ? "Y" : "N"));
+            new KeyValue<String>("required",
+                    fieldRefType.getPresence().equals(PresenceT.REQUIRED) ? "Y" : "N"));
     return writer;
   }
 
@@ -278,9 +278,9 @@ public class DataDictionaryGenerator {
     CodeSetType codeSet = codeSets.get(type);
     String fixType = codeSet == null ? type : codeSet.getType();
     writeElement(writer, "field", 2, codeSet == null,
-        new KeyValue<Integer>("number", fieldType.getId().intValue()),
-        new KeyValue<String>("name", fieldType.getName()),
-        new KeyValue<String>("type", fixType.toUpperCase()));
+            new KeyValue<Integer>("number", fieldType.getId().intValue()),
+            new KeyValue<String>("name", fieldType.getName()),
+            new KeyValue<String>("type", fixType.toUpperCase()));
     if (codeSet != null) {
       for (CodeType code : codeSet.getCode()) {
         writeCode(writer, code);
@@ -293,8 +293,8 @@ public class DataDictionaryGenerator {
   private Writer writeGroup(Writer writer, GroupRefType groupRefType) throws IOException {
     GroupType group = groups.get(groupRefType.getId().intValue());
     writeElement(writer, "component", 3, true, new KeyValue<String>("name", group.getName()),
-        new KeyValue<String>("required",
-            groupRefType.getPresence().equals(PresenceT.REQUIRED) ? "Y" : "N"));
+            new KeyValue<String>("required",
+                    groupRefType.getPresence().equals(PresenceT.REQUIRED) ? "Y" : "N"));
     return writer;
   }
 
@@ -302,7 +302,7 @@ public class DataDictionaryGenerator {
     writeElement(writer, "component", 2, false, new KeyValue<String>("name", groupType.getName()));
     FieldType numInGroupField = fields.get(groupType.getNumInGroup().getId().intValue());
     writeElement(writer, "group", 3, false,
-        new KeyValue<String>("name", numInGroupField.getName()));
+            new KeyValue<String>("name", numInGroupField.getName()));
     List<Object> members = groupType.getComponentRefOrGroupRefOrFieldRef();
     for (Object member : members) {
       if (member instanceof FieldRefType) {
@@ -325,8 +325,8 @@ public class DataDictionaryGenerator {
     boolean isAdminMessage = isAdmin(messageType.getCategory());
     String msgcat = isAdminMessage ? "admin" : "app";
     writeElement(writer, "message", 2, false, new KeyValue<String>("name", messageType.getName()),
-        new KeyValue<String>("msgtype", messageType.getMsgType()),
-        new KeyValue<String>("msgcat", msgcat));
+            new KeyValue<String>("msgtype", messageType.getMsgType()),
+            new KeyValue<String>("msgcat", msgcat));
 
     List<Object> members = messageType.getStructure().getComponentRefOrGroupRefOrFieldRef();
     for (Object member : members) {

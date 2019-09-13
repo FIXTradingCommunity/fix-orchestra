@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2017 FIX Protocol Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
@@ -20,6 +20,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
@@ -238,7 +239,7 @@ public class TestGenerator {
             File outputFile = new File(resourcesDir,
                 String.format("%s-%s.feature", repository.getName(), actor.getName()));
             try (OutputStreamWriter fileWriter =
-                new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8")) {
+                new OutputStreamWriter(new FileOutputStream(outputFile), StandardCharsets.UTF_8)) {
               AutoIndentWriter writer = new AutoIndentWriter(fileWriter);
 
               generateFeature(writer, repository, flow, actor);

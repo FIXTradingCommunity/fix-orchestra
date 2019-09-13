@@ -77,7 +77,7 @@ import io.fixprotocol._2016.fixrepository.SupportType;
 public class DocGenerator {
 
   // without this, output was not getting flushed since ST was not closing the file
-  private class STWriterWrapper extends NoIndentWriter implements AutoCloseable {
+  private static class STWriterWrapper extends NoIndentWriter implements AutoCloseable {
 
     STWriterWrapper(final Writer out) {
       super(out);
@@ -283,13 +283,7 @@ public class DocGenerator {
     generateCategories(messagesDocPath, "Message Categories", sortedCategoryList);
 
     final List<MessageType> sortedMessageList =
-        repository.getMessages().getMessage().stream().sorted((o1, o2) -> {
-          int retv = o1.getName().compareTo(o2.getName());
-          if (retv == 0) {
-            retv = o1.getScenario().compareTo(o2.getScenario());
-          }
-          return retv;
-        }).collect(Collectors.toList());
+        repository.getMessages().getMessage().stream().sorted(Comparator.comparing(MessageType::getName).thenComparing(MessageType::getScenario)).collect(Collectors.toList());
 
     final Optional<Actors> actors = Optional.ofNullable(repository.getActors());
 
@@ -332,16 +326,12 @@ public class DocGenerator {
 
     final List<ComponentType> componentList = repository.getComponents().getComponent();
     final List<ComponentType> sortedComponentList =
-        componentList.stream().sorted(new Comparator<ComponentType>() {
-
-          @Override
-          public int compare(ComponentType o1, ComponentType o2) {
-            int retv = o1.getName().compareTo(o2.getName());
-            if (retv == 0) {
-              retv = o1.getScenario().compareTo(o2.getScenario());
-            }
-            return retv;
+        componentList.stream().sorted((o1, o2) -> {
+          int retv = o1.getName().compareTo(o2.getName());
+          if (retv == 0) {
+            retv = o1.getScenario().compareTo(o2.getScenario());
           }
+          return retv;
         }).collect(Collectors.toList());
 
     generateAllComponentsList(messagesDocPath, sortedComponentList);
@@ -354,16 +344,12 @@ public class DocGenerator {
     });
 
     final List<GroupType> groupList = repository.getGroups().getGroup();
-    final List<GroupType> sortedGroupList = groupList.stream().sorted(new Comparator<GroupType>() {
-
-      @Override
-      public int compare(GroupType o1, GroupType o2) {
-        int retv = o1.getName().compareTo(o2.getName());
-        if (retv == 0) {
-          retv = o1.getScenario().compareTo(o2.getScenario());
-        }
-        return retv;
+    final List<GroupType> sortedGroupList = groupList.stream().sorted((o1, o2) -> {
+      int retv = o1.getName().compareTo(o2.getName());
+      if (retv == 0) {
+        retv = o1.getScenario().compareTo(o2.getScenario());
       }
+      return retv;
     }).collect(Collectors.toList());
     generateAllGroupsList(messagesDocPath, sortedGroupList);
 

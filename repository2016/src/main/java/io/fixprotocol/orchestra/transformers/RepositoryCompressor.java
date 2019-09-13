@@ -405,7 +405,7 @@ public class RepositoryCompressor {
     }
   }
   
-  private BiPredicate<String,String> isCategoryInSection = (String category, String section) -> {
+  private final BiPredicate<String,String> isCategoryInSection = (String category, String section) -> {
     List<CategoryType> categories = this.inRepository.getCategories().getCategory();
     for (CategoryType categoryType : categories) {
       if (categoryType.getName().equals(category) && categoryType.getSection().equals(section)) {

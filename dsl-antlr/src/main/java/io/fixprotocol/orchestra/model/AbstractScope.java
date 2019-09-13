@@ -2,7 +2,7 @@ package io.fixprotocol.orchestra.model;
 
 import java.util.function.Consumer;
 
-/**
+/*
  * Copyright 2017 FIX Protocol Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except

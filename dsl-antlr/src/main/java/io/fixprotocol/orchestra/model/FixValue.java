@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2017 FIX Protocol Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
@@ -106,11 +106,8 @@ public class FixValue<T> implements FixNode {
       return false;
     FixValue other = (FixValue) obj;
     if (name == null) {
-      if (other.name != null)
-        return false;
-    } else if (!name.equals(other.name))
-      return false;
-    return true;
+      return other.name == null;
+    } else return name.equals(other.name);
   }
 
   /**

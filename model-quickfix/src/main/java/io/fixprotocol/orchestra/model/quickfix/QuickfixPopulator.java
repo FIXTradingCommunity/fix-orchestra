@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2017 FIX Protocol Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
@@ -112,13 +112,13 @@ public class QuickfixPopulator implements Populator<Message> {
         List<BlockAssignmentType> blockAssignments = groupRefType.getBlockAssignment();
         GroupType groupType = repositoryAdapter.getGroup(groupRefType);
 
-        for (int i = 0; i < blockAssignments.size(); i++) {
+        for (BlockAssignmentType blockAssignment : blockAssignments) {
           Group group = groupFactory.apply(groupType.getNumInGroup().getId().intValue());
           try (GroupInstanceScope groupScope =
-              new GroupInstanceScope(group, groupType, repositoryAdapter, symbolResolver, evaluator)) {
+                       new GroupInstanceScope(group, groupType, repositoryAdapter, symbolResolver, evaluator)) {
             try (Scope local = (Scope) symbolResolver.resolve(SymbolResolver.LOCAL_ROOT)) {
               local.nest(new PathStep(groupType.getName()), groupScope);
-              populateFieldMap(group, blockAssignments.get(i).getComponentRefOrGroupRefOrFieldRef(), groupScope);
+              populateFieldMap(group, blockAssignment.getComponentRefOrGroupRefOrFieldRef(), groupScope);
               fieldMap.addGroup(group);
             }
           } catch (Exception e) {

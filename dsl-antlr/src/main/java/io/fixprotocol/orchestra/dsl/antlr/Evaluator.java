@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2017 FIX Protocol Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
@@ -41,7 +41,7 @@ public class Evaluator {
     }
   };
 
-  private class DefaultSemanticErrorListener implements SemanticErrorListener {
+  private static class DefaultSemanticErrorListener implements SemanticErrorListener {
 
     @Override
     public void onError(String msg) {

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2017 FIX Protocol Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
@@ -61,11 +61,8 @@ public class PathStep {
     } else if (!name.equals(other.name))
       return false;
     if (predicate == null) {
-      if (other.predicate != null)
-        return false;
-    } else if (!predicate.equals(other.predicate))
-      return false;
-    return true;
+      return other.predicate == null;
+    } else return predicate.equals(other.predicate);
   }
   
   /**

@@ -5,7 +5,7 @@ import java.util.List;
 
 public class TestException extends Exception {
   
-  private class Detail {
+  private static class Detail {
     
     private final String actual;
     private final String detailMessage;

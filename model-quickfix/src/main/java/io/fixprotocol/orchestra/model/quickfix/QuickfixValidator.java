@@ -50,7 +50,7 @@ import quickfix.Message;
  */
 public class QuickfixValidator implements Validator<Message> {
 
-  private class ErrorListener implements SemanticErrorListener {
+  private static class ErrorListener implements SemanticErrorListener {
 
     private final BlockingQueue<String> messages = new LinkedBlockingQueue<>();
 
@@ -143,13 +143,12 @@ public class QuickfixValidator implements Validator<Message> {
 
     switch (presence) {
       case CONSTANT:
+      case IGNORED:
         break;
       case FORBIDDEN:
         if (isPresentInMessage) {
           testException.addDetail("Forbidden field " + id + " is present", "FORBIDDEN", "present");
         }
-        break;
-      case IGNORED:
         break;
       case OPTIONAL:
         // Evaluate rules if present
