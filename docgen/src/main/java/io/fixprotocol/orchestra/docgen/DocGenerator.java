@@ -326,13 +326,7 @@ public class DocGenerator {
 
     final List<ComponentType> componentList = repository.getComponents().getComponent();
     final List<ComponentType> sortedComponentList =
-        componentList.stream().sorted((o1, o2) -> {
-          int retv = o1.getName().compareTo(o2.getName());
-          if (retv == 0) {
-            retv = o1.getScenario().compareTo(o2.getScenario());
-          }
-          return retv;
-        }).collect(Collectors.toList());
+        componentList.stream().sorted(Comparator.comparing(ComponentType::getName).thenComparing(ComponentType::getScenario)).collect(Collectors.toList());
 
     generateAllComponentsList(messagesDocPath, sortedComponentList);
     componentList.forEach(c -> {
@@ -344,13 +338,7 @@ public class DocGenerator {
     });
 
     final List<GroupType> groupList = repository.getGroups().getGroup();
-    final List<GroupType> sortedGroupList = groupList.stream().sorted((o1, o2) -> {
-      int retv = o1.getName().compareTo(o2.getName());
-      if (retv == 0) {
-        retv = o1.getScenario().compareTo(o2.getScenario());
-      }
-      return retv;
-    }).collect(Collectors.toList());
+    final List<GroupType> sortedGroupList = groupList.stream().sorted(Comparator.comparing(GroupType::getName).thenComparing(GroupType::getScenario)).collect(Collectors.toList());
     generateAllGroupsList(messagesDocPath, sortedGroupList);
 
     groupList.forEach(c -> {

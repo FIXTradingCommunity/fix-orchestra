@@ -17,12 +17,15 @@ package io.fixprotocol.orchestra.transformers;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-
+import org.xml.sax.SAXException;
+import io.fixprotocol.orchestra.repository.RepositoryValidator;
 import io.fixprotocol.orchestra.transformers.RepositoryXslTransformer;
-
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 
 public class RepositoryXslTransformerTest {
@@ -30,9 +33,12 @@ public class RepositoryXslTransformerTest {
   /**
    * 
    * Transform FIX Repository 2010 Edition unified repositories to Orchestra schema for FIX 5.0SP2
+   * @throws URISyntaxException 
+   * @throws SAXException 
+   * @throws ParserConfigurationException 
    */
   @Test
-  public void transformEP() throws IOException, TransformerException {
+  public void transformEP() throws IOException, TransformerException, ParserConfigurationException, SAXException, URISyntaxException {
     String[] arr = new String[4];
     arr[0] = Thread.currentThread().getContextClassLoader()
         .getResource("xsl/unified2orchestra.xslt").getFile();
@@ -47,15 +53,19 @@ public class RepositoryXslTransformerTest {
     RepositoryXslTransformer.main(arr);
     File outFile = new File(arr[2]);
     Assert.assertTrue(outFile.exists());
+    //new RepositoryValidator().validate(new FileInputStream(outFile));
   }
   
   /**
    * 
    * Transform FIX Repository 2010 Edition unified repositories to Orchestra schema for FIX 5.0SP2
+   * @throws URISyntaxException 
+   * @throws SAXException 
+   * @throws ParserConfigurationException 
    */
   @Ignore
   @Test
-  public void transform50() throws IOException, TransformerException {
+  public void transform50() throws IOException, TransformerException, ParserConfigurationException, SAXException, URISyntaxException {
     String[] arr = new String[4];
     arr[0] = Thread.currentThread().getContextClassLoader()
         .getResource("xsl/unified2orchestra.xslt").getFile();
@@ -70,6 +80,7 @@ public class RepositoryXslTransformerTest {
     RepositoryXslTransformer.main(arr);
     File outFile = new File(arr[2]);
     Assert.assertTrue(outFile.exists());
+    new RepositoryValidator().validate(new FileInputStream(outFile));
   }
   
   /**
@@ -97,9 +108,12 @@ public class RepositoryXslTransformerTest {
   /**
    * 
    * Transform FIX Repository 2010 Edition unified repositories to Orchestra schema for FIX 4.2
+   * @throws URISyntaxException 
+   * @throws SAXException 
+   * @throws ParserConfigurationException 
    */
   @Test
-  public void transform42() throws IOException, TransformerException {
+  public void transform42() throws IOException, TransformerException, ParserConfigurationException, SAXException, URISyntaxException {
     String[] arr = new String[4];
     arr[0] = Thread.currentThread().getContextClassLoader()
         .getResource("xsl/unified2orchestra.xslt").getFile();
@@ -114,5 +128,6 @@ public class RepositoryXslTransformerTest {
     RepositoryXslTransformer.main(arr);
     File outFile = new File(arr[2]);
     Assert.assertTrue(outFile.exists());
+    //new RepositoryValidator().validate(new FileInputStream(outFile));
   }
 }

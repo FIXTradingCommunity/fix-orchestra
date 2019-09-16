@@ -52,6 +52,9 @@
 					<schemaIncludes>
 						<include>*.xsd</include>
 					</schemaIncludes>
+					<schemaExcludes>
+						<schemaExclude>xml.xsd</schemaExclude>
+					</schemaExcludes>
 					<bindingDirectory>src/main/resources/bindings</bindingDirectory>
 					<bindingIncludes>
 						<include>bindings.xml</include>
