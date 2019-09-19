@@ -9,7 +9,7 @@ This project is intended to be a demonstration. Currently, the generated tests a
 To run the test generator, enter this command line:
 
 ```
-java -jar testgen-1.2.0-RC3-SNAPSHOT-jar-with-dependencies <filename> [resources-dir] [source-dir]
+java -jar testgen-<version>-jar-with-dependencies <filename> [resources-dir] [source-dir]
 ```
 
 ### Command line arguments

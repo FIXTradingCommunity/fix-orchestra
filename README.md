@@ -38,9 +38,9 @@ All FIX standards specifications
 ### Current version: Version 1.0 Release Candidate 5
 Release Candidate 5 was approved by the Global Technical Committee on Sept. 19, 2019 for 90 day public review. The key enhancements in Release Candidate 5 were:
 
-Security keys for sessions
-Support for XML Inclusions (XInclude)
-Syntax for mututally exclusive message elements
+* Security keys for sessions
+* Support for XML Inclusions (XInclude)
+* Syntax for mututally exclusive message elements
 
 ### Version 1.0 Release Candidate 4
 Release Candidate 4 was approved by the Global Technical Committee on Feb. 21, 2019 for 90 day public review.
