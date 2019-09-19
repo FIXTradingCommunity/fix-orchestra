@@ -35,29 +35,33 @@ All FIX standards specifications
 
 ## Versions
 
-### Working version: Release Candidate 5
-Further refinement and additional demonstrations and tooling
+### Current version: Version 1.0 Release Candidate 5
+Release Candidate 5 was approved by the Global Technical Committee on Sept. 19, 2019 for 90 day public review. The key enhancements in Release Candidate 5 were:
 
-### Current version: Release Candidate 4
+Security keys for sessions
+Support for XML Inclusions (XInclude)
+Syntax for mututally exclusive message elements
+
+### Version 1.0 Release Candidate 4
 Release Candidate 4 was approved by the Global Technical Committee on Feb. 21, 2019 for 90 day public review.
 Themes:
 * Tool development
 * Schema refinements as needed
 
-### Release Candidate 3
+### Version 1.0 Release Candidate 3
 Release Candidate 3 was approved by the Global Technical Committee on March 8, 2018 for 90 day public review.
 Themes:
 * Semantic concepts
 * Additional demonstration applications: documentation generator, test generator
 * Refinement of previous deliverables
 
-### Release Candidate 2
+### Version 1.0 Release Candidate 2
 Release Candidate 2 was approved by the Global Technical Committee on May 18, 2017 for 90 day public review. The themes for Release Candidate 2 were:
 * Completion of a DSL grammar for conditional expressions
 * FIXatdl integration
 * Session configuration
 
-### Release Candidate 1
+### Version 1.0 Release Candidate 1
 Version 1.0 RC1 standardized the XML schema for FIX Orchestra and FIX Repository 2016 Edition. Release Candidate 1 was approved by the Global Technical Committee on Dec. 15, 2016 for 90 day public review. 
 
 
