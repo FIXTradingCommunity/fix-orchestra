@@ -29,6 +29,8 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.ls.LSInput;
 import org.w3c.dom.ls.LSResourceResolver;
@@ -44,23 +46,21 @@ import org.xml.sax.SAXParseException;
  */
 public class RepositoryValidator {
 
-
   private static final class ErrorListener implements ErrorHandler {
     private int errors = 0;
     private int fatalErrors = 0;
-
     private int warnings = 0;
 
     @Override
     public void error(SAXParseException exception) throws SAXException {
-      System.out.format("ERROR   %d:%d %s%n", exception.getLineNumber(),
-          exception.getColumnNumber(), exception.getMessage());
+      parentLogger.error("{}:{} {}", exception.getLineNumber(), exception.getColumnNumber(),
+          exception.getMessage());
       errors++;
     }
 
     @Override
     public void fatalError(SAXParseException exception) throws SAXException {
-      System.out.format("FATAL  %d:%d %s%n", exception.getLineNumber(), exception.getColumnNumber(),
+      parentLogger.fatal("{}:{} {}", exception.getLineNumber(), exception.getColumnNumber(),
           exception.getMessage());
       fatalErrors++;
     }
@@ -79,8 +79,8 @@ public class RepositoryValidator {
 
     @Override
     public void warning(SAXParseException exception) throws SAXException {
-      System.out.format("WARNING %d:%d %s%n", exception.getLineNumber(),
-          exception.getColumnNumber(), exception.getMessage());
+      parentLogger.warn("{}:{} {}", exception.getLineNumber(), exception.getColumnNumber(),
+          exception.getMessage());
       warnings++;
     }
 
@@ -100,8 +100,6 @@ public class RepositoryValidator {
       this.systemId = systemId;
       this.inputStream = new BufferedInputStream(inputStream);
       this.baseUri = baseURI;
-      // System.out.format("publicId=%s systemId=%s inputStream=%s%n", publicId, systemId,
-      // inputStream);
     }
 
     @Override
@@ -213,6 +211,8 @@ public class RepositoryValidator {
 
   }
 
+  private static final Logger parentLogger = LogManager.getLogger();
+
   /**
    * Validate an Orchestra repository file against the XML schema
    * 
@@ -258,7 +258,12 @@ public class RepositoryValidator {
     validator.validate(new DOMSource(document));
 
     if (errorHandler.getErrors() + errorHandler.getFatalErrors() > 0) {
+      parentLogger.fatal("RepositoryValidator complete; fatal errors={} errors={} warnings={}",
+          errorHandler.getFatalErrors(), errorHandler.getErrors(), errorHandler.getWarnings());
       throw new SAXException();
+    } else {
+      parentLogger.info("RepositoryValidator complete; fatal errors={} errors={} warnings={}",
+          errorHandler.getFatalErrors(), errorHandler.getErrors(), errorHandler.getWarnings());
     }
   }
 

@@ -73,8 +73,9 @@
 		<cucumber.version>1.2.5</cucumber.version>
 		<java.version>1.8</java.version>
 		<junit.version>4.11</junit.version>
+		<log4j.version>2.12.1</log4j.version>
 		<quickfixj.version>2.1.1</quickfixj.version>
-		<saxon.version>9.9.1-4</saxon.version>
+		<saxon.version>9.9.1-5</saxon.version>
 		<slf4j.version>1.7.22</slf4j.version>
 		<stringtemplate.version>4.1</stringtemplate.version>
 	</properties>

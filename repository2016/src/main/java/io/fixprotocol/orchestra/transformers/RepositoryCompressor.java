@@ -2,7 +2,6 @@ package io.fixprotocol.orchestra.transformers;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
@@ -22,6 +21,8 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.purl.dc.elements._1.ObjectFactory;
 import org.purl.dc.elements._1.SimpleLiteral;
 import org.purl.dc.terms.ElementOrRefinementContainer;
@@ -45,11 +46,10 @@ import io.fixprotocol._2016.fixrepository.Messages;
 import io.fixprotocol._2016.fixrepository.Repository;
 import io.fixprotocol._2016.fixrepository.Sections;
 
-
 /**
  * Selectively compresses an Orchestra file <br>
- * Copies selected elements to a new file.
- * Only selected messages are retained with one of the following filters
+ * Copies selected elements to a new file. Only selected messages are retained with one of the
+ * following filters
  * <ul>
  * <li>Messages that have a flow</li>
  * <li>Messages that have a specified category</li>
@@ -66,18 +66,30 @@ import io.fixprotocol._2016.fixrepository.Sections;
  *
  */
 public class RepositoryCompressor {
-  
-  static class HasFlow implements Predicate<MessageType> {
 
-    private final String flow;
+  public static class Builder {
 
-    public HasFlow(String flow) {
-      this.flow = flow;
+    private String inputFile;
+    private Predicate<MessageType> messagePredicate;
+    private String outputFile;
+
+    public RepositoryCompressor build() {
+      return new RepositoryCompressor(this);
     }
 
-    @Override
-    public boolean test(MessageType m) {
-      return flow.equals(m.getFlow());
+    Builder withInputFile(String inputFile) {
+      this.inputFile = inputFile;
+      return this;
+    }
+
+    Builder withMessagePredicate(Predicate<MessageType> messagePredicate) {
+      this.messagePredicate = messagePredicate;
+      return this;
+    }
+
+    Builder withOutputFile(String outputFile) {
+      this.outputFile = outputFile;
+      return this;
     }
   }
 
@@ -94,6 +106,53 @@ public class RepositoryCompressor {
       return category.equals(m.getCategory());
     }
   }
+  static class HasFlow implements Predicate<MessageType> {
+
+    private final String flow;
+
+    public HasFlow(String flow) {
+      this.flow = flow;
+    }
+
+    @Override
+    public boolean test(MessageType m) {
+      return flow.equals(m.getFlow());
+    }
+  }
+  static class HasSection implements Predicate<MessageType> {
+
+    private final String section;
+    private final BiPredicate<String, String> testCategory;
+
+    public HasSection(String section, BiPredicate<String, String> testCategory) {
+      this.section = section;
+      this.testCategory = testCategory;
+    }
+
+    @Override
+    public boolean test(MessageType m) {
+      return this.testCategory.test(m.getCategory(), this.section);
+    }
+  }
+
+  static class IsCategoryInSection implements BiPredicate<String, String> {
+
+    private List<CategoryType> categories;
+
+    public void setCategories(List<CategoryType> categories) {
+      this.categories = categories;
+    }
+
+    @Override
+    public boolean test(String category, String section) {
+      for (CategoryType categoryType : categories) {
+        if (categoryType.getName().equals(category) && categoryType.getSection().equals(section)) {
+          return true;
+        }
+      }
+      return false;
+    }
+  };
 
   static class NotCategory implements Predicate<MessageType> {
 
@@ -108,29 +167,13 @@ public class RepositoryCompressor {
       return !category.equals(m.getCategory());
     }
   }
- 
-  static class HasSection implements Predicate<MessageType> {
 
-    private final String section;
-    private final BiPredicate<String, String> testCategory;
-
-    public HasSection(String section, BiPredicate<String,String> testCategory) {
-      this.section = section;
-      this.testCategory = testCategory;
-    }
-
-    @Override
-    public boolean test(MessageType m) {
-      return this.testCategory.test(m.getCategory(), this.section);
-    }
-  }
-  
   static class NotSection implements Predicate<MessageType> {
 
     private final String section;
     private final BiPredicate<String, String> testCategory;
 
-    public NotSection(String section, BiPredicate<String,String> testCategory) {
+    public NotSection(String section, BiPredicate<String, String> testCategory) {
       this.section = section;
       this.testCategory = testCategory;
     }
@@ -140,98 +183,112 @@ public class RepositoryCompressor {
       return !this.testCategory.test(m.getCategory(), this.section);
     }
   }
-  
-  public static void main(String[] args) throws IOException, JAXBException  {
-    RepositoryCompressor compressor = new RepositoryCompressor();
-    compressor.parseArgs(args);
+
+  private static final Logger parentLogger = LogManager.getLogger();
+
+
+  static IsCategoryInSection isCategoryInSection = new IsCategoryInSection();
+
+  public static Builder builder() {
+    return new Builder();
   }
 
-  private void parseArgs( String[] args) throws IOException, JAXBException {
-    Options options = new Options();  
-    options.addOption(Option.builder("i").desc("path of input file").longOpt("input").numberOfArgs(1).required().build());
-    options.addOption(Option.builder("o").desc("path of output file").longOpt("output").numberOfArgs(1).required().build());
-    options.addOption(Option.builder("c").desc("select messages by category").longOpt("category").numberOfArgs(1).build());
-    options.addOption(Option.builder("s").desc("select messages by section").longOpt("section").numberOfArgs(1).build());
-    options.addOption(Option.builder("f").desc("select messages by flow").longOpt("flow").numberOfArgs(1).build());
-    options.addOption(Option.builder("n").desc("select messages except category").longOpt("notcategory").numberOfArgs(1).build());
-    options.addOption(Option.builder("x").desc("select messages except section").longOpt("notsection").numberOfArgs(1).build());
-    options.addOption(Option.builder("?").desc("display usage").longOpt("help").numberOfArgs(1).build());
-    
+  public static void main(String[] args) throws Exception {
+    RepositoryCompressor compressor = RepositoryCompressor.parseArgs(args).build();
+    compressor.compress();
+  }
+
+  public static Builder parseArgs(String[] args) throws ParseException {
+    Options options = new Options();
+    options.addOption(Option.builder("i").desc("path of input file").longOpt("input")
+        .numberOfArgs(1).required().build());
+    options.addOption(Option.builder("o").desc("path of output file").longOpt("output")
+        .numberOfArgs(1).required().build());
+    options.addOption(Option.builder("c").desc("select messages by category").longOpt("category")
+        .numberOfArgs(1).build());
+    options.addOption(Option.builder("s").desc("select messages by section").longOpt("section")
+        .numberOfArgs(1).build());
+    options.addOption(Option.builder("f").desc("select messages by flow").longOpt("flow")
+        .numberOfArgs(1).build());
+    options.addOption(Option.builder("n").desc("select messages except category")
+        .longOpt("notcategory").numberOfArgs(1).build());
+    options.addOption(Option.builder("x").desc("select messages except section")
+        .longOpt("notsection").numberOfArgs(1).build());
+    options.addOption(
+        Option.builder("?").desc("display usage").longOpt("help").numberOfArgs(1).build());
+
     DefaultParser parser = new DefaultParser();
     CommandLine cmd;
-    String inputFile;
-    String outputFile;     
-    Predicate<MessageType> messagePredicate = null;
-    
+
+    Builder builder = new Builder();
+
+
     try {
       cmd = parser.parse(options, args);
 
       if (cmd.hasOption("?")) {
-        usage(options);
+        HelpFormatter formatter = new HelpFormatter();
+        formatter.printHelp("RepositoryCompressor", options);
         System.exit(0);
       }
-      inputFile = cmd.getOptionValue("i");
-      outputFile = cmd.getOptionValue("o");
+
+      builder.inputFile = cmd.getOptionValue("i");
+      builder.outputFile = cmd.getOptionValue("o");
 
       if (cmd.hasOption("c")) {
         String category = cmd.getOptionValue("c");
-        messagePredicate = new HasCategory(category);
+        builder.messagePredicate = new HasCategory(category);
       }
-      
+
       if (cmd.hasOption("notcategory")) {
         String category = cmd.getOptionValue("notcategory");
-        if (messagePredicate == null) {
-          messagePredicate = new NotCategory(category);
+        if (builder.messagePredicate == null) {
+          builder.messagePredicate = new NotCategory(category);
         } else {
-          messagePredicate = messagePredicate.and(new NotCategory(category));
+          builder.messagePredicate = builder.messagePredicate.and(new NotCategory(category));
         }
       }
-      
+
       if (cmd.hasOption("s")) {
         String section = cmd.getOptionValue("s");
-        if (messagePredicate == null) {
-          messagePredicate = new HasSection(section, isCategoryInSection);
+        if (builder.messagePredicate == null) {
+          builder.messagePredicate = new HasSection(section, isCategoryInSection);
         } else {
-          messagePredicate = messagePredicate.and(new HasSection(section, isCategoryInSection));
+          builder.messagePredicate =
+              builder.messagePredicate.and(new HasSection(section, isCategoryInSection));
         }
       }
-      
+
       if (cmd.hasOption("notsection")) {
         String section = cmd.getOptionValue("notsection");
-        if (messagePredicate == null) {
-          messagePredicate = new NotSection(section, isCategoryInSection);
+        if (builder.messagePredicate == null) {
+          builder.messagePredicate = new NotSection(section, isCategoryInSection);
         } else {
-          messagePredicate = messagePredicate.and(new NotSection(section, isCategoryInSection));
+          builder.messagePredicate =
+              builder.messagePredicate.and(new NotSection(section, isCategoryInSection));
         }
       }
-      
+
       if (cmd.hasOption("f")) {
         String flow = cmd.getOptionValue("f");
-        if (messagePredicate == null) {
-          messagePredicate = new HasFlow(flow);
+        if (builder.messagePredicate == null) {
+          builder.messagePredicate = new HasFlow(flow);
         } else {
-          messagePredicate = messagePredicate.and(new HasFlow(flow));
+          builder.messagePredicate = builder.messagePredicate.and(new HasFlow(flow));
         }
       }
-      
-      if (messagePredicate == null) {
-        System.err.println("Must select one or more selection criteria: category / section / flow");
-        usage(options);
-        System.exit(1);
+
+      if (builder.messagePredicate == null) {
+        parentLogger.fatal(
+            "RepositoryCompressor invalid arguments; Must select one or more selection criteria: category / section / flow");
+        throw new ParseException(
+            "Must select one or more selection criteria: category / section / flow");
       }
-
-      compress(inputFile, outputFile, messagePredicate);
-
+      return builder;
     } catch (ParseException e) {
-      System.err.println(e.getMessage());
-      usage(options);
-      System.exit(1);
-    }   
-  }
-
-  private void usage(Options options) {
-    HelpFormatter formatter = new HelpFormatter();
-    formatter.printHelp("RepositoryCompressor", options);
+      parentLogger.fatal("RepositoryCompressor invalid arguments", e);
+      throw e;
+    }
   }
 
   static Predicate<? super MessageType> hasFlow() {
@@ -243,20 +300,28 @@ public class RepositoryCompressor {
   private final List<BigInteger> fieldIdList = new ArrayList<>();
   private final List<BigInteger> groupIdList = new ArrayList<>();
   private List<GroupType> groupList;
-  private Repository inRepository;
+  private final String inputFile;
+  private final Predicate<MessageType> messagePredicate;
+  private final String outputFile;
 
-  public void compress(String inputFile, String outputFile,
-      Predicate<? super MessageType> messagePredicate) throws IOException, JAXBException  {
-    
-    try (InputStream is = new FileInputStream(inputFile);
-        OutputStream os = new FileOutputStream(outputFile)) {
-      compress(is, os,  messagePredicate);
+  protected RepositoryCompressor(Builder builder) {
+    this.inputFile = builder.inputFile;
+    this.outputFile = builder.outputFile;
+    this.messagePredicate = builder.messagePredicate;
+  }
+
+  public void compress() throws Exception {
+
+    try (InputStream is = new FileInputStream(this.inputFile);
+        OutputStream os = new FileOutputStream(this.outputFile)) {
+      compress(is, os, this.messagePredicate);
     }
   }
-  
-  public void compress(InputStream is, OutputStream os,
-      Predicate<? super MessageType> messagePredicate) throws JAXBException  {
-    inRepository = unmarshal(is);
+
+  private void compress(InputStream is, OutputStream os,
+      Predicate<? super MessageType> messagePredicate) throws JAXBException {
+    final Repository inRepository = unmarshal(is);
+    isCategoryInSection.setCategories(inRepository.getCategories().getCategory());
     final Repository outRepository = new Repository();
     inRepository.copyTo(null, outRepository, AttributeCopyStrategy.INSTANCE);
 
@@ -347,8 +412,6 @@ public class RepositoryCompressor {
     }
   }
 
-
-
   private GroupType getGroup(BigInteger id) {
     for (GroupType group : groupList) {
       if (group.getId().equals(id)) {
@@ -386,7 +449,7 @@ public class RepositoryCompressor {
         GroupRefType groupRef = (GroupRefType) obj;
         GroupType group = getGroup(groupRef.getId());
         if (group == null) {
-          System.err.format("Group missing for groupRef; ID=%d%n", groupRef.getId().intValue());
+          parentLogger.error("Group missing for groupRef; ID={}", groupRef.getId().intValue());
           return;
         }
         fieldIdList.add(group.getNumInGroup().getId());
@@ -404,16 +467,5 @@ public class RepositoryCompressor {
       }
     }
   }
-  
-  private final BiPredicate<String,String> isCategoryInSection = (String category, String section) -> {
-    List<CategoryType> categories = this.inRepository.getCategories().getCategory();
-    for (CategoryType categoryType : categories) {
-      if (categoryType.getName().equals(category) && categoryType.getSection().equals(section)) {
-        return true;
-      }
-    }
-    return false;
-  };
-
 
 }
