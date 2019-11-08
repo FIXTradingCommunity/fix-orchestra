@@ -15,6 +15,8 @@
 package io.fixprotocol.orchestra.repository;
 
 import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -213,6 +215,12 @@ public class RepositoryValidator {
 
   private static final Logger parentLogger = LogManager.getLogger();
 
+  public static void main(String[] args) throws Exception {
+    RepositoryValidator validator = new RepositoryValidator();
+    InputStream is = new FileInputStream(new File(args[0]));
+    validator.validate(is);
+  }
+
   /**
    * Validate an Orchestra repository file against the XML schema
    * 
@@ -239,8 +247,7 @@ public class RepositoryValidator {
     factory.setResourceResolver(resourceResolver);
 
     // load a WXS schema, represented by a Schema instance
-    ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-    URL resourceUrl = classLoader.getResource("xsd/FixRepository2016.xsd");
+    URL resourceUrl = this.getClass().getClassLoader().getResource("xsd/FixRepository2016.xsd");
     String path = resourceUrl.getPath();
     String parentPath = path.substring(0, path.lastIndexOf('/'));
     URL baseUrl = new URL(resourceUrl.getProtocol(), null, parentPath);
