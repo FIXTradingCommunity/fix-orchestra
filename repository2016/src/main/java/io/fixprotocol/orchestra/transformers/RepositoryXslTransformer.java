@@ -1,14 +1,12 @@
 package io.fixprotocol.orchestra.transformers;
 
 import java.io.File;
-import java.io.IOException;
-
+import java.util.Arrays;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
-
 import net.sf.saxon.TransformerFactoryImpl;
 
 /**
@@ -19,7 +17,7 @@ import net.sf.saxon.TransformerFactoryImpl;
  * @author Uditha Wijerathna
  */
 public class RepositoryXslTransformer {
-    public static void main(String[] args) throws TransformerException, IOException {
+    public static void main(String[] args) throws TransformerException {
         if (args.length < 3) {
             System.out.println(
                 "Usage : $<application> [xsl_file_path] [input_xml_file_path] [output_file_path] [param=value]");
@@ -32,23 +30,35 @@ public class RepositoryXslTransformer {
         for (int i = 3; i < args.length; i++) {
           System.out.format("Parameter : %s%n", args[i]);  
         }
-        File xsltFile = new File(args[0]);
-        File inputXml = new File(args[1]);
-        File outputXml = new File(args[2]);
-        outputXml.getParentFile().mkdirs();
+        RepositoryXslTransformer transformer = new RepositoryXslTransformer();
+        transformer.transform(args);
+    }
 
-        Source xmlSource = new javax.xml.transform.stream.StreamSource(inputXml);
-        Source xsltSource = new javax.xml.transform.stream.StreamSource(xsltFile);
-        Result result = new javax.xml.transform.stream.StreamResult(outputXml);
+    public void transform(String[] args)
+        throws TransformerException {
+      File xsltFile = new File(args[0]);
+      File inputXml = new File(args[1]);
+      File outputXml = new File(args[2]);
+      String[] parameters = Arrays.copyOfRange(args, 3, args.length);     
+      transform(xsltFile, inputXml, outputXml, parameters);
+    }
 
-        TransformerFactory transFact = new TransformerFactoryImpl();
-        Transformer trans = transFact.newTransformer(xsltSource);
-        
-        for (int i = 3; i < args.length; i++) {
-          String[] parts = args[i].split("=");
-          trans.setParameter(parts[0], parts[1]);
-        }
-         
-        trans.transform(xmlSource, result);
+    public void transform(File xsltFile, File inputXml, File outputXml, String[] parameters)
+        throws TransformerException {
+      outputXml.getParentFile().mkdirs();
+
+      Source xmlSource = new javax.xml.transform.stream.StreamSource(inputXml);
+      Source xsltSource = new javax.xml.transform.stream.StreamSource(xsltFile);
+      Result result = new javax.xml.transform.stream.StreamResult(outputXml);
+
+      TransformerFactory transFact = new TransformerFactoryImpl();
+      Transformer trans = transFact.newTransformer(xsltSource);
+      
+      for (int i = 0; i < parameters.length; i++) {
+        String[] parts = parameters[i].split("=");
+        trans.setParameter(parts[0], parts[1]);
+      }
+       
+      trans.transform(xmlSource, result);
     }
 }
