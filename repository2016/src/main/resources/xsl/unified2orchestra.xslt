@@ -208,9 +208,10 @@
 			</xsl:choose>
 			<xsl:element name="fixr:numInGroup">
 				<xsl:attribute name="id" select="@id"/>
+				<xsl:apply-templates select="@textId"/>
 			</xsl:element>
 			<xsl:apply-templates mode="member"/>
-			<xsl:apply-templates select="@textId"/>
+			<xsl:apply-templates select="../@textId"/>
 		</group>
 	</xsl:template>
 	<xsl:template match="repeatingGroup" mode="member">
