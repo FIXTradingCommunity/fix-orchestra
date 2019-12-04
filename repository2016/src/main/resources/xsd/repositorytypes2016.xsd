@@ -180,6 +180,12 @@
 					<xs:documentation>Specifies a how a component or each group entry is populated (optional)</xs:documentation>
 				</xs:annotation>
 			</xs:element>
+			<xs:element name="rule" type="fixr:componentRuleType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Rule to tell when a conditionally require component
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attributeGroup ref="fixr:refidGrp"/>
@@ -191,6 +197,21 @@
 					code generation and the like. Allows more than one instance of a
 					component in a message.
 				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="componentRuleType">
+		<xs:sequence>
+			<xs:element name="when" type="fixr:expressionType"/>
+		</xs:sequence>
+		<xs:attribute name="name" type="fixr:Name_t">
+			<xs:annotation>
+				<xs:documentation>Name of this rule</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="presence" type="fixr:presence_t">
+			<xs:annotation>
+				<xs:documentation>Overrides presence when expression is true</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 	</xs:complexType>
@@ -213,20 +234,6 @@
 		</xs:attribute>
 		<xs:attribute name="which" type="fixr:memberType"/>
 	</xs:complexType>
-	<xs:simpleType name="memberType">
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="oneOf">
-				<xs:annotation>
-					<xs:documentation>Members are mutually exclusive; exactly one must be present.</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="anyOf">
-				<xs:annotation>
-					<xs:documentation>At least one of the members must be present.</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-		</xs:restriction>
-	</xs:simpleType>
 	<xs:complexType name="conceptType">
 		<xs:sequence>
 			<xs:choice maxOccurs="unbounded">
@@ -615,6 +622,20 @@
 	</xs:simpleType>
 	<xs:simpleType name="language_t">
 		<xs:restriction base="xs:language"/>
+	</xs:simpleType>
+	<xs:simpleType name="memberType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="oneOf">
+				<xs:annotation>
+					<xs:documentation>Members are mutually exclusive; exactly one must be present.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="anyOf">
+				<xs:annotation>
+					<xs:documentation>At least one of the members must be present.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
 	</xs:simpleType>
 	<xs:attributeGroup name="messageAttribGrp">
 		<xs:attribute name="msgType" type="fixr:MsgType_t"/>
