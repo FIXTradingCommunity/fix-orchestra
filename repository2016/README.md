@@ -1,7 +1,7 @@
 # Module repository2016
 This module provides an XML schema for message structures and workflow. The message structure feature is also known as FIX Repository 2016 Edition. Users may express workflow as responses to messages under different scenarios, as well as external state information that may influence behaviors.
 
-See documentation of the schema in [Orchestra specifications](https://github.com/FIXTradingCommunity/fix-orchestra-spec/tree/master/v1-0-RC2)
+See documentation of the schema in [Orchestra specifications](https://github.com/FIXTradingCommunity/fix-orchestra-spec/tree/master/v1-0-DRAFT)
 
 The XML namespace for the schema is `http://fixprotocol.io/2016/fixrepository`.
 
