@@ -553,7 +553,7 @@ public class ScoreVisitorImplTest {
   }
   
   @Test
-  public void testVisitTime() throws IOException {
+  public void testVisitTimestamp() throws IOException {
     final String value = "#2017-02-03T11:12:13.123456789Z#";
     ScoreParser parser = parse(value);
     AnyExpressionContext ctx = parser.anyExpression();
@@ -565,8 +565,8 @@ public class ScoreVisitorImplTest {
   }
   
   @Test
-  public void testVisitTimestamp() throws IOException {
-    final String value = "#T11:12:13.123456789Z#";
+  public void testVisitTimeOnly() throws IOException {
+    final String value = "#11:12:13.123456789Z#";
     ScoreParser parser = parse(value);
     AnyExpressionContext ctx = parser.anyExpression();
     Object expression = visitor.visitAnyExpression(ctx);
