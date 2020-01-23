@@ -1,7 +1,7 @@
 # Module interfaces2016
 This module provides an XML schema for service offerings, protocols and session provisioning. Service elements may link to Orchestra files composed in the `repository2016` schema.
 
-See documentation of the schema in [Orchestra specifications](https://github.com/FIXTradingCommunity/fix-orchestra-spec/tree/master/v1-0-RC2)
+See documentation of the schema in [Orchestra specifications](https://github.com/FIXTradingCommunity/fix-orchestra-spec/tree/master/v1-0-RC5)
 
 The XML namespace for the schema is `http://fixprotocol.io/2016/fixinterfaces`.
 
