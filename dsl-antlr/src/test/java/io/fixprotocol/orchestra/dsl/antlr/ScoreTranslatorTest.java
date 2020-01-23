@@ -92,7 +92,7 @@ public class ScoreTranslatorTest {
     ScoreTranslator visitor = new ScoreTranslator();
     AnyExpressionContext ctx = p.anyExpression();
     String text = visitor.visitAnyExpression(ctx);
-    System.out.println(text);
+    //System.out.println(text);
   }
 
 }

@@ -18,7 +18,7 @@
 		</dependency>
 		<dependency>
 			<groupId>io.fixprotocol.orchestra</groupId>
-			<artifactId>interfaces2016</artifactId>
+			<artifactId>interfaces</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
