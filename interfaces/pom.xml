@@ -4,9 +4,9 @@
 	<parent>
 		<groupId>io.fixprotocol.orchestra</groupId>
 		<artifactId>parent</artifactId>
-		<version>1.4.1-RC5-SNAPSHOT</version>
+		<version>1.4.2-RC5-SNAPSHOT</version>
 	</parent>
-	<artifactId>interfaces2016</artifactId>
+	<artifactId>interfaces</artifactId>
 	<name>${project.groupId}:${project.artifactId}</name>
 	<description>XML schema for FIX Orchestra session configuration</description>
 

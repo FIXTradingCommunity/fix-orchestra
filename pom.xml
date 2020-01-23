@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.fixprotocol.orchestra</groupId>
 	<artifactId>parent</artifactId>
-	<version>1.4.1-RC5-SNAPSHOT</version>
+	<version>1.4.2-RC5-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>${project.groupId}:${project.artifactId}</name>
 	<description>Parent project for FIX Orchestra</description>
@@ -53,10 +53,10 @@
 	</distributionManagement>
 
 	<modules>
-		<module>interfaces2016</module>
+		<module>interfaces</module>
 		<module>session-quickfix</module>
 		<module>repository2010</module>
-		<module>repository2016</module>
+		<module>repository</module>
 		<module>dsl-antlr</module>
 		<module>message-model</module>
 		<module>repository-quickfix</module>
