@@ -10,7 +10,7 @@
 	</xs:annotation>
 	<!-- includes xml:base to support XInclude -->
 	<xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="http://www.w3.org/2001/03/xml.xsd"/>
-	<xs:include schemaLocation="repositorytypes2016.xsd"/>
+	<xs:include schemaLocation="repositorytypes.xsd"/>
 	<xs:import namespace="http://purl.org/dc/terms/" schemaLocation="dcterms.xsd"/>
 	<xs:element name="actors">
 		<xs:annotation>

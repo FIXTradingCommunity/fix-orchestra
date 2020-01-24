@@ -247,7 +247,7 @@ public class RepositoryValidator {
     factory.setResourceResolver(resourceResolver);
 
     // load a WXS schema, represented by a Schema instance
-    URL resourceUrl = this.getClass().getClassLoader().getResource("xsd/FixRepository2016.xsd");
+    URL resourceUrl = this.getClass().getClassLoader().getResource("xsd/repository.xsd");
     String path = resourceUrl.getPath();
     String parentPath = path.substring(0, path.lastIndexOf('/'));
     URL baseUrl = new URL(resourceUrl.getProtocol(), null, parentPath);
