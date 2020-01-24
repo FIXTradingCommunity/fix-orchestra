@@ -1,3 +1,17 @@
+/*
+ * Copyright 2017-2020 FIX Protocol Ltd
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ *
+ */
 package io.fixprotocol.orchestra.quickfix;
 
 import java.io.File;
@@ -19,22 +33,22 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import io.fixprotocol._2016.fixrepository.CodeSetType;
-import io.fixprotocol._2016.fixrepository.CodeType;
-import io.fixprotocol._2016.fixrepository.ComponentRefType;
-import io.fixprotocol._2016.fixrepository.ComponentType;
-import io.fixprotocol._2016.fixrepository.FieldRefType;
-import io.fixprotocol._2016.fixrepository.FieldType;
-import io.fixprotocol._2016.fixrepository.GroupRefType;
-import io.fixprotocol._2016.fixrepository.GroupType;
-import io.fixprotocol._2016.fixrepository.MessageType;
-import io.fixprotocol._2016.fixrepository.Repository;
+import io.fixprotocol._2020.orchestra.repository.CodeSetType;
+import io.fixprotocol._2020.orchestra.repository.CodeType;
+import io.fixprotocol._2020.orchestra.repository.ComponentRefType;
+import io.fixprotocol._2020.orchestra.repository.ComponentType;
+import io.fixprotocol._2020.orchestra.repository.FieldRefType;
+import io.fixprotocol._2020.orchestra.repository.FieldType;
+import io.fixprotocol._2020.orchestra.repository.GroupRefType;
+import io.fixprotocol._2020.orchestra.repository.GroupType;
+import io.fixprotocol._2020.orchestra.repository.MessageType;
+import io.fixprotocol._2020.orchestra.repository.Repository;
 
 /**
  * Generates message classes for QuickFIX/J from a FIX Orchestra file
  * <p>
- * Unlike the QuickFIX/J code generator, this utility works directly from a FIX Orchestra or FIX
- * Repository 2016 Edition file rather than from a QuickFIX data dictionary file.
+ * Unlike the QuickFIX/J code generator, this utility works directly from a FIX Orchestra 
+ * file rather than from a QuickFIX data dictionary file.
  * <p>
  * For now, message validation in QuickFIX/J still requires a data dictionary file, but in future
  * versions, validations may be delegated to additional generated code that takes advantage to

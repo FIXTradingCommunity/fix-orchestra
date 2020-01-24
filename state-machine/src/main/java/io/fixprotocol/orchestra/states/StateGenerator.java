@@ -1,3 +1,17 @@
+/*
+ * Copyright 2017-2020 FIX Protocol Ltd
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ *
+ */
 package io.fixprotocol.orchestra.states;
 
 import java.io.File;
@@ -22,12 +36,12 @@ import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STErrorListener;
 import org.stringtemplate.v4.STGroupFile;
 import org.stringtemplate.v4.misc.STMessage;
-import io.fixprotocol._2016.fixrepository.ActorType;
-import io.fixprotocol._2016.fixrepository.Actors;
-import io.fixprotocol._2016.fixrepository.Repository;
-import io.fixprotocol._2016.fixrepository.StateMachineType;
-import io.fixprotocol._2016.fixrepository.StateType;
-import io.fixprotocol._2016.fixrepository.TransitionType;
+import io.fixprotocol._2020.orchestra.repository.ActorType;
+import io.fixprotocol._2020.orchestra.repository.Actors;
+import io.fixprotocol._2020.orchestra.repository.Repository;
+import io.fixprotocol._2020.orchestra.repository.StateMachineType;
+import io.fixprotocol._2020.orchestra.repository.StateType;
+import io.fixprotocol._2020.orchestra.repository.TransitionType;
 
 
 public class StateGenerator {

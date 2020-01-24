@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 FIX Protocol Ltd
+ * Copyright 2017-2020 FIX Protocol Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -16,8 +16,8 @@ package io.fixprotocol.orchestra.message;
 
 import java.util.List;
 
-import io.fixprotocol._2016.fixrepository.CodeSetType;
-import io.fixprotocol._2016.fixrepository.CodeType;
+import io.fixprotocol._2020.orchestra.repository.CodeSetType;
+import io.fixprotocol._2020.orchestra.repository.CodeType;
 import io.fixprotocol.orchestra.model.FixNode;
 import io.fixprotocol.orchestra.model.FixType;
 import io.fixprotocol.orchestra.model.FixValue;

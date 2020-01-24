@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 FIX Protocol Ltd
+ * Copyright 2017-2020 FIX Protocol Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -17,13 +17,13 @@ package io.fixprotocol.orchestra.model.quickfix;
 import java.util.List;
 import java.util.function.Function;
 
-import io.fixprotocol._2016.fixrepository.BlockAssignmentType;
-import io.fixprotocol._2016.fixrepository.CodeSetType;
-import io.fixprotocol._2016.fixrepository.ComponentRefType;
-import io.fixprotocol._2016.fixrepository.FieldRefType;
-import io.fixprotocol._2016.fixrepository.GroupRefType;
-import io.fixprotocol._2016.fixrepository.GroupType;
-import io.fixprotocol._2016.fixrepository.MessageType;
+import io.fixprotocol._2020.orchestra.repository.BlockAssignmentType;
+import io.fixprotocol._2020.orchestra.repository.CodeSetType;
+import io.fixprotocol._2020.orchestra.repository.ComponentRefType;
+import io.fixprotocol._2020.orchestra.repository.FieldRefType;
+import io.fixprotocol._2020.orchestra.repository.GroupRefType;
+import io.fixprotocol._2020.orchestra.repository.GroupType;
+import io.fixprotocol._2020.orchestra.repository.MessageType;
 import io.fixprotocol.orchestra.dsl.antlr.Evaluator;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreException;
 import io.fixprotocol.orchestra.message.CodeSetScope;

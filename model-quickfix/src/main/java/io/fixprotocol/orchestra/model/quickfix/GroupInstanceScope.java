@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 FIX Protocol Ltd
+ * Copyright 2017-2020 FIX Protocol Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -16,9 +16,9 @@ package io.fixprotocol.orchestra.model.quickfix;
 
 import java.util.List;
 
-import io.fixprotocol._2016.fixrepository.FieldRefType;
-import io.fixprotocol._2016.fixrepository.GroupRefType;
-import io.fixprotocol._2016.fixrepository.GroupType;
+import io.fixprotocol._2020.orchestra.repository.FieldRefType;
+import io.fixprotocol._2020.orchestra.repository.GroupRefType;
+import io.fixprotocol._2020.orchestra.repository.GroupType;
 
 import io.fixprotocol.orchestra.dsl.antlr.Evaluator;
 

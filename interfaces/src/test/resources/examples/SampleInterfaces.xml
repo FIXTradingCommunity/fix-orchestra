@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<fixi:interfaces xmlns:dcterms="http://purl.org/dc/terms/" xmlns:fixi="http://fixprotocol.io/2016/fixinterfaces" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://fixprotocol.io/2016/fixinterfaces ../../../main/resources/xsd/FixInterfaces.xsd">
+<fixi:interfaces xmlns:dcterms="http://purl.org/dc/terms/" xmlns:fixi="http://fixprotocol.io/2020/orchestra/interfaces" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://fixprotocol.io/2020/orchestra/interfaces ../../../main/resources/xsd/interfaces.xsd">
 	<fixi:metadata>
 		<dcterms:subject>Service offerings and sessions example file</dcterms:subject>
 		<dcterms:date>2019-08-07T09:30:00Z</dcterms:date>

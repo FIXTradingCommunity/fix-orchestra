@@ -1,3 +1,17 @@
+/*
+ * Copyright 2017-2020 FIX Protocol Ltd
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ *
+ */
 package io.fixprotocol.orchestra.transformers;
 
 import java.io.FileInputStream;
@@ -26,25 +40,25 @@ import org.apache.logging.log4j.Logger;
 import org.purl.dc.elements._1.ObjectFactory;
 import org.purl.dc.elements._1.SimpleLiteral;
 import org.purl.dc.terms.ElementOrRefinementContainer;
-import io.fixprotocol._2016.fixrepository.Actors;
-import io.fixprotocol._2016.fixrepository.Categories;
-import io.fixprotocol._2016.fixrepository.CategoryType;
-import io.fixprotocol._2016.fixrepository.CodeSetType;
-import io.fixprotocol._2016.fixrepository.CodeSets;
-import io.fixprotocol._2016.fixrepository.ComponentRefType;
-import io.fixprotocol._2016.fixrepository.ComponentType;
-import io.fixprotocol._2016.fixrepository.Components;
-import io.fixprotocol._2016.fixrepository.Datatypes;
-import io.fixprotocol._2016.fixrepository.FieldRefType;
-import io.fixprotocol._2016.fixrepository.FieldType;
-import io.fixprotocol._2016.fixrepository.Fields;
-import io.fixprotocol._2016.fixrepository.GroupRefType;
-import io.fixprotocol._2016.fixrepository.GroupType;
-import io.fixprotocol._2016.fixrepository.Groups;
-import io.fixprotocol._2016.fixrepository.MessageType;
-import io.fixprotocol._2016.fixrepository.Messages;
-import io.fixprotocol._2016.fixrepository.Repository;
-import io.fixprotocol._2016.fixrepository.Sections;
+import io.fixprotocol._2020.orchestra.repository.Actors;
+import io.fixprotocol._2020.orchestra.repository.Categories;
+import io.fixprotocol._2020.orchestra.repository.CategoryType;
+import io.fixprotocol._2020.orchestra.repository.CodeSetType;
+import io.fixprotocol._2020.orchestra.repository.CodeSets;
+import io.fixprotocol._2020.orchestra.repository.ComponentRefType;
+import io.fixprotocol._2020.orchestra.repository.ComponentType;
+import io.fixprotocol._2020.orchestra.repository.Components;
+import io.fixprotocol._2020.orchestra.repository.Datatypes;
+import io.fixprotocol._2020.orchestra.repository.FieldRefType;
+import io.fixprotocol._2020.orchestra.repository.FieldType;
+import io.fixprotocol._2020.orchestra.repository.Fields;
+import io.fixprotocol._2020.orchestra.repository.GroupRefType;
+import io.fixprotocol._2020.orchestra.repository.GroupType;
+import io.fixprotocol._2020.orchestra.repository.Groups;
+import io.fixprotocol._2020.orchestra.repository.MessageType;
+import io.fixprotocol._2020.orchestra.repository.Messages;
+import io.fixprotocol._2020.orchestra.repository.Repository;
+import io.fixprotocol._2020.orchestra.repository.Sections;
 
 /**
  * Selectively compresses an Orchestra file <br>

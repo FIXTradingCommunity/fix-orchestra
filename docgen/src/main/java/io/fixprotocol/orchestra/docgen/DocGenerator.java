@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 FIX Protocol Ltd
+ * Copyright 2017-2020 FIX Protocol Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -45,30 +45,30 @@ import org.stringtemplate.v4.STGroupFile;
 import org.stringtemplate.v4.STWriter;
 import org.stringtemplate.v4.misc.STMessage;
 
-import io.fixprotocol._2016.fixrepository.ActorType;
-import io.fixprotocol._2016.fixrepository.Actors;
-import io.fixprotocol._2016.fixrepository.CatComponentTypeT;
-import io.fixprotocol._2016.fixrepository.Categories;
-import io.fixprotocol._2016.fixrepository.CategoryType;
-import io.fixprotocol._2016.fixrepository.CodeSetType;
-import io.fixprotocol._2016.fixrepository.CodeType;
-import io.fixprotocol._2016.fixrepository.ComponentRefType;
-import io.fixprotocol._2016.fixrepository.ComponentType;
-import io.fixprotocol._2016.fixrepository.Datatype;
-import io.fixprotocol._2016.fixrepository.FieldRefType;
-import io.fixprotocol._2016.fixrepository.FieldRuleType;
-import io.fixprotocol._2016.fixrepository.FieldType;
-import io.fixprotocol._2016.fixrepository.FlowType;
-import io.fixprotocol._2016.fixrepository.GroupRefType;
-import io.fixprotocol._2016.fixrepository.GroupType;
-import io.fixprotocol._2016.fixrepository.MessageRefType;
-import io.fixprotocol._2016.fixrepository.MessageType;
-import io.fixprotocol._2016.fixrepository.MessageType.Responses;
-import io.fixprotocol._2016.fixrepository.PresenceT;
-import io.fixprotocol._2016.fixrepository.Repository;
-import io.fixprotocol._2016.fixrepository.ResponseType;
-import io.fixprotocol._2016.fixrepository.StateMachineType;
-import io.fixprotocol._2016.fixrepository.SupportType;
+import io.fixprotocol._2020.orchestra.repository.ActorType;
+import io.fixprotocol._2020.orchestra.repository.Actors;
+import io.fixprotocol._2020.orchestra.repository.CatComponentTypeT;
+import io.fixprotocol._2020.orchestra.repository.Categories;
+import io.fixprotocol._2020.orchestra.repository.CategoryType;
+import io.fixprotocol._2020.orchestra.repository.CodeSetType;
+import io.fixprotocol._2020.orchestra.repository.CodeType;
+import io.fixprotocol._2020.orchestra.repository.ComponentRefType;
+import io.fixprotocol._2020.orchestra.repository.ComponentType;
+import io.fixprotocol._2020.orchestra.repository.Datatype;
+import io.fixprotocol._2020.orchestra.repository.FieldRefType;
+import io.fixprotocol._2020.orchestra.repository.FieldRuleType;
+import io.fixprotocol._2020.orchestra.repository.FieldType;
+import io.fixprotocol._2020.orchestra.repository.FlowType;
+import io.fixprotocol._2020.orchestra.repository.GroupRefType;
+import io.fixprotocol._2020.orchestra.repository.GroupType;
+import io.fixprotocol._2020.orchestra.repository.MessageRefType;
+import io.fixprotocol._2020.orchestra.repository.MessageType;
+import io.fixprotocol._2020.orchestra.repository.MessageType.Responses;
+import io.fixprotocol._2020.orchestra.repository.PresenceT;
+import io.fixprotocol._2020.orchestra.repository.Repository;
+import io.fixprotocol._2020.orchestra.repository.ResponseType;
+import io.fixprotocol._2020.orchestra.repository.StateMachineType;
+import io.fixprotocol._2020.orchestra.repository.SupportType;
 
 /**
  * @author Don Mendelson

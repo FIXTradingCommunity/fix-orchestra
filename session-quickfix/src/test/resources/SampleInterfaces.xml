@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <fixi:interfaces xmlns:dcterms="http://purl.org/dc/terms/"
-xmlns:fixi="http://fixprotocol.io/2016/fixinterfaces"
+xmlns:fixi="http://fixprotocol.io/2020/orchestra/interfaces"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xsi:schemaLocation="http://fixprotocol.io/2016/fixinterfaces ../../../../interfaces2016/src/main/resources/xsd/FixInterfaces.xsd">
+xsi:schemaLocation="http://fixprotocol.io/2020/orchestra/interfaces ../../../../interfaces2016/src/main/resources/xsd/interfaces.xsd">
 	<fixi:metadata>
 		<dcterms:subject>Service offerings and sessions example file</dcterms:subject>
 		<dcterms:description>Mock-up presentation for concepts</dcterms:description>
