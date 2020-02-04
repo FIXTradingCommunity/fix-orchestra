@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fixi:interfaces xmlns:dcterms="http://purl.org/dc/terms/" xmlns:fixi="http://fixprotocol.io/2020/orchestra/interfaces" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://fixprotocol.io/2020/orchestra/interfaces ../../../main/resources/xsd/interfaces.xsd">
+	<fixi:metadata>
+		<dcterms:subject>Service offerings and sessions example file</dcterms:subject>
+		<dcterms:date>2019-08-07T09:30:00Z</dcterms:date>
+	</fixi:metadata>
+	<fixi:interface name="Private">
+		<!-- one or more service offerings, with local orchestration file or internet address -->
+		<fixi:service name="orderEntry" orchestration="https://mydomain.com/orchestra/orderEntry.xml"/>
+		<!-- the protcol stack -->
+		<fixi:userInterface name="ATDL" orchestration="https://mydomain.com/orchestra/algo.xml"/>
+		<fixi:encoding name="TagValue"/>
+		<fixi:sessionProtocol name="FIXT.1.1" reliability="recoverable" orchestration="https://mydomain.com/orchestra/session.xml">
+			<fixi:annotation>
+				<fixi:documentation langId="en-us">FIX session protocol</fixi:documentation>
+			</fixi:annotation>
+		</fixi:sessionProtocol>
+		<fixi:transport name="TCP"/>
+		<fixi:sessions>
+			<fixi:session name="XYZ-ABC">
+				<!-- inherits services and protocols from interface -->
+				<!-- alternate addresses are supported -->
+				<fixi:transport address="10.96.1.2:567" use="primary"/>
+				<fixi:transport address="10.96.2.2:567" use="secondary"/>
+				<!-- there can be any number of identifiers -->
+				<fixi:identifier name="SenderCompID">
+					<fixi:value>XYZ</fixi:value>
+				</fixi:identifier>
+				<fixi:identifier name="TargetCompID">
+					<fixi:value>ABC</fixi:value>
+				</fixi:identifier>
+				<!-- tells when session becomes effective so it can be configured in advance -->
+				<fixi:activationTime>2019-08-07T09:30:00Z</fixi:activationTime>
+			</fixi:session>
+		</fixi:sessions>
+	</fixi:interface>
+	<fixi:interface name="Public">
+		<fixi:service name="marketData" orchestration="https://mydomain.com/orchestra/marketData.xml"/>
+		<!-- the protcol stack -->
+		<fixi:encoding name="SBE" messageSchema="https://mydomain.com/orchestra/marketDataSchema.xml"/>
+		<fixi:transport name="UDPMulticast" address="224.0.0.1" reliability="bestEffort" messageCast="multicast"/>
+		<fixi:sessions>
+			<fixi:session name="MD1">
+		</fixi:session>
+		</fixi:sessions>
+	</fixi:interface>
+	<fixi:interface name="OrderRouting">
+		<fixi:service name="orderRouting" orchestration="https://mydomain.com/orchestra/orderRouting.xml"/>
+		<fixi:encoding name="GPB" messageSchema="file://something.proto">
+			<fixi:annotation>
+				<fixi:documentation>Message schema attribute demonstrates extensibility</fixi:documentation>
+			</fixi:annotation>
+		</fixi:encoding>
+		<fixi:protocol name="TLS" version="1.2" layer="transport">
+			<fixi:annotation>
+				<fixi:documentation>Additional protocols may be added</fixi:documentation>
+			</fixi:annotation>
+		</fixi:protocol>
+		<fixi:sessions>
+			<fixi:session name="OR1">
+			<fixi:securityKeys><![CDATA[
+-----BEGIN CERTIFICATE-----
+MIIFOzCCAyOgAwIBAgIRAJ7vjU69WHIyjOvNNQ+M6lEwDQYJKoZIhvcNAQELBQAw
+czELMAkGA1UEBhMCVVMxETAPBgNVBAgTCE5FVyBZT1JLMREwDwYDVQQHEwhORVcg
+WU9SSzEVMBMGA1UEChMMQmxvb21iZXJnIExQMQwwCgYDVQQLEwNGSVgxGTAXBgNV
+BAMTEEZJWCBDb25uZWN0aXZpdHkwHhcNMTgwOTI0MTEyMzI3WhcNMjAwOTIzMTEy
+ODI3WjBrMQswCQYDVQQGEwJVUzERMA8GA1UECAwITkVXIFlPUksxETAPBgNVBAcM
+CE5FVyBZT1JLMRUwEwYDVQQKDAxCbG9vbWJlcmcgTFAxDDAKBgNVBAsMA0ZJWDER
+MA8GA1UEAwwINTY1MTk0OjEwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIB
+AQChkIYKkMnp2amvLOI7ChXvUUaHdUKKEwXKiztR66USt/IbQBrNUIg5j+CSahpf
+cnGdE8wORkrXHVRyqLIkaNeYxr4VKdA91MhKeC52ljJemCeiphQVrgJl8FVSfcK3
+wMkrCbpBOdSWARuNYmEUrObVMy7uHffgu/dwmDvbt4HQCLvuNOBUIxjzR/NRaxYp
+b+nHQRuCOkPQAU1xr7Efk2vjJDbKZIk4hHl58KBDh+5bz/xlJpkRQTtFIi8I9prA
+GvU7wzh1/W/FY8+54+RtuQvvngbTLP9ULXlddmsuJ8V5HRTvgBC0R32vwgF9k8F0
+l/CAmRQMvPLqR2h1FrOmqWSjAgMBAAGjgdEwgc4wHQYDVR0OBBYEFH/CD81G4bGe
+/ILwNjSzrP6NwoXoMB8GA1UdIwQYMBaAFP97ZY0F9aWeeJL/uWLEjCz2ojcZMAwG
+A1UdEwEB/wQCMAAwCwYDVR0PBAQDAgWgMBMGA1UdJQQMMAoGCCsGAQUFBwMCMDoG
+A1UdHwQzMDEwL6AtoCuGKWh0dHA6Ly9iYmNhLmJsb29tYmVyZy5jb20vZml4Y29u
+bi1jcmwucGVtMCAGA1UdEgQZMBeBFWNhYWRtaW5AYmxvb21iZXJnLmNvbTANBgkq
+hkiG9w0BAQsFAAOCAgEA1ATBjvQ76la2MAQZpYmskpVLRgrTmJui5A6GS6RdJiu5
+WyYEpcfaQ8vHwFFEzwwel0+eQfErceOvaqbwtyCQL7na14M1dsMABOb96SUMy+UL
+8S7Rcd7SXg8i4JrSyiIYA9JJWXrsmmT3i6Gnz3wCj674N3lPX3/auX0fOv0t85Kr
+HgW2mFEzt0ABciEY/0/jb/mnkwlCjkZwzWECWjXLfUyBiYC1yN7cepb7945DuVYY
+s8bX5lwjW8Jf1kiXhXnWUYoQ5QrI11vGv6BWMVNI0y+kVj4E2yY5md58tn3urbb9
+VjTDR/BmFl2Yg/n/KajTyNwsjd14vcxOrCWh7j77ogCJnFODG28iYqS9kBWv1RZe
+lgFurrWe/MwKZeX2UsZnKvUIADZILJraOBLYtHgFuS99zh4YUlliTGD08FvMLcJt
+x/5G8Cy11yXYJocmYVRDFNIWfy3f4WRv0KmLsjwBX2GrlVzo7lpg8KuyI0XudcGq
+GJjjvXntXsX8RD5/LVnaf/WOoaFNHgBxuUeWLhFVpA1NVkUgyfuacyZcRLlFZnUR
+K6G2N13xV0faTig0sxd5KalXfb7D0+MYAkNWHUTvTicDMR9dHp3JzWbpc6zIn2f3
+VoYxTV3x4ViNr8u6tgLtkxemaXy1WK/+qcUDr3GGr3B7uqMBugTasB32IIYz6zo=
+-----END CERTIFICATE-----
+-----BEGIN CA CERTIFICATES-----
+-----BEGIN CERTIFICATE-----
+MIIGUzCCBDugAwIBAgICDFswDQYJKoZIhvcNAQELBQAwgaAxCzAJBgNVBAYTAlVT
+MREwDwYDVQQIEwhORVcgWU9SSzERMA8GA1UEBxMITkVXIFlPUksxFTATBgNVBAoT
+DEJsb29tYmVyZyBMUDEMMAoGA1UECxQDUiZEMSAwHgYDVQQDExdTeXN0ZW0gU2Vj
+dXJpdHkgUm9vdCBDQTEkMCIGCSqGSIb3DQEJARYVY2FhZG1pbkBibG9vbWJlcmcu
+Y29tMB4XDTE2MDkwNzE2MTAyNFoXDTI2MDkwNTE2MTAyNFowczELMAkGA1UEBhMC
+VVMxETAPBgNVBAgTCE5FVyBZT1JLMREwDwYDVQQHEwhORVcgWU9SSzEVMBMGA1UE
+ChMMQmxvb21iZXJnIExQMQwwCgYDVQQLEwNGSVgxGTAXBgNVBAMTEEZJWCBDb25u
+ZWN0aXZpdHkwggIiMA0GCSqGSIb3DQEBAQUAA4ICDwAwggIKAoICAQDWofPvnFc9
+966ks4PMs61WudYAA7zvo2CquS71Pc7Aj288M+72RGHwQNEIlk54+XG/xotZpT27
+5q2GnSAJ+SHt+y6X8bp7E8qPGltMFBskK+TXhtUeLi2XZc5eW8bjlZgxFyCjXdeo
+ZNpm0emmttnWjTZDrvxWyRaj3E6Wh2+80fe/7LyiA8M4NYAMULRmvwyafgQyTTqv
+ajNopcMviBItmPuQ9obHd46ADSSe8IxQ9QjpBFTcru53pW/gAjWx1mU7EZ8RN1gd
+vAvt7SQwG4z/vOoAEPay65mf098RcehBCDwrSUQmVquIaVPtSwgH/rzny70GVwCf
+XAXM3JtiZ3u2GaFLN7bFMh7cX6er4YESBLBQ16CGdXDF/OdUI9v9+yJ/6nTU+YE0
+aWH+SvQHxmxKT7TcXM7spXzHs2FpmZ04WnmEp479jYUNMsWGh1r/1O1j5c3U/owM
+1bIQmk6G6/flr9DDqRlQinnltw86FelzisTmCHyp27SxG7CWTbb5TK3kA+MtlM7H
+A5Md+UhNu5wA8iV2hW3LxXiX2U5f6IP0dIoEUuw/I2V+zblswmU0Fd5Hk3QLcOUZ
+CLPrcYZ8MZK6N1WUlXIkJfQyWOFo0kc2KYWaJbhYul5Sdujy70tk8i+ywWzrg6Tl
+Zh+Lnte9VJxk0BRd7s/WC8NJ2PIKtbBZ3wIDAQABo4HCMIG/MBIGA1UdEwEB/wQI
+MAYBAf8CAQAwDgYDVR0PAQH/BAQDAgEGMB0GA1UdDgQWBBT/e2WNBfWlnniS/7li
+xIws9qI3GTAfBgNVHSMEGDAWgBSckHzn/DsF5No7AsXrbUoBy+OYSDA3BgNVHR8E
+MDAuMCygKqAohiZodHRwOi8vYmJjYS5ibG9vbWJlcmcuY29tL2JiY2EtY3JsLnBl
+bTAgBgNVHREEGTAXgRVjYWFkbWluQGJsb29tYmVyZy5jb20wDQYJKoZIhvcNAQEL
+BQADggIBAMTL1iPgZ6AGCver/e3pVmCWW3fy0jdVkJmUz2aWwK+oPHll1E6Upmvg
+kn3RjUjDjz/8jxX7vIfGN4xDKpWKTsDJEqHp34hZMD0tPZ4VuTu9CKrT61PMXKlB
+rnzcwMF+tpOm1kD4gXRXPpHwB03Lep5tGdzO38jIfd4pNFhlrqKHlG8r+3lB66gz
+3kFQiVo9atOYklK2FEdyMssZYx0udcMBdEtZnnL0I/2WaWmTIUZjUYWzJVngQOst
+c5Vfd+KCOo4Mo0z36/ofph/ldU3H33HXhZCN/SDpnXaJUd/bclsbfTlQ0NmVx4wL
+3Z5CRqtnTjuZallNhIxMeAtr4qWoWOWfLWBy/hld3Mxnlh4RyEmRS3ZY/PMJQRTe
+7uvD7W/gYpQjugMHBlot6+TrERLGtctF8jGYyGkuavnwFxl5EzzVc7Hor5S7ZjgY
+rKVGyiuMsQsodTFJQu5oHkym0ZP32fseI0zej/kMx/w1JcDkLK3CJwTZfXWEwP7n
+QLlU9S0J9/3jlHCtIltLbxljLcnu8lOg4ni1/7Z+xIj0VXnRHSUHGmm8fqHZE2dj
+4ju1Qa4Wmu62KyPb6Gk8SNqK1+0g7T4cL7S+GCEpd5FyXyrjcJtiuzopG4hOMwLv
+iQVqJK1RqQFbtCjaOTHaFnpmGeWw69r2J5TZXz69fq4zywAIzS1b
+-----END CERTIFICATE-----
+-----BEGIN CERTIFICATE-----
+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
+o05qNAx76kU96u342e32yg01d+U=
+-----END CERTIFICATE-----
+-----BEGIN CERTIFICATE-----
+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
+o05qNAx76kU96u342e32yg01d+U=
+-----END CERTIFICATE-----
+-----END CA CERTIFICATES-----
+-----BEGIN PRIVATE KEY-----
+MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQChkIYKkMnp2amv
+LOI7ChXvUUaHdUKKEwXKiztR66USt/IbQBrNUIg5j+CSahpfcnGdE8wORkrXHVRy
+qLIkaNeYxr4VKdA91MhKeC52ljJemCeiphQVrgJl8FVSfcK3wMkrCbpBOdSWARuN
+YmEUrObVMy7uHffgu/dwmDvbt4HQCLvuNOBUIxjzR/NRaxYpb+nHQRuCOkPQAU1x
+r7Efk2vjJDbKZIk4hHl58KBDh+5bz/xlJpkRQTtFIi8I9prAGvU7wzh1/W/FY8+5
+4+RtuQvvngbTLP9ULXlddmsuJ8V5HRTvgBC0R32vwgF9k8F0l/CAmRQMvPLqR2h1
+FrOmqWSjAgMBAAECggEAOkGRg5fHppG8lJSbkmxFkoB87PUEJCNN0EW6AwT0Bbbc
+DqVjxKqIJDFT6ZdmoQn0G4564p7H9570x086xNQlAUqQWbM1CkaCXg/NuSbZTLCS
+ghxeW57d8IHjUhZUsstJ/kHIriI7HEeT9rwFg14A8dk9z9Bwg9FjHG9YDhayMR+S
+b0/W25/L2Xr3dmF5J7pbiVwwqwpC2J5Obxh8D4FEr/0kBQ0Ak3nPZ569Ecsbygw7
+qclETZLxOSPij4cjHW/KlsWERHAAyidNloy3zz16RgHqwirBDOE1MTivhXk/J2Ie
+vR6XOU3MdTw7/yGe0EseZfKXtHQd7XAIq5KmW6JvkQKBgQDNxnBSbAzRKq21TZ8c
+df13tKQKZMfkvjRVcBVWQ5zoCI6VL1+5TVwL+0njGcqm3jt+/+IbAhFnoyrUNvIQ
+H8bFfu/kUhZEUe57XMEyn4CIDzgGVpC/WiIE35McKRDukWA7T6lXzIFQMPtBsMww
+d+nY/0d5gxN1RyAu6WWruPXEmQKBgQDI/6Y9uY/jmxKLvU4//t+OFGSlqGI4YqiA
+6YhLUxIa7mZ8JysDoZibaYDY/6lDk/ugEpFEO7g1WPW+bWx1K5dMTHkTnjfSFgVO
+Ugn65dWGwMClY6UhfDQDjPrc5qO4A0thrSCnxLImT/rrZlKytjiyClkuCt81Z/uI
+gKNe+zO8mwKBgES2SrN7GRyPX8n2zXa3f5gFXfGKjaU4TklpT/aqRS7GDLaMRy6d
+QmtN0fJfnmfyNXPHBj12h1FQDvEmF9aCheFU7c4UCxNtOHFBG9JHqKfGTTLwnQ0I
+j+uIrJruq5S+PqAPjcCfrV6VvJDG9KgKoq+vLrLIriqvQXPow+Z/sLGhAoGAU8CS
+2K11k3WOaMPc0zW0mVNODOj45F3XsL+elyRqKuajtZ/sgHrZSAjSM5l0QkBrXOvf
+s/reavxCibK2uqwLQzOqT85hnByo4VW16uHR83Bl1YSLzkQeuEwKS/mexpI42t50
++PMw+F3jRCtC0kyzmxxMxK6rC2nkmaBgcrdhe3kCgYBQ1hhnfcd/9ingChsk+dbN
+Lddcmm9BoToYfBBrM/nverxevtNozdzTUlfNqFjg/QbafbciwxgjLeArOKMs1e/w
+NRRKekmfCXu0XFT+CuSkP1U0aFqFE4wo1Q415Pc2i1VN+tNn7UDxjsO7wkfsHMB2
+5eo9g92rY9ukKvFBHEp2jQ==
+-----END PRIVATE KEY-----
+				]]></fixi:securityKeys>
+			</fixi:session>
+		</fixi:sessions>
+	</fixi:interface>
+</fixi:interfaces>

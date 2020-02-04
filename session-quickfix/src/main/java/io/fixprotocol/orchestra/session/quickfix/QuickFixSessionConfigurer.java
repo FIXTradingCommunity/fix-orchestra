@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 FIX Protocol Ltd
+ * Copyright 2017-2020 FIX Protocol Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -27,18 +27,16 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.datatype.XMLGregorianCalendar;
-
 import org.w3c.dom.Node;
-
-import io.fixprotocol._2016.fixinterfaces.IdentifierType;
-import io.fixprotocol._2016.fixinterfaces.InterfaceType;
-import io.fixprotocol._2016.fixinterfaces.InterfaceType.Sessions;
-import io.fixprotocol._2016.fixinterfaces.Interfaces;
-import io.fixprotocol._2016.fixinterfaces.RoleT;
-import io.fixprotocol._2016.fixinterfaces.SessionProtocolType;
-import io.fixprotocol._2016.fixinterfaces.SessionType;
-import io.fixprotocol._2016.fixinterfaces.TransportProtocolType;
-import io.fixprotocol._2016.fixinterfaces.TransportUseEnum;
+import io.fixprotocol._2020.orchestra.interfaces.IdentifierType;
+import io.fixprotocol._2020.orchestra.interfaces.InterfaceType;
+import io.fixprotocol._2020.orchestra.interfaces.InterfaceType.Sessions;
+import io.fixprotocol._2020.orchestra.interfaces.Interfaces;
+import io.fixprotocol._2020.orchestra.interfaces.RoleT;
+import io.fixprotocol._2020.orchestra.interfaces.SessionProtocolType;
+import io.fixprotocol._2020.orchestra.interfaces.SessionType;
+import io.fixprotocol._2020.orchestra.interfaces.TransportProtocolType;
+import io.fixprotocol._2020.orchestra.interfaces.TransportUseEnum;
 import quickfix.Acceptor;
 import quickfix.ConfigError;
 import quickfix.Dictionary;

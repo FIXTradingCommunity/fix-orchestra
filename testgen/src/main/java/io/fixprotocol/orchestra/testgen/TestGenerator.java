@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 FIX Protocol Ltd
+ * Copyright 2017-2020 FIX Protocol Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -36,15 +36,15 @@ import org.stringtemplate.v4.STErrorListener;
 import org.stringtemplate.v4.STGroupFile;
 import org.stringtemplate.v4.misc.STMessage;
 
-import io.fixprotocol._2016.fixrepository.ActorType;
-import io.fixprotocol._2016.fixrepository.FieldRefType;
-import io.fixprotocol._2016.fixrepository.FlowType;
-import io.fixprotocol._2016.fixrepository.MessageRefType;
-import io.fixprotocol._2016.fixrepository.MessageType;
-import io.fixprotocol._2016.fixrepository.MessageType.Responses;
-import io.fixprotocol._2016.fixrepository.PresenceT;
-import io.fixprotocol._2016.fixrepository.Repository;
-import io.fixprotocol._2016.fixrepository.ResponseType;
+import io.fixprotocol._2020.orchestra.repository.ActorType;
+import io.fixprotocol._2020.orchestra.repository.FieldRefType;
+import io.fixprotocol._2020.orchestra.repository.FlowType;
+import io.fixprotocol._2020.orchestra.repository.MessageRefType;
+import io.fixprotocol._2020.orchestra.repository.MessageType;
+import io.fixprotocol._2020.orchestra.repository.MessageType.Responses;
+import io.fixprotocol._2020.orchestra.repository.PresenceT;
+import io.fixprotocol._2020.orchestra.repository.Repository;
+import io.fixprotocol._2020.orchestra.repository.ResponseType;
 import io.fixprotocol.orchestra.quickfix.DataDictionaryGenerator;
 
 
@@ -58,7 +58,7 @@ public class TestGenerator {
    * 
    * @param args command line arguments
    *        <ol>
-   *        <li>Name of Orchestra input file in Repository 2016 Edition format
+   *        <li>Name of Orchestra input file in Repository format
    *        <li>Name of resources output directory--will be created if it does not exist, defaults
    *        to "src/test/resources"</li>
    *        <li>Name of source output directory--will be created if it does not exist, defaults to

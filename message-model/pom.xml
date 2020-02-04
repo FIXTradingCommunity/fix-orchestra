@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>io.fixprotocol.orchestra</groupId>
 		<artifactId>parent</artifactId>
-		<version>1.4.1-RC5-SNAPSHOT</version>
+		<version>1.4.2-RC5-SNAPSHOT</version>
 	</parent>
 	<artifactId>message-model</artifactId>
 	<name>${project.groupId}:${project.artifactId}</name>
@@ -14,7 +14,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>io.fixprotocol.orchestra</groupId>
-			<artifactId>repository2016</artifactId>
+			<artifactId>repository</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>

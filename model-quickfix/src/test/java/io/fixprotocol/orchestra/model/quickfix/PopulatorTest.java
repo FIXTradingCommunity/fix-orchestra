@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 FIX Protocol Ltd
+ * Copyright 2017-2020 FIX Protocol Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -27,8 +27,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import io.fixprotocol._2016.fixrepository.MessageType;
-import io.fixprotocol._2016.fixrepository.Repository;
+import io.fixprotocol._2020.orchestra.repository.MessageType;
+import io.fixprotocol._2020.orchestra.repository.Repository;
 import io.fixprotocol.orchestra.model.ModelException;
 import io.fixprotocol.orchestra.model.SymbolResolver;
 import io.fixprotocol.orchestra.repository.RepositoryAccessor;
