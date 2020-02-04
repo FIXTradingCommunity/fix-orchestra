@@ -51,10 +51,9 @@ public final class DateTimeFormatters {
   /**
    * Formatter for ISO 8601 time of day only.
    * 
-   * Java has ISO_LOCAL_TIME, but it doesn't handle the leading 'T' or time zone.
+   * Java has ISO_LOCAL_TIME, but it doesn't handle time zone.
    */
   public static final DateTimeFormatter TIME_ONLY = new DateTimeFormatterBuilder()
-      .appendLiteral('T')
       .appendValue(HOUR_OF_DAY, 2)
       .appendLiteral(':')
       .appendValue(MINUTE_OF_HOUR, 2)

@@ -73,11 +73,11 @@ qual: ID (index | pred)? ;
  */
 var: scope=('$'|'^'|'in.'|'out.'|'this.')? qual ('.' qual )*;
 
-DATETIME: DATE TIME ;
+DATETIME: DATE 'T' TIME ;
 
 DATE: DIGIT DIGIT DIGIT DIGIT '-' DIGIT DIGIT '-' DIGIT DIGIT ;
 
-TIME: 'T' DIGIT DIGIT ':' DIGIT DIGIT (':' DIGIT DIGIT)? ('.' DIGIT+)? TZD ;
+TIME: DIGIT DIGIT ':' DIGIT DIGIT (':' DIGIT DIGIT)? ('.' DIGIT+)? TZD ;
 
 fragment
 TZD: ('Z' | SIGN DIGIT DIGIT? ':' DIGIT DIGIT );
