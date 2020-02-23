@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>io.fixprotocol.orchestra</groupId>
 		<artifactId>parent</artifactId>
-		<version>1.4.2-RC5-SNAPSHOT</version>
+		<version>1.5.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>state-machine</artifactId>
 	<name>${project.groupId}:${project.artifactId}</name>
