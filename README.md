@@ -3,18 +3,19 @@
 
 # FIX Orchestra Resources
 
-This project contains resources and sample code for FIX Orchestra and FIX Repository 2016 Edition. Technical specifications for FIX Orchestra are in project [fix-orchestra-spec](https://github.com/FIXTradingCommunity/fix-orchestra-spec).
+This project contains resources and sample code for FIX Orchestra version 1.0. Technical specifications for FIX Orchestra are in project [fix-orchestra-spec](https://github.com/FIXTradingCommunity/fix-orchestra-spec).
 
 FIX Orchestra is intended to provide a standard and some reference implementation for *machine readable rules of engagement* between counterparties. The goal is to reduce the time to get counterparties trading, and improve accuracy of implementations.
 
 ### News
 
+* Version 1.5 of this project conforms to Orchestra version 1.0 Draft Standard.
 * The repositoryDiffMerge module was promoted to its own [xml-diff-merge project](https://github.com/FIXTradingCommunity/xml-diff-merge) since it has uses aside from Orchestra.
 * See new [Orchestra tutorials](https://github.com/FIXTradingCommunity/fix-orchestra/wiki) and FAQ.
 
 ### Planned Lifecycle
 
-The planned lifecycle of this project is to roll out new features in a series of release candidates. After each release candidate is approved, it will be exposed to public review.  When version 1 is considered complete, the last release candidate will be promoted to Draft Standard.
+The planned lifecycle of this project is to roll out new features in a series of release candidates. After each release candidate is approved, it will be exposed to public review.  When a version is considered complete, the last release candidate will be promoted to Draft Standard.
 
 ### Participation
 
@@ -33,9 +34,15 @@ All FIX standards specifications
 
 [FIX Standards](https://www.fixtrading.org/standards/)
 
-## Versions
+## Standards Versions
 
-### Current version: Version 1.0 Release Candidate 5
+### Version 1.0 Draft Standard
+
+Release candidate 5 was promoted to Draft Standard with minor enhancements and corrections on February 20, 2020. A draft standard must have at least two interoperable implementations in order to be promoted to a final Technical Standard.
+
+Version 1.5 of this project conforms to Orchestra version 1.0 Draft Standard. The XML schemas in the `repository` and `interfaces` modules are considered normative for the Orchestra standard. However, demonstration code in this project may be maintained and enhanced between versions of the standard.
+
+### Version 1.0 Release Candidate 5
 Release Candidate 5 was approved by the Global Technical Committee on Sept. 19, 2019 for 90 day public review. The key enhancements in Release Candidate 5 were:
 
 * Security keys for sessions
@@ -62,27 +69,26 @@ Release Candidate 2 was approved by the Global Technical Committee on May 18, 20
 * Session configuration
 
 ### Version 1.0 Release Candidate 1
-Version 1.0 RC1 standardized the XML schema for FIX Orchestra and FIX Repository 2016 Edition. Release Candidate 1 was approved by the Global Technical Committee on Dec. 15, 2016 for 90 day public review. 
-
+Version 1.0 RC1 standardized the XML schema for FIX Orchestra. Release Candidate 1 was approved by the Global Technical Committee on Dec. 15, 2016 for 90 day public review. 
 
 ## Normative Modules
 The following modules are **normative**.
 
-### repository2016
-This module contains an XML schema for Orchestra, also known as FIX Repository 2016 Edition. It is used to convey message structures and their components, as well as FIX application behaviors. Users may express workflow as responses to messages under different scenarios, as well as external state information that may influence behaviors.
+### repository
+This module contains an XML schema for Orchestra. It is used to convey message structures and their components, as well as FIX application behaviors. Users may express workflow as responses to messages under different scenarios, as well as external state information that may influence behaviors.
 
-In addition to providing the XML schema as a resource, the module builds Java bindings for the schema. An XSLT is provided to translate existing Repository 2010 Edition files to the 2016 Edition schema
+In addition to providing the XML schema as a resource, the module builds Java bindings for the schema. An XSLT is provided to translate existing Repository 2010 Edition files to the Orchestra schema.
 
-### interfaces2016
+### interfaces
 
-This module provides an XML schema for service offerings, protocols and session provisioning. In addition to providing the XML schema as a resource, the module builds Java bindings for the schema. Service elements may link to Orchestra files composed in the `repository2016` schema.
+This module provides an XML schema for service offerings, protocols and session provisioning. In addition to providing the XML schema as a resource, the module builds Java bindings for the schema. Service elements may link to Orchestra files composed in the `repository` schema.
 
 
 ### dsl-antlr - Score Domain Specific Language (DSL)
 
 An orchestra file may contain conditional expressions to describe conditionally required fields and tell when a certain response to a message applies. Also, the DSL may be used for assignment expressions to set message fields and external state variables.
 
-The Score grammar is provided in the notation of ANTLR4, and the project builds a lexer/parser for the grammar.
+The Score grammar is provided in the notation of ANTLR4, and the project builds a lexer/parser for the grammar. This project generates Java code, but ANTLR4 is capable of generating several other programming languages from the same grammar.
 
 ## Informational Modules
 
@@ -113,7 +119,7 @@ Google Protocol Buffers schemas from an Orchestra file.
 
 #### repository-quickfix
 
-This module generates a QuickFIX data dictionary from a FIX Repository 2016 or Orchestra file. The format can be consumed by the C++, Java and .NET versions. Additionally, the module generates message classes for QuickFIX/J directly from an Orchestra file. Although the QuickFIX data dictionary format is not as richly featured as Orchestra, it is hoped that this utility will help with Orchestra adoption. In future, message validation will be able to take advantage of conditional expressions in Orchestra.
+This module generates a QuickFIX data dictionary from an Orchestra file. The format can be consumed by the C++, Java and .NET versions. Additionally, the module generates message classes for QuickFIX/J directly from an Orchestra file. Although the QuickFIX data dictionary format is not as richly featured as Orchestra, it is hoped that this utility will help with Orchestra adoption. In future, message validation will be able to take advantage of conditional expressions in Orchestra.
 
 #### message-model
 Generic interfaces for message validators and populators not specific to a FIX engine implementation.
@@ -122,7 +128,7 @@ Generic interfaces for message validators and populators not specific to a FIX e
 This module generates code that is conformant to the QuickFIX/J API for validating and populating messages. It is dependent on `repository-quickfix`.
 
 #### session-quickfix
-A demonstration of session configuration for QuickFIX open-source FIX engine. It consumes an XML file in the `interfaces2016` schema.
+A demonstration of session configuration for QuickFIX open-source FIX engine. It consumes an XML file in the `interfaces` schema.
 
 A module like this needs to be developed to support each FIX engine that uses a proprietary configuration format. The demonstration provides an example to follow for that work.
 
@@ -132,10 +138,10 @@ A demonstration of state machine code generation from an Orchestra file.
 ### Data Files
 Data files in this project under `test/resources` are strictly for testing and to serve as examples for format. They are non-normative for FIX standards and may not be up to date.
 
-See [FIX Standards](https://www.fixtrading.org/standards/) for normative standards documents and [FIX Repository](https://www.fixtrading.org/standards/fix-repository/) for latest Repository extension packs.
+See [FIX Standards](https://www.fixtrading.org/standards/) for normative standards documents and [FIX Repository](https://www.fixtrading.org/standards/fix-repository/) for latest Repository extension packs. The plan is to start publishing extension packs in the Orchestra schema in 2020.
 
 ## License
-© Copyright 2016-2019 FIX Protocol Limited
+© Copyright 2016-2020 FIX Protocol Limited
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -154,7 +160,7 @@ limitations under the License.
 Note that the related Technical Specifications project has a different license than these resources. See [fix-orchestra-spec](https://github.com/FIXTradingCommunity/fix-orchestra-spec/blob/master/LICENSE)
 
 ## Prerequisites
-This project requires Java 8 or later. It should run on any platform for which the JVM is supported.
+This project requires Java 8 or later. It should run on any platform for which the JVM is supported. The plan is update this project to a minimum of Java 11, a long-term support version, soon.
 
 ## Build
 The project is built with Maven version 3.0 or later. 
