@@ -16,7 +16,7 @@ package io.fixprotocol.orchestra.dsl.antlr;
 
 /**
  * An Exception that occurs in the evaluation of a Score DSL expression
- * 
+ *
  * @author Don Mendelson
  *
  */
@@ -25,23 +25,15 @@ public class ScoreException extends Exception {
   private static final long serialVersionUID = 6950517934100277304L;
 
   /**
-   * 
+   *
    */
-  public ScoreException() {
-   }
+  public ScoreException() {}
 
   /**
    * @param message error text
    */
   public ScoreException(String message) {
     super(message);
-  }
-
-  /**
-   * @param cause nested exception
-   */
-  public ScoreException(Throwable cause) {
-    super(cause);
   }
 
   /**
@@ -61,6 +53,13 @@ public class ScoreException extends Exception {
   public ScoreException(String message, Throwable cause, boolean enableSuppression,
       boolean writableStackTrace) {
     super(message, cause, enableSuppression, writableStackTrace);
+  }
+
+  /**
+   * @param cause nested exception
+   */
+  public ScoreException(Throwable cause) {
+    super(cause);
   }
 
 }

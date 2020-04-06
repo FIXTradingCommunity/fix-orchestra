@@ -21,16 +21,21 @@ import java.time.LocalTime;
 import java.time.ZonedDateTime;
 
 /**
- * FIX data types 
+ * FIX data types
  * <p>
  * Types are hard-coded for now. In the future, consider populating dynamically from datatypes in
  * Orchestra file.
- * 
+ *
  * @author Don Mendelson
  *
  */
 public enum FixType {
   Amt {
+    @Override
+    public BigDecimal fromString(String text) {
+      return new BigDecimal(text);
+    }
+
     @Override
     public FixType getBaseType() {
       return floatType;
@@ -40,13 +45,13 @@ public enum FixType {
     public Class<BigDecimal> getValueClass() {
       return BigDecimal.class;
     }
-
-    @Override
-    public BigDecimal fromString(String text) {
-      return new BigDecimal(text);
-    }
   },
   BooleanType {
+    @Override
+    public Boolean fromString(String text) {
+      return Boolean.parseBoolean(text);
+    }
+
     @Override
     public FixType getBaseType() {
       return BooleanType;
@@ -56,13 +61,13 @@ public enum FixType {
     public Class<Boolean> getValueClass() {
       return Boolean.class;
     }
-
-    @Override
-    public Boolean fromString(String text) {
-      return Boolean.parseBoolean(text);
-    }
   },
   charType {
+    @Override
+    public Character fromString(String text) {
+      return text.charAt(0);
+    }
+
     @Override
     public FixType getBaseType() {
       return charType;
@@ -72,13 +77,13 @@ public enum FixType {
     public Class<Character> getValueClass() {
       return Character.class;
     }
-
-    @Override
-    public Character fromString(String text) {
-      return text.charAt(0);
-    }
   },
   Country {
+    @Override
+    public String fromString(String text) {
+      return text;
+    }
+
     @Override
     public FixType getBaseType() {
       return StringType;
@@ -87,15 +92,15 @@ public enum FixType {
     @Override
     public Class<String> getValueClass() {
       return String.class;
-    }
-
-    @Override
-    public String fromString(String text) {
-      return text;
     }
   },
   Currency {
     @Override
+    public String fromString(String text) {
+      return text;
+    }
+
+    @Override
     public FixType getBaseType() {
       return StringType;
     }
@@ -104,13 +109,13 @@ public enum FixType {
     public Class<String> getValueClass() {
       return String.class;
     }
-
-    @Override
-    public String fromString(String text) {
-      return text;
-    }
   },
   data {
+    @Override
+    public byte[] fromString(String text) {
+      return text.getBytes();
+    }
+
     @Override
     public FixType getBaseType() {
       return StringType;
@@ -120,13 +125,13 @@ public enum FixType {
     public Class<byte[]> getValueClass() {
       return byte[].class;
     }
-
-    @Override
-    public byte[] fromString(String text) {
-      return text.getBytes();
-    }
   },
   DayOfMonth {
+    @Override
+    public Integer fromString(String text) {
+      return Integer.parseInt(text);
+    }
+
     @Override
     public FixType getBaseType() {
       return intType;
@@ -135,15 +140,15 @@ public enum FixType {
     @Override
     public Class<Integer> getValueClass() {
       return Integer.class;
-    }
-
-    @Override
-    public Integer fromString(String text) {
-      return Integer.parseInt(text);
     }
   },
   Exchange {
     @Override
+    public String fromString(String text) {
+      return text;
+    }
+
+    @Override
     public FixType getBaseType() {
       return StringType;
     }
@@ -151,15 +156,15 @@ public enum FixType {
     @Override
     public Class<String> getValueClass() {
       return String.class;
-    }
-
-    @Override
-    public String fromString(String text) {
-      return text;
     }
   },
   floatType {
     @Override
+    public BigDecimal fromString(String text) {
+      return new BigDecimal(text);
+    }
+
+    @Override
     public FixType getBaseType() {
       return floatType;
     }
@@ -167,15 +172,15 @@ public enum FixType {
     @Override
     public Class<BigDecimal> getValueClass() {
       return BigDecimal.class;
-    }
-
-    @Override
-    public BigDecimal fromString(String text) {
-      return new BigDecimal(text);
     }
   },
   intType {
     @Override
+    public Integer fromString(String text) {
+      return Integer.parseInt(text);
+    }
+
+    @Override
     public FixType getBaseType() {
       return intType;
     }
@@ -183,15 +188,15 @@ public enum FixType {
     @Override
     public Class<Integer> getValueClass() {
       return Integer.class;
-    }
-
-    @Override
-    public Integer fromString(String text) {
-      return Integer.parseInt(text);
     }
   },
   Language {
     @Override
+    public String fromString(String text) {
+      return text;
+    }
+
+    @Override
     public FixType getBaseType() {
       return StringType;
     }
@@ -199,15 +204,16 @@ public enum FixType {
     @Override
     public Class<String> getValueClass() {
       return String.class;
-    }
-
-    @Override
-    public String fromString(String text) {
-      return text;
     }
   },
   Length {
     @Override
+    public Integer fromString(String text) {
+      return Integer.parseInt(text);
+    }
+
+
+    @Override
     public FixType getBaseType() {
       return intType;
     }
@@ -216,16 +222,15 @@ public enum FixType {
     @Override
     public Class<Integer> getValueClass() {
       return Integer.class;
-    }
-
-
-    @Override
-    public Integer fromString(String text) {
-      return Integer.parseInt(text);
     }
   },
   LocalMktDate {
     @Override
+    public LocalDate fromString(String text) {
+      return LocalDate.parse(text);
+    }
+
+    @Override
     public FixType getBaseType() {
       return StringType;
     }
@@ -233,15 +238,15 @@ public enum FixType {
     @Override
     public Class<LocalDate> getValueClass() {
       return LocalDate.class;
-    }
-
-    @Override
-    public LocalDate fromString(String text) {
-      return LocalDate.parse(text);
     }
   },
   LocalMktTime {
     @Override
+    public LocalTime fromString(String text) {
+      return LocalTime.parse(text);
+    }
+
+    @Override
     public FixType getBaseType() {
       return StringType;
     }
@@ -250,13 +255,13 @@ public enum FixType {
     public Class<LocalTime> getValueClass() {
       return LocalTime.class;
     }
-
-    @Override
-    public LocalTime fromString(String text) {
-      return LocalTime.parse(text);
-    }
   },
   MonthYear {
+    @Override
+    public String fromString(String text) {
+      return text;
+    }
+
     @Override
     public FixType getBaseType() {
       return StringType;
@@ -265,15 +270,15 @@ public enum FixType {
     @Override
     public Class<String> getValueClass() {
       return String.class;
-    }
-
-    @Override
-    public String fromString(String text) {
-      return text;
     }
   },
   MultipleCharValue {
     @Override
+    public String fromString(String text) {
+      return text;
+    }
+
+    @Override
     public FixType getBaseType() {
       return StringType;
     }
@@ -281,15 +286,15 @@ public enum FixType {
     @Override
     public Class<String> getValueClass() {
       return String.class;
-    }
-
-    @Override
-    public String fromString(String text) {
-      return text;
     }
   },
   MultipleStringValue {
     @Override
+    public String fromString(String text) {
+      return text;
+    }
+
+    @Override
     public FixType getBaseType() {
       return StringType;
     }
@@ -297,15 +302,16 @@ public enum FixType {
     @Override
     public Class<String> getValueClass() {
       return String.class;
-    }
-
-    @Override
-    public String fromString(String text) {
-      return text;
     }
   },
   NumInGroup {
     @Override
+    public Integer fromString(String text) {
+      return Integer.parseInt(text);
+    }
+
+
+    @Override
     public FixType getBaseType() {
       return intType;
     }
@@ -314,16 +320,15 @@ public enum FixType {
     @Override
     public Class<Integer> getValueClass() {
       return Integer.class;
-    }
-
-
-    @Override
-    public Integer fromString(String text) {
-      return Integer.parseInt(text);
     }
   },
   Percentage {
     @Override
+    public BigDecimal fromString(String text) {
+      return new BigDecimal(text);
+    }
+
+    @Override
     public FixType getBaseType() {
       return floatType;
     }
@@ -331,15 +336,15 @@ public enum FixType {
     @Override
     public Class<BigDecimal> getValueClass() {
       return BigDecimal.class;
-    }
-
-    @Override
-    public BigDecimal fromString(String text) {
-      return new BigDecimal(text);
     }
   },
   Price {
     @Override
+    public BigDecimal fromString(String text) {
+      return new BigDecimal(text);
+    }
+
+    @Override
     public FixType getBaseType() {
       return floatType;
     }
@@ -347,15 +352,15 @@ public enum FixType {
     @Override
     public Class<BigDecimal> getValueClass() {
       return BigDecimal.class;
-    }
-
-    @Override
-    public BigDecimal fromString(String text) {
-      return new BigDecimal(text);
     }
   },
   PriceOffset {
     @Override
+    public BigDecimal fromString(String text) {
+      return new BigDecimal(text);
+    }
+
+    @Override
     public FixType getBaseType() {
       return floatType;
     }
@@ -363,15 +368,15 @@ public enum FixType {
     @Override
     public Class<BigDecimal> getValueClass() {
       return BigDecimal.class;
-    }
-
-    @Override
-    public BigDecimal fromString(String text) {
-      return new BigDecimal(text);
     }
   },
   Qty {
     @Override
+    public BigDecimal fromString(String text) {
+      return new BigDecimal(text);
+    }
+
+    @Override
     public FixType getBaseType() {
       return floatType;
     }
@@ -380,13 +385,13 @@ public enum FixType {
     public Class<BigDecimal> getValueClass() {
       return BigDecimal.class;
     }
-
-    @Override
-    public BigDecimal fromString(String text) {
-      return new BigDecimal(text);
-    }
   },
   SeqNum {
+    @Override
+    public String fromString(String text) {
+      return text;
+    }
+
     @Override
     public FixType getBaseType() {
       return intType;
@@ -396,13 +401,13 @@ public enum FixType {
     public Class<Integer> getValueClass() {
       return Integer.class;
     }
-
+  },
+  StringType {
     @Override
     public String fromString(String text) {
       return text;
     }
-  },
-  StringType {
+
     @Override
     public FixType getBaseType() {
       return StringType;
@@ -412,13 +417,14 @@ public enum FixType {
     public Class<String> getValueClass() {
       return String.class;
     }
-
-    @Override
-    public String fromString(String text) {
-       return text;
-    }
   },
   TagNum {
+    @Override
+    public Integer fromString(String text) {
+      return Integer.parseInt(text);
+    }
+
+
     @Override
     public FixType getBaseType() {
       return intType;
@@ -429,14 +435,13 @@ public enum FixType {
     public Class<Integer> getValueClass() {
       return Integer.class;
     }
-
-
-    @Override
-    public Integer fromString(String text) {
-      return Integer.parseInt(text);
-    }
   },
   TZTimeOnly {
+    @Override
+    public ZonedDateTime fromString(String text) {
+      return ZonedDateTime.parse(text);
+    }
+
     @Override
     public FixType getBaseType() {
       return StringType;
@@ -445,15 +450,15 @@ public enum FixType {
     @Override
     public Class<ZonedDateTime> getValueClass() {
       return ZonedDateTime.class;
-    }
-
-    @Override
-    public ZonedDateTime fromString(String text) {
-      return ZonedDateTime.parse(text);
     }
   },
   TZTimestamp {
     @Override
+    public ZonedDateTime fromString(String text) {
+      return ZonedDateTime.parse(text);
+    }
+
+    @Override
     public FixType getBaseType() {
       return StringType;
     }
@@ -462,13 +467,13 @@ public enum FixType {
     public Class<ZonedDateTime> getValueClass() {
       return ZonedDateTime.class;
     }
-
-    @Override
-    public ZonedDateTime fromString(String text) {
-      return ZonedDateTime.parse(text);
-    }
   },
   UTCDateOnly {
+    @Override
+    public LocalDate fromString(String text) {
+      return LocalDate.parse(text);
+    }
+
     @Override
     public FixType getBaseType() {
       return StringType;
@@ -478,13 +483,13 @@ public enum FixType {
     public Class<LocalDate> getValueClass() {
       return LocalDate.class;
     }
-
-    @Override
-    public LocalDate fromString(String text) {
-      return LocalDate.parse(text);
-    }
   },
   UTCTimeOnly {
+    @Override
+    public LocalTime fromString(String text) {
+      return LocalTime.parse(text);
+    }
+
     @Override
     public FixType getBaseType() {
       return StringType;
@@ -494,13 +499,13 @@ public enum FixType {
     public Class<LocalTime> getValueClass() {
       return LocalTime.class;
     }
-
-    @Override
-    public LocalTime fromString(String text) {
-      return LocalTime.parse(text);
-    }
   },
   UTCTimestamp {
+    @Override
+    public Instant fromString(String text) {
+      return Instant.parse(text);
+    }
+
     @Override
     public FixType getBaseType() {
       return StringType;
@@ -510,13 +515,13 @@ public enum FixType {
     public Class<Instant> getValueClass() {
       return Instant.class;
     }
-
-    @Override
-    public Instant fromString(String text) {
-      return Instant.parse(text);
-    }
   },
   XMLData {
+    @Override
+    public String fromString(String text) {
+      return text;
+    }
+
     @Override
     public FixType getBaseType() {
       return StringType;
@@ -526,16 +531,16 @@ public enum FixType {
     public Class<String> getValueClass() {
       return String.class;
     }
-
-    @Override
-    public String fromString(String text) {
-      return text;
-    }
   },
   /**
    * Not currently a FIX data type (but should be since there are fields with duration semantics)
    */
   Duration {
+    @Override
+    public java.time.Duration fromString(String text) {
+      return java.time.Duration.parse(text);
+    }
+
     @Override
     public FixType getBaseType() {
       return null;
@@ -545,20 +550,14 @@ public enum FixType {
     public Class<?> getValueClass() {
       return java.time.Duration.class;
     }
-
-    @Override
-    public java.time.Duration fromString(String text) {
-      return java.time.Duration.parse(text);
-    }
-  } 
-  ;
+  };
 
   /**
-   * Returns the enum value for its name 
+   * Returns the enum value for its name
    * <p>
    * Semantically the same as {@code enum.valueOf()} but Java doesn't allow that method to be
    * overridden. This method is necessary because some of the FIX data types are Java keywords.
-   * 
+   *
    * @param name a FIX data type name
    * @return an enum value
    * @throws IllegalArgumentException - if there is no constant with the specified name
@@ -586,25 +585,26 @@ public enum FixType {
   }
 
   /**
-   * The base FIXType according to the FIX specification 
+   * Converts a String to an instance of the default storage class
+   * 
+   * @param text value serialized as a String
+   * @return an object the class returned by {@link #getValueClass()}
+   */
+  public abstract Object fromString(String text);
+
+  /**
+   * The base FIXType according to the FIX specification
    * <p>
    * Unfortunately, the FIX taxonomy of types is largely lexical, not semantic.
-   * 
+   *
    * @return base data type
    */
   public abstract FixType getBaseType();
 
   /**
    * The default class used for storage of the FIX data type in this implementation
-   * 
+   *
    * @return a Java class
    */
   public abstract Class<?> getValueClass();
-  
-  /**
-   * Converts a String to an instance of the default storage class
-   * @param text value serialized as a String
-   * @return an object the class returned by {@link #getValueClass()}
-   */
-  public abstract Object fromString(String text);
 }

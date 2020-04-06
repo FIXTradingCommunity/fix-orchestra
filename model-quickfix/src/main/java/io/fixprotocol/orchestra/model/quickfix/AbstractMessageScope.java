@@ -21,7 +21,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-
 import io.fixprotocol._2020.orchestra.repository.CodeSetType;
 import io.fixprotocol._2020.orchestra.repository.FieldRefType;
 import io.fixprotocol._2020.orchestra.repository.GroupRefType;
@@ -37,7 +36,6 @@ import io.fixprotocol.orchestra.model.ModelException;
 import io.fixprotocol.orchestra.model.PathStep;
 import io.fixprotocol.orchestra.model.Scope;
 import io.fixprotocol.orchestra.model.SymbolResolver;
-import io.fixprotocol.orchestra.repository.RepositoryAccessor;
 import quickfix.BytesField;
 import quickfix.FieldMap;
 import quickfix.FieldNotFound;
@@ -53,7 +51,7 @@ abstract class AbstractMessageScope {
   private final FieldMap fieldMap;
   private final RepositoryAccessor repository;
   private final SymbolResolver symbolResolver;
-  
+
   protected AbstractMessageScope(FieldMap fieldMap, RepositoryAccessor repository,
       SymbolResolver symbolResolver, Evaluator evaluator) {
     this.fieldMap = fieldMap;
@@ -63,14 +61,14 @@ abstract class AbstractMessageScope {
   }
 
   protected void assignField(FieldRefType fieldRefType, FixValue fixValue) {
-    int id = fieldRefType.getId().intValue();
-    String scenario = fieldRefType.getScenario();
+    final int id = fieldRefType.getId().intValue();
+    final String scenario = fieldRefType.getScenario();
     String dataTypeString = repository.getFieldDatatype(id, scenario);
-    CodeSetType codeSet = repository.getCodeset(dataTypeString, scenario);
+    final CodeSetType codeSet = repository.getCodeset(dataTypeString, scenario);
     if (codeSet != null) {
       dataTypeString = codeSet.getType();
     }
-    FixType dataType = FixType.forName(dataTypeString);
+    final FixType dataType = FixType.forName(dataTypeString);
     switch (dataType) {
       case StringType:
       case MultipleCharValue:
@@ -107,19 +105,19 @@ abstract class AbstractMessageScope {
         break;
       case UTCTimestamp:
       case TZTimestamp:
-        fieldMap.setUtcTimeStamp(id, (LocalDateTime)fixValue.getValue());
+        fieldMap.setUtcTimeStamp(id, (LocalDateTime) fixValue.getValue());
         break;
       case UTCTimeOnly:
       case TZTimeOnly:
       case LocalMktTime:
-        fieldMap.setUtcTimeOnly(id, (LocalTime)fixValue.getValue());
+        fieldMap.setUtcTimeOnly(id, (LocalTime) fixValue.getValue());
         break;
       case UTCDateOnly:
       case LocalMktDate:
-        fieldMap.setUtcDateOnly(id, (LocalDate)fixValue.getValue());
+        fieldMap.setUtcDateOnly(id, (LocalDate) fixValue.getValue());
         break;
       case data:
-        BytesField bytesField = new BytesField(id, (byte[]) fixValue.getValue());
+        final BytesField bytesField = new BytesField(id, (byte[]) fixValue.getValue());
         fieldMap.setField(bytesField);
         break;
       case Duration:
@@ -131,22 +129,22 @@ abstract class AbstractMessageScope {
   protected RepositoryAccessor getRepository() {
     return repository;
   }
-  
+
   @SuppressWarnings("unchecked")
   protected FixNode resolveField(FieldRefType fieldRefType) {
-    int id = fieldRefType.getId().intValue();
-    String scenario = fieldRefType.getScenario();
-    String name = repository.getFieldName(id, scenario);
+    final int id = fieldRefType.getId().intValue();
+    final String scenario = fieldRefType.getScenario();
+    final String name = repository.getFieldName(id, scenario);
     @SuppressWarnings("rawtypes")
-    FixValue fixValue = null;   
+    FixValue fixValue = null;
     String dataTypeString = repository.getFieldDatatype(id, scenario);
-    CodeSetType codeSet = repository.getCodeset(dataTypeString, scenario);
+    final CodeSetType codeSet = repository.getCodeset(dataTypeString, scenario);
     if (codeSet != null) {
       dataTypeString = codeSet.getType();
       symbolResolver.nest(new PathStep("^"), new CodeSetScope(codeSet));
     }
 
-    FixType dataType = FixType.forName(dataTypeString);
+    final FixType dataType = FixType.forName(dataTypeString);
     try {
       switch (dataType) {
         case StringType:
@@ -190,25 +188,22 @@ abstract class AbstractMessageScope {
         case UTCTimestamp:
         case TZTimestamp:
           fixValue = new FixValue<LocalDateTime>(name, dataType);
-          ((FixValue<LocalDateTime>) fixValue)
-              .setValue(fieldMap.getUtcTimeStamp(id));
+          ((FixValue<LocalDateTime>) fixValue).setValue(fieldMap.getUtcTimeStamp(id));
           break;
         case UTCTimeOnly:
         case TZTimeOnly:
         case LocalMktTime:
           fixValue = new FixValue<LocalTime>(name, dataType);
-          ((FixValue<LocalTime>) fixValue)
-              .setValue(LocalTime.from(fieldMap.getUtcTimeOnly(id)));
+          ((FixValue<LocalTime>) fixValue).setValue(LocalTime.from(fieldMap.getUtcTimeOnly(id)));
           break;
         case UTCDateOnly:
         case LocalMktDate:
           fixValue = new FixValue<LocalDate>(name, dataType);
-          ((FixValue<LocalDate>) fixValue)
-              .setValue(LocalDate.from(fieldMap.getUtcTimeOnly(id)));
+          ((FixValue<LocalDate>) fixValue).setValue(LocalDate.from(fieldMap.getUtcTimeOnly(id)));
           break;
         case data:
           fixValue = new FixValue<byte[]>(name, dataType);
-          BytesField bytesField = new BytesField(id);
+          final BytesField bytesField = new BytesField(id);
           fieldMap.getField(bytesField);
           ((FixValue<byte[]>) fixValue).setValue(bytesField.getValue());
           break;
@@ -216,15 +211,15 @@ abstract class AbstractMessageScope {
           // todo
           break;
       }
-    } catch (FieldNotFound e) {
+    } catch (final FieldNotFound e) {
       // Set default value if field is not present
-      String defaultValue = fieldRefType.getValue();
+      final String defaultValue = fieldRefType.getValue();
       if (defaultValue != null) {
         final Class<?> valueClass = dataType.getValueClass();
         try {
           fixValue = FixValueFactory.create(null, dataType, valueClass);
           fixValue.setValue(valueClass.cast(dataType.fromString(defaultValue)));
-        } catch (ModelException e1) {
+        } catch (final ModelException e1) {
 
         }
       }
@@ -233,24 +228,24 @@ abstract class AbstractMessageScope {
   }
 
   protected FixNode resolveGroup(PathStep pathStep, GroupRefType groupRefType) {
-    GroupType groupType = repository.getGroup(groupRefType);
-    int index = pathStep.getIndex();
-    String predicate = pathStep.getPredicate();
+    final GroupType groupType = repository.getGroup(groupRefType);
+    final int index = pathStep.getIndex();
+    final String predicate = pathStep.getPredicate();
     if (index != PathStep.NO_INDEX) {
       Group group;
       try {
         // Both PathStep and QuickFIX use one-based index for group entries
         group = fieldMap.getGroup(index, (groupType.getNumInGroup().getId().intValue()));
-      } catch (FieldNotFound e) {
+      } catch (final FieldNotFound e) {
         return null;
       }
       return new GroupInstanceScope(group, groupType, repository, symbolResolver, evaluator);
     } else if (predicate != null) {
-      List<Group> groups = fieldMap.getGroups(groupType.getNumInGroup().getId().intValue());
-      for (Group group : groups) {
-        GroupInstanceScope scope =
+      final List<Group> groups = fieldMap.getGroups(groupType.getNumInGroup().getId().intValue());
+      for (final Group group : groups) {
+        final GroupInstanceScope scope =
             new GroupInstanceScope(group, groupType, repository, symbolResolver, evaluator);
-        Scope local = (Scope) symbolResolver.resolve(SymbolResolver.LOCAL_ROOT);
+        final Scope local = (Scope) symbolResolver.resolve(SymbolResolver.LOCAL_ROOT);
         local.nest(new PathStep(groupType.getName()), scope);
         FixValue<?> fixValue;
         try {
@@ -258,7 +253,7 @@ abstract class AbstractMessageScope {
           if (fixValue.getValue() == Boolean.TRUE) {
             return scope;
           }
-        } catch (ScoreException e) {
+        } catch (final ScoreException e) {
           // TODO Auto-generated catch block
           e.printStackTrace();
         }

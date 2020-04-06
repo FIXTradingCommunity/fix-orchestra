@@ -19,27 +19,17 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
-
 import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.AnyExpressionContext;
 import io.fixprotocol.orchestra.model.FixValue;
 import io.fixprotocol.orchestra.model.SymbolResolver;
 
 /**
  * Evaluates a Score expression
- * 
+ *
  * @author Don Mendelson
  *
  */
 public class Evaluator {
-
-  private final BaseErrorListener errorListener = new BaseErrorListener() {
-    @Override
-    public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line,
-        int charPositionInLine, String msg, RecognitionException e) {
-      throw new IllegalStateException(String.format(
-          "Failed to parse at line %d position %d due to %s", line, charPositionInLine, msg), e);
-    }
-  };
 
   private static class DefaultSemanticErrorListener implements SemanticErrorListener {
 
@@ -50,12 +40,21 @@ public class Evaluator {
 
   }
 
+  private final BaseErrorListener errorListener = new BaseErrorListener() {
+    @Override
+    public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line,
+        int charPositionInLine, String msg, RecognitionException e) {
+      throw new IllegalStateException(String.format(
+          "Failed to parse at line %d position %d due to %s", line, charPositionInLine, msg), e);
+    }
+  };
+
   private final ScoreVisitorImpl visitor;
 
 
   /**
    * Constructor with default SemanticErrorListener
-   * 
+   *
    * @param symbolResolver resolves symbols
    */
   public Evaluator(SymbolResolver symbolResolver) {
@@ -75,7 +74,7 @@ public class Evaluator {
 
   /**
    * Parses and evaluates a Score expression
-   * 
+   *
    * @param expression a Boolean predicate in the Score grammar
    * @return the value of the expression
    * @throws ScoreException if the expression is invalid syntactically or semantically
@@ -87,7 +86,7 @@ public class Evaluator {
       parser.addErrorListener(errorListener);
       final AnyExpressionContext ctx = parser.anyExpression();
       return visitor.visitAnyExpression(ctx);
-    } catch (IllegalStateException e) {
+    } catch (final IllegalStateException e) {
       throw new ScoreException("Syntactical or semantic error; " + e.getMessage());
     }
   }

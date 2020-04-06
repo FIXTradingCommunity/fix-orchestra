@@ -14,7 +14,7 @@
  */
 /**
  * Interfaces for an implementation of FIX Orchestra message models
- * 
+ *
  * @author Don Mendelson
  *
  */

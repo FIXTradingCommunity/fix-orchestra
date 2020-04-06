@@ -26,12 +26,12 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
- * Operations on {@link FixValue} 
+ * Operations on {@link FixValue}
  * <p>
  * This implementation has many workarounds for Java type erasure. If raw types are removed from
  * Java in the future as suggested, this code will break. The expectation is that change will be
  * accompanied by reified types.
- * 
+ *
  * @author Don Mendelson
  */
 public class FixValueOperations {
@@ -39,13 +39,13 @@ public class FixValueOperations {
   private static class Operation extends OperationKey {
     /**
      * Lookup for double dispatch with swapped operands
-     * 
+     *
      * @param key types of operands
      * @param operations gives function to dispatch
      * @return operation to dispatch
      */
     static Operation commutativeMatch(OperationKey key, Operation[] operations) {
-      for (Operation operation : operations) {
+      for (final Operation operation : operations) {
         if (operation.fixType1 == key.fixType2 && operation.fixType2 == key.fixType1
             && operation.valueType1 == key.valueType2 && operation.valueType2 == key.valueType1) {
           return operation;
@@ -56,13 +56,13 @@ public class FixValueOperations {
 
     /**
      * Lookup for double dispatch
-     * 
+     *
      * @param key types of operands
      * @param operations gives function to dispatch
      * @return operation to dispatch
      */
     static Operation exactMatch(OperationKey key, Operation[] operations) {
-      for (Operation operation : operations) {
+      for (final Operation operation : operations) {
         if (operation.fixType1 == key.fixType1 && operation.fixType2 == key.fixType2
             && operation.valueType1 == key.valueType1 && operation.valueType2 == key.valueType2) {
           return operation;
@@ -72,15 +72,13 @@ public class FixValueOperations {
     }
 
     @SuppressWarnings("rawtypes")
-    final
-    BiFunction evaluate;
+    final BiFunction evaluate;
     final FixType resultType;
     final Class<?> resultValueType;
 
     @SuppressWarnings("rawtypes")
-    Operation(FixType fixType1, FixType fixType2, FixType resultType,
-              Class<?> valueType1, Class<?> valueType2,
-              Class<?> resultValueType, BiFunction evaluate) {
+    Operation(FixType fixType1, FixType fixType2, FixType resultType, Class<?> valueType1,
+        Class<?> valueType2, Class<?> resultValueType, BiFunction evaluate) {
       super(fixType1, fixType2, valueType1, valueType2);
       this.resultType = resultType;
       this.resultValueType = resultValueType;
@@ -100,8 +98,7 @@ public class FixValueOperations {
      * @param valueType1
      * @param valueType2
      */
-    OperationKey(FixType fixType1, FixType fixType2, Class<?> valueType1,
-        Class<?> valueType2) {
+    OperationKey(FixType fixType1, FixType fixType2, Class<?> valueType1, Class<?> valueType2) {
       this.fixType1 = fixType1;
       this.fixType2 = fixType2;
       this.valueType1 = valueType1;
@@ -154,7 +151,7 @@ public class FixValueOperations {
   static final BiFunction<String, String, Boolean> eqString = String::equals;
 
   static final BiFunction<ZonedDateTime, ZonedDateTime, Boolean> eqZonedDateTime =
-          ZonedDateTime::equals;
+      ZonedDateTime::equals;
 
   static final BiFunction<BigDecimal, BigDecimal, Boolean> geDecimal =
       (x, y) -> x.compareTo(y) >= 0;
@@ -197,7 +194,7 @@ public class FixValueOperations {
   static final BiFunction<LocalTime, LocalTime, Boolean> gtLocalTime = LocalTime::isAfter;
 
   static final BiFunction<ZonedDateTime, ZonedDateTime, Boolean> gtZonedDateTime =
-          ChronoZonedDateTime::isAfter;
+      ChronoZonedDateTime::isAfter;
 
 
   static final BiFunction<BigDecimal, BigDecimal, Boolean> leDecimal =
@@ -241,7 +238,7 @@ public class FixValueOperations {
   static final BiFunction<LocalTime, LocalTime, Boolean> ltLocalTime = LocalTime::isBefore;
 
   static final BiFunction<ZonedDateTime, ZonedDateTime, Boolean> ltZonedDateTime =
-          ChronoZonedDateTime::isBefore;
+      ChronoZonedDateTime::isBefore;
 
   static final BiFunction<BigDecimal, BigDecimal, Integer> modDecimal =
       (x, y) -> x.intValue() % y.intValue();
@@ -249,7 +246,7 @@ public class FixValueOperations {
   static final BiFunction<Integer, Integer, Integer> modInteger = (x, y) -> x % y;
 
   static final BiFunction<BigDecimal, BigDecimal, BigDecimal> multiplyDecimal =
-          BigDecimal::multiply;
+      BigDecimal::multiply;
 
   static final BiFunction<Integer, Integer, Integer> multiplyInteger = (x, y) -> x * y;
 
@@ -283,7 +280,7 @@ public class FixValueOperations {
       (x, y) -> !x.equals(y);
 
   static final BiFunction<BigDecimal, BigDecimal, BigDecimal> subtractDecimal =
-          BigDecimal::subtract;
+      BigDecimal::subtract;
 
   static final BiFunction<BigDecimal, Integer, BigDecimal> subtractDecimalInteger =
       (x, y) -> x.subtract(BigDecimal.valueOf(y));
@@ -308,7 +305,7 @@ public class FixValueOperations {
           Objects.requireNonNull(operand1, "Missing operand 1");
           Objects.requireNonNull(operand2, "Missing operand 2");
 
-          OperationKey key = new OperationKey(operand1.getType(), operand2.getType(),
+          final OperationKey key = new OperationKey(operand1.getType(), operand2.getType(),
               operand1.getValue().getClass(), operand2.getValue().getClass());
 
           boolean swapOperands = false;
@@ -336,7 +333,7 @@ public class FixValueOperations {
                       operation.valueType2.cast(operand2.getValue()))));
             }
             return result;
-          } catch (ModelException e) {
+          } catch (final ModelException e) {
             return null;
           }
         }
@@ -346,20 +343,20 @@ public class FixValueOperations {
    * Logical and operator
    */
   public final BiFunction<FixValue<Boolean>, FixValue<Boolean>, FixValue<Boolean>> and =
-          (operand1, operand2) -> {
-            Objects.requireNonNull(operand1, "Missing operand 1");
-            Objects.requireNonNull(operand2, "Missing operand 2");
+      (operand1, operand2) -> {
+        Objects.requireNonNull(operand1, "Missing operand 1");
+        Objects.requireNonNull(operand2, "Missing operand 2");
 
-            FixValue<Boolean> result;
-            try {
-              result = FixValueFactory.create(null, FixType.BooleanType, Boolean.class);
+        FixValue<Boolean> result;
+        try {
+          result = FixValueFactory.create(null, FixType.BooleanType, Boolean.class);
 
-              result.setValue(operand1.getValue() && operand2.getValue());
-              return result;
-            } catch (ModelException e) {
-              return null;
-            }
-          };
+          result.setValue(operand1.getValue() && operand2.getValue());
+          return result;
+        } catch (final ModelException e) {
+          return null;
+        }
+      };
 
   /**
    * Divide operator
@@ -373,11 +370,11 @@ public class FixValueOperations {
           Objects.requireNonNull(operand1, "Missing operand 1");
           Objects.requireNonNull(operand2, "Missing operand 2");
 
-          OperationKey key = new OperationKey(operand1.getType(), operand2.getType(),
+          final OperationKey key = new OperationKey(operand1.getType(), operand2.getType(),
               operand1.getValue().getClass(), operand2.getValue().getClass());
 
-          boolean swapOperands = false;
-          Operation operation = Operation.exactMatch(key, divideOperations);
+          final boolean swapOperands = false;
+          final Operation operation = Operation.exactMatch(key, divideOperations);
           if (operation == null) {
             return null;
           }
@@ -397,7 +394,7 @@ public class FixValueOperations {
                       operation.valueType2.cast(operand2.getValue()))));
             }
             return result;
-          } catch (ModelException e) {
+          } catch (final ModelException e) {
             return null;
           }
         }
@@ -415,7 +412,7 @@ public class FixValueOperations {
           Objects.requireNonNull(operand1, "Missing operand 1");
           Objects.requireNonNull(operand2, "Missing operand 2");
 
-          OperationKey key = new OperationKey(operand1.getType(), operand2.getType(),
+          final OperationKey key = new OperationKey(operand1.getType(), operand2.getType(),
               operand1.getValue().getClass(), operand2.getValue().getClass());
 
           boolean swapOperands = false;
@@ -443,7 +440,7 @@ public class FixValueOperations {
                       operation.valueType2.cast(operand2.getValue()))));
             }
             return result;
-          } catch (ModelException e) {
+          } catch (final ModelException e) {
             return null;
           }
         }
@@ -461,11 +458,11 @@ public class FixValueOperations {
           Objects.requireNonNull(operand1, "Missing operand 1");
           Objects.requireNonNull(operand2, "Missing operand 2");
 
-          OperationKey key = new OperationKey(operand1.getType(), operand2.getType(),
+          final OperationKey key = new OperationKey(operand1.getType(), operand2.getType(),
               operand1.getValue().getClass(), operand2.getValue().getClass());
 
-          boolean swapOperands = false;
-          Operation operation = Operation.exactMatch(key, geOperations);
+          final boolean swapOperands = false;
+          final Operation operation = Operation.exactMatch(key, geOperations);
           if (operation == null) {
             return null;
           }
@@ -485,7 +482,7 @@ public class FixValueOperations {
                       operation.valueType2.cast(operand2.getValue()))));
             }
             return result;
-          } catch (ModelException e) {
+          } catch (final ModelException e) {
             return null;
           }
         }
@@ -503,11 +500,11 @@ public class FixValueOperations {
           Objects.requireNonNull(operand1, "Missing operand 1");
           Objects.requireNonNull(operand2, "Missing operand 2");
 
-          OperationKey key = new OperationKey(operand1.getType(), operand2.getType(),
+          final OperationKey key = new OperationKey(operand1.getType(), operand2.getType(),
               operand1.getValue().getClass(), operand2.getValue().getClass());
 
-          boolean swapOperands = false;
-          Operation operation = Operation.exactMatch(key, gtOperations);
+          final boolean swapOperands = false;
+          final Operation operation = Operation.exactMatch(key, gtOperations);
           if (operation == null) {
             return null;
           }
@@ -526,7 +523,7 @@ public class FixValueOperations {
                       operation.valueType2.cast(operand2.getValue()))));
             }
             return result;
-          } catch (ModelException e) {
+          } catch (final ModelException e) {
             return null;
           }
         }
@@ -544,11 +541,11 @@ public class FixValueOperations {
           Objects.requireNonNull(operand1, "Missing operand 1");
           Objects.requireNonNull(operand2, "Missing operand 2");
 
-          OperationKey key = new OperationKey(operand1.getType(), operand2.getType(),
+          final OperationKey key = new OperationKey(operand1.getType(), operand2.getType(),
               operand1.getValue().getClass(), operand2.getValue().getClass());
 
-          boolean swapOperands = false;
-          Operation operation = Operation.exactMatch(key, leOperations);
+          final boolean swapOperands = false;
+          final Operation operation = Operation.exactMatch(key, leOperations);
           if (operation == null) {
             return null;
           }
@@ -567,7 +564,7 @@ public class FixValueOperations {
                       operation.valueType2.cast(operand2.getValue()))));
             }
             return result;
-          } catch (ModelException e) {
+          } catch (final ModelException e) {
             return null;
           }
         }
@@ -585,11 +582,11 @@ public class FixValueOperations {
           Objects.requireNonNull(operand1, "Missing operand 1");
           Objects.requireNonNull(operand2, "Missing operand 2");
 
-          OperationKey key = new OperationKey(operand1.getType(), operand2.getType(),
+          final OperationKey key = new OperationKey(operand1.getType(), operand2.getType(),
               operand1.getValue().getClass(), operand2.getValue().getClass());
 
-          boolean swapOperands = false;
-          Operation operation = Operation.exactMatch(key, ltOperations);
+          final boolean swapOperands = false;
+          final Operation operation = Operation.exactMatch(key, ltOperations);
           if (operation == null) {
             return null;
           }
@@ -608,7 +605,7 @@ public class FixValueOperations {
                       operation.valueType2.cast(operand2.getValue()))));
             }
             return result;
-          } catch (ModelException e) {
+          } catch (final ModelException e) {
             return null;
           }
         }
@@ -626,11 +623,11 @@ public class FixValueOperations {
           Objects.requireNonNull(operand1, "Missing operand 1");
           Objects.requireNonNull(operand2, "Missing operand 2");
 
-          OperationKey key = new OperationKey(operand1.getType(), operand2.getType(),
+          final OperationKey key = new OperationKey(operand1.getType(), operand2.getType(),
               operand1.getValue().getClass(), operand2.getValue().getClass());
 
-          boolean swapOperands = false;
-          Operation operation = Operation.exactMatch(key, modOperations);
+          final boolean swapOperands = false;
+          final Operation operation = Operation.exactMatch(key, modOperations);
           if (operation == null) {
             return null;
           }
@@ -649,7 +646,7 @@ public class FixValueOperations {
                       operation.valueType2.cast(operand2.getValue()))));
             }
             return result;
-          } catch (ModelException e) {
+          } catch (final ModelException e) {
             return null;
           }
         }
@@ -667,7 +664,7 @@ public class FixValueOperations {
           Objects.requireNonNull(operand1, "Missing operand 1");
           Objects.requireNonNull(operand2, "Missing operand 2");
 
-          OperationKey key = new OperationKey(operand1.getType(), operand2.getType(),
+          final OperationKey key = new OperationKey(operand1.getType(), operand2.getType(),
               operand1.getValue().getClass(), operand2.getValue().getClass());
 
           boolean swapOperands = false;
@@ -694,7 +691,7 @@ public class FixValueOperations {
                       operation.valueType2.cast(operand2.getValue()))));
             }
             return result;
-          } catch (ModelException e) {
+          } catch (final ModelException e) {
             return null;
           }
         }
@@ -712,11 +709,11 @@ public class FixValueOperations {
           Objects.requireNonNull(operand1, "Missing operand 1");
           Objects.requireNonNull(operand2, "Missing operand 2");
 
-          OperationKey key = new OperationKey(operand1.getType(), operand2.getType(),
+          final OperationKey key = new OperationKey(operand1.getType(), operand2.getType(),
               operand1.getValue().getClass(), operand2.getValue().getClass());
 
-          boolean swapOperands = false;
-          Operation operation = Operation.exactMatch(key, neOperations);
+          final boolean swapOperands = false;
+          final Operation operation = Operation.exactMatch(key, neOperations);
           if (operation == null) {
             return null;
           }
@@ -735,7 +732,7 @@ public class FixValueOperations {
                       operation.valueType2.cast(operand2.getValue()))));
             }
             return result;
-          } catch (ModelException e) {
+          } catch (final ModelException e) {
             return null;
           }
         }
@@ -744,38 +741,37 @@ public class FixValueOperations {
   /**
    * Logical-not unary operator
    */
-  public final Function<FixValue<Boolean>, FixValue<Boolean>> not =
-          operand1 -> {
-            Objects.requireNonNull(operand1, "Missing operand 1");
-            FixValue<Boolean> result;
-            try {
-              result = FixValueFactory.create(null, FixType.BooleanType, Boolean.class);
+  public final Function<FixValue<Boolean>, FixValue<Boolean>> not = operand1 -> {
+    Objects.requireNonNull(operand1, "Missing operand 1");
+    FixValue<Boolean> result;
+    try {
+      result = FixValueFactory.create(null, FixType.BooleanType, Boolean.class);
 
-              result.setValue(!operand1.getValue());
-              return result;
-            } catch (ModelException e) {
-              return null;
-            }
-          };
+      result.setValue(!operand1.getValue());
+      return result;
+    } catch (final ModelException e) {
+      return null;
+    }
+  };
 
   /**
    * Logical or operator
    */
   public final BiFunction<FixValue<Boolean>, FixValue<Boolean>, FixValue<Boolean>> or =
-          (operand1, operand2) -> {
-            Objects.requireNonNull(operand1, "Missing operand 1");
-            Objects.requireNonNull(operand2, "Missing operand 2");
+      (operand1, operand2) -> {
+        Objects.requireNonNull(operand1, "Missing operand 1");
+        Objects.requireNonNull(operand2, "Missing operand 2");
 
-            FixValue<Boolean> result;
-            try {
-              result = FixValueFactory.create(null, FixType.BooleanType, Boolean.class);
+        FixValue<Boolean> result;
+        try {
+          result = FixValueFactory.create(null, FixType.BooleanType, Boolean.class);
 
-              result.setValue(operand1.getValue() || operand2.getValue());
-              return result;
-            } catch (ModelException e) {
-              return null;
-            }
-          };
+          result.setValue(operand1.getValue() || operand2.getValue());
+          return result;
+        } catch (final ModelException e) {
+          return null;
+        }
+      };
 
   /**
    * Subtract operator
@@ -789,11 +785,11 @@ public class FixValueOperations {
           Objects.requireNonNull(operand1, "Missing operand 1");
           Objects.requireNonNull(operand2, "Missing operand 2");
 
-          OperationKey key = new OperationKey(operand1.getType(), operand2.getType(),
+          final OperationKey key = new OperationKey(operand1.getType(), operand2.getType(),
               operand1.getValue().getClass(), operand2.getValue().getClass());
 
-          boolean swapOperands = false;
-          Operation operation = Operation.exactMatch(key, subtractOperations);
+          final boolean swapOperands = false;
+          final Operation operation = Operation.exactMatch(key, subtractOperations);
           if (operation == null) {
             return null;
           }
@@ -812,7 +808,7 @@ public class FixValueOperations {
                       operation.valueType2.cast(operand2.getValue()))));
             }
             return result;
-          } catch (ModelException e) {
+          } catch (final ModelException e) {
             return null;
           }
         }

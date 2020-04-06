@@ -15,7 +15,6 @@
 package io.fixprotocol.orchestra.model.quickfix;
 
 import java.util.List;
-
 import io.fixprotocol._2020.orchestra.repository.FieldRefType;
 import io.fixprotocol._2020.orchestra.repository.GroupRefType;
 import io.fixprotocol._2020.orchestra.repository.GroupType;
@@ -27,7 +26,6 @@ import io.fixprotocol.orchestra.model.ModelException;
 import io.fixprotocol.orchestra.model.PathStep;
 import io.fixprotocol.orchestra.model.Scope;
 import io.fixprotocol.orchestra.model.SymbolResolver;
-import io.fixprotocol.orchestra.repository.RepositoryAccessor;
 import quickfix.Message;
 
 /**
@@ -41,7 +39,7 @@ public class MessageScope extends AbstractMessageScope implements Scope {
 
   /**
    * Constructor
-   * 
+   *
    * @param message FIX message to expose
    * @param messageType metadata about the FIX message type
    * @param repository FIX Repository contains metadata
@@ -52,12 +50,40 @@ public class MessageScope extends AbstractMessageScope implements Scope {
       SymbolResolver symbolResolver, Evaluator evaluator) {
     super(message, repository, symbolResolver, evaluator);
     this.messageType = messageType;
-   }
+  }
 
 
   /*
    * (non-Javadoc)
    * 
+   * @see io.fixprotocol.orchestra.model.Scope#assign(io.fixprotocol.orchestra.model.PathStep,
+   * io.fixprotocol.orchestra.model.FixValue)
+   */
+  @Override
+  public FixValue<?> assign(PathStep pathStep, FixValue<?> value) throws ModelException {
+    if (value.getValue() == null) {
+      throw new ModelException(
+          String.format("Assigning field %s null not allowed", value.getName()));
+    }
+    final String name = pathStep.getName();
+    final List<Object> members = getRepository().getMessageMembers(messageType);
+    for (final Object member : members) {
+      if (member instanceof FieldRefType) {
+        final FieldRefType fieldRefType = (FieldRefType) member;
+        final String fieldName = getRepository().getFieldName(fieldRefType.getId().intValue(),
+            fieldRefType.getScenario());
+        if (name.equals(fieldName)) {
+          assignField(fieldRefType, value);
+          return value;
+        }
+      }
+    }
+    return null;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
    * @see java.lang.AutoCloseable#close()
    */
   @Override
@@ -69,7 +95,7 @@ public class MessageScope extends AbstractMessageScope implements Scope {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see io.fixprotocol.orchestra.dsl.antlr.FixNode#getName()
    */
   @Override
@@ -79,7 +105,7 @@ public class MessageScope extends AbstractMessageScope implements Scope {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see io.fixprotocol.orchestra.dsl.antlr.Scope#nest(io.fixprotocol.orchestra.dsl.antlr.PathStep,
    * io.fixprotocol.orchestra.dsl.antlr.Scope)
    */
@@ -90,7 +116,7 @@ public class MessageScope extends AbstractMessageScope implements Scope {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * io.fixprotocol.orchestra.dsl.antlr.Scope#remove(io.fixprotocol.orchestra.dsl.antlr.PathStep)
    */
@@ -101,24 +127,25 @@ public class MessageScope extends AbstractMessageScope implements Scope {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * io.fixprotocol.orchestra.dsl.antlr.Scope#resolve(io.fixprotocol.orchestra.dsl.antlr.PathStep)
    */
   @Override
   public FixNode resolve(PathStep pathStep) {
-    String name = pathStep.getName();
-    List<Object> members = getRepository().getMessageMembers(messageType);
-    for (Object member : members) {
+    final String name = pathStep.getName();
+    final List<Object> members = getRepository().getMessageMembers(messageType);
+    for (final Object member : members) {
       if (member instanceof FieldRefType) {
-        FieldRefType fieldRefType = (FieldRefType) member;
-        String fieldName = getRepository().getFieldName(fieldRefType.getId().intValue(), fieldRefType.getScenario());
+        final FieldRefType fieldRefType = (FieldRefType) member;
+        final String fieldName = getRepository().getFieldName(fieldRefType.getId().intValue(),
+            fieldRefType.getScenario());
         if (name.equals(fieldName)) {
           return resolveField(fieldRefType);
         }
       } else if (member instanceof GroupRefType) {
-        GroupRefType groupRefType = (GroupRefType) member;
-        GroupType group = getRepository().getGroup(groupRefType);
+        final GroupRefType groupRefType = (GroupRefType) member;
+        final GroupType group = getRepository().getGroup(groupRefType);
         if (name.equals(group.getName())) {
           return resolveGroup(pathStep, groupRefType);
         }
@@ -127,39 +154,16 @@ public class MessageScope extends AbstractMessageScope implements Scope {
     return null;
   }
 
+
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * io.fixprotocol.orchestra.dsl.antlr.Scope#setParent(io.fixprotocol.orchestra.dsl.antlr.Scope)
    */
   @Override
   public void setParent(Scope parent) {
     this.parent = parent;
-  }
-
-
-  /* (non-Javadoc)
-   * @see io.fixprotocol.orchestra.model.Scope#assign(io.fixprotocol.orchestra.model.PathStep, io.fixprotocol.orchestra.model.FixValue)
-   */
-  @Override
-  public FixValue<?> assign(PathStep pathStep, FixValue<?> value) throws ModelException {
-    if (value.getValue() == null) {
-      throw new ModelException(String.format("Assigning field %s null not allowed", value.getName()));
-    }
-    String name = pathStep.getName();
-    List<Object> members = getRepository().getMessageMembers(messageType);
-    for (Object member : members) {
-      if (member instanceof FieldRefType) {
-        FieldRefType fieldRefType = (FieldRefType) member;
-        String fieldName = getRepository().getFieldName(fieldRefType.getId().intValue(), fieldRefType.getScenario());
-        if (name.equals(fieldName)) {
-          assignField(fieldRefType, value);
-          return value;
-        }
-      }
-    }
-    return null;
   }
 
 }

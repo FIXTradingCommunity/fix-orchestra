@@ -4,23 +4,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TestException extends Exception {
-  
+
   private static class Detail {
-    
+
     private final String actual;
     private final String detailMessage;
     private final String expected;
-    
+
     public Detail(String detailMessage) {
       this(detailMessage, null, null);
     }
-    
+
     public Detail(String detailMessage, String expected, String actual) {
       this.detailMessage = detailMessage;
       this.expected = expected;
       this.actual = actual;
     }
-    
+
     @Override
     public String toString() {
       return "Detail [" + (detailMessage != null ? "detailMessage=" + detailMessage + ", " : "")
@@ -32,9 +32,8 @@ public class TestException extends Exception {
   private static final long serialVersionUID = 1017825737727657154L;
 
   private final List<Detail> details = new ArrayList<>();
-      
-  public TestException() {
-  }
+
+  public TestException() {}
 
   public TestException(String message) {
     super(message);
@@ -52,22 +51,22 @@ public class TestException extends Exception {
   public TestException(Throwable cause) {
     super(cause);
   }
-  
+
   public void addDetail(String detailMessage) {
     details.add(new Detail(detailMessage));
   }
-  
+
   public void addDetail(String detailMessage, String expected, String actual) {
     details.add(new Detail(detailMessage, expected, actual));
-  }
-  
-  public boolean hasDetails() {
-    return !details.isEmpty();
   }
 
   @Override
   public String getMessage() {
     return super.getMessage() + "; " + details.toString();
+  }
+
+  public boolean hasDetails() {
+    return !details.isEmpty();
   }
 
   @Override

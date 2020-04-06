@@ -17,39 +17,26 @@ package io.fixprotocol.orchestra.dsl.antlr.test;
 import org.antlr.v4.gui.TestRig;
 
 /**
- * Interactive tester for the Score DSL 
+ * Interactive tester for the Score DSL
  * <p>
  * To start a test session, enter this command line:
- * 
+ *
  * <pre>
  * java -jar dsl-antlr-[version]-jar-with-dependencies.jar
  * </pre>
- * 
+ *
  * The interactive tester evaluates expressions that you enter. It waits until the end of input to
  * start evaluation. To end input, type Ctrl-D on Linux or Ctrl-Z on Windows. If an expression does
  * not conform to the Score DSL, the tester will report "mismatched input".
- * 
+ *
  * @author Don Mendelson
  *
  */
 public class InteractiveTest implements Runnable {
 
-  private TestRig testRig;
-
-  /**
-   * Instantiates the ANTLR4 test rig with parameters
-   * 
-   * @param args arguments to {@code TestRig}
-   * @throws Exception if parameters are invalid
-   * 
-   */
-  public InteractiveTest(String[] args) throws Exception {
-    testRig = new TestRig(args);
-  }
-
   /**
    * Runs an interactive test of the DSL
-   * 
+   *
    * @param args parameters to {@code TestRig}. If empty, defaults are applied.
    * @throws Exception if parameters are invalid
    */
@@ -59,20 +46,33 @@ public class InteractiveTest implements Runnable {
       testArgs = new String[] {"io.fixprotocol.orchestra.dsl.antlr.Score", "anyExpression", "-gui",
           "-tree", "-tokens"};
     }
-    InteractiveTest test = new InteractiveTest(testArgs);
+    final InteractiveTest test = new InteractiveTest(testArgs);
     test.run();
+  }
+
+  private final TestRig testRig;
+
+  /**
+   * Instantiates the ANTLR4 test rig with parameters
+   *
+   * @param args arguments to {@code TestRig}
+   * @throws Exception if parameters are invalid
+   *
+   */
+  public InteractiveTest(String[] args) throws Exception {
+    testRig = new TestRig(args);
   }
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see java.lang.Runnable#run()
    */
   @Override
   public void run() {
     try {
       testRig.process();
-    } catch (Exception e) {
+    } catch (final Exception e) {
       e.printStackTrace();
     }
   }

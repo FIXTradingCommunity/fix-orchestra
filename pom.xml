@@ -5,14 +5,14 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.fixprotocol.orchestra</groupId>
 	<artifactId>parent</artifactId>
-	<version>1.5.0</version>
+	<version>1.6.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>${project.groupId}:${project.artifactId}</name>
 	<description>Parent project for FIX Orchestra</description>
 	<url>https://github.com/FIXTradingCommunity/fix-orchestra/wiki</url>
 	<inceptionYear>2016</inceptionYear>
 	<prerequisites>
-		<maven>3.0.5</maven>
+		<maven>3.1.0</maven>
 	</prerequisites>
 
 	<organization>
@@ -64,6 +64,7 @@
 		<module>docgen</module>
 		<module>testgen</module>
 		<module>state-machine</module>
+		<module>repository-util</module>
 	</modules>
 
 	<properties>
@@ -71,11 +72,11 @@
 		<antlr.version>4.8-1</antlr.version>
 		<commons-cli.version>1.4</commons-cli.version>
 		<cucumber.version>1.2.6</cucumber.version>
-		<java.version>1.8</java.version>
+		<java.version>11</java.version>
 		<junit.version>4.11</junit.version>
-		<log4j.version>2.13.0</log4j.version>
+		<log4j.version>2.13.1</log4j.version>
 		<quickfixj.version>2.1.1</quickfixj.version>
-		<saxon.version>9.9.1-6</saxon.version>
+		<saxon.version>10.0</saxon.version>
 		<slf4j.version>1.7.22</slf4j.version>
 		<stringtemplate.version>4.3</stringtemplate.version>
 	</properties>
@@ -105,7 +106,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-resources-plugin</artifactId>
-					<version>3.0.1</version>
+					<version>3.1.0</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>

@@ -16,7 +16,7 @@ package io.fixprotocol.orchestra.model;
 
 /**
  * Confederated symbol space
- * 
+ *
  * @author Don Mendelson
  *
  */
@@ -48,7 +48,7 @@ public class SymbolResolver extends TreeSymbolTable {
 
   @Override
   public FixValue<?> assign(PathStep pathStep, FixValue<?> value) throws ModelException {
-    String pathName = pathStep.getName();
+    final String pathName = pathStep.getName();
     if (pathName.startsWith("$")) {
       final Scope variables = (Scope) super.resolve(VARIABLE_ROOT);
       final PathStep vPathStep = new PathStep(pathName.substring(1));
@@ -72,7 +72,7 @@ public class SymbolResolver extends TreeSymbolTable {
   @Override
   public FixNode resolve(PathStep pathStep) {
     FixNode node = null;
-    String pathName = pathStep.getName();
+    final String pathName = pathStep.getName();
     if (pathName.length() > 1 && pathName.startsWith(VARIABLE_ROOT.getName())) {
       final Scope variables = (Scope) super.resolve(VARIABLE_ROOT);
       final PathStep vPathStep = new PathStep(pathName.substring(1));

@@ -15,7 +15,6 @@
 package io.fixprotocol.orchestra.message;
 
 import java.util.List;
-
 import io.fixprotocol._2020.orchestra.repository.CodeSetType;
 import io.fixprotocol._2020.orchestra.repository.CodeType;
 import io.fixprotocol.orchestra.model.FixNode;
@@ -28,7 +27,7 @@ import io.fixprotocol.orchestra.model.Scope;
 
 /**
  * Scope for a code set
- * 
+ *
  * @author Don Mendelson
  *
  */
@@ -39,7 +38,7 @@ public class CodeSetScope implements Scope {
 
   /**
    * Constructor
-   * 
+   *
    * @param codeSet from metadata
    */
   public CodeSetScope(CodeSetType codeSet) {
@@ -48,7 +47,7 @@ public class CodeSetScope implements Scope {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * io.fixprotocol.orchestra.dsl.antlr.Scope#assign(io.fixprotocol.orchestra.dsl.antlr.PathStep,
    * io.fixprotocol.orchestra.dsl.antlr.FixValue)
@@ -60,7 +59,7 @@ public class CodeSetScope implements Scope {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see java.lang.AutoCloseable#close()
    */
   @Override
@@ -72,7 +71,7 @@ public class CodeSetScope implements Scope {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see io.fixprotocol.orchestra.dsl.antlr.FixNode#getName()
    */
   @Override
@@ -82,7 +81,7 @@ public class CodeSetScope implements Scope {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see io.fixprotocol.orchestra.dsl.antlr.Scope#nest(io.fixprotocol.orchestra.dsl.antlr.PathStep,
    * io.fixprotocol.orchestra.dsl.antlr.Scope)
    */
@@ -93,7 +92,7 @@ public class CodeSetScope implements Scope {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * io.fixprotocol.orchestra.dsl.antlr.Scope#remove(io.fixprotocol.orchestra.dsl.antlr.PathStep)
    */
@@ -104,18 +103,18 @@ public class CodeSetScope implements Scope {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * io.fixprotocol.orchestra.dsl.antlr.Scope#resolve(io.fixprotocol.orchestra.dsl.antlr.PathStep)
    */
   @SuppressWarnings("unchecked")
   @Override
   public FixValue<?> resolve(PathStep pathStep) {
-    String dataTypeString = codeSet.getType();
-    FixType dataType = FixType.forName(dataTypeString);
-    String name = pathStep.getName();
-    List<CodeType> codes = codeSet.getCode();
-    for (CodeType code : codes) {
+    final String dataTypeString = codeSet.getType();
+    final FixType dataType = FixType.forName(dataTypeString);
+    final String name = pathStep.getName();
+    final List<CodeType> codes = codeSet.getCode();
+    for (final CodeType code : codes) {
       if (code.getName().equals(name)) {
         @SuppressWarnings("rawtypes")
         FixValue fixValue;
@@ -123,7 +122,7 @@ public class CodeSetScope implements Scope {
           fixValue = FixValueFactory.create(name, dataType, dataType.getValueClass());
           fixValue.setValue(dataType.getValueClass().cast(dataType.fromString(code.getValue())));
           return fixValue;
-        } catch (ModelException e) {
+        } catch (final ModelException e) {
           return null;
         }
       }
@@ -133,7 +132,7 @@ public class CodeSetScope implements Scope {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * io.fixprotocol.orchestra.dsl.antlr.Scope#setParent(io.fixprotocol.orchestra.dsl.antlr.Scope)
    */

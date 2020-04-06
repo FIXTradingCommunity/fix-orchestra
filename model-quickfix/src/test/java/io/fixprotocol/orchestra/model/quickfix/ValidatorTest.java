@@ -32,7 +32,7 @@ import io.fixprotocol._2020.orchestra.repository.MessageType;
 import io.fixprotocol._2020.orchestra.repository.Repository;
 import io.fixprotocol.orchestra.message.TestException;
 import io.fixprotocol.orchestra.model.SymbolResolver;
-import io.fixprotocol.orchestra.repository.RepositoryAccessor;
+
 import quickfix.SessionID;
 import quickfix.field.TradSesStatus;
 import quickfix.field.TradingSessionID;

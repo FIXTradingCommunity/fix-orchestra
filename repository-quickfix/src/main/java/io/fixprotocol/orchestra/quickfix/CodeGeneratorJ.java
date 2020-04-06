@@ -28,11 +28,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-
 import io.fixprotocol._2020.orchestra.repository.CodeSetType;
 import io.fixprotocol._2020.orchestra.repository.CodeType;
 import io.fixprotocol._2020.orchestra.repository.ComponentRefType;
@@ -47,14 +45,14 @@ import io.fixprotocol._2020.orchestra.repository.Repository;
 /**
  * Generates message classes for QuickFIX/J from a FIX Orchestra file
  * <p>
- * Unlike the QuickFIX/J code generator, this utility works directly from a FIX Orchestra 
- * file rather than from a QuickFIX data dictionary file.
+ * Unlike the QuickFIX/J code generator, this utility works directly from a FIX Orchestra file
+ * rather than from a QuickFIX data dictionary file.
  * <p>
  * For now, message validation in QuickFIX/J still requires a data dictionary file, but in future
  * versions, validations may be delegated to additional generated code that takes advantage to
  * conditional logic supported by Orchestra. For example, a validator may invoke an evaluation of an
  * expression for a conditionally required field.
- * 
+ *
  * @author Don Mendelson
  *
  */
@@ -71,17 +69,17 @@ public class CodeGeneratorJ {
 
   /**
    * Runs a CodeGeneratorJ with command line arguments
-   * 
+   *
    * @param args command line arguments. The first argument is the name of a FIX Orchestra file. An
    *        optional second argument is the target directory for generated code. It defaults to
    *        "target/generated-sources".
-   * @throws IOException 
-   * @throws FileNotFoundException 
+   * @throws IOException
+   * @throws FileNotFoundException
    */
   public static void main(String[] args) throws IOException {
-    CodeGeneratorJ generator = new CodeGeneratorJ();
+    final CodeGeneratorJ generator = new CodeGeneratorJ();
     if (args.length >= 1) {
-      File inputFile = new File(args[0]);
+      final File inputFile = new File(args[0]);
       File outputDir;
       if (args.length >= 2) {
         outputDir = new File(args[1]);
@@ -105,48 +103,48 @@ public class CodeGeneratorJ {
     try {
       final Repository repository = unmarshal(inputFile);
       final List<CodeSetType> codeSetList = repository.getCodeSets().getCodeSet();
-      for (CodeSetType codeSet : codeSetList) {
+      for (final CodeSetType codeSet : codeSetList) {
         codeSets.put(codeSet.getName(), codeSet);
       }
 
       final List<FieldType> fieldList = repository.getFields().getField();
       final File fileDir = getPackagePath(outputDir, FIELD_PACKAGE);
       fileDir.mkdirs();
-      for (FieldType fieldType : fieldList) {
+      for (final FieldType fieldType : fieldList) {
         fields.put(fieldType.getId().intValue(), fieldType);
         generateField(outputDir, fieldType, FIELD_PACKAGE);
       }
 
       String version = repository.getVersion();
       // Split off EP portion of version
-      String[] parts = version.split("_");
+      final String[] parts = version.split("_");
       if (parts.length > 0) {
         version = parts[0];
       }
-      String versionPath = version.replaceAll("[\\.]", "").toLowerCase();
+      final String versionPath = version.replaceAll("[\\.]", "").toLowerCase();
       final String componentPackage = getPackage("quickfix", versionPath, "component");
       final File componentDir = getPackagePath(outputDir, componentPackage);
       componentDir.mkdirs();
       final List<ComponentType> componentList = repository.getComponents().getComponent();
-      for (ComponentType component : componentList) {
-          components.put(component.getId().intValue(), component);
+      for (final ComponentType component : componentList) {
+        components.put(component.getId().intValue(), component);
       }
       final List<GroupType> groupList = repository.getGroups().getGroup();
-      for (GroupType group : groupList) {
+      for (final GroupType group : groupList) {
         groups.put(group.getId().intValue(), group);
       }
-      
-      for (GroupType group : groupList) {
-          generateGroup(outputDir, group, componentPackage);
+
+      for (final GroupType group : groupList) {
+        generateGroup(outputDir, group, componentPackage);
       }
-      for (ComponentType component : componentList) {
-          generateComponent(outputDir, component, componentPackage);
+      for (final ComponentType component : componentList) {
+        generateComponent(outputDir, component, componentPackage);
       }
       final String messagePackage = getPackage("quickfix", versionPath);
       final File messageDir = getPackagePath(outputDir, messagePackage);
       messageDir.mkdirs();
       final List<MessageType> messageList = repository.getMessages().getMessage();
-      for (MessageType message : messageList) {
+      for (final MessageType message : messageList) {
         generateMessage(outputDir, message, messagePackage, componentPackage);
       }
       generateMessageBaseClass(outputDir, version, messagePackage);
@@ -160,8 +158,8 @@ public class CodeGeneratorJ {
 
   private void generateComponent(File outputDir, ComponentType componentType, String packageName)
       throws IOException {
-    String name = toTitleCase(componentType.getName());
-    File file = getClassFilePath(outputDir, packageName, name);
+    final String name = toTitleCase(componentType.getName());
+    final File file = getClassFilePath(outputDir, packageName, name);
     try (FileWriter writer = new FileWriter(file)) {
       writeFileHeader(writer);
       writePackage(writer, packageName);
@@ -172,13 +170,13 @@ public class CodeGeneratorJ {
       writeSerializationVersion(writer, SERIALIZATION_VERSION);
       writeMsgType(writer, "");
 
-      List<Integer> componentFields = new ArrayList<>();
-      List<Object> members = componentType.getComponentRefOrGroupRefOrFieldRef();
+      final List<Integer> componentFields = new ArrayList<>();
+      final List<Object> members = componentType.getComponentRefOrGroupRefOrFieldRef();
       componentFields.addAll(members.stream().filter(member -> member instanceof FieldRefType)
           .map(member -> ((FieldRefType) member).getId().intValue()).collect(Collectors.toList()));
       writeComponentFieldIds(writer, componentFields);
 
-      List<Integer> componentGroupFields = new ArrayList<>();
+      final List<Integer> componentGroupFields = new ArrayList<>();
       writeGroupFieldIds(writer, componentGroupFields);
       writeComponentNoArgConstructor(writer, name);
 
@@ -190,30 +188,30 @@ public class CodeGeneratorJ {
 
   private void generateField(File outputDir, FieldType fieldType, String packageName)
       throws IOException {
-    String name = toTitleCase(fieldType.getName());
-    File file = getClassFilePath(outputDir, packageName, name);
+    final String name = toTitleCase(fieldType.getName());
+    final File file = getClassFilePath(outputDir, packageName, name);
     try (FileWriter writer = new FileWriter(file)) {
       writeFileHeader(writer);
       writePackage(writer, packageName);
-      String type = fieldType.getType();
-      CodeSetType codeSet = codeSets.get(type);
-      String fixType = codeSet == null ? type : codeSet.getType();
+      final String type = fieldType.getType();
+      final CodeSetType codeSet = codeSets.get(type);
+      final String fixType = codeSet == null ? type : codeSet.getType();
 
       if (DATE_TYPES.contains(fixType)) {
         writeImport(writer, "java.time.LocalDate");
         writeImport(writer, "java.time.LocalTime");
         writeImport(writer, "java.time.LocalDateTime");
-        
+
       }
-      String baseClassname = getFieldBaseClass(fixType);
+      final String baseClassname = getFieldBaseClass(fixType);
       if (baseClassname.equals("DecimalField")) {
         writeImport(writer, "java.math.BigDecimal");
       }
-      String qualifiedBaseClassname = getQualifiedClassName("quickfix", baseClassname);
+      final String qualifiedBaseClassname = getQualifiedClassName("quickfix", baseClassname);
       writeImport(writer, qualifiedBaseClassname);
       writeClassDeclaration(writer, name, baseClassname);
       writeSerializationVersion(writer, SERIALIZATION_VERSION);
-      int fieldId = fieldType.getId().intValue();
+      final int fieldId = fieldType.getId().intValue();
       writeFieldId(writer, fieldId);
       if (codeSet != null) {
         writeValues(writer, codeSet);
@@ -226,8 +224,8 @@ public class CodeGeneratorJ {
 
   private void generateGroup(File outputDir, GroupType groupType, String packageName)
       throws IOException {
-    String name = toTitleCase(groupType.getName());
-    File file = getClassFilePath(outputDir, packageName, name);
+    final String name = toTitleCase(groupType.getName());
+    final File file = getClassFilePath(outputDir, packageName, name);
     try (FileWriter writer = new FileWriter(file)) {
       writeFileHeader(writer);
       writePackage(writer, packageName);
@@ -238,22 +236,22 @@ public class CodeGeneratorJ {
       writeSerializationVersion(writer, SERIALIZATION_VERSION);
       writeMsgType(writer, "");
 
-      List<Integer> componentFields = Collections.emptyList();
+      final List<Integer> componentFields = Collections.emptyList();
       writeComponentFieldIds(writer, componentFields);
 
-      int numInGroupId = groupType.getNumInGroup().getId().intValue();
-      List<Integer> componentGroupFields = new ArrayList<>();
+      final int numInGroupId = groupType.getNumInGroup().getId().intValue();
+      final List<Integer> componentGroupFields = new ArrayList<>();
       componentGroupFields.add(numInGroupId);
       writeGroupFieldIds(writer, componentGroupFields);
 
       writeComponentNoArgConstructor(writer, name);
 
-      FieldType numInGroupField = fields.get(numInGroupId);
-      String numInGroupFieldName = numInGroupField.getName();
+      final FieldType numInGroupField = fields.get(numInGroupId);
+      final String numInGroupFieldName = numInGroupField.getName();
       writeFieldAccessors(writer, numInGroupFieldName, numInGroupId);
       writeGroupInnerClass(writer, groupType, packageName, packageName);
 
-      List<Object> members = groupType.getComponentRefOrGroupRefOrFieldRef();
+      final List<Object> members = groupType.getComponentRefOrGroupRefOrFieldRef();
       writeMemberAccessors(writer, members, packageName, packageName);
 
       writeEndClassDeclaration(writer);
@@ -263,11 +261,11 @@ public class CodeGeneratorJ {
   private void generateMessage(File outputDir, MessageType messageType, String messagePackage,
       String componentPackage) throws IOException {
     String messageClassname = toTitleCase(messageType.getName());
-    String scenario = messageType.getScenario();
+    final String scenario = messageType.getScenario();
     if (!scenario.equals("base")) {
       messageClassname = messageClassname + toTitleCase(scenario);
     }
-    File file = getClassFilePath(outputDir, messagePackage, messageClassname);
+    final File file = getClassFilePath(outputDir, messagePackage, messageClassname);
     try (FileWriter writer = new FileWriter(file)) {
       writeFileHeader(writer);
       writePackage(writer, messagePackage);
@@ -279,7 +277,7 @@ public class CodeGeneratorJ {
       writeSerializationVersion(writer, SERIALIZATION_VERSION);
       writeMsgType(writer, messageType.getMsgType());
 
-      List<Object> members = messageType.getStructure().getComponentRefOrGroupRefOrFieldRef();
+      final List<Object> members = messageType.getStructure().getComponentRefOrGroupRefOrFieldRef();
       writeMessageNoArgConstructor(writer, messageClassname);
 
       writeMemberAccessors(writer, members, messagePackage, componentPackage);
@@ -290,7 +288,7 @@ public class CodeGeneratorJ {
 
   private void generateMessageBaseClass(File outputDir, String version, String messagePackage)
       throws IOException {
-    File file = getClassFilePath(outputDir, messagePackage, "Message");
+    final File file = getClassFilePath(outputDir, messagePackage, "Message");
     try (FileWriter writer = new FileWriter(file)) {
       writeFileHeader(writer);
       writePackage(writer, messagePackage);
@@ -307,7 +305,7 @@ public class CodeGeneratorJ {
 
   private void generateMessageCracker(File outputDir, String messagePackage,
       List<MessageType> messageList) throws IOException {
-    File file = getClassFilePath(outputDir, messagePackage, "MessageCracker");
+    final File file = getClassFilePath(outputDir, messagePackage, "MessageCracker");
     try (FileWriter writer = new FileWriter(file)) {
       writeFileHeader(writer);
       writePackage(writer, messagePackage);
@@ -321,9 +319,9 @@ public class CodeGeneratorJ {
       writer.write(String.format("%sthrow new UnsupportedMessageType();%n", indent(2)));
       writer.write(String.format("%s}%n", indent(1)));
 
-      for (MessageType messageType : messageList) {
-        String name = messageType.getName();
-        String scenario = messageType.getScenario();
+      for (final MessageType messageType : messageList) {
+        final String name = messageType.getName();
+        final String scenario = messageType.getScenario();
         if (!scenario.equals("base")) {
           continue;
         }
@@ -343,7 +341,7 @@ public class CodeGeneratorJ {
         writer.write(String.format("%s}%n", indent(1)));
       }
 
-      String crackMethodName = "crack" + messagePackage.split("\\.")[1];
+      final String crackMethodName = "crack" + messagePackage.split("\\.")[1];
       writer.write(String.format(
           "%n%spublic void crack(quickfix.Message message, SessionID sessionID)%n", indent(1)));
       writer.write(String.format(
@@ -360,9 +358,9 @@ public class CodeGeneratorJ {
           indent(2)));
 
       writer.write(String.format("%sswitch (type) {%n", indent(2)));
-      for (MessageType messageType : messageList) {
-        String name = messageType.getName();
-        String scenario = messageType.getScenario();
+      for (final MessageType messageType : messageList) {
+        final String name = messageType.getName();
+        final String scenario = messageType.getScenario();
         if (!scenario.equals("base")) {
           continue;
         }
@@ -379,7 +377,7 @@ public class CodeGeneratorJ {
 
   private void generateMessageFactory(File outputDir, String messagePackage,
       List<MessageType> messageList) throws IOException {
-    File file = getClassFilePath(outputDir, messagePackage, "MessageFactory");
+    final File file = getClassFilePath(outputDir, messagePackage, "MessageFactory");
     try (FileWriter writer = new FileWriter(file)) {
       writeFileHeader(writer);
       writePackage(writer, messagePackage);
@@ -402,7 +400,7 @@ public class CodeGeneratorJ {
   }
 
   private File getClassFilePath(File outputDir, String packageName, String className) {
-    StringBuilder sb = new StringBuilder();
+    final StringBuilder sb = new StringBuilder();
     sb.append(packageName.replace('.', File.separatorChar));
     sb.append(File.separatorChar);
     sb.append(className);
@@ -455,19 +453,19 @@ public class CodeGeneratorJ {
   }
 
   private void getGroupFields(List<Object> members, List<Integer> groupComponentFields) {
-    for (Object member : members) {
+    for (final Object member : members) {
       if (member instanceof FieldRefType) {
         groupComponentFields.add(((FieldRefType) member).getId().intValue());
       } else if (member instanceof GroupRefType) {
-        int id = ((GroupRefType) member).getId().intValue();
-        GroupType groupType = groups.get(id);
+        final int id = ((GroupRefType) member).getId().intValue();
+        final GroupType groupType = groups.get(id);
         if (groupType != null) {
           groupComponentFields.add(groupType.getNumInGroup().getId().intValue());
         } else {
           System.err.format("Group missing from repository; id=%d%n", id);
         }
       } else if (member instanceof ComponentRefType) {
-        ComponentType componentType =
+        final ComponentType componentType =
             components.get(((ComponentRefType) member).getId().intValue());
         getGroupFields(componentType.getComponentRefOrGroupRefOrFieldRef(), groupComponentFields);
       }
@@ -479,7 +477,7 @@ public class CodeGeneratorJ {
   }
 
   private File getPackagePath(File outputDir, String packageName) {
-    StringBuilder sb = new StringBuilder();
+    final StringBuilder sb = new StringBuilder();
     sb.append(packageName.replace('.', File.separatorChar));
     return new File(outputDir, sb.toString());
   }
@@ -489,14 +487,21 @@ public class CodeGeneratorJ {
   }
 
   private String indent(int level) {
-    char[] chars = new char[level * SPACES_PER_LEVEL];
+    final char[] chars = new char[level * SPACES_PER_LEVEL];
     Arrays.fill(chars, ' ');
     return new String(chars);
   }
 
+  // Capitalize first char and any after underscore or space. Leave other caps as-is.
+  private String toTitleCase(String text) {
+    final String[] parts = text.split("_ ");
+    return Arrays.stream(parts).map(part -> part.substring(0, 1).toUpperCase() + part.substring(1))
+        .collect(Collectors.joining());
+  }
+
   private Repository unmarshal(InputStream inputFile) throws JAXBException {
-    JAXBContext jaxbContext = JAXBContext.newInstance(Repository.class);
-    Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+    final JAXBContext jaxbContext = JAXBContext.newInstance(Repository.class);
+    final Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
     return (Repository) jaxbUnmarshaller.unmarshal(inputFile);
   }
 
@@ -517,7 +522,7 @@ public class CodeGeneratorJ {
 
   private Writer writeComponentAccessors(Writer writer, String componentName, String packageName)
       throws IOException {
-    String className = getQualifiedClassName(packageName, componentName);
+    final String className = getQualifiedClassName(packageName, componentName);
     writer.write(
         String.format("%n%spublic void set(%s component) {%n%ssetComponent(component);%n%s}%n",
             indent(1), className, indent(2), indent(1)));
@@ -533,7 +538,7 @@ public class CodeGeneratorJ {
   private Writer writeComponentFieldIds(Writer writer, List<Integer> componentFields)
       throws IOException {
     writer.write(String.format("%Sprivate int[] componentFields = {", indent(1)));
-    for (Integer fieldId : componentFields) {
+    for (final Integer fieldId : componentFields) {
       writer.write(String.format("%d, ", fieldId));
     }
     writer.write(String.format("};%n"));
@@ -555,7 +560,7 @@ public class CodeGeneratorJ {
   }
 
   private Writer writeFieldAccessors(Writer writer, String name, int id) throws IOException {
-    String qualifiedClassName = getQualifiedClassName(FIELD_PACKAGE, name);
+    final String qualifiedClassName = getQualifiedClassName(FIELD_PACKAGE, name);
 
     writer.write(String.format("%n%spublic void set(%s value) {%n%ssetField(value);%n%s}%n",
         indent(1), qualifiedClassName, indent(2), indent(1)));
@@ -591,7 +596,7 @@ public class CodeGeneratorJ {
             indent(1), className, indent(2), fieldId, indent(1)));
         writer.write(String.format("%n%spublic %s(char data) {%n%ssuper(%d, data);%n%s}%n",
             indent(1), className, indent(2), fieldId, indent(1)));
-        break;     
+        break;
       case "UtcDateOnlyField":
         writer.write(String.format("%n%spublic %s(LocalDate data) {%n%ssuper(%d, data);%n%s}%n",
             indent(1), className, indent(2), fieldId, indent(1)));
@@ -649,23 +654,22 @@ public class CodeGeneratorJ {
 
   private void writeGroupCreateCase(Writer writer, String parentQualifiedName, GroupType groupType)
       throws IOException {
-    FieldType numInGroupField = fields.get(groupType.getNumInGroup().getId().intValue());
-    String numInGroupFieldName = numInGroupField.getName();
+    final FieldType numInGroupField = fields.get(groupType.getNumInGroup().getId().intValue());
+    final String numInGroupFieldName = numInGroupField.getName();
 
-    String numInGroupFieldClassname =
+    final String numInGroupFieldClassname =
         getQualifiedClassName(FIELD_PACKAGE, numInGroupFieldName);
     writer.write(String.format("%scase %s.FIELD:%n", indent(3), numInGroupFieldClassname));
     writer.write(String.format("%sreturn new %s.%s();%n", indent(4), parentQualifiedName,
         numInGroupFieldName));
-    List<Object> members = groupType.getComponentRefOrGroupRefOrFieldRef();
-    for (Object member : members) {
+    final List<Object> members = groupType.getComponentRefOrGroupRefOrFieldRef();
+    for (final Object member : members) {
       if (member instanceof GroupRefType) {
-        int id = ((GroupRefType) member).getId().intValue();
-        GroupType nestedGroupType = groups.get(id);
+        final int id = ((GroupRefType) member).getId().intValue();
+        final GroupType nestedGroupType = groups.get(id);
         if (groupType != null) {
           writeGroupCreateCase(writer,
-              String.format("%s.%s", parentQualifiedName, numInGroupFieldName),
-              nestedGroupType);
+              String.format("%s.%s", parentQualifiedName, numInGroupFieldName), nestedGroupType);
         } else {
           System.err.format("Group missing from repository; id=%d%n", id);
         }
@@ -680,9 +684,9 @@ public class CodeGeneratorJ {
         "%n%spublic Group create(String beginString, String msgType, int correspondingFieldID) {%n",
         indent(1)));
     writer.write(String.format("%sswitch (msgType) {%n", indent(2)));
-    for (MessageType messageType : messageList) {
-      String messageName = messageType.getName();
-      String scenario = messageType.getScenario();
+    for (final MessageType messageType : messageList) {
+      final String messageName = messageType.getName();
+      final String scenario = messageType.getScenario();
       if (!scenario.equals("base")) {
         continue;
       }
@@ -690,13 +694,13 @@ public class CodeGeneratorJ {
           .write(String.format("%scase %s.%s.MSGTYPE:%n", indent(1), messagePackage, messageName));
       writer.write(String.format("%sswitch (correspondingFieldID) {%n", indent(2)));
 
-      List<Object> members = messageType.getStructure().getComponentRefOrGroupRefOrFieldRef();
-      for (Object member : members) {
+      final List<Object> members = messageType.getStructure().getComponentRefOrGroupRefOrFieldRef();
+      for (final Object member : members) {
         if (member instanceof GroupRefType) {
-          int id = ((GroupRefType) member).getId().intValue();
-          GroupType groupType = groups.get(id);
+          final int id = ((GroupRefType) member).getId().intValue();
+          final GroupType groupType = groups.get(id);
           if (groupType != null) {
-            String parentQualifiedName = getQualifiedClassName(messagePackage, messageName);
+            final String parentQualifiedName = getQualifiedClassName(messagePackage, messageName);
             writeGroupCreateCase(writer, parentQualifiedName, groupType);
           } else {
             System.err.format("Group missing from repository; id=%d%n", id);
@@ -715,7 +719,7 @@ public class CodeGeneratorJ {
   private Writer writeGroupFieldIds(Writer writer, List<Integer> componentFields)
       throws IOException {
     writer.write(String.format("%Sprivate int[] componentGroups = {", indent(1)));
-    for (Integer fieldId : componentFields) {
+    for (final Integer fieldId : componentFields) {
       writer.write(String.format("%d, ", fieldId));
     }
     writer.write(String.format("};%n"));
@@ -726,20 +730,21 @@ public class CodeGeneratorJ {
 
   private void writeGroupInnerClass(FileWriter writer, GroupType groupType, String packageName,
       String componentPackage) throws IOException {
-    int numInGroupId = groupType.getNumInGroup().getId().intValue();
-    String numInGroupFieldName =fields.get(groupType.getNumInGroup().getId().intValue()).getName();
+    final int numInGroupId = groupType.getNumInGroup().getId().intValue();
+    final String numInGroupFieldName =
+        fields.get(groupType.getNumInGroup().getId().intValue()).getName();
 
     writeStaticClassDeclaration(writer, numInGroupFieldName, "Group");
     writeSerializationVersion(writer, SERIALIZATION_VERSION);
 
-    List<Integer> groupComponentFields = new ArrayList<>();
+    final List<Integer> groupComponentFields = new ArrayList<>();
     getGroupFields(groupType.getComponentRefOrGroupRefOrFieldRef(), groupComponentFields);
     writeOrderFieldIds(writer, groupComponentFields);
 
-    Integer firstFieldId = groupComponentFields.get(0);
+    final Integer firstFieldId = groupComponentFields.get(0);
     writeGroupNoArgConstructor(writer, numInGroupFieldName, numInGroupId, firstFieldId);
 
-    List<Object> members = groupType.getComponentRefOrGroupRefOrFieldRef();
+    final List<Object> members = groupType.getComponentRefOrGroupRefOrFieldRef();
     writeMemberAccessors(writer, members, packageName, componentPackage);
 
     writeEndClassDeclaration(writer);
@@ -761,26 +766,27 @@ public class CodeGeneratorJ {
 
   private void writeMemberAccessors(FileWriter writer, List<Object> members, String packageName,
       String componentPackage) throws IOException {
-    for (Object member : members) {
+    for (final Object member : members) {
       if (member instanceof FieldRefType) {
-        FieldRefType fieldRefType = (FieldRefType) member;
-        FieldType field = fields.get(fieldRefType.getId().intValue());
+        final FieldRefType fieldRefType = (FieldRefType) member;
+        final FieldType field = fields.get(fieldRefType.getId().intValue());
         writeFieldAccessors(writer, field.getName(), fieldRefType.getId().intValue());
       } else if (member instanceof GroupRefType) {
-        int id = ((GroupRefType) member).getId().intValue();
-        GroupType groupType = groups.get(id);
+        final int id = ((GroupRefType) member).getId().intValue();
+        final GroupType groupType = groups.get(id);
         if (groupType != null) {
           writeComponentAccessors(writer, groupType.getName(), componentPackage);
-          int numInGroupId = groupType.getNumInGroup().getId().intValue();
-          FieldType numInGroupField = fields.get(numInGroupId);
-          String numInGroupName = numInGroupField.getName();
+          final int numInGroupId = groupType.getNumInGroup().getId().intValue();
+          final FieldType numInGroupField = fields.get(numInGroupId);
+          final String numInGroupName = numInGroupField.getName();
           writeFieldAccessors(writer, numInGroupName, numInGroupId);
           writeGroupInnerClass(writer, groupType, packageName, componentPackage);
         } else {
           System.err.format("Group missing from repository; id=%d%n", id);
         }
       } else if (member instanceof ComponentRefType) {
-        ComponentType component = components.get(((ComponentRefType) member).getId().intValue());
+        final ComponentType component =
+            components.get(((ComponentRefType) member).getId().intValue());
         writeComponentAccessors(writer, component.getName(), componentPackage);
       }
     }
@@ -792,9 +798,9 @@ public class CodeGeneratorJ {
     writer.write(String.format("%n%spublic Message create(String beginString, String msgType) {%n",
         indent(1)));
     writer.write(String.format("%sswitch (msgType) {%n", indent(2)));
-    for (MessageType messageType : messageList) {
-      String name = messageType.getName();
-      String scenario = messageType.getScenario();
+    for (final MessageType messageType : messageList) {
+      final String name = messageType.getName();
+      final String scenario = messageType.getScenario();
       if (!scenario.equals("base")) {
         continue;
       }
@@ -840,7 +846,7 @@ public class CodeGeneratorJ {
   private Writer writeOrderFieldIds(Writer writer, List<Integer> componentFields)
       throws IOException {
     writer.write(String.format("%Sprivate static final int[]  ORDER = {", indent(1)));
-    for (Integer fieldId : componentFields) {
+    for (final Integer fieldId : componentFields) {
       writer.write(String.format("%d, ", fieldId));
     }
     writer.write(String.format("0};%n"));
@@ -876,8 +882,8 @@ public class CodeGeneratorJ {
   }
 
   private Writer writeValues(Writer writer, CodeSetType codeSet) throws IOException {
-    String type = codeSet.getType();
-    for (CodeType code : codeSet.getCode()) {
+    final String type = codeSet.getType();
+    for (final CodeType code : codeSet.getCode()) {
       switch (type) {
         case "Boolean":
           writer.write(String.format("%n%spublic static final boolean %s = %s;%n", indent(1),
@@ -898,13 +904,6 @@ public class CodeGeneratorJ {
 
     }
     return writer;
-  }
-
-  // Capitalize first char and any after underscore or space. Leave other caps as-is.
-  private String toTitleCase(String text) {
-    String[] parts = text.split("_ ");
-    return Arrays.stream(parts).map(part -> part.substring(0, 1).toUpperCase() + part.substring(1))
-        .collect(Collectors.joining());
   }
 
 }

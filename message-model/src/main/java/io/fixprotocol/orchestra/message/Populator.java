@@ -19,7 +19,7 @@ import io.fixprotocol.orchestra.model.ModelException;
 
 /**
  * Populates an outbound message from an inbound message and an Orchestra file
- * 
+ *
  * @author Don Mendelson
  *
  * @param <M> message class
@@ -28,7 +28,7 @@ public interface Populator<M> {
 
   /**
    * Populates a message.
-   * 
+   *
    * @param inboundMessage inbound message
    * @param inboundMessageType Orchestra declaration of inbound message type
    * @param outboundMessage outbound message to populate

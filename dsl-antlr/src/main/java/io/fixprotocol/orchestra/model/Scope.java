@@ -16,16 +16,16 @@ package io.fixprotocol.orchestra.model;
 
 /**
  * A symbol space for FIX elements
- * 
+ *
  * @author Don Mendelson
  *
  */
-public interface Scope extends FixNode, AutoCloseable  {
+public interface Scope extends FixNode, AutoCloseable {
 
   /**
    * If the symbol already exists, assign it to the new value. Otherwise, insert the value in the
    * table.
-   * 
+   *
    * @param pathStep search criteria
    * @param value new value to assign or insert
    * @return the assigned value
@@ -34,9 +34,16 @@ public interface Scope extends FixNode, AutoCloseable  {
   FixValue<?> assign(PathStep pathStep, FixValue<?> value) throws ModelException;
 
   /**
+   * Name of this Scope
+   */
+  @Override
+  String getName();
+
+  /**
    * Nest another Scope within this Scope
    * <p>
    * If a nested Scope already exists at the specified path, it is replaced.
+   * 
    * @param pathStep location
    * @param nested another Scope
    * @return the nested Scope
@@ -44,29 +51,26 @@ public interface Scope extends FixNode, AutoCloseable  {
   Scope nest(PathStep pathStep, Scope nested);
 
   /**
-   * Search for a symbol in the table
-   * 
-   * @param pathStep search criteria
-   * @return a value if found or {@code null} if not found
-   */
-  FixNode resolve(PathStep pathStep);
-  
-  /**
    * Remove a nested Scope or symbol
+   * 
    * @param pathStep location
    * @return a removed node
    */
   FixNode remove(PathStep pathStep);
-  
+
+  /**
+   * Search for a symbol in the table
+   *
+   * @param pathStep search criteria
+   * @return a value if found or {@code null} if not found
+   */
+  FixNode resolve(PathStep pathStep);
+
   /**
    * Set parent Scope
+   * 
    * @param parent scope
    */
   void setParent(Scope parent);
-  
-  /**
-   * Name of this Scope
-   */
-  String getName();
 
 }

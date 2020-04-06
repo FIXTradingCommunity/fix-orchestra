@@ -18,6 +18,7 @@ package io.fixprotocol.orchestra.model;
  * Used to search a Scope
  * <p>
  * Analogous to an XPath path step
+ * 
  * @author Don Mendelson
  *
  */
@@ -31,17 +32,19 @@ public class PathStep {
   private int index = NO_INDEX;
   private final String name;
   private String predicate;
-  
+
   /**
    * Constructor
+   * 
    * @param name a symbol
    */
   public PathStep(String name) {
     this.name = name;
   }
+
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see java.lang.Object#equals(java.lang.Object)
    */
   @Override
@@ -52,7 +55,7 @@ public class PathStep {
       return false;
     if (getClass() != obj.getClass())
       return false;
-    PathStep other = (PathStep) obj;
+    final PathStep other = (PathStep) obj;
     if (index != other.index)
       return false;
     if (name == null) {
@@ -62,9 +65,10 @@ public class PathStep {
       return false;
     if (predicate == null) {
       return other.predicate == null;
-    } else return predicate.equals(other.predicate);
+    } else
+      return predicate.equals(other.predicate);
   }
-  
+
   /**
    * @return the index
    */
@@ -86,7 +90,9 @@ public class PathStep {
     return predicate;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see java.lang.Object#hashCode()
    */
   @Override
@@ -101,20 +107,25 @@ public class PathStep {
 
   /**
    * A one-based index into an array-like Scope
+   * 
    * @param index the index to set
    */
   public void setIndex(int index) {
     this.index = index;
   }
+
   /**
    * An expression to evaluate to select a symbol in an array-like Scope
+   * 
    * @param predicate the predicate to set
    */
   public void setPredicate(String predicate) {
     this.predicate = predicate;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see java.lang.Object#toString()
    */
   @Override

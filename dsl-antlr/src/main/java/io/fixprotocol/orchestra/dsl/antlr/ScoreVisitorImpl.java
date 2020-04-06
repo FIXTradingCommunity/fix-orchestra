@@ -20,10 +20,8 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import org.antlr.v4.runtime.tree.TerminalNode;
-
 import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.AddSubContext;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.AnyExpressionContext;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.AssignmentContext;
@@ -66,7 +64,7 @@ import io.fixprotocol.orchestra.model.SymbolResolver;
 
 /**
  * Evaluates Score DSL expressions
- * 
+ *
  * @author Don Mendelson
  *
  */
@@ -77,16 +75,17 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
   private final SemanticErrorListener errorListener;
 
   private final FixValueOperations fixValueOperations = new FixValueOperations();
-  
+
   private PathStep pathStep;
-  
+
   private final SymbolResolver symbolResolver;
-  
+
 
   private boolean trace = false;
+
   /**
    * Constructor with default SemanticErrorListener
-   * 
+   *
    * @param symbolResolver resolves symbols in variable and message spaces
    */
   public ScoreVisitorImpl(SymbolResolver symbolResolver) {
@@ -95,7 +94,7 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
 
   /**
    * Constructor
-   * 
+   *
    * @param symbolResolver resolves symbols in variable and message spaces
    * @param errorListener listens for semantic errors
    */
@@ -121,15 +120,15 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitAddSub(io.fixprotocol.orchestra.dsl.antlr.
    * ScoreParser.AddSubContext)
    */
   @Override
   public FixValue<?> visitAddSub(AddSubContext ctx) {
-    FixValue<?> operand0 = visit(ctx.expr(0));
-    FixValue<?> operand1 = visit(ctx.expr(1));
+    final FixValue<?> operand0 = visit(ctx.expr(0));
+    final FixValue<?> operand1 = visit(ctx.expr(1));
 
     try {
       switch (ctx.op.getText()) {
@@ -138,7 +137,7 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
         case "-":
           return fixValueOperations.subtract.apply(operand0, operand1);
       }
-    } catch (Exception ex) {
+    } catch (final Exception ex) {
       errorListener
           .onError(String.format("Semantic error; %s at '%s'", ex.getMessage(), ctx.getText()));
     }
@@ -147,7 +146,7 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitAnyExpression(io.fixprotocol.orchestra.dsl
    * .antlr.ScoreParser.AnyExpressionContext)
@@ -159,29 +158,29 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitAssignment(io.fixprotocol.orchestra.dsl.
    * antlr.ScoreParser.AssignmentContext)
    */
   @Override
   public FixValue<?> visitAssignment(AssignmentContext ctx) {
-    FixValue<?> val = visit(ctx.expr());
+    final FixValue<?> val = visit(ctx.expr());
     if (val == null) {
       errorListener.onError(
           String.format("Semantic error; missing val for assignment at '%s'", ctx.getText()));
       return null;
     }
-    FixValue<?> var = visitVar(ctx.var());
+    final FixValue<?> var = visitVar(ctx.var());
     try {
       if (var != null) {
         var.assign(val);
         return var;
       } else {
-        FixValue<?> namedVal = FixValueFactory.copy(pathStep.getName(), val);
+        final FixValue<?> namedVal = FixValueFactory.copy(pathStep.getName(), val);
         return currentScope.assign(pathStep, namedVal);
       }
-    } catch (ModelException e) {
+    } catch (final ModelException e) {
       errorListener
           .onError(String.format("Semantic error; %s at '%s'", e.getMessage(), ctx.getText()));
       return null;
@@ -190,30 +189,29 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitCharacter(io.fixprotocol.orchestra.dsl.
    * antlr.ScoreParser.CharacterContext)
    */
   @Override
   public FixValue<?> visitCharacter(CharacterContext ctx) {
-    return new FixValue<Character>(FixType.charType,
-            ctx.CHAR().getText().charAt(1));
+    return new FixValue<Character>(FixType.charType, ctx.CHAR().getText().charAt(1));
   }
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitContains(io.fixprotocol.orchestra.dsl.
    * antlr.ScoreParser.ContainsContext)
    */
   @Override
   public FixValue<?> visitContains(ContainsContext ctx) {
-    FixValue<?> operand0 = visit(ctx.val);
-    for (ExprContext memberExpr : ctx.member) {
-      FixValue<?> member = visit(memberExpr);
-      FixValue<Boolean> result = fixValueOperations.eq.apply(operand0, member);
+    final FixValue<?> operand0 = visit(ctx.val);
+    for (final ExprContext memberExpr : ctx.member) {
+      final FixValue<?> member = visit(memberExpr);
+      final FixValue<Boolean> result = fixValueOperations.eq.apply(operand0, member);
       if (result.getValue()) {
         return result;
       }
@@ -224,7 +222,7 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitDateonly(io.fixprotocol.orchestra.dsl.
    * antlr.ScoreParser.DateonlyContext)
@@ -236,7 +234,7 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitDecimal(io.fixprotocol.orchestra.dsl.antlr
    * .ScoreParser.DecimalContext)
@@ -248,7 +246,7 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitDuration(io.fixprotocol.orchestra.dsl.
    * antlr.ScoreParser.DurationContext)
@@ -260,15 +258,15 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitEquality(io.fixprotocol.orchestra.dsl.
    * antlr.ScoreParser.EqualityContext)
    */
   @Override
   public FixValue<Boolean> visitEquality(EqualityContext ctx) {
-    FixValue<?> operand0 = visit(ctx.expr(0));
-    FixValue<?> operand1 = visit(ctx.expr(1));
+    final FixValue<?> operand0 = visit(ctx.expr(0));
+    final FixValue<?> operand1 = visit(ctx.expr(1));
 
     try {
       switch (ctx.op.getText()) {
@@ -279,7 +277,7 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
         case "ne":
           return fixValueOperations.ne.apply(operand0, operand1);
       }
-    } catch (Exception ex) {
+    } catch (final Exception ex) {
       errorListener
           .onError(String.format("Semantic error; %s at '%s'", ex.getMessage(), ctx.getText()));
     }
@@ -289,15 +287,15 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
 
   @Override
   public FixValue<?> visitExist(ExistContext ctx) {
-    FixValue<Boolean> result = new FixValue<Boolean>("", FixType.BooleanType);
-    FixValue<?> var = visit(ctx.var());
+    final FixValue<Boolean> result = new FixValue<Boolean>("", FixType.BooleanType);
+    final FixValue<?> var = visit(ctx.var());
     result.setValue(var != null);
     return result;
   }
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitIndex(io.fixprotocol.orchestra.dsl.antlr.
    * ScoreParser.IndexContext)
@@ -312,7 +310,7 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitInteger(io.fixprotocol.orchestra.dsl.antlr
    * .ScoreParser.IntegerContext)
@@ -324,7 +322,7 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitLogicalAnd(io.fixprotocol.orchestra.dsl.
    * antlr.ScoreParser.LogicalAndContext)
@@ -332,15 +330,15 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
   @SuppressWarnings("unchecked")
   @Override
   public FixValue<Boolean> visitLogicalAnd(LogicalAndContext ctx) {
-    FixValue<Boolean> operand0 = (FixValue<Boolean>) visit(ctx.expr(0));
-    FixValue<Boolean> operand1 = (FixValue<Boolean>) visit(ctx.expr(1));
+    final FixValue<Boolean> operand0 = (FixValue<Boolean>) visit(ctx.expr(0));
+    final FixValue<Boolean> operand1 = (FixValue<Boolean>) visit(ctx.expr(1));
     try {
       switch (ctx.op.getText()) {
         case "&&":
         case "and":
           return fixValueOperations.and.apply(operand0, operand1);
       }
-    } catch (Exception ex) {
+    } catch (final Exception ex) {
       errorListener
           .onError(String.format("Semantic error; %s at '%s'", ex.getMessage(), ctx.getText()));
     }
@@ -350,10 +348,10 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
   @Override
   public FixValue<Boolean> visitLogicalNot(LogicalNotContext ctx) {
     @SuppressWarnings("unchecked")
-    FixValue<Boolean> operand = (FixValue<Boolean>) visit(ctx.expr());
+    final FixValue<Boolean> operand = (FixValue<Boolean>) visit(ctx.expr());
     try {
       return fixValueOperations.not.apply(operand);
-    } catch (Exception ex) {
+    } catch (final Exception ex) {
       errorListener
           .onError(String.format("Semantic error; %s at '%s'", ex.getMessage(), ctx.getText()));
     }
@@ -362,7 +360,7 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitLogicalOr(io.fixprotocol.orchestra.dsl.
    * antlr.ScoreParser.LogicalOrContext)
@@ -370,9 +368,9 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
   @Override
   public FixValue<Boolean> visitLogicalOr(LogicalOrContext ctx) {
     @SuppressWarnings("unchecked")
-    FixValue<Boolean> operand0 = (FixValue<Boolean>) visit(ctx.expr(0));
+    final FixValue<Boolean> operand0 = (FixValue<Boolean>) visit(ctx.expr(0));
     @SuppressWarnings("unchecked")
-    FixValue<Boolean> operand1 = (FixValue<Boolean>) visit(ctx.expr(1));
+    final FixValue<Boolean> operand1 = (FixValue<Boolean>) visit(ctx.expr(1));
 
     try {
       switch (ctx.op.getText()) {
@@ -380,7 +378,7 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
         case "or":
           return fixValueOperations.or.apply(operand0, operand1);
       }
-    } catch (Exception ex) {
+    } catch (final Exception ex) {
       errorListener
           .onError(String.format("Semantic error; %s at '%s'", ex.getMessage(), ctx.getText()));
     }
@@ -389,15 +387,15 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitMulDiv(io.fixprotocol.orchestra.dsl.antlr.
    * ScoreParser.MulDivContext)
    */
   @Override
   public FixValue<?> visitMulDiv(MulDivContext ctx) {
-    FixValue<?> operand0 = visit(ctx.expr(0));
-    FixValue<?> operand1 = visit(ctx.expr(1));
+    final FixValue<?> operand0 = visit(ctx.expr(0));
+    final FixValue<?> operand1 = visit(ctx.expr(1));
 
     try {
       switch (ctx.op.getText()) {
@@ -410,7 +408,7 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
           return fixValueOperations.mod.apply(operand0, operand1);
 
       }
-    } catch (Exception ex) {
+    } catch (final Exception ex) {
       errorListener
           .onError(String.format("Semantic error; %s at '%s'", ex.getMessage(), ctx.getText()));
     }
@@ -419,7 +417,7 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitParens(io.fixprotocol.orchestra.dsl.antlr.
    * ScoreParser.ParensContext)
@@ -431,21 +429,21 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitPred(io.fixprotocol.orchestra.dsl.antlr.
    * ScoreParser.PredContext)
    */
   @Override
   public FixValue<?> visitPred(PredContext ctx) {
-    TerminalNode id = ctx.ID();
-    ExprContext expr = ctx.expr();
+    final TerminalNode id = ctx.ID();
+    final ExprContext expr = ctx.expr();
     return null;
   }
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitQual(io.fixprotocol.orchestra.dsl.antlr.
    * ScoreParser.QualContext)
@@ -454,18 +452,18 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
   public FixValue<?> visitQual(QualContext ctx) {
     pathStep = new PathStep(ctx.ID().getText());
 
-    IndexContext indexContext = ctx.index();
+    final IndexContext indexContext = ctx.index();
     if (indexContext != null) {
       visitIndex(indexContext);
     }
-    PredContext predContext = ctx.pred();
+    final PredContext predContext = ctx.pred();
     if (predContext != null) {
-      String id = predContext.ID().getText();
-      ExprContext expr = predContext.expr();
+      final String id = predContext.ID().getText();
+      final ExprContext expr = predContext.expr();
       // todo evaluate predicate expression
     }
 
-    FixNode node = currentScope.resolve(pathStep);
+    final FixNode node = currentScope.resolve(pathStep);
     if (node instanceof Scope) {
       currentScope = (Scope) node;
       if (isTrace()) {
@@ -481,18 +479,18 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitRange(io.fixprotocol.orchestra.dsl.antlr.
    * ScoreParser.RangeContext)
    */
   @Override
   public FixValue<?> visitRange(RangeContext ctx) {
-    FixValue<?> val = visit(ctx.val);
-    FixValue<?> min = visit(ctx.min);
-    FixValue<?> max = visit(ctx.max);
+    final FixValue<?> val = visit(ctx.val);
+    final FixValue<?> min = visit(ctx.min);
+    final FixValue<?> max = visit(ctx.max);
 
-    return fixValueOperations.and.apply(fixValueOperations.ge.apply(val, min), 
+    return fixValueOperations.and.apply(fixValueOperations.ge.apply(val, min),
         fixValueOperations.le.apply(val, max));
   }
 
@@ -500,15 +498,15 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitRelational(io.fixprotocol.orchestra.dsl.
    * antlr.ScoreParser.RelationalContext)
    */
   @Override
   public FixValue<Boolean> visitRelational(RelationalContext ctx) {
-    FixValue<?> operand0 = visit(ctx.expr(0));
-    FixValue<?> operand1 = visit(ctx.expr(1));
+    final FixValue<?> operand0 = visit(ctx.expr(0));
+    final FixValue<?> operand1 = visit(ctx.expr(1));
 
     try {
       switch (ctx.op.getText()) {
@@ -518,14 +516,14 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
         case "<=":
         case "le":
           return fixValueOperations.le.apply(operand0, operand1);
-       case ">":
+        case ">":
         case "gt":
           return fixValueOperations.gt.apply(operand0, operand1);
         case ">=":
         case "ge":
           return fixValueOperations.ge.apply(operand0, operand1);
       }
-    } catch (Exception ex) {
+    } catch (final Exception ex) {
       errorListener
           .onError(String.format("Semantic error; %s at '%s'", ex.getMessage(), ctx.getText()));
     }
@@ -534,7 +532,7 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitString(io.fixprotocol.orchestra.dsl.antlr.
    * ScoreParser.StringContext)
@@ -547,7 +545,7 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitTimeonly(io.fixprotocol.orchestra.dsl.
    * antlr.ScoreParser.TimeonlyContext)
@@ -561,20 +559,21 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitTimestamp(io.fixprotocol.orchestra.dsl.
    * antlr.ScoreParser.TimestampContext)
    */
   @Override
   public FixValue<?> visitTimestamp(TimestampContext ctx) {
-    final Instant instant = DateTimeFormatters.DATE_TIME.parse(ctx.DATETIME().getText(), Instant::from);
+    final Instant instant =
+        DateTimeFormatters.DATE_TIME.parse(ctx.DATETIME().getText(), Instant::from);
     return new FixValue<Instant>(FixType.UTCTimestamp, instant);
   }
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitUnaryNeg(io.fixprotocol.orchestra.dsl.
    * antlr.ScoreParser.UnaryNegContext)
@@ -582,8 +581,8 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
   @SuppressWarnings("unchecked")
   @Override
   public FixValue<?> visitUnaryMinus(UnaryMinusContext ctx) {
-    FixValue<?> unsigned = visit(ctx.expr());
-    Object val = unsigned.getValue();
+    final FixValue<?> unsigned = visit(ctx.expr());
+    final Object val = unsigned.getValue();
     if (val instanceof Integer) {
       ((FixValue<Integer>) unsigned).setValue((Integer) val * -1);
     } else if (val instanceof BigDecimal) {
@@ -598,7 +597,7 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitVar(io.fixprotocol.orchestra.dsl.antlr.
    * ScoreParser.VarContext)
@@ -609,20 +608,20 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
     currentScope = symbolResolver;
     String scopeText;
     if (ctx.scope == null) {
-      //implicit scope
+      // implicit scope
       scopeText = "this.";
     } else {
       scopeText = ctx.scope.getText();
     }
     pathStep = new PathStep(scopeText);
-    FixNode node = currentScope.resolve(pathStep);
+    final FixNode node = currentScope.resolve(pathStep);
     if (node instanceof Scope) {
       currentScope = (Scope) node;
       if (isTrace()) {
         System.out.format("Current scope %s%n", currentScope.getName());
       }
-      List<QualContext> qualifiers = ctx.qual();
-      for (QualContext qualifier : qualifiers) {
+      final List<QualContext> qualifiers = ctx.qual();
+      for (final QualContext qualifier : qualifiers) {
         value = visitQual(qualifier);
       }
     } else {
@@ -634,7 +633,7 @@ class ScoreVisitorImpl extends AbstractParseTreeVisitor<FixValue<?>>
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * io.fixprotocol.orchestra.dsl.antlr.ScoreVisitor#visitVariable(io.fixprotocol.orchestra.dsl.
    * antlr.ScoreParser.VariableContext)

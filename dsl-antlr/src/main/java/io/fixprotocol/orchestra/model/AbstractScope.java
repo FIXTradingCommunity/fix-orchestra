@@ -25,7 +25,7 @@ public abstract class AbstractScope implements Scope {
 
   protected static boolean trace = false;
   protected static Consumer<String> traceHandler = System.out::println;
-  
+
   /**
    * @return the trace
    */
@@ -39,21 +39,21 @@ public abstract class AbstractScope implements Scope {
   public void setTrace(boolean trace) {
     AbstractScope.trace = trace;
   }
-  
+
   public void setTraceHandler(Consumer<String> traceHandler) {
     AbstractScope.traceHandler = traceHandler;
   }
 
   protected void traceNest(PathStep pathStep, Scope nested) {
     if (isTrace()) {
-      traceHandler.accept(String.format("Path %s scope %s nested under scope %s", pathStep.getName(), 
-          nested.getName(), getName()));
+      traceHandler.accept(String.format("Path %s scope %s nested under scope %s",
+          pathStep.getName(), nested.getName(), getName()));
     }
   }
-  
+
   protected void traceRemove(PathStep pathStep, FixNode removed) {
     if (isTrace()) {
-      traceHandler.accept(String.format("Path %s node %s removed from scope %s", pathStep.getName(), 
+      traceHandler.accept(String.format("Path %s node %s removed from scope %s", pathStep.getName(),
           removed.getName(), getName()));
     }
   }
