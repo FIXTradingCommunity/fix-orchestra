@@ -1,18 +1,52 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
 		<groupId>io.fixprotocol.orchestra</groupId>
 		<artifactId>parent</artifactId>
 		<version>1.6.0-SNAPSHOT</version>
-  </parent>
-  <artifactId>repository-quickfix</artifactId>
-  <name>${project.groupId}:${project.artifactId}</name>
-  <description>Generates QuickFIX data dictionary and message classes from a FIX Orchestra file</description>
-  <dependencies>
-  	<dependency>
-  		<groupId>io.fixprotocol.orchestra</groupId>
-  		<artifactId>repository</artifactId>
-  		<version>${project.version}</version>
-  	</dependency>
-  </dependencies>
+	</parent>
+	<artifactId>repository-quickfix</artifactId>
+	<name>${project.groupId}:${project.artifactId}</name>
+	<description>Generates QuickFIX data dictionary and message classes from a FIX Orchestra file</description>
+	<dependencies>
+		<dependency>
+			<groupId>io.fixprotocol.orchestra</groupId>
+			<artifactId>repository</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.quickfixj</groupId>
+			<artifactId>quickfixj-core</artifactId>
+			<version>${quickfixj.version}</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>modular</id>
+			<dependencies>
+				<dependency>
+					<groupId>io.fixprotocol.orchestra</groupId>
+					<artifactId>repository</artifactId>
+					<version>${project.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>org.quickfixj</groupId>
+					<artifactId>quickfixj-core</artifactId>
+					<version>${quickfixj.version}</version>
+				</dependency>
+			</dependencies>
+		</profile>
+	</profiles>
 </project>

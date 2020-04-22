@@ -12,9 +12,9 @@
 	<url>https://github.com/FIXTradingCommunity/fix-orchestra/wiki</url>
 	<inceptionYear>2016</inceptionYear>
 	<prerequisites>
-		<maven>3.1.0</maven>
+		<!-- supports toolchain configuration -->
+		<maven>3.3.1</maven>
 	</prerequisites>
-
 	<organization>
 		<name>FIX Trading Community</name>
 		<url>http://https://www.fixtrading.org/</url>
@@ -51,7 +51,6 @@
 			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository>
 	</distributionManagement>
-
 	<modules>
 		<module>interfaces</module>
 		<module>session-quickfix</module>
@@ -66,13 +65,11 @@
 		<module>state-machine</module>
 		<module>repository-util</module>
 	</modules>
-
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<antlr.version>4.8-1</antlr.version>
 		<commons-cli.version>1.4</commons-cli.version>
 		<cucumber.version>1.2.6</cucumber.version>
-		<java.version>11</java.version>
 		<junit.version>4.11</junit.version>
 		<log4j.version>2.13.1</log4j.version>
 		<quickfixj.version>2.1.1</quickfixj.version>
@@ -80,7 +77,6 @@
 		<slf4j.version>1.7.22</slf4j.version>
 		<stringtemplate.version>4.3</stringtemplate.version>
 	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -95,12 +91,13 @@
 			<plugins>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.8.0</version>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>3.2.0</version>
 					<configuration>
-						<source>${java.version}</source>
-						<target>${java.version}</target>
-						<compilerArgument>-Xlint</compilerArgument>
+						<manifest>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+							<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+						</manifest>
 					</configuration>
 				</plugin>
 				<plugin>
@@ -131,6 +128,51 @@
 	</build>
 
 	<profiles>
+		<profile>
+			<id>nonmodular</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-compiler-plugin</artifactId>
+						<version>3.8.1</version>
+						<configuration>
+							<source>1.8</source>
+							<target>1.8</target>
+							<excludes>
+								<exclude>module-info.java</exclude>
+							</excludes>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>modular</id>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-compiler-plugin</artifactId>
+							<version>3.8.1</version>
+							<configuration>
+								<source>11</source>
+								<target>11</target>
+								<compilerArgs>
+									<arg>-Xlint</arg>
+								</compilerArgs>
+							</configuration>
+						</plugin>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-resources-plugin</artifactId>
+							<version>3.1.0</version>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+			</build>
+		</profile>
 		<profile>
 			<id>release</id>
 			<build>
@@ -179,5 +221,4 @@
 			</build>
 		</profile>
 	</profiles>
-
 </project>

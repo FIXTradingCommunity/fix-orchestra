@@ -16,7 +16,6 @@ package io.fixprotocol.orchestra.session.quickfix;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.time.ZonedDateTime;
@@ -38,7 +37,6 @@ import io.fixprotocol._2020.orchestra.interfaces.SessionType;
 import io.fixprotocol._2020.orchestra.interfaces.TransportProtocolType;
 import io.fixprotocol._2020.orchestra.interfaces.TransportUseEnum;
 import quickfix.Acceptor;
-import quickfix.ConfigError;
 import quickfix.Dictionary;
 import quickfix.FixVersions;
 import quickfix.Initiator;
@@ -52,7 +50,7 @@ import quickfix.SessionSettings;
  */
 public class QuickFixSessionConfigurer {
 
-  public static void main(String[] args) throws JAXBException, ConfigError, IOException {
+  public static void main(String[] args) throws Exception {
     if (args.length < 2) {
       useage();
     } else {
@@ -72,7 +70,7 @@ public class QuickFixSessionConfigurer {
 
   private ZonedDateTime effectiveTime = ZonedDateTime.now();
 
-  public void configure(InputStream in, OutputStream out) throws JAXBException, ConfigError {
+  public void configure(InputStream in, OutputStream out) throws Exception {
     final SessionSettings quickFixSettings = new SessionSettings();
 
     final Interfaces interfaces = unmarshal(in);
