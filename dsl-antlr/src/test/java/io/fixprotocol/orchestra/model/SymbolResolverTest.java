@@ -66,7 +66,7 @@ public class SymbolResolverTest {
     @SuppressWarnings("unchecked")
     FixValue<Character> found = (FixValue<Character>) node.resolve(pathStep2);
     assertNotNull(found);
-    assertEquals(new Character('1'), found.getValue());
+    assertEquals(Character.valueOf('1'), found.getValue());
   }
  
   @Test
