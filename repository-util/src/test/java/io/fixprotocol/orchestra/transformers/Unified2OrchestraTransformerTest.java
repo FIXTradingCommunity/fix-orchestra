@@ -19,7 +19,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 import io.fixprotocol.orchestra.repository.RepositoryValidator;
-import io.fixprotocol.orchestra.transformers.RepositoryXslTransformer;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import java.io.File;

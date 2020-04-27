@@ -4,9 +4,9 @@
 
 Adds datatype mappings to ISO 11404 General-Purpose Datatypes standard to an Orchestra file. Other mappings may be added in the future.
 
-## Repository2010to2016.xsl
+## orchestra2unified.xslt
 
-Translates FIX Repository 2010 Edition to Orchestra / 2016 Edition schema.
+Translates FIX Unified Repository 2010 Edition to Orchestra Repository schema.
 
 Argument is a delimited string of phrase file URLs.
 

@@ -207,6 +207,20 @@ public class RepositoryCompressor {
     return new Builder();
   }
 
+  /**
+   * usage: RepositoryCompressor 
+   * -?,--help display usage 
+   * -c,--category <arg> select messages by category 
+   * -f,--flow <arg> select messages by flow 
+   * -i,--input <arg> path of input file
+   * -n,--notcategory <arg> select messages except category 
+   * -o,--output <arg> path of output file
+   * -s,--section <arg> select messages by section 
+   * -x,--notsection <arg> select messages except section
+   * 
+   * @param args command line arguments
+   * @throws Exception
+   */
   public static void main(String[] args) throws Exception {
     RepositoryCompressor compressor = RepositoryCompressor.parseArgs(args).build();
     compressor.compress();
@@ -228,8 +242,7 @@ public class RepositoryCompressor {
         .longOpt("notcategory").numberOfArgs(1).build());
     options.addOption(Option.builder("x").desc("select messages except section")
         .longOpt("notsection").numberOfArgs(1).build());
-    options.addOption(
-        Option.builder("?").desc("display usage").longOpt("help").numberOfArgs(1).build());
+    options.addOption(Option.builder("?").desc("display usage").longOpt("help").build());
 
     DefaultParser parser = new DefaultParser();
     CommandLine cmd;
