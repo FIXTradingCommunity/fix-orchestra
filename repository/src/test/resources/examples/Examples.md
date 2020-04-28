@@ -12,5 +12,6 @@ Some features to note:
 * A value in an outgoing message can be set by the expression in an `assign` element. For example, the value of ClOrdID in an ExecutionReport is assigned the value of the incoming order field of the same name.
 * Workflow is represented by the `responses` element under a message definition. See the possible responses to a NewOrderSingle message. Each `response` element has a `when` element that contains a Score DSL expression. When the expression evaluates to true, then its response is triggered.
 * The `states` element represents a state machine. See MarketPhase state machine that belongs to the Market actor.
+* An orderAck response of NewOrderSingle starts an expiration timer for the accepted order. When the timer fires, it triggers Expired transition in the OrderState state machine.
 * The attribute `which="oneOf"` on a component indicates that exactly one of its members must be present.
 
