@@ -20,7 +20,7 @@ public class DataDictionaryGeneratorTest {
   }
 
   @Test
-  public void testGenerate() throws IOException, JAXBException {
+  public void testGenerate() throws Exception {
     generator.generate(
         Thread.currentThread().getContextClassLoader().getResource("mit_compressed.xml").openStream(),
         new File("target/spec"));

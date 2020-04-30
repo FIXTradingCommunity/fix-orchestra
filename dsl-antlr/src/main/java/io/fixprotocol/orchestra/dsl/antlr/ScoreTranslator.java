@@ -28,10 +28,8 @@ import java.util.Map;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import org.antlr.v4.runtime.tree.TerminalNode;
-
 import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.AddSubContext;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.AnyExpressionContext;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.AssignmentContext;
@@ -65,7 +63,7 @@ import io.fixprotocol.orchestra.dsl.datetime.DateTimeFormatters;
 
 /**
  * Parses Score DSL expressions and translates them to natural language
- * 
+ *
  * @author Don Mendelson
  *
  */
@@ -80,7 +78,8 @@ class ScoreTranslator extends AbstractParseTreeVisitor<String> implements ScoreV
   }
 
   private static String ordinal(int i) {
-    String[] sufixes = new String[] {"th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th"};
+    final String[] sufixes =
+        new String[] {"th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th"};
     switch (i % 100) {
       case 11:
       case 12:
@@ -93,21 +92,21 @@ class ScoreTranslator extends AbstractParseTreeVisitor<String> implements ScoreV
 
   // todo: add language code as parameter to construct map
   private static Map<String, String> tokenMap() {
-    return Collections.unmodifiableMap(Stream
-        .of(entry("eq", "equals"), entry("==", "equals"), entry("ne", "does not equal"),
-            entry("!=", "does not equal"), entry("+", "plus"), entry("-", "minus"),
-            entry("<", "less than"), entry("lt", "less than"), entry("<=", "less than or equal to"),
-            entry("le", "less than or equal to"), entry(">", "greater than"),
-            entry("gt", "greater than"), entry(">=", "greater than or equal to"),
-            entry("ge", "greater than or equal to"), entry("*", "times"), entry("/", "divided by"),
-            entry("%", "modulo"), entry("mod", "modulo"), entry("&&", "and"), entry("and", "and"),
-            entry("||", "or"), entry("or", "or"), entry("!", "not"), entry("not", "not"),
-            entry("=", "is set to"), entry("if", "if"), entry("exists", "exists"),
-            entry("between", "between"), entry("in", "equals one of"), entry("where", "where"),
-            entry("$", "variable"), entry("in.", "incoming"), entry("out.", "outgoing"),
-            entry(/* code */ "^", "")
-            )
-        .collect(entriesToMap()));
+    return Collections
+        .unmodifiableMap(Stream
+            .of(entry("eq", "equals"), entry("==", "equals"), entry("ne", "does not equal"),
+                entry("!=", "does not equal"), entry("+", "plus"), entry("-", "minus"),
+                entry("<", "less than"), entry("lt", "less than"),
+                entry("<=", "less than or equal to"), entry("le", "less than or equal to"),
+                entry(">", "greater than"), entry("gt", "greater than"),
+                entry(">=", "greater than or equal to"), entry("ge", "greater than or equal to"),
+                entry("*", "times"), entry("/", "divided by"), entry("%", "modulo"),
+                entry("mod", "modulo"), entry("&&", "and"), entry("and", "and"), entry("||", "or"),
+                entry("or", "or"), entry("!", "not"), entry("not", "not"), entry("=", "is set to"),
+                entry("if", "if"), entry("exists", "exists"), entry("between", "between"),
+                entry("in", "equals one of"), entry("where", "where"), entry("$", "variable"),
+                entry("in.", "incoming"), entry("out.", "outgoing"), entry(/* code */ "^", ""))
+            .collect(entriesToMap()));
   }
 
   private final SemanticErrorListener errorListener;
@@ -123,7 +122,7 @@ class ScoreTranslator extends AbstractParseTreeVisitor<String> implements ScoreV
 
   /**
    * Constructor
-   * 
+   *
    * @param errorListener listens for semantic errors
    */
   public ScoreTranslator(SemanticErrorListener errorListener) {
@@ -148,8 +147,8 @@ class ScoreTranslator extends AbstractParseTreeVisitor<String> implements ScoreV
 
   @Override
   public String visitAddSub(AddSubContext ctx) {
-    String operand0 = visit(ctx.expr(0));
-    String operand1 = visit(ctx.expr(1));
+    final String operand0 = visit(ctx.expr(0));
+    final String operand1 = visit(ctx.expr(1));
 
     return String.format("%s %s %s", operand0, translateToken(ctx.op.getText()), operand1);
   }
@@ -161,13 +160,13 @@ class ScoreTranslator extends AbstractParseTreeVisitor<String> implements ScoreV
 
   @Override
   public String visitAssignment(AssignmentContext ctx) {
-    String val = visit(ctx.expr());
+    final String val = visit(ctx.expr());
     if (val == null) {
       errorListener.onError(
           String.format("Semantic error; missing val for assignment at '%s'", ctx.getText()));
       return null;
     }
-    String var = visitVar(ctx.var());
+    final String var = visitVar(ctx.var());
 
     return String.format("%s %s %s", var, translateToken("="), val);
   }
@@ -179,8 +178,8 @@ class ScoreTranslator extends AbstractParseTreeVisitor<String> implements ScoreV
 
   @Override
   public String visitContains(ContainsContext ctx) {
-    String val = visit(ctx.val);
-    List<String> memberStrings =
+    final String val = visit(ctx.val);
+    final List<String> memberStrings =
         ctx.member.stream().map(this::visit).collect(Collectors.toList());
     return String.format("%s %s %s %s", translateToken("if"), val, translateToken("in"),
         String.join(", ", memberStrings));
@@ -200,21 +199,22 @@ class ScoreTranslator extends AbstractParseTreeVisitor<String> implements ScoreV
   @Override
   public String visitDuration(DurationContext ctx) {
     // Remove PT prefix, expand units
-    return Duration.parse(ctx.PERIOD().getText()).toString().substring(2)
-        .replace("D", " days").replace("H", " hours").replace("M", " minutes").replace("S", " seconds");
+    return Duration.parse(ctx.PERIOD().getText()).toString().substring(2).replace("D", " days")
+        .replace("H", " hours").replace("M", " minutes").replace("S", " seconds");
   }
 
   @Override
   public String visitEquality(EqualityContext ctx) {
-    String operand0 = visit(ctx.expr(0));
-    String operand1 = visit(ctx.expr(1));
+    final String operand0 = visit(ctx.expr(0));
+    final String operand1 = visit(ctx.expr(1));
 
     return String.format("%s %s %s", operand0, translateToken(ctx.op.getText()), operand1);
   }
 
   @Override
   public String visitExist(ExistContext ctx) {
-    return String.format("%s %s %s", translateToken("if"), visit(ctx.var()), translateToken("exists"));
+    return String.format("%s %s %s", translateToken("if"), visit(ctx.var()),
+        translateToken("exists"));
   }
 
   @Override
@@ -232,8 +232,8 @@ class ScoreTranslator extends AbstractParseTreeVisitor<String> implements ScoreV
 
   @Override
   public String visitLogicalAnd(LogicalAndContext ctx) {
-    String operand0 = visit(ctx.expr(0));
-    String operand1 = visit(ctx.expr(1));
+    final String operand0 = visit(ctx.expr(0));
+    final String operand1 = visit(ctx.expr(1));
     return String.format("%s %s %s", operand0, translateToken(ctx.op.getText()), operand1);
   }
 
@@ -244,16 +244,16 @@ class ScoreTranslator extends AbstractParseTreeVisitor<String> implements ScoreV
 
   @Override
   public String visitLogicalOr(LogicalOrContext ctx) {
-    String operand0 = visit(ctx.expr(0));
-    String operand1 = visit(ctx.expr(1));
+    final String operand0 = visit(ctx.expr(0));
+    final String operand1 = visit(ctx.expr(1));
     return String.format("%s %s %s", operand0, translateToken(ctx.op.getText()), operand1);
 
   }
 
   @Override
   public String visitMulDiv(MulDivContext ctx) {
-    String operand0 = visit(ctx.expr(0));
-    String operand1 = visit(ctx.expr(1));
+    final String operand0 = visit(ctx.expr(0));
+    final String operand1 = visit(ctx.expr(1));
     return String.format("%s %s %s", operand0, translateToken(ctx.op.getText()), operand1);
   }
 
@@ -264,33 +264,34 @@ class ScoreTranslator extends AbstractParseTreeVisitor<String> implements ScoreV
 
   @Override
   public String visitPred(PredContext ctx) {
-    TerminalNode id = ctx.ID();
-    ExprContext expr = ctx.expr();
+    final TerminalNode id = ctx.ID();
+    final ExprContext expr = ctx.expr();
     return null;
   }
 
   @Override
   public String visitQual(QualContext ctx) {
-    String id = ctx.ID().getText();
+    final String id = ctx.ID().getText();
 
-    IndexContext indexContext = ctx.index();
+    final IndexContext indexContext = ctx.index();
     if (indexContext != null) {
       return String.format("%s %s", visitIndex(indexContext), id);
     }
-    PredContext predContext = ctx.pred();
+    final PredContext predContext = ctx.pred();
     if (predContext != null) {
-      String predId = predContext.ID().getText();
-      ExprContext expr = predContext.expr();
-      return String.format("%s %s %s %s %s", id, translateToken("where"), predId, translateToken("=="),visit(expr));
+      final String predId = predContext.ID().getText();
+      final ExprContext expr = predContext.expr();
+      return String.format("%s %s %s %s %s", id, translateToken("where"), predId,
+          translateToken("=="), visit(expr));
     }
     return id;
   }
 
   @Override
   public String visitRange(RangeContext ctx) {
-    String val = visit(ctx.val);
-    String min = visit(ctx.min);
-    String max = visit(ctx.max);
+    final String val = visit(ctx.val);
+    final String min = visit(ctx.min);
+    final String max = visit(ctx.max);
 
     return String.format("%s %s %s %s %s %s", translateToken("if"), val, translateToken("between"),
         min, translateToken("and"), max);
@@ -298,8 +299,8 @@ class ScoreTranslator extends AbstractParseTreeVisitor<String> implements ScoreV
 
   @Override
   public String visitRelational(RelationalContext ctx) {
-    String operand0 = visit(ctx.expr(0));
-    String operand1 = visit(ctx.expr(1));
+    final String operand0 = visit(ctx.expr(0));
+    final String operand1 = visit(ctx.expr(1));
     return String.format("%s %s %s", operand0, translateToken(ctx.op.getText()), operand1);
   }
 
@@ -313,15 +314,16 @@ class ScoreTranslator extends AbstractParseTreeVisitor<String> implements ScoreV
     // Remove initial T and timestamp for Java, even though ISO require them
     // and the translate to localized format
     final LocalTime localTime = LocalTime.parse(ctx.TIME().getText(), DateTimeFormatters.TIME_ONLY);
-    return DateTimeFormatter.ofLocalizedTime(FormatStyle.LONG).withZone( ZoneId.systemDefault() )
+    return DateTimeFormatter.ofLocalizedTime(FormatStyle.LONG).withZone(ZoneId.systemDefault())
         .format(localTime);
   }
 
   @Override
   public String visitTimestamp(TimestampContext ctx) {
     // Parse as ISO and the translate to localized format
-    final Instant instant = DateTimeFormatters.DATE_TIME.parse(ctx.DATETIME().getText(), Instant::from);
-    return DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withZone( ZoneId.of("Z") )
+    final Instant instant =
+        DateTimeFormatters.DATE_TIME.parse(ctx.DATETIME().getText(), Instant::from);
+    return DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withZone(ZoneId.of("Z"))
         .format(instant);
   }
 
@@ -341,9 +343,10 @@ class ScoreTranslator extends AbstractParseTreeVisitor<String> implements ScoreV
       scopeText = ctx.scope.getText();
     }
 
-    List<QualContext> qualifiers = ctx.qual();
+    final List<QualContext> qualifiers = ctx.qual();
 
-    List<String> qualStrings = qualifiers.stream().map(this::visit).collect(Collectors.toList());
+    final List<String> qualStrings =
+        qualifiers.stream().map(this::visit).collect(Collectors.toList());
     return String.format("%s %s", translateToken(scopeText), String.join("-", qualStrings));
   }
 

@@ -15,24 +15,21 @@
 package io.fixprotocol.orchestra.model.quickfix;
 
 import java.util.List;
-
 import io.fixprotocol._2020.orchestra.repository.FieldRefType;
 import io.fixprotocol._2020.orchestra.repository.GroupRefType;
 import io.fixprotocol._2020.orchestra.repository.GroupType;
-
 import io.fixprotocol.orchestra.dsl.antlr.Evaluator;
-
 import io.fixprotocol.orchestra.model.FixNode;
 import io.fixprotocol.orchestra.model.FixValue;
 import io.fixprotocol.orchestra.model.ModelException;
 import io.fixprotocol.orchestra.model.PathStep;
 import io.fixprotocol.orchestra.model.Scope;
 import io.fixprotocol.orchestra.model.SymbolResolver;
-import io.fixprotocol.orchestra.repository.RepositoryAccessor;
 import quickfix.Group;
 
 /**
  * Symbol Scope for an instance of a repeating group
+ * 
  * @author Don Mendelson
  *
  */
@@ -41,25 +38,27 @@ class GroupInstanceScope extends AbstractMessageScope implements Scope {
   private final GroupType groupType;
   private Scope parent;
 
-  public GroupInstanceScope(Group group, GroupType groupType, RepositoryAccessor repository, SymbolResolver symbolResolver, Evaluator evaluator) {
+  public GroupInstanceScope(Group group, GroupType groupType, RepositoryAccessor repository,
+      SymbolResolver symbolResolver, Evaluator evaluator) {
     super(group, repository, symbolResolver, evaluator);
     this.groupType = groupType;
   }
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * io.fixprotocol.orchestra.dsl.antlr.Scope#assign(io.fixprotocol.orchestra.dsl.antlr.PathStep,
    * io.fixprotocol.orchestra.dsl.antlr.FixValue)
    */
   @Override
   public FixValue<?> assign(PathStep pathStep, FixValue<?> fixValue) throws ModelException {
-    List<Object> members = groupType.getComponentRefOrGroupRefOrFieldRef();
-    for (Object member : members) {
+    final List<Object> members = groupType.getComponentRefOrGroupRefOrFieldRef();
+    for (final Object member : members) {
       if (member instanceof FieldRefType) {
-        FieldRefType fieldRefType = (FieldRefType) member;
-        String fieldName = getRepository().getFieldName(fieldRefType.getId().intValue(), fieldRefType.getScenario());
+        final FieldRefType fieldRefType = (FieldRefType) member;
+        final String fieldName = getRepository().getFieldName(fieldRefType.getId().intValue(),
+            fieldRefType.getScenario());
         if (fieldName.equals(pathStep.getName())) {
           assignField(fieldRefType, fixValue);
           return fixValue;
@@ -72,6 +71,18 @@ class GroupInstanceScope extends AbstractMessageScope implements Scope {
   /*
    * (non-Javadoc)
    * 
+   * @see java.lang.AutoCloseable#close()
+   */
+  @Override
+  public void close() throws Exception {
+    if (parent != null) {
+      parent.remove(new PathStep(groupType.getName()));
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   *
    * @see io.fixprotocol.orchestra.dsl.antlr.FixNode#getName()
    */
   @Override
@@ -81,7 +92,7 @@ class GroupInstanceScope extends AbstractMessageScope implements Scope {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see io.fixprotocol.orchestra.dsl.antlr.Scope#nest(io.fixprotocol.orchestra.dsl.antlr.PathStep,
    * io.fixprotocol.orchestra.dsl.antlr.Scope)
    */
@@ -94,27 +105,39 @@ class GroupInstanceScope extends AbstractMessageScope implements Scope {
    * (non-Javadoc)
    * 
    * @see
+   * io.fixprotocol.orchestra.dsl.antlr.Scope#remove(io.fixprotocol.orchestra.dsl.antlr.PathStep)
+   */
+  @Override
+  public FixNode remove(PathStep arg0) {
+    throw new UnsupportedOperationException("Message structure is immutable");
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see
    * io.fixprotocol.orchestra.dsl.antlr.Scope#resolve(io.fixprotocol.orchestra.dsl.antlr.PathStep)
    */
   @Override
   public FixNode resolve(PathStep pathStep) {
     String unqualified = pathStep.getName();
-    int index = unqualified.indexOf('.');
+    final int index = unqualified.indexOf('.');
     if (index > 0) {
-      unqualified = pathStep.getName().substring(index+1);
+      unqualified = pathStep.getName().substring(index + 1);
     }
 
-    List<Object> members = groupType.getComponentRefOrGroupRefOrFieldRef();
-    for (Object member : members) {
+    final List<Object> members = groupType.getComponentRefOrGroupRefOrFieldRef();
+    for (final Object member : members) {
       if (member instanceof FieldRefType) {
-        FieldRefType fieldRefType = (FieldRefType) member;
-        String fieldName = getRepository().getFieldName(fieldRefType.getId().intValue(), fieldRefType.getScenario());
+        final FieldRefType fieldRefType = (FieldRefType) member;
+        final String fieldName = getRepository().getFieldName(fieldRefType.getId().intValue(),
+            fieldRefType.getScenario());
         if (fieldName.equals(unqualified)) {
           return resolveField(fieldRefType);
         }
       } else if (member instanceof GroupRefType) {
-        GroupRefType groupRefType = (GroupRefType) member;
-        GroupType group = getRepository().getGroup(groupRefType);
+        final GroupRefType groupRefType = (GroupRefType) member;
+        final GroupType group = getRepository().getGroup(groupRefType);
         if (group.getName().equals(unqualified)) {
           return resolveGroup(pathStep, groupRefType);
         }
@@ -123,31 +146,16 @@ class GroupInstanceScope extends AbstractMessageScope implements Scope {
     return null;
   }
 
-  /* (non-Javadoc)
-   * @see java.lang.AutoCloseable#close()
-   */
-  @Override
-  public void close() throws Exception {
-    if (parent != null) {
-      parent.remove(new PathStep(groupType.getName()));
-    }
-  }
-
-  /* (non-Javadoc)
-   * @see io.fixprotocol.orchestra.dsl.antlr.Scope#remove(io.fixprotocol.orchestra.dsl.antlr.PathStep)
-   */
-  @Override
-  public FixNode remove(PathStep arg0) {
-    throw new UnsupportedOperationException("Message structure is immutable");
-  }
-
-  /* (non-Javadoc)
-   * @see io.fixprotocol.orchestra.dsl.antlr.Scope#setParent(io.fixprotocol.orchestra.dsl.antlr.Scope)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * io.fixprotocol.orchestra.dsl.antlr.Scope#setParent(io.fixprotocol.orchestra.dsl.antlr.Scope)
    */
   @Override
   public void setParent(Scope parent) {
     this.parent = parent;
   }
-  
- 
+
+
 }

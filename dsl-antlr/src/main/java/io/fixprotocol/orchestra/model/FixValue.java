@@ -17,13 +17,13 @@ package io.fixprotocol.orchestra.model;
 import java.util.Objects;
 
 /**
- * Represents an mutable value of a DSL expression 
+ * Represents an mutable value of a DSL expression
  * <p>
- * Access control, immutable usage and synchronization of {@link #assign(FixValue)}
- * must be guarded externally.
- * 
+ * Access control, immutable usage and synchronization of {@link #assign(FixValue)} must be guarded
+ * externally.
+ *
  * @param T storage type for value
- * 
+ *
  * @author Don Mendelson
  */
 public class FixValue<T> implements FixNode {
@@ -34,7 +34,7 @@ public class FixValue<T> implements FixNode {
 
   /**
    * Construct an unnamed expression value
-   * 
+   *
    * @param type a FIX data type
    * @param value an immutable value
    */
@@ -44,7 +44,7 @@ public class FixValue<T> implements FixNode {
 
   /**
    * Construct with a name only for search
-   * 
+   *
    * @param name message component name
    */
   public FixValue(String name) {
@@ -53,7 +53,7 @@ public class FixValue<T> implements FixNode {
 
   /**
    * Construct a named expression without value
-   * 
+   *
    * @param name named value
    * @param type a FIX data type
    */
@@ -63,7 +63,7 @@ public class FixValue<T> implements FixNode {
 
   /**
    * Construct a named expression value
-   * 
+   *
    * @param name named value
    * @param type a FIX data type
    * @param value an immutable value
@@ -76,7 +76,7 @@ public class FixValue<T> implements FixNode {
 
   /**
    * Assigns a value to this FixValue
-   * 
+   *
    * @param operand other FixValue
    * @throws ModelException if a type conflict occurs
    */
@@ -92,7 +92,7 @@ public class FixValue<T> implements FixNode {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see java.lang.Object#equals(java.lang.Object)
    */
   @SuppressWarnings("rawtypes")
@@ -104,15 +104,17 @@ public class FixValue<T> implements FixNode {
       return false;
     if (getClass() != obj.getClass())
       return false;
-    FixValue other = (FixValue) obj;
+    final FixValue other = (FixValue) obj;
     if (name == null) {
       return other.name == null;
-    } else return name.equals(other.name);
+    } else
+      return name.equals(other.name);
   }
 
   /**
    * @return the name
    */
+  @Override
   public String getName() {
     return name;
   }
@@ -133,7 +135,7 @@ public class FixValue<T> implements FixNode {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see java.lang.Object#hashCode()
    */
   @Override
@@ -153,7 +155,7 @@ public class FixValue<T> implements FixNode {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see java.lang.Object#toString()
    */
   @Override

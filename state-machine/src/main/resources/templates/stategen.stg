@@ -1,7 +1,7 @@
 has_interface(stateMachine, package) ::= <<
 package $package$;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 /**
  * A stateful object with $stateMachine.name$
@@ -15,7 +15,7 @@ public interface Has$stateMachine.name$ {
 transition_interface(stateMachine, package) ::= <<
 package $package$;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 /**
  * State transitions of an object with $stateMachine.name$
@@ -42,7 +42,7 @@ public interface $stateMachine.name$Transition {
 state_enum(stateMachine, package) ::= <<
 package $package$;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 /**
  * Enumerated states of $stateMachine.name$
@@ -72,7 +72,7 @@ stateMachinePart1(stateMachine, package) ::= <<
 package $package$;
 
 import java.util.function.BiConsumer;
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 import io.fixprotocol.orchestra.dsl.antlr.Evaluator;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreException;
 import io.fixprotocol.orchestra.model.FixValue;
@@ -154,7 +154,7 @@ state_case(stateMachine, state, package) ::= <<
 transition_enum(stateMachine, state, package) ::= <<
 package $package$;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 /**
  * Transitions from state $stateMachine.name$.$state.name$

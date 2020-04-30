@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.BiPredicate;
-
 import io.fixprotocol._2020.orchestra.repository.CodeSetType;
 import io.fixprotocol._2020.orchestra.repository.CodeType;
 import io.fixprotocol._2020.orchestra.repository.ComponentRefType;
@@ -42,7 +41,6 @@ import io.fixprotocol.orchestra.model.FixValue;
 import io.fixprotocol.orchestra.model.PathStep;
 import io.fixprotocol.orchestra.model.Scope;
 import io.fixprotocol.orchestra.model.SymbolResolver;
-import io.fixprotocol.orchestra.repository.RepositoryAccessor;
 import quickfix.FieldMap;
 import quickfix.FieldNotFound;
 import quickfix.Group;
@@ -56,9 +54,9 @@ import quickfix.Message;
  * <li>Checks field presence including conditionally required field rule</li>
  * <li>Checks code membership in a codeSet</li>
  * </ul>
- * Only validates the message body, not session level header and trailer.
- * This implementation is a demonstration of capabilities. There is no claim to high performance.
- * 
+ * Only validates the message body, not session level header and trailer. This implementation is a
+ * demonstration of capabilities. There is no claim to high performance.
+ *
  * @author Don Mendelson
  *
  */
@@ -72,26 +70,28 @@ public class QuickfixValidator implements Validator<Message> {
     public void onError(String msg) {
       try {
         messages.put(msg);
-      } catch (InterruptedException e) {
+      } catch (final InterruptedException e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
       }
     }
-    
+
     void getErrors(Collection<String> toReceive) {
       messages.drainTo(toReceive);
     }
-    
+
     boolean hasError() {
       return !messages.isEmpty();
     }
   }
+
   private final ErrorListener errorListener = new ErrorListener();
   private final Evaluator evaluator;
 
   private final BiPredicate<String, TestException> predicateEvaluator =
       new BiPredicate<String, TestException>() {
 
+        @Override
         public boolean test(String expression, TestException testException) {
           FixValue<?> fixValue;
           try {
@@ -99,30 +99,30 @@ public class QuickfixValidator implements Validator<Message> {
             final ArrayList<String> toReceive = new ArrayList<>();
             errorListener.getErrors(toReceive);
             toReceive.forEach(testException::addDetail);
-            
+
             if (fixValue.getValue() == Boolean.TRUE) {
               return true;
             }
-          } catch (ScoreException e) {
+          } catch (final ScoreException e) {
             testException.addDetail(e.getMessage());
           }
           return false;
         }
       };
-  
+
   private final RepositoryAccessor repositoryAdapter;
-  
+
   private final SymbolResolver symbolResolver;
 
   public QuickfixValidator(RepositoryAccessor repositoryAdapter, SymbolResolver symbolResolver) {
     this.repositoryAdapter = repositoryAdapter;
     this.symbolResolver = symbolResolver;
-    evaluator = new Evaluator(symbolResolver, errorListener );
+    evaluator = new Evaluator(symbolResolver, errorListener);
   }
 
   @Override
   public void validate(Message message, MessageType messageType) throws TestException {
-    TestException testException =
+    final TestException testException =
         new TestException("Invalid message type " + messageType.getName());
     try (final MessageScope messageScope =
         new MessageScope(message, messageType, repositoryAdapter, symbolResolver, evaluator)) {
@@ -130,11 +130,11 @@ public class QuickfixValidator implements Validator<Message> {
       try (Scope local = (Scope) symbolResolver.resolve(SymbolResolver.LOCAL_ROOT)) {
         local.nest(new PathStep(messageType.getName()), messageScope);
 
-        List<Object> members = repositoryAdapter.getMessageMembers(messageType);
+        final List<Object> members = repositoryAdapter.getMessageMembers(messageType);
 
         validateFieldMap(message, testException, members);
       }
-    } catch (Exception e) {
+    } catch (final Exception e) {
       throw new RuntimeException("Internal error", e);
     } finally {
       if (testException.hasDetails()) {
@@ -145,15 +145,15 @@ public class QuickfixValidator implements Validator<Message> {
 
   private void validateField(FieldMap fieldMap, TestException testException,
       FieldRefType fieldRefType) {
-    int id = fieldRefType.getId().intValue();
-    String scenario = fieldRefType.getScenario();
-    PresenceT presence = fieldRefType.getPresence();
-    String dataTypeString = repositoryAdapter.getFieldDatatype(id, scenario);
-    CodeSetType codeSet = repositoryAdapter.getCodeset(dataTypeString, scenario);
+    final int id = fieldRefType.getId().intValue();
+    final String scenario = fieldRefType.getScenario();
+    final PresenceT presence = fieldRefType.getPresence();
+    final String dataTypeString = repositoryAdapter.getFieldDatatype(id, scenario);
+    final CodeSetType codeSet = repositoryAdapter.getCodeset(dataTypeString, scenario);
     if (codeSet != null) {
-      symbolResolver.nest(new PathStep("^"), new CodeSetScope(codeSet) );
+      symbolResolver.nest(new PathStep("^"), new CodeSetScope(codeSet));
     }
-    boolean isPresentInMessage = fieldMap.isSetField(id);
+    final boolean isPresentInMessage = fieldMap.isSetField(id);
 
     switch (presence) {
       case CONSTANT:
@@ -166,9 +166,9 @@ public class QuickfixValidator implements Validator<Message> {
         break;
       case OPTIONAL:
         // Evaluate rules if present
-        List<FieldRuleType> rules = fieldRefType.getRule();
-        for (FieldRuleType rule : rules) {
-          String when = rule.getWhen();
+        final List<FieldRuleType> rules = fieldRefType.getRule();
+        for (final FieldRuleType rule : rules) {
+          final String when = rule.getWhen();
           if (predicateEvaluator.test(when, testException) && !isPresentInMessage) {
             testException.addDetail("Missing required field " + id, "REQUIRED", "(not present)");
           }
@@ -183,13 +183,13 @@ public class QuickfixValidator implements Validator<Message> {
 
     if (isPresentInMessage) {
       try {
-        String value = fieldMap.getString(id);
-        String datatypeName = repositoryAdapter.getFieldDatatype(id, scenario);
-        Datatype datatype = repositoryAdapter.getDatatype(datatypeName);
+        final String value = fieldMap.getString(id);
+        final String datatypeName = repositoryAdapter.getFieldDatatype(id, scenario);
+        final Datatype datatype = repositoryAdapter.getDatatype(datatypeName);
         if (datatype == null) {
-          List<CodeType> codeList = codeSet.getCode();
+          final List<CodeType> codeList = codeSet.getCode();
           boolean matchesCode = false;
-          for (CodeType codeType : codeList) {
+          for (final CodeType codeType : codeList) {
             if (value.equals(codeType.getValue())) {
               matchesCode = true;
               break;
@@ -201,7 +201,7 @@ public class QuickfixValidator implements Validator<Message> {
           }
 
         }
-      } catch (FieldNotFound e) {
+      } catch (final FieldNotFound e) {
         // already tested for presence
       }
     }
@@ -209,24 +209,24 @@ public class QuickfixValidator implements Validator<Message> {
 
   private void validateFieldMap(FieldMap fieldMap, TestException testException,
       List<Object> members) {
-    for (Object member : members) {
+    for (final Object member : members) {
       if (member instanceof FieldRefType) {
-        FieldRefType fieldRefType = (FieldRefType) member;
+        final FieldRefType fieldRefType = (FieldRefType) member;
         validateField(fieldMap, testException, fieldRefType);
       } else if (member instanceof GroupRefType) {
-        GroupRefType groupRefType = (GroupRefType) member;
-        GroupType groupType = repositoryAdapter.getGroup(groupRefType);       
-        List<Group> groups = fieldMap.getGroups(groupType.getNumInGroup().getId().intValue());
-        for (Group group : groups) {
-          validateFieldMap(group, testException,
-              groupType.getComponentRefOrGroupRefOrFieldRef());
+        final GroupRefType groupRefType = (GroupRefType) member;
+        final GroupType groupType = repositoryAdapter.getGroup(groupRefType);
+        final List<Group> groups = fieldMap.getGroups(groupType.getNumInGroup().getId().intValue());
+        for (final Group group : groups) {
+          validateFieldMap(group, testException, groupType.getComponentRefOrGroupRefOrFieldRef());
         }
       } else if (member instanceof ComponentRefType) {
-        ComponentRefType componentRefType = (ComponentRefType) member;
-        ComponentType component = repositoryAdapter.getComponent(componentRefType);
-        if (!component.getName().equals("StandardHeader") && !component.getName().equals("StandardTrailer"))
-        validateFieldMap(fieldMap, testException,
-            component.getComponentRefOrGroupRefOrFieldRef());
+        final ComponentRefType componentRefType = (ComponentRefType) member;
+        final ComponentType component = repositoryAdapter.getComponent(componentRefType);
+        if (!component.getName().equals("StandardHeader")
+            && !component.getName().equals("StandardTrailer"))
+          validateFieldMap(fieldMap, testException,
+              component.getComponentRefOrGroupRefOrFieldRef());
       }
     }
   }

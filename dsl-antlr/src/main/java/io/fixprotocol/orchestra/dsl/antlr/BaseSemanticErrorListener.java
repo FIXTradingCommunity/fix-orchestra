@@ -16,19 +16,22 @@ package io.fixprotocol.orchestra.dsl.antlr;
 
 /**
  * Prints semantic errors on console
+ * 
  * @author Don Mendelson
  *
  */
 public class BaseSemanticErrorListener implements SemanticErrorListener {
 
   /**
-   * 
+   *
    */
   public BaseSemanticErrorListener() {
     // TODO Auto-generated constructor stub
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see io.fixprotocol.orchestra.dsl.antlr.SemanticErrorListener#onError(java.lang.String)
    */
   @Override

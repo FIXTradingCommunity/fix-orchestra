@@ -18,7 +18,7 @@ package io.fixprotocol.orchestra.model;
 
 /**
  * A FIX structure such as a component or a leaf node, that is a field
- * 
+ *
  * @author Don Mendelson
  *
  */
@@ -26,6 +26,7 @@ public interface FixNode {
 
   /**
    * Name of this node
+   * 
    * @return node name
    */
   String getName();

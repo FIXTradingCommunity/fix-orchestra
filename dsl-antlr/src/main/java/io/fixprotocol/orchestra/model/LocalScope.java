@@ -18,7 +18,7 @@ import java.util.ArrayDeque;
 
 /**
  * A stack of local scopes
- * 
+ *
  * @author Don Mendelson
  *
  */
@@ -30,6 +30,7 @@ public class LocalScope extends AbstractScope {
 
   /**
    * Construct a LocalScope by name
+   * 
    * @param name name of the LocalScope
    */
   public LocalScope(String name) {
@@ -38,7 +39,7 @@ public class LocalScope extends AbstractScope {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * io.fixprotocol.orchestra.dsl.antlr.Scope#assign(io.fixprotocol.orchestra.dsl.antlr.PathStep,
    * io.fixprotocol.orchestra.dsl.antlr.FixValue)
@@ -55,7 +56,7 @@ public class LocalScope extends AbstractScope {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see java.lang.AutoCloseable#close()
    */
   @Override
@@ -67,7 +68,7 @@ public class LocalScope extends AbstractScope {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see io.fixprotocol.orchestra.dsl.antlr.FixNode#getName()
    */
   @Override
@@ -85,14 +86,14 @@ public class LocalScope extends AbstractScope {
 
   @Override
   public FixNode remove(PathStep pathStep) {
-    Scope removed = stack.pollFirst();
+    final Scope removed = stack.pollFirst();
     traceRemove(pathStep, removed);
     return removed;
   }
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * io.fixprotocol.orchestra.dsl.antlr.Scope#resolve(io.fixprotocol.orchestra.dsl.antlr.PathStep)
    */
@@ -108,7 +109,7 @@ public class LocalScope extends AbstractScope {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * io.fixprotocol.orchestra.dsl.antlr.Scope#setParent(io.fixprotocol.orchestra.dsl.antlr.Scope)
    */
@@ -116,17 +117,19 @@ public class LocalScope extends AbstractScope {
   public void setParent(Scope parent) {
     this.parent = parent;
   }
-  
+
+  @Override
   protected void traceNest(PathStep pathStep, Scope nested) {
     if (isTrace()) {
-      traceHandler.accept(String.format("Path %s scope %s nested under scope %s", pathStep.getName(), 
-          nested.getName(), getName()));
+      traceHandler.accept(String.format("Path %s scope %s nested under scope %s",
+          pathStep.getName(), nested.getName(), getName()));
     }
   }
 
+  @Override
   protected void traceRemove(PathStep pathStep, FixNode removed) {
     if (isTrace()) {
-      Scope current = stack.peekFirst();
+      final Scope current = stack.peekFirst();
       traceHandler.accept(String.format("Scope %s removed from local scope; current scope is %s",
           pathStep.getName(), current != null ? current.getName() : "none"));
     }

@@ -5,16 +5,16 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.fixprotocol.orchestra</groupId>
 	<artifactId>parent</artifactId>
-	<version>1.5.0</version>
+	<version>1.6.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>${project.groupId}:${project.artifactId}</name>
-	<description>Parent project for FIX Orchestra</description>
+	<description>Parent project for FIX Orchestra. Build Java 8 by default, multi-release jar on demand.</description>
 	<url>https://github.com/FIXTradingCommunity/fix-orchestra/wiki</url>
 	<inceptionYear>2016</inceptionYear>
 	<prerequisites>
-		<maven>3.0.5</maven>
+		<!-- supports toolchain configuration -->
+		<maven>3.3.1</maven>
 	</prerequisites>
-
 	<organization>
 		<name>FIX Trading Community</name>
 		<url>http://https://www.fixtrading.org/</url>
@@ -51,7 +51,6 @@
 			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository>
 	</distributionManagement>
-
 	<modules>
 		<module>interfaces</module>
 		<module>session-quickfix</module>
@@ -64,48 +63,103 @@
 		<module>docgen</module>
 		<module>testgen</module>
 		<module>state-machine</module>
+		<module>repository-util</module>
 	</modules>
-
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<antlr.version>4.8-1</antlr.version>
+		<base.java.version>1.8</base.java.version>
 		<commons-cli.version>1.4</commons-cli.version>
 		<cucumber.version>1.2.6</cucumber.version>
-		<java.version>1.8</java.version>
 		<junit.version>4.11</junit.version>
-		<log4j.version>2.13.0</log4j.version>
+		<log4j.version>2.13.2</log4j.version>
 		<quickfixj.version>2.1.1</quickfixj.version>
-		<saxon.version>9.9.1-6</saxon.version>
+		<saxon.version>10.0</saxon.version>
 		<slf4j.version>1.7.22</slf4j.version>
 		<stringtemplate.version>4.3</stringtemplate.version>
 	</properties>
-
-	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>${junit.version}</version>
+				<scope>test</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<build>
 		<pluginManagement>
 			<plugins>
+				<!-- Use toolchains to select the compilers -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-toolchains-plugin</artifactId>
+					<version>3.0.0</version>
+					<executions>
+						<execution>
+							<goals>
+								<goal>toolchain</goal>
+							</goals>
+						</execution>
+					</executions>
+					<configuration>
+						<toolchains>
+							<jdk>
+								<version>${base.java.version}</version>
+							</jdk>
+						</toolchains>
+					</configuration>
+				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.8.0</version>
+					<version>3.8.1</version>
 					<configuration>
-						<source>${java.version}</source>
-						<target>${java.version}</target>
-						<compilerArgument>-Xlint</compilerArgument>
+						<source>${base.java.version}</source>
+						<target>${base.java.version}</target>
+					</configuration>
+					<executions>
+						<!-- for Java 11+ -->
+						<execution>
+							<id>java11</id>
+							<goals>
+								<goal>compile</goal>
+							</goals>
+							<configuration>
+								<release>11</release>
+								<jdkToolchain>
+									<version>[11,)</version>
+								</jdkToolchain>
+								<compileSourceRoots>
+									<compileSourceRoot>${project.basedir}/src/main/java11</compileSourceRoot>
+								</compileSourceRoots>
+								<multiReleaseOutput>true</multiReleaseOutput>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>3.2.0</version>
+					<configuration>
+						<archive>
+							<manifest>
+								<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+								<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+							</manifest>
+							<manifestEntries>
+								<Multi-Release>true</Multi-Release>
+							</manifestEntries>
+						</archive>
 					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-resources-plugin</artifactId>
-					<version>3.0.1</version>
+					<version>3.1.0</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>
@@ -128,7 +182,6 @@
 			</plugin>
 		</plugins>
 	</build>
-
 	<profiles>
 		<profile>
 			<id>release</id>
@@ -178,5 +231,4 @@
 			</build>
 		</profile>
 	</profiles>
-
 </project>

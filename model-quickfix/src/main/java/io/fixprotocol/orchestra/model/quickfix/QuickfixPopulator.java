@@ -16,7 +16,6 @@ package io.fixprotocol.orchestra.model.quickfix;
 
 import java.util.List;
 import java.util.function.Function;
-
 import io.fixprotocol._2020.orchestra.repository.BlockAssignmentType;
 import io.fixprotocol._2020.orchestra.repository.CodeSetType;
 import io.fixprotocol._2020.orchestra.repository.ComponentRefType;
@@ -33,7 +32,6 @@ import io.fixprotocol.orchestra.model.ModelException;
 import io.fixprotocol.orchestra.model.PathStep;
 import io.fixprotocol.orchestra.model.Scope;
 import io.fixprotocol.orchestra.model.SymbolResolver;
-import io.fixprotocol.orchestra.repository.RepositoryAccessor;
 import quickfix.FieldMap;
 import quickfix.Group;
 import quickfix.Message;
@@ -51,7 +49,7 @@ public class QuickfixPopulator implements Populator<Message> {
 
   /**
    * Constructor
-   * 
+   *
    * @param repositoryAdapter repository wrapper
    * @param symbolResolver resolves symbols in expressions
    * @param groupFactory creates instances of QuickFIX Group
@@ -74,11 +72,11 @@ public class QuickfixPopulator implements Populator<Message> {
         Scope outScope = symbolResolver.nest(new PathStep("out."), new MessageScope(outboundMessage,
             outboundMessageType, repositoryAdapter, symbolResolver, evaluator))) {
 
-      List<Object> members = repositoryAdapter.getMessageMembers(outboundMessageType);
-      
+      final List<Object> members = repositoryAdapter.getMessageMembers(outboundMessageType);
+
       populateFieldMap(outboundMessage, members, outScope);
 
-    } catch (Exception e1) {
+    } catch (final Exception e1) {
       // TODO Auto-generated catch block
       e1.printStackTrace();
     }
@@ -86,51 +84,55 @@ public class QuickfixPopulator implements Populator<Message> {
 
   private void populateFieldMap(FieldMap fieldMap, List<?> members, Scope outScope)
       throws ModelException {
-    for (Object member : members) {
+    for (final Object member : members) {
       if (member instanceof FieldRefType) {
-        FieldRefType fieldRefType = (FieldRefType) member;
-        String scenario = fieldRefType.getScenario();
-        String fieldName = repositoryAdapter.getFieldName(fieldRefType.getId().intValue(), scenario);
-        String assignExpression = fieldRefType.getAssign();
+        final FieldRefType fieldRefType = (FieldRefType) member;
+        final String scenario = fieldRefType.getScenario();
+        final String fieldName =
+            repositoryAdapter.getFieldName(fieldRefType.getId().intValue(), scenario);
+        final String assignExpression = fieldRefType.getAssign();
         if (assignExpression != null) {
           try {
-            String dataTypeString = repositoryAdapter.getFieldDatatype(fieldRefType.getId().intValue(), scenario);
-            CodeSetType codeSet = repositoryAdapter.getCodeset(dataTypeString, scenario);
+            final String dataTypeString =
+                repositoryAdapter.getFieldDatatype(fieldRefType.getId().intValue(), scenario);
+            final CodeSetType codeSet = repositoryAdapter.getCodeset(dataTypeString, scenario);
             if (codeSet != null) {
-              symbolResolver.nest(new PathStep("^"), new CodeSetScope(codeSet) );
+              symbolResolver.nest(new PathStep("^"), new CodeSetScope(codeSet));
             }
-            FixValue<?> fixValue = evaluator.evaluate(assignExpression);
+            final FixValue<?> fixValue = evaluator.evaluate(assignExpression);
             if (fixValue != null) {
               outScope.assign(new PathStep(fieldName), fixValue);
             }
-          } catch (ScoreException e) {
+          } catch (final ScoreException e) {
             throw new ModelException("Failed to assign field " + fieldName, e);
           }
         }
       } else if (member instanceof GroupRefType) {
-        GroupRefType groupRefType = (GroupRefType) member;
-        List<BlockAssignmentType> blockAssignments = groupRefType.getBlockAssignment();
-        GroupType groupType = repositoryAdapter.getGroup(groupRefType);
+        final GroupRefType groupRefType = (GroupRefType) member;
+        final List<BlockAssignmentType> blockAssignments = groupRefType.getBlockAssignment();
+        final GroupType groupType = repositoryAdapter.getGroup(groupRefType);
 
-        for (BlockAssignmentType blockAssignment : blockAssignments) {
-          Group group = groupFactory.apply(groupType.getNumInGroup().getId().intValue());
-          try (GroupInstanceScope groupScope =
-                       new GroupInstanceScope(group, groupType, repositoryAdapter, symbolResolver, evaluator)) {
+        for (final BlockAssignmentType blockAssignment : blockAssignments) {
+          final Group group = groupFactory.apply(groupType.getNumInGroup().getId().intValue());
+          try (GroupInstanceScope groupScope = new GroupInstanceScope(group, groupType,
+              repositoryAdapter, symbolResolver, evaluator)) {
             try (Scope local = (Scope) symbolResolver.resolve(SymbolResolver.LOCAL_ROOT)) {
               local.nest(new PathStep(groupType.getName()), groupScope);
-              populateFieldMap(group, blockAssignment.getComponentRefOrGroupRefOrFieldRef(), groupScope);
+              populateFieldMap(group, blockAssignment.getComponentRefOrGroupRefOrFieldRef(),
+                  groupScope);
               fieldMap.addGroup(group);
             }
-          } catch (Exception e) {
+          } catch (final Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
           }
         }
       } else if (member instanceof ComponentRefType) {
-        ComponentRefType componentRefType = (ComponentRefType) member;
-        List<BlockAssignmentType> blockAssignments = componentRefType.getBlockAssignment();
+        final ComponentRefType componentRefType = (ComponentRefType) member;
+        final List<BlockAssignmentType> blockAssignments = componentRefType.getBlockAssignment();
         if (blockAssignments.size() > 0) {
-          List<?> blockElements = blockAssignments.get(0).getComponentRefOrGroupRefOrFieldRef();
+          final List<?> blockElements =
+              blockAssignments.get(0).getComponentRefOrGroupRefOrFieldRef();
           populateFieldMap(fieldMap, blockElements, outScope);
         }
       }

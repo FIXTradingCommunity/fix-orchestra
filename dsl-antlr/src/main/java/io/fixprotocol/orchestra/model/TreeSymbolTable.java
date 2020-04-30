@@ -19,7 +19,7 @@ import java.util.Map;
 
 /**
  * A flat symbol space. The only key is name.
- * 
+ *
  * @author Don Mendelson
  *
  */
@@ -28,10 +28,10 @@ public class TreeSymbolTable extends AbstractScope {
   private final String name;
   private Scope parent;
   private final Map<String, FixNode> symbols = new HashMap<>();
-  
+
   /**
    * Constructor
-   * 
+   *
    * @param name table name
    */
   public TreeSymbolTable(String name) {
@@ -40,9 +40,9 @@ public class TreeSymbolTable extends AbstractScope {
 
   @Override
   public FixValue<?> assign(PathStep pathStep, FixValue<?> value) throws ModelException {
-    FixNode node = symbols.get(pathStep.getName());
+    final FixNode node = symbols.get(pathStep.getName());
     if (node instanceof FixValue) {
-      FixValue<?> val = (FixValue<?>) node;
+      final FixValue<?> val = (FixValue<?>) node;
       val.assign(value);
       return val;
     } else if (node == null) {
@@ -53,7 +53,9 @@ public class TreeSymbolTable extends AbstractScope {
     }
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see java.lang.AutoCloseable#close()
    */
   @Override
@@ -75,8 +77,9 @@ public class TreeSymbolTable extends AbstractScope {
     return nested;
   }
 
+  @Override
   public FixNode remove(PathStep pathStep) {
-    FixNode removed = symbols.remove(pathStep.getName());
+    final FixNode removed = symbols.remove(pathStep.getName());
     traceRemove(pathStep, removed);
     return removed;
   }
@@ -85,23 +88,27 @@ public class TreeSymbolTable extends AbstractScope {
   public FixNode resolve(PathStep pathStep) {
     return symbols.get(pathStep.getName());
   }
-  
-  /* (non-Javadoc)
-   * @see io.fixprotocol.orchestra.dsl.antlr.Scope#setParent(io.fixprotocol.orchestra.dsl.antlr.Scope)
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * io.fixprotocol.orchestra.dsl.antlr.Scope#setParent(io.fixprotocol.orchestra.dsl.antlr.Scope)
    */
   @Override
   public void setParent(Scope parent) {
     this.parent = parent;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see java.lang.Object#toString()
    */
   @Override
   public String toString() {
     return "TreeSymbolTable [" + (name != null ? "name=" + name + ", " : "")
-        + (parent != null ? "parent=" + parent + ", " : "")
-        +  "symbols=" + symbols  + "]";
+        + (parent != null ? "parent=" + parent + ", " : "") + "symbols=" + symbols + "]";
   }
 
 }

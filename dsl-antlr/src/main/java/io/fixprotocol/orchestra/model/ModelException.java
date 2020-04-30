@@ -16,7 +16,7 @@ package io.fixprotocol.orchestra.model;
 
 /**
  * An Exception that occurs in the evaluation of a model
- * 
+ *
  * @author Don Mendelson
  *
  */
@@ -25,23 +25,15 @@ public class ModelException extends Exception {
   private static final long serialVersionUID = 6950517934100277304L;
 
   /**
-   * 
+   *
    */
-  public ModelException() {
-   }
+  public ModelException() {}
 
   /**
    * @param message error text
    */
   public ModelException(String message) {
     super(message);
-  }
-
-  /**
-   * @param cause nested exception
-   */
-  public ModelException(Throwable cause) {
-    super(cause);
   }
 
   /**
@@ -55,14 +47,19 @@ public class ModelException extends Exception {
   /**
    * @param message error text
    * @param cause nested exception
-   * @param enableSuppression whether or not suppression is enabled
-   *                          or disabled
-   * @param writableStackTrace whether or not the stack trace should
-   *                           be writable
+   * @param enableSuppression whether or not suppression is enabled or disabled
+   * @param writableStackTrace whether or not the stack trace should be writable
    */
   public ModelException(String message, Throwable cause, boolean enableSuppression,
       boolean writableStackTrace) {
     super(message, cause, enableSuppression, writableStackTrace);
+  }
+
+  /**
+   * @param cause nested exception
+   */
+  public ModelException(Throwable cause) {
+    super(cause);
   }
 
 }

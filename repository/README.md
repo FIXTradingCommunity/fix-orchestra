@@ -8,19 +8,24 @@ The XML namespace for the schema is `http://fixprotocol.io/2020/orchestra/reposi
 
 ## Project Features
 
-In addition to providing the XML schema as a resource, this module provides these features:
-* Builds Java bindings for the schema. 
-* Transform Repository2010to2016.xsl populates an Orchestra file from an existing Repository 2010 Edition file.
-* Transform enrich_datatypes.xslt adds datatype mappings to an Orchestra file.
+In addition to providing the XML schema as a resource, this module builds Java bindings for the schema. In other words, an application can access or manipulate an Orchestra repository using plain old Java objects (POJO) without having to be concerned with XML node details.
 
 ## Build
 
-The module may be included as a dependency in a Maven project as follows:
+This Maven module builds a multi-release jar (MRJAR) so it will run with either Java 8, prior to the introduction of the Java Package Module System (JPMS), or with modules in Java 11 or later. Building the MRJAR requires the presence of two Java Development Kits (JDK), but usage of it only requires a Java runtime version of choice.
+
+### Java module
+
+For use with Java 11 or later, the name of the produced Java module is `orchestra.repository`. See module-info.java for the full specification of dependencies and exposed packages.
+
+### Maven dependency
+
+This Maven module may be included as a dependency in a project as follows (substitute current verion as needed):
 
 ```xml
 <dependency>
   <groupId>io.fixprotocol.orchestra</groupId>
   <artifactId>repository</artifactId>
-  <version>1.5.0</version>
+  <version>1.6.0</version>
 </dependency>
 ```

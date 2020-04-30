@@ -16,7 +16,6 @@ package io.fixprotocol.orchestra.session.quickfix;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.time.ZonedDateTime;
@@ -38,7 +37,6 @@ import io.fixprotocol._2020.orchestra.interfaces.SessionType;
 import io.fixprotocol._2020.orchestra.interfaces.TransportProtocolType;
 import io.fixprotocol._2020.orchestra.interfaces.TransportUseEnum;
 import quickfix.Acceptor;
-import quickfix.ConfigError;
 import quickfix.Dictionary;
 import quickfix.FixVersions;
 import quickfix.Initiator;
@@ -52,13 +50,11 @@ import quickfix.SessionSettings;
  */
 public class QuickFixSessionConfigurer {
 
-  private ZonedDateTime effectiveTime = ZonedDateTime.now();
-
-  public static void main(String[] args) throws JAXBException, ConfigError, IOException {
+  public static void main(String[] args) throws Exception {
     if (args.length < 2) {
       useage();
     } else {
-      QuickFixSessionConfigurer configurer = new QuickFixSessionConfigurer();
+      final QuickFixSessionConfigurer configurer = new QuickFixSessionConfigurer();
       try (FileOutputStream out = new FileOutputStream(args[1]);
           FileInputStream in = new FileInputStream(args[0])) {
         configurer.configure(in, out);
@@ -66,37 +62,25 @@ public class QuickFixSessionConfigurer {
     }
   }
 
-
   public static void useage() {
     System.err.println(
         "Usage: java io.fixprotocol.orchestra.session.quickfix.QuickFixConfigurer <interfaces-file> <quickfix-file>");
   }
 
-  /**
-   * @return the effectiveTime
-   */
-  public ZonedDateTime getEffectiveTime() {
-    return effectiveTime;
-  }
 
-  /**
-   * @param effectiveTime the effectiveTime to set
-   */
-  public void setEffectiveTime(ZonedDateTime effectiveTime) {
-    this.effectiveTime = effectiveTime;
-  }
+  private ZonedDateTime effectiveTime = ZonedDateTime.now();
 
-  public void configure(InputStream in, OutputStream out) throws JAXBException, ConfigError {
-    SessionSettings quickFixSettings = new SessionSettings();
+  public void configure(InputStream in, OutputStream out) throws Exception {
+    final SessionSettings quickFixSettings = new SessionSettings();
 
-    Interfaces interfaces = unmarshal(in);
-    List<InterfaceType> interfaceList = interfaces.getInterface();
-    for (InterfaceType interfaceType : interfaceList) {
+    final Interfaces interfaces = unmarshal(in);
+    final List<InterfaceType> interfaceList = interfaces.getInterface();
+    for (final InterfaceType interfaceType : interfaceList) {
       boolean isFixSession = false;
       String interfaceVersion = null;
       List<SessionProtocolType> sessionProtocols = interfaceType.getSessionProtocol();
-      for (SessionProtocolType sessionProtocolType : sessionProtocols) {
-        String protocolName = sessionProtocolType.getName();
+      for (final SessionProtocolType sessionProtocolType : sessionProtocols) {
+        final String protocolName = sessionProtocolType.getName();
         if (protocolName.contains("FIX4") || protocolName.contains("FIXT")) {
           interfaceVersion = sessionProtocolType.getVersion();
           isFixSession = true;
@@ -104,14 +88,14 @@ public class QuickFixSessionConfigurer {
         }
       }
 
-      Sessions sessions = interfaceType.getSessions();
-      List<SessionType> sessionList = sessions.getSession();
-      for (SessionType sessionType : sessionList) {
+      final Sessions sessions = interfaceType.getSessions();
+      final List<SessionType> sessionList = sessions.getSession();
+      for (final SessionType sessionType : sessionList) {
 
         String version = null;
         sessionProtocols = sessionType.getSessionProtocol();
-        for (SessionProtocolType sessionProtocolType : sessionProtocols) {
-          String protocolName = sessionProtocolType.getName();
+        for (final SessionProtocolType sessionProtocolType : sessionProtocols) {
+          final String protocolName = sessionProtocolType.getName();
           if (protocolName.contains("FIX4") || protocolName.contains("FIXT")) {
             version = sessionProtocolType.getVersion();
             isFixSession = true;
@@ -133,7 +117,8 @@ public class QuickFixSessionConfigurer {
 
         final XMLGregorianCalendar activationTimeXml = sessionType.getActivationTime();
         if (activationTimeXml != null) {
-          ZonedDateTime activationTime = activationTimeXml.toGregorianCalendar().toZonedDateTime();
+          final ZonedDateTime activationTime =
+              activationTimeXml.toGregorianCalendar().toZonedDateTime();
           if (activationTime.isAfter(effectiveTime)) {
             continue;
           }
@@ -141,7 +126,7 @@ public class QuickFixSessionConfigurer {
 
         final XMLGregorianCalendar deactivationTimeXml = sessionType.getDeactivationTime();
         if (deactivationTimeXml != null) {
-          ZonedDateTime deativationTime =
+          final ZonedDateTime deativationTime =
               deactivationTimeXml.toGregorianCalendar().toZonedDateTime();
           if (deativationTime.isBefore(effectiveTime)) {
             continue;
@@ -164,16 +149,16 @@ public class QuickFixSessionConfigurer {
             break;
         }
 
-        Map<String, String> identifierMap = new HashMap<>();
-        List<IdentifierType> identifierList = sessionType.getIdentifier();
-        for (IdentifierType identifierType : identifierList) {
-          String name = identifierType.getName();
-          Node value = (Node) identifierType.getValue();
-          String text = value.getFirstChild().getTextContent();
+        final Map<String, String> identifierMap = new HashMap<>();
+        final List<IdentifierType> identifierList = sessionType.getIdentifier();
+        for (final IdentifierType identifierType : identifierList) {
+          final String name = identifierType.getName();
+          final Node value = (Node) identifierType.getValue();
+          final String text = value.getFirstChild().getTextContent();
           identifierMap.put(name, text);
         }
 
-        Dictionary dictionary = new Dictionary();
+        final Dictionary dictionary = new Dictionary();
         dictionary.setString(SessionSettings.BEGINSTRING, beginString);
         dictionary.setString(SessionSettings.SENDERCOMPID,
             identifierMap.getOrDefault(SessionSettings.SENDERCOMPID, SessionID.NOT_SET));
@@ -192,14 +177,14 @@ public class QuickFixSessionConfigurer {
           dictionary.setString(quickfix.Session.SETTING_DEFAULT_APPL_VER_ID, applVersion);
         }
 
-        RoleT role = sessionType.getRole();
-        List<TransportProtocolType> transportList = sessionType.getTransport();
+        final RoleT role = sessionType.getRole();
+        final List<TransportProtocolType> transportList = sessionType.getTransport();
         TransportProtocolType transport = null;
-        int transportCount = transportList.size();
+        final int transportCount = transportList.size();
         if (transportCount == 1) {
           transport = transportList.get(0);
         } else {
-          for (TransportProtocolType aTransport : transportList) {
+          for (final TransportProtocolType aTransport : transportList) {
             if (aTransport.getUse().equalsIgnoreCase(TransportUseEnum.PRIMARY.toString())) {
               transport = aTransport;
             }
@@ -209,8 +194,8 @@ public class QuickFixSessionConfigurer {
             continue;
           }
 
-          String address = transport.getAddress();
-          String[] addressParts = address.split(":");
+          final String address = transport.getAddress();
+          final String[] addressParts = address.split(":");
 
           switch (role) {
             case INITIATOR:
@@ -227,7 +212,7 @@ public class QuickFixSessionConfigurer {
               break;
           }
 
-          SessionID sessionId =
+          final SessionID sessionId =
               new SessionID(beginString, identifierMap.get(SessionSettings.SENDERCOMPID),
                   identifierMap.get(SessionSettings.SENDERSUBID),
                   identifierMap.get(SessionSettings.SENDERLOCID),
@@ -243,9 +228,23 @@ public class QuickFixSessionConfigurer {
     }
   }
 
+  /**
+   * @return the effectiveTime
+   */
+  public ZonedDateTime getEffectiveTime() {
+    return effectiveTime;
+  }
+
+  /**
+   * @param effectiveTime the effectiveTime to set
+   */
+  public void setEffectiveTime(ZonedDateTime effectiveTime) {
+    this.effectiveTime = effectiveTime;
+  }
+
   private Interfaces unmarshal(InputStream in) throws JAXBException {
-    JAXBContext jaxbContext = JAXBContext.newInstance(Interfaces.class);
-    Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+    final JAXBContext jaxbContext = JAXBContext.newInstance(Interfaces.class);
+    final Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
     return (Interfaces) jaxbUnmarshaller.unmarshal(in);
   }
 }
