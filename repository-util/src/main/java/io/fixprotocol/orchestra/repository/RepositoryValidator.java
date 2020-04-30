@@ -17,6 +17,7 @@ package io.fixprotocol.orchestra.repository;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -31,7 +32,7 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
-import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.ls.LSInput;
@@ -39,14 +40,46 @@ import org.w3c.dom.ls.LSResourceResolver;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
+import io.fixprotocol.orchestra.util.LogUtil;
+
 
 /**
  * Validates an Orchestra file against the repository schema
- * 
+ *
  * @author Don Mendelson
  *
  */
 public class RepositoryValidator {
+
+  public static class Builder {
+    private boolean verbose;
+    private String logFile;
+    private InputStream inputStream;
+
+    public RepositoryValidator build() {
+      return new RepositoryValidator(this);
+    }
+
+    public Builder eventLog(String logFile) {
+      this.logFile = logFile;
+      return this;
+    }
+
+    public Builder inputFile(String inputFilename) throws FileNotFoundException {
+      this.inputStream = new FileInputStream(inputFilename);
+      return this;
+    }
+
+    public Builder inputStream(InputStream inputStream) {
+      this.inputStream = inputStream;
+      return this;
+    }
+
+    public Builder verbose(boolean verbose) {
+      this.verbose = verbose;
+      return this;
+    }
+  }
 
   private static final class ErrorListener implements ErrorHandler {
     private int errors = 0;
@@ -195,12 +228,12 @@ public class RepositoryValidator {
         String systemId, String baseURI) {
       InputStream resourceAsStream = null;
 
-      int filePos = systemId.lastIndexOf('/') + 1;
-      String filePath = baseUrl.getPath() + "/" + systemId.substring(filePos);
+      final int filePos = systemId.lastIndexOf('/') + 1;
+      final String filePath = baseUrl.getPath() + "/" + systemId.substring(filePos);
       try {
-        URL fileUrl = new URL(baseUrl.getProtocol(), baseUrl.getHost(), filePath);
+        final URL fileUrl = new URL(baseUrl.getProtocol(), baseUrl.getHost(), filePath);
         resourceAsStream = fileUrl.openStream();
-      } catch (IOException e) {
+      } catch (final IOException e) {
         // Not a fatal error for schema validation
       }
       return new Input(publicId, systemId, resourceAsStream, baseURI);
@@ -213,51 +246,100 @@ public class RepositoryValidator {
 
   }
 
-  private static final Logger parentLogger = LogManager.getLogger();
+  private static Logger parentLogger = null;
 
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  /**
+   * Execute RepositoryValidator with command line arguments
+   * 
+   * @param args command line arguments
+   * -e <logfile> name of event log
+   * -v verbose logging
+   * -i <orchestrafile> name of input file; "-i" is optional
+   * 
+   * @throws Exception if the file to validate cannot be found, read, or parsed
+   */
   public static void main(String[] args) throws Exception {
-    RepositoryValidator validator = new RepositoryValidator();
-    InputStream is = new FileInputStream(new File(args[0]));
-    validator.validate(is);
+    final Builder builder = RepositoryValidator.builder();
+
+    for (int i = 0; i < args.length;) {
+      switch (args[i]) {
+        case "-e":
+          if (i < args.length - 1) {
+            builder.eventLog(args[i + 1]);
+            i++;
+          }
+          break;
+        case "-v":
+          builder.verbose(true);
+          break;
+        case "-i":
+          break;
+        default:
+          builder.inputFile(args[i]);
+      }
+      i++;
+    }
+    final RepositoryValidator validator = builder.build();
+    validator.validate();
+  }
+
+  private final File logFile;
+  private final boolean verbose;
+  private final InputStream inputStream;
+
+  private RepositoryValidator(Builder builder) {
+    this.logFile = builder.logFile != null ? new File(builder.logFile) : null;
+    this.verbose = builder.verbose;
+    this.inputStream = builder.inputStream;
   }
 
   /**
    * Validate an Orchestra repository file against the XML schema
-   * 
+   *
    * If the validation fails, an exception is thrown. If valid, there is no return.
-   * 
+   *
    * @param repositoryInstance an XML instance file as a stream
    * @throws ParserConfigurationException if the XML parser fails due to a configuration error
    * @throws SAXException if XML parser fails or the file is invalid
    * @throws IOException if the XML file cannot be read
    */
-  public void validate(InputStream repositoryInstance)
-      throws ParserConfigurationException, SAXException, IOException {
+  public void validate() throws IOException, ParserConfigurationException, SAXException {
+
+    final Level level = verbose ? Level.DEBUG : Level.ERROR;
+    if (logFile != null) {
+      parentLogger = LogUtil.initializeFileLogger(logFile.getCanonicalPath(), level, getClass());
+    } else {
+      parentLogger = LogUtil.initializeDefaultLogger(level, getClass());
+    }
 
     // parse an XML document into a DOM tree
     final DocumentBuilderFactory parserFactory = DocumentBuilderFactory.newInstance();
     parserFactory.setNamespaceAware(true);
     parserFactory.setXIncludeAware(true);
-    DocumentBuilder parser = parserFactory.newDocumentBuilder();
-    Document document = parser.parse(repositoryInstance);
+    final DocumentBuilder parser = parserFactory.newDocumentBuilder();
+    final Document document = parser.parse(inputStream);
 
     // create a SchemaFactory capable of understanding WXS schemas
-    SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+    final SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
     final ResourceResolver resourceResolver = new ResourceResolver();
     factory.setResourceResolver(resourceResolver);
 
     // load a WXS schema, represented by a Schema instance
-    URL resourceUrl = this.getClass().getClassLoader().getResource("xsd/repository.xsd");
-    String path = resourceUrl.getPath();
-    String parentPath = path.substring(0, path.lastIndexOf('/'));
-    URL baseUrl = new URL(resourceUrl.getProtocol(), null, parentPath);
+    final URL resourceUrl = this.getClass().getClassLoader().getResource("xsd/repository.xsd");
+    final String path = resourceUrl.getPath();
+    final String parentPath = path.substring(0, path.lastIndexOf('/'));
+    final URL baseUrl = new URL(resourceUrl.getProtocol(), null, parentPath);
     resourceResolver.setBaseUrl(baseUrl);
 
-    Source schemaFile = new StreamSource(resourceUrl.openStream());
-    Schema schema = factory.newSchema(schemaFile);
+    final Source schemaFile = new StreamSource(resourceUrl.openStream());
+    final Schema schema = factory.newSchema(schemaFile);
 
     // create a Validator instance, which can be used to validate an instance document
-    Validator validator = schema.newValidator();
+    final Validator validator = schema.newValidator();
     final ErrorListener errorHandler = new ErrorListener();
     validator.setErrorHandler(errorHandler);
 
@@ -267,7 +349,6 @@ public class RepositoryValidator {
     if (errorHandler.getErrors() + errorHandler.getFatalErrors() > 0) {
       parentLogger.fatal("RepositoryValidator complete; fatal errors={} errors={} warnings={}",
           errorHandler.getFatalErrors(), errorHandler.getErrors(), errorHandler.getWarnings());
-      throw new SAXException();
     } else {
       parentLogger.info("RepositoryValidator complete; fatal errors={} errors={} warnings={}",
           errorHandler.getFatalErrors(), errorHandler.getErrors(), errorHandler.getWarnings());

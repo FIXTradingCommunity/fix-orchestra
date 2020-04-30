@@ -64,7 +64,8 @@ public class Unified2OrchestraTransformerTest {
     File phrasesFile = new File(String.format("%s/FIX.5.0SP2_en_phrases.xml", sourceDir));
     new Unified2OrchestraTransformer().transform(inputXml, phrasesFile, outputXml);
     Assert.assertTrue(outputXml.exists());
-    new RepositoryValidator().validate(new FileInputStream(outputXml));
+    RepositoryValidator validator = RepositoryValidator.builder().inputStream(new FileInputStream(outputXml)).build();
+    validator.validate();
   }
   
   /**

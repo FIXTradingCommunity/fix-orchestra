@@ -67,8 +67,9 @@ public class RepositoryCompressorTest {
   @Test
   public void validate()
       throws ParserConfigurationException, SAXException, IOException, URISyntaxException {
-    new RepositoryValidator().validate(Thread.currentThread().getContextClassLoader()
-        .getResourceAsStream("mit_2016.xml"));
+    RepositoryValidator validator = RepositoryValidator.builder().inputStream(Thread.currentThread().getContextClassLoader()
+        .getResourceAsStream("mit_2016.xml")).build();
+    validator.validate();
   }
 
   @Test
@@ -78,7 +79,8 @@ public class RepositoryCompressorTest {
     RepositoryCompressor.main(new String[] {"-i", "src/test/resources/FixRepository50SP2EP247.xml",
         "-o", outfile, "--category", "TradeCapture"});
     Assert.assertTrue(new File(outfile).exists());
-    new RepositoryValidator().validate(new FileInputStream(new File(outfile)));
+    RepositoryValidator validator = RepositoryValidator.builder().inputStream(new FileInputStream(new File(outfile))).build();
+    validator.validate();
   }
 
   @Test
@@ -88,7 +90,8 @@ public class RepositoryCompressorTest {
     RepositoryCompressor.main(new String[] {"-i", "src/test/resources/FixRepository50SP2EP247.xml",
         "-o", outfile, "--section", "Trade", "--notcategory", "CrossOrders"});
     Assert.assertTrue(new File(outfile).exists());
-    new RepositoryValidator().validate(new FileInputStream(new File(outfile)));
+    RepositoryValidator validator = RepositoryValidator.builder().inputStream(new FileInputStream(new File(outfile))).build();
+    validator.validate();
   }
 
   @Test
@@ -98,7 +101,8 @@ public class RepositoryCompressorTest {
     RepositoryCompressor.main(new String[] {"-i", "src/test/resources/FixRepository50SP2EP247.xml",
         "-o", outfile, "--section", "PreTrade"});
     Assert.assertTrue(new File(outfile).exists());
-    new RepositoryValidator().validate(new FileInputStream(new File(outfile)));
+    RepositoryValidator validator = RepositoryValidator.builder().inputStream(new FileInputStream(new File(outfile))).build();
+    validator.validate();
   }
 
   @Test
@@ -108,7 +112,8 @@ public class RepositoryCompressorTest {
     RepositoryCompressor.main(new String[] {"-i", "src/test/resources/FixRepository50SP2EP247.xml",
         "-o", outfile, "--section", "PostTrade"});
     Assert.assertTrue(new File(outfile).exists());
-    new RepositoryValidator().validate(new FileInputStream(new File(outfile)));
+    RepositoryValidator validator = RepositoryValidator.builder().inputStream(new FileInputStream(new File(outfile))).build();
+    validator.validate();
   }
 
   @Test
@@ -118,6 +123,7 @@ public class RepositoryCompressorTest {
     RepositoryCompressor.main(new String[] {"-i", "src/test/resources/FixRepository50SP2EP247.xml",
         "-o", outfile, "--section", "Session"});
     Assert.assertTrue(new File(outfile).exists());
-    new RepositoryValidator().validate(new FileInputStream(new File(outfile)));
+    RepositoryValidator validator = RepositoryValidator.builder().inputStream(new FileInputStream(new File(outfile))).build();
+    validator.validate();
   }
 }
