@@ -73,8 +73,8 @@ public class CodeGeneratorJ {
    * @param args command line arguments. The first argument is the name of a FIX Orchestra file. An
    *        optional second argument is the target directory for generated code. It defaults to
    *        "target/generated-sources".
-   * @throws IOException
-   * @throws FileNotFoundException
+   * @throws IOException an IO error occurred
+   * @throws FileNotFoundException the Orchestra file is not found
    */
   public static void main(String[] args) throws IOException {
     final CodeGeneratorJ generator = new CodeGeneratorJ();

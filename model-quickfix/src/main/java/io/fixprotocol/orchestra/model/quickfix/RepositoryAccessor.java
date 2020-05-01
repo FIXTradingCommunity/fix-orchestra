@@ -38,6 +38,7 @@ public class RepositoryAccessor {
 
   /**
    * Constructor wraps a populated Repository
+   * @param repository an Orchestra Repository object
    */
   public RepositoryAccessor(Repository repository) {
     this.repository = repository;

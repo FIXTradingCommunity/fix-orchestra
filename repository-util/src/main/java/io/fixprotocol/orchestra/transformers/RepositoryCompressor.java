@@ -208,18 +208,21 @@ public class RepositoryCompressor {
   }
 
   /**
-   * usage: RepositoryCompressor 
+   * usage: RepositoryCompressor
+   * 
+   * <pre>
    * -?,--help display usage 
-   * -c,--category <arg> select messages by category 
-   * -f,--flow <arg> select messages by flow 
-   * -i,--input <arg> path of input file
-   * -n,--notcategory <arg> select messages except category 
-   * -o,--output <arg> path of output file
-   * -s,--section <arg> select messages by section 
-   * -x,--notsection <arg> select messages except section
+   * -c,--category &lt;arg&gt; select messages by category 
+   * -f,--flow &lt;arg&gt; select messages by flow 
+   * -i,--input &lt;arg&gt; path of input file
+   * -n,--notcategory &lt;arg&gt; select messages except category 
+   * -o,--output &lt;arg&gt; path of output file
+   * -s,--section &lt;arg&gt; select messages by section 
+   * -x,--notsection &lt;arg&gt; select messages except section
+   * </pre>
    * 
    * @param args command line arguments
-   * @throws Exception
+   * @throws Exception if an IO error occurs or a file cannot be parsed
    */
   public static void main(String[] args) throws Exception {
     RepositoryCompressor compressor = RepositoryCompressor.parseArgs(args).build();

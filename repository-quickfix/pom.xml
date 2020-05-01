@@ -62,26 +62,13 @@
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-toolchains-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 			</plugin>
 		</plugins>
 	</build>
 
-	<profiles>
-		<profile>
-			<id>modular</id>
-			<dependencies>
-				<dependency>
-					<groupId>io.fixprotocol.orchestra</groupId>
-					<artifactId>repository</artifactId>
-					<version>${project.version}</version>
-				</dependency>
-				<dependency>
-					<groupId>org.quickfixj</groupId>
-					<artifactId>quickfixj-core</artifactId>
-					<version>${quickfixj.version}</version>
-				</dependency>
-			</dependencies>
-		</profile>
-	</profiles>
 </project>

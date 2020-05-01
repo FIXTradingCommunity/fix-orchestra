@@ -256,9 +256,12 @@ public class RepositoryValidator {
    * Execute RepositoryValidator with command line arguments
    * 
    * @param args command line arguments
-   * -e <logfile> name of event log
+   * 
+   * <pre>
+   * -e &lt;logfile&gt; name of event log
    * -v verbose logging
-   * -i <orchestrafile> name of input file; "-i" is optional
+   * -i &lt;orchestrafile&gt; name of input file; "-i" is optional
+   * </pre>
    * 
    * @throws Exception if the file to validate cannot be found, read, or parsed
    */
@@ -302,7 +305,6 @@ public class RepositoryValidator {
    *
    * If the validation fails, an exception is thrown. If valid, there is no return.
    *
-   * @param repositoryInstance an XML instance file as a stream
    * @throws ParserConfigurationException if the XML parser fails due to a configuration error
    * @throws SAXException if XML parser fails or the file is invalid
    * @throws IOException if the XML file cannot be read
