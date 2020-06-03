@@ -1,10 +1,12 @@
 package io.fixprotocol.orchestra.dsl.antlr;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.AnyExpressionContext;
@@ -40,20 +42,12 @@ public class DslExpressionTest {
       "out.ExpireTime=#2017-02-02T22:15Z#",
       "exists in.StopPx",
       })
-  public void testExampleFieldCondition(String condition) throws Exception {
-    ScoreLexer l = new ScoreLexer(CharStreams.fromString(condition));
-    ScoreParser p = new ScoreParser(new CommonTokenStream(l));
-    p.addErrorListener(new BaseErrorListener() {
-      @Override
-      public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line,
-          int charPositionInLine, String msg, RecognitionException e) {
-        throw new IllegalStateException(String.format(
-            "Failed to parse at line %d position %d due to %s", line, charPositionInLine, msg), e);
-      }
-    });
-    ScoreBaseVisitor<Object> visitor = new ScoreBaseVisitor<>();
-    AnyExpressionContext ctx = p.anyExpression();
-    Object expression = visitor.visitAnyExpression(ctx);
-    //System.out.println(expression.getClass().getSimpleName());
+  public void testExampleFieldCondition(String condition) throws ScoreException  {
+    Evaluator.validateSyntax(condition);
+  }
+  
+  @Test
+  public void badExpression() {
+    Exception exception = assertThrows(ScoreException.class, () -> {Evaluator.validateSyntax("2 > ");});
   }
 }

@@ -21,8 +21,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Iterator;
 import javax.xml.XMLConstants;
+import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -32,14 +35,23 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.w3c.dom.ls.LSInput;
 import org.w3c.dom.ls.LSResourceResolver;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
+import io.fixprotocol.orchestra.dsl.antlr.Evaluator;
+import io.fixprotocol.orchestra.dsl.antlr.ScoreException;
 import io.fixprotocol.orchestra.util.LogUtil;
 
 
@@ -52,9 +64,9 @@ import io.fixprotocol.orchestra.util.LogUtil;
 public class RepositoryValidator {
 
   public static class Builder {
-    private boolean verbose;
-    private String logFile;
     private InputStream inputStream;
+    private String logFile;
+    private boolean verbose;
 
     public RepositoryValidator build() {
       return new RepositoryValidator(this);
@@ -81,10 +93,8 @@ public class RepositoryValidator {
     }
   }
 
-  private static final class ErrorListener implements ErrorHandler {
-    private int errors = 0;
-    private int fatalErrors = 0;
-    private int warnings = 0;
+  private final class ErrorListener implements ErrorHandler {
+
 
     @Override
     public void error(SAXParseException exception) throws SAXException {
@@ -100,18 +110,6 @@ public class RepositoryValidator {
       fatalErrors++;
     }
 
-    public int getErrors() {
-      return errors;
-    }
-
-    public int getFatalErrors() {
-      return fatalErrors;
-    }
-
-    public int getWarnings() {
-      return warnings;
-    }
-
     @Override
     public void warning(SAXParseException exception) throws SAXException {
       parentLogger.warn("{}:{} {}", exception.getLineNumber(), exception.getColumnNumber(),
@@ -120,7 +118,6 @@ public class RepositoryValidator {
     }
 
   }
-
   static class Input implements LSInput {
 
     private String baseUri;
@@ -218,7 +215,6 @@ public class RepositoryValidator {
     }
 
   }
-
   static class ResourceResolver implements LSResourceResolver {
 
     private URL baseUrl;
@@ -246,6 +242,7 @@ public class RepositoryValidator {
 
   }
 
+
   private static Logger parentLogger = null;
 
   public static Builder builder() {
@@ -257,11 +254,11 @@ public class RepositoryValidator {
    * 
    * @param args command line arguments
    * 
-   * <pre>
+   *        <pre>
    * -e &lt;logfile&gt; name of event log
    * -v verbose logging
    * -i &lt;orchestrafile&gt; name of input file; "-i" is optional
-   * </pre>
+   *        </pre>
    * 
    * @throws Exception if the file to validate cannot be found, read, or parsed
    */
@@ -290,14 +287,34 @@ public class RepositoryValidator {
     validator.validate();
   }
 
-  private final File logFile;
-  private final boolean verbose;
+  private int errors = 0;
+
+  private int fatalErrors = 0;
+
   private final InputStream inputStream;
+
+  private final File logFile;
+
+  private final boolean verbose;
+
+  private int warnings = 0;
 
   private RepositoryValidator(Builder builder) {
     this.logFile = builder.logFile != null ? new File(builder.logFile) : null;
     this.verbose = builder.verbose;
     this.inputStream = builder.inputStream;
+  }
+
+  public int getErrors() {
+    return errors;
+  }
+
+  public int getFatalErrors() {
+    return fatalErrors;
+  }
+
+  public int getWarnings() {
+    return warnings;
   }
 
   /**
@@ -318,6 +335,67 @@ public class RepositoryValidator {
       parentLogger = LogUtil.initializeDefaultLogger(level, getClass());
     }
 
+    final ErrorListener errorHandler = new ErrorListener();
+    final Document xmlDocument = validateSchema(errorHandler);
+    validateExpressions(xmlDocument);
+
+    if (getErrors() + getFatalErrors() > 0) {
+      parentLogger.fatal("RepositoryValidator complete; fatal errors={} errors={} warnings={}",
+          getFatalErrors(), getErrors(), getWarnings());
+    } else {
+      parentLogger.info("RepositoryValidator complete; fatal errors={} errors={} warnings={}",
+          getFatalErrors(), getErrors(), getWarnings());
+    }
+  }
+
+  private void validateExpressions(Document xmlDocument) {
+    XPath xPath = XPathFactory.newInstance().newXPath();
+    xPath.setNamespaceContext(new NamespaceContext() {
+      @Override
+      public String getNamespaceURI(String arg0) {
+        if ("fixr".equals(arg0)) {
+          return "http://fixprotocol.io/2020/orchestra/repository";
+        }
+        return null;
+      }
+
+      @Override
+      public String getPrefix(String arg0) {
+        return null;
+      }
+
+      @Override
+      public Iterator<String> getPrefixes(String arg0) {
+        return null;
+      }
+    });
+    String expression = "//fixr:when";
+    try {
+      NodeList nodeList =
+          (NodeList) xPath.compile(expression).evaluate(xmlDocument, XPathConstants.NODESET);
+      for (int i = 0; i < nodeList.getLength(); i++) {
+        Node node = nodeList.item(i);
+        short nodeType = node.getNodeType();
+        if (nodeType == Node.ELEMENT_NODE) {
+          Element element = (Element) node;
+          String condition = element.getTextContent();
+          try {
+            Evaluator.validateSyntax(condition);
+          } catch (ScoreException exception) {
+            parentLogger.error("{}:{} {}", exception.getLineNumber(), exception.getColumnNumber(),
+                exception.getMessage());
+            errors++;
+          }
+        }
+      }
+    } catch (XPathExpressionException e) {
+      parentLogger.error(e);
+      fatalErrors++;
+    }
+  }
+
+  private Document validateSchema(ErrorListener errorHandler)
+      throws ParserConfigurationException, SAXException, IOException {
     // parse an XML document into a DOM tree
     final DocumentBuilderFactory parserFactory = DocumentBuilderFactory.newInstance();
     parserFactory.setNamespaceAware(true);
@@ -342,19 +420,12 @@ public class RepositoryValidator {
 
     // create a Validator instance, which can be used to validate an instance document
     final Validator validator = schema.newValidator();
-    final ErrorListener errorHandler = new ErrorListener();
+
     validator.setErrorHandler(errorHandler);
 
     // validate the DOM tree
     validator.validate(new DOMSource(document));
-
-    if (errorHandler.getErrors() + errorHandler.getFatalErrors() > 0) {
-      parentLogger.fatal("RepositoryValidator complete; fatal errors={} errors={} warnings={}",
-          errorHandler.getFatalErrors(), errorHandler.getErrors(), errorHandler.getWarnings());
-    } else {
-      parentLogger.info("RepositoryValidator complete; fatal errors={} errors={} warnings={}",
-          errorHandler.getFatalErrors(), errorHandler.getErrors(), errorHandler.getWarnings());
-    }
+    return document;
   }
 
 }

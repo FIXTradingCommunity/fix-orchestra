@@ -4,4 +4,6 @@ module orchestra.score {
   
   exports io.fixprotocol.orchestra.model;
   opens io.fixprotocol.orchestra.model;
+  
+  exports io.fixprotocol.orchestra.dsl.antlr;
 }

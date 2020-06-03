@@ -170,10 +170,9 @@ public class CodeGeneratorJ {
       writeSerializationVersion(writer, SERIALIZATION_VERSION);
       writeMsgType(writer, "");
 
-      final List<Integer> componentFields = new ArrayList<>();
       final List<Object> members = componentType.getComponentRefOrGroupRefOrFieldRef();
-      componentFields.addAll(members.stream().filter(member -> member instanceof FieldRefType)
-          .map(member -> ((FieldRefType) member).getId().intValue()).collect(Collectors.toList()));
+      final List<Integer> componentFields = new ArrayList<>(members.stream().filter(member -> member instanceof FieldRefType)
+              .map(member -> ((FieldRefType) member).getId().intValue()).collect(Collectors.toList()));
       writeComponentFieldIds(writer, componentFields);
 
       final List<Integer> componentGroupFields = new ArrayList<>();

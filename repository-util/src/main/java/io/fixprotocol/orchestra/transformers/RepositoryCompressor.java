@@ -166,7 +166,7 @@ public class RepositoryCompressor {
       }
       return false;
     }
-  };
+  }
 
   static class NotCategory implements Predicate<MessageType> {
 
@@ -201,7 +201,7 @@ public class RepositoryCompressor {
   private static final Logger parentLogger = LogManager.getLogger();
 
 
-  static IsCategoryInSection isCategoryInSection = new IsCategoryInSection();
+  static final IsCategoryInSection isCategoryInSection = new IsCategoryInSection();
 
   public static Builder builder() {
     return new Builder();

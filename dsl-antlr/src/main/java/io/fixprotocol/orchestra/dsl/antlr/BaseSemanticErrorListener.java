@@ -20,7 +20,7 @@ package io.fixprotocol.orchestra.dsl.antlr;
  * @author Don Mendelson
  *
  */
-public class BaseSemanticErrorListener implements SemanticErrorListener {
+class BaseSemanticErrorListener implements SemanticErrorListener {
 
   /**
    *

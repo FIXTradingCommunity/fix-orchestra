@@ -40,17 +40,30 @@ public class Evaluator {
 
   }
 
-  private final BaseErrorListener errorListener = new BaseErrorListener() {
+  private static class SyntaxErrorListener extends BaseErrorListener {
     @Override
     public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line,
         int charPositionInLine, String msg, RecognitionException e) {
-      throw new IllegalStateException(String.format(
-          "Failed to parse at line %d position %d due to %s", line, charPositionInLine, msg), e);
+      throw new IllegalStateException(new ScoreException(msg, line, charPositionInLine, e));
     }
-  };
+  }
+
+  public static void validateSyntax(String expression) throws ScoreException {
+    final ScoreLexer lexer = new ScoreLexer(CharStreams.fromString(expression));
+    final ScoreParser parser = new ScoreParser(new CommonTokenStream(lexer));
+    parser.addErrorListener(new SyntaxErrorListener());
+    try {
+      final AnyExpressionContext ctx = parser.anyExpression();
+    } catch (IllegalStateException e) {
+      Throwable cause = e.getCause();
+      if (cause instanceof ScoreException) {
+        throw (ScoreException) cause;
+      }
+    }
+  }
+
 
   private final ScoreVisitorImpl visitor;
-
 
   /**
    * Constructor with default SemanticErrorListener
@@ -61,6 +74,7 @@ public class Evaluator {
     visitor = new ScoreVisitorImpl(symbolResolver, new DefaultSemanticErrorListener());
   }
 
+
   /**
    * Constructor
    *
@@ -70,7 +84,6 @@ public class Evaluator {
   public Evaluator(SymbolResolver symbolResolver, SemanticErrorListener semanticErrorListener) {
     visitor = new ScoreVisitorImpl(symbolResolver, semanticErrorListener);
   }
-
 
   /**
    * Parses and evaluates a Score expression
@@ -83,12 +96,11 @@ public class Evaluator {
     try {
       final ScoreLexer lexer = new ScoreLexer(CharStreams.fromString(expression));
       final ScoreParser parser = new ScoreParser(new CommonTokenStream(lexer));
-      parser.addErrorListener(errorListener);
+      parser.addErrorListener(new SyntaxErrorListener());
       final AnyExpressionContext ctx = parser.anyExpression();
       return visitor.visitAnyExpression(ctx);
     } catch (final IllegalStateException e) {
       throw new ScoreException("Syntactical or semantic error; " + e.getMessage());
     }
   }
-
 }
