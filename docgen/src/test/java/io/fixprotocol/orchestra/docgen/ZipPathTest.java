@@ -1,76 +1,76 @@
 package io.fixprotocol.orchestra.docgen;
 
-import static org.junit.Assert.*;
-
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import java.nio.file.Path;
-
-import org.junit.Test;
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 public class ZipPathTest {
 
-  @Ignore
+  @Disabled
   @Test
   public void testHashCode() {
     fail("Not yet implemented");
   }
 
-  @Ignore
+  @Disabled
   @Test
   public void testCompareTo() {
     fail("Not yet implemented");
   }
 
-  @Ignore
+  @Disabled
   @Test
   public void testEndsWithPath() {
     fail("Not yet implemented");
   }
 
-  @Ignore
+  @Disabled
   @Test
   public void testEndsWithString() {
     fail("Not yet implemented");
   }
 
-  @Ignore
+  @Disabled
   @Test
   public void testEqualsObject() {
     fail("Not yet implemented");
   }
 
-  @Ignore
+  @Disabled
   @Test
   public void testGetFileName() {
     fail("Not yet implemented");
   }
 
-  @Ignore
+  @Disabled
   @Test
   public void testGetFileSystem() {
     fail("Not yet implemented");
   }
 
-  @Ignore
+  @Disabled
   @Test
   public void testGetName() {
     fail("Not yet implemented");
   }
 
-  @Ignore
+  @Disabled
   @Test
   public void testGetNameCount() {
     fail("Not yet implemented");
   }
 
-  @Ignore
+  @Disabled
   @Test
   public void testGetParent() {
     fail("Not yet implemented");
   }
 
-  @Ignore
+  @Disabled
   @Test
   public void testGetRoot() {
     fail("Not yet implemented");
@@ -84,25 +84,25 @@ public class ZipPathTest {
     assertFalse(path2.isAbsolute());
   }
 
-  @Ignore
+  @Disabled
   @Test
   public void testIterator() {
     fail("Not yet implemented");
   }
 
-  @Ignore
+  @Disabled
   @Test
   public void testNormalize() {
     fail("Not yet implemented");
   }
 
-  @Ignore
+  @Disabled
   @Test
   public void testRegisterWatchServiceKindOfQArray() {
     fail("Not yet implemented");
   }
 
-  @Ignore
+  @Disabled
   @Test
   public void testRegisterWatchServiceKindOfQArrayModifierArray() {
     fail("Not yet implemented");
@@ -133,61 +133,61 @@ public class ZipPathTest {
     assertEquals("/first/second", second.toString());
   }
 
-  @Ignore
+  @Disabled
   @Test
   public void testResolveSiblingPath() {
     fail("Not yet implemented");
   }
 
-  @Ignore
+  @Disabled
   @Test
   public void testResolveSiblingString() {
     fail("Not yet implemented");
   }
 
-  @Ignore
+  @Disabled
   @Test
   public void testStartsWithPath() {
     fail("Not yet implemented");
   }
 
-  @Ignore
+  @Disabled
   @Test
   public void testStartsWithString() {
     fail("Not yet implemented");
   }
 
-  @Ignore
+  @Disabled
   @Test
   public void testSubpath() {
     fail("Not yet implemented");
   }
 
-  @Ignore
+  @Disabled
   @Test
   public void testToAbsolutePath() {
     fail("Not yet implemented");
   }
 
-  @Ignore
+  @Disabled
   @Test
   public void testToFile() {
     fail("Not yet implemented");
   }
 
-  @Ignore
+  @Disabled
   @Test
   public void testToRealPath() {
     fail("Not yet implemented");
   }
 
-  @Ignore
+  @Disabled
   @Test
   public void testToString() {
     fail("Not yet implemented");
   }
 
-  @Ignore
+  @Disabled
   @Test
   public void testToUri() {
     fail("Not yet implemented");

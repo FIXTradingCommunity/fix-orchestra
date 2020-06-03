@@ -14,8 +14,10 @@
  */
 package io.fixprotocol.orchestra.model.quickfix;
 
-import static org.junit.Assert.*;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import java.io.File;
 import java.io.InputStream;
 import java.math.BigDecimal;
@@ -23,11 +25,9 @@ import java.math.BigDecimal;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import io.fixprotocol._2020.orchestra.repository.MessageType;
 import io.fixprotocol._2020.orchestra.repository.Repository;
 import io.fixprotocol.orchestra.dsl.antlr.Evaluator;
@@ -47,7 +47,7 @@ public class MessageScopeTest {
 
   private static Repository repository;
   
-  @BeforeClass
+  @BeforeAll
   public static void setupOnce() throws Exception  {
     repository = unmarshal(Thread.currentThread().getContextClassLoader().getResourceAsStream("mit_2016.xml"));
   }
@@ -58,7 +58,7 @@ public class MessageScopeTest {
   /**
    * @throws java.lang.Exception
    */
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     final RepositoryAccessor repositoryAdapter = new RepositoryAccessor(repository);
     final MessageType messageType =

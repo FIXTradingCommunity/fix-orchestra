@@ -14,19 +14,16 @@
  */
 package io.fixprotocol.orchestra.model.quickfix;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.InputStream;
 import java.util.function.Function;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import io.fixprotocol._2020.orchestra.repository.MessageType;
 import io.fixprotocol._2020.orchestra.repository.Repository;
 import io.fixprotocol.orchestra.model.ModelException;
@@ -49,7 +46,7 @@ public class PopulatorTest {
 
   private static Repository repository;
 
-  @BeforeClass
+  @BeforeAll
   public static void setupOnce() throws Exception {
     repository = unmarshal(Thread.currentThread().getContextClassLoader().getResourceAsStream("mit_2016.xml"));
   }
@@ -76,7 +73,7 @@ public class PopulatorTest {
     
   };
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     repositoryAdapter = new RepositoryAccessor(repository);
     final SymbolResolver symbolResolver = new SymbolResolver();

@@ -15,10 +15,9 @@ import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilder;
 import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilderFactory;
 import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
 import org.apache.logging.log4j.spi.LoggerContextFactory;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 import io.fixprotocol.orchestra.repository.RepositoryValidator;
 
@@ -58,7 +57,7 @@ class CustomLogFactory implements LoggerContextFactory {
 
 public class RepositoryCompressorTest {
 
-  @BeforeClass
+  @BeforeAll
   public static void setupOnce() {
     new File(("target/test")).mkdirs();
     LogManager.setFactory(new CustomLogFactory());
@@ -78,7 +77,7 @@ public class RepositoryCompressorTest {
     // Include every category in the "Trade" section except "CrossOrders"
     RepositoryCompressor.main(new String[] {"-i", "src/test/resources/FixRepository50SP2EP247.xml",
         "-o", outfile, "--category", "TradeCapture"});
-    Assert.assertTrue(new File(outfile).exists());
+    Assertions.assertTrue(new File(outfile).exists());
     RepositoryValidator validator = RepositoryValidator.builder().inputStream(new FileInputStream(new File(outfile))).build();
     validator.validate();
   }
@@ -89,7 +88,7 @@ public class RepositoryCompressorTest {
     // Include every category in the "Trade" section except "CrossOrders"
     RepositoryCompressor.main(new String[] {"-i", "src/test/resources/FixRepository50SP2EP247.xml",
         "-o", outfile, "--section", "Trade", "--notcategory", "CrossOrders"});
-    Assert.assertTrue(new File(outfile).exists());
+    Assertions.assertTrue(new File(outfile).exists());
     RepositoryValidator validator = RepositoryValidator.builder().inputStream(new FileInputStream(new File(outfile))).build();
     validator.validate();
   }
@@ -100,7 +99,7 @@ public class RepositoryCompressorTest {
     // Include every category in the "Trade" section except "CrossOrders"
     RepositoryCompressor.main(new String[] {"-i", "src/test/resources/FixRepository50SP2EP247.xml",
         "-o", outfile, "--section", "PreTrade"});
-    Assert.assertTrue(new File(outfile).exists());
+    Assertions.assertTrue(new File(outfile).exists());
     RepositoryValidator validator = RepositoryValidator.builder().inputStream(new FileInputStream(new File(outfile))).build();
     validator.validate();
   }
@@ -111,7 +110,7 @@ public class RepositoryCompressorTest {
     // Include every category in the "Trade" section except "CrossOrders"
     RepositoryCompressor.main(new String[] {"-i", "src/test/resources/FixRepository50SP2EP247.xml",
         "-o", outfile, "--section", "PostTrade"});
-    Assert.assertTrue(new File(outfile).exists());
+    Assertions.assertTrue(new File(outfile).exists());
     RepositoryValidator validator = RepositoryValidator.builder().inputStream(new FileInputStream(new File(outfile))).build();
     validator.validate();
   }
@@ -122,7 +121,7 @@ public class RepositoryCompressorTest {
     // Include every category in the "Trade" section except "CrossOrders"
     RepositoryCompressor.main(new String[] {"-i", "src/test/resources/FixRepository50SP2EP247.xml",
         "-o", outfile, "--section", "Session"});
-    Assert.assertTrue(new File(outfile).exists());
+    Assertions.assertTrue(new File(outfile).exists());
     RepositoryValidator validator = RepositoryValidator.builder().inputStream(new FileInputStream(new File(outfile))).build();
     validator.validate();
   }

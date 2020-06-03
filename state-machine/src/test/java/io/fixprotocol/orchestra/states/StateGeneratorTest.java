@@ -1,14 +1,16 @@
 package io.fixprotocol.orchestra.states;
 
 import static io.fixprotocol.orchestra.model.SymbolResolver.CODE_SET_ROOT;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import io.fixprotocol.orchestra.dsl.antlr.Evaluator;
 import io.fixprotocol.orchestra.dsl.antlr.SemanticErrorListener;
 import io.fixprotocol.orchestra.model.FixNode;
@@ -114,14 +116,14 @@ public class StateGeneratorTest {
   private Scope codeScope;
   private static CodeSet timeInForceCodeSet = new CodeSet();
 
-  @BeforeClass
+  @BeforeAll
   public static void setUpOnce() throws ModelException {
     timeInForceCodeSet.assign("Day", new FixValue<Character>(FixType.charType, '0'));
     timeInForceCodeSet.assign("GoodTilCancel", new FixValue<Character>(FixType.charType, '1'));
     timeInForceCodeSet.assign("GoodTilDate", new FixValue<Character>(FixType.charType, '6'));
   }
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     SymbolResolver symbolResolver = new SymbolResolver();
     inScope = symbolResolver.nest(IN_ROOT, new TreeSymbolTable("Objects"));
@@ -139,12 +141,15 @@ public class StateGeneratorTest {
     assertEquals(OrderState.New, order.getOrderState());
   }
   
-  @Test(expected = StateMachineException.class)
+  @Test
   public void badTransition() throws Exception {
     Order order = new Order("CL00001", '0');
     assignObject(order);
     assignCodeSet(timeInForceCodeSet);
-    order.setOrderState(stateMachine.tryTransition("DoneForDay", order, onEntry, onExit, evaluator));
+    assertThrows(StateMachineException.class, () -> {
+      order.setOrderState(
+          stateMachine.tryTransition("DoneForDay", order, onEntry, onExit, evaluator));
+    });
   }
   
   private void assignObject(Order order) throws ModelException {

@@ -14,18 +14,12 @@
  */
 package io.fixprotocol.orchestra.session.quickfix;
 
-import static org.junit.Assert.assertNotNull;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.net.URI;
-import java.time.ZonedDateTime;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import io.fixprotocol.orchestra.session.quickfix.QuickFixSessionConfigurer;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Don Mendelson
@@ -35,12 +29,12 @@ public class QuickFixSessionConfigurerTest {
 
   private QuickFixSessionConfigurer tool;
 
-  @BeforeClass
+  @BeforeAll
   public static void setupOnce() {
     new File(("target/test")).mkdirs();
   }
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     tool = new QuickFixSessionConfigurer();
   }
@@ -51,7 +45,7 @@ public class QuickFixSessionConfigurerTest {
     tool.configure(
         Thread.currentThread().getContextClassLoader().getResourceAsStream("SampleInterfaces.xml"),
         new FileOutputStream(outfile));
-    Assert.assertTrue(new File(outfile).exists());
+    Assertions.assertTrue(new File(outfile).exists());
   }
 
 }

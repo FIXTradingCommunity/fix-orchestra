@@ -14,17 +14,12 @@
  */
 package io.fixprotocol.orchestra.model;
 
-import static org.junit.Assert.*;
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
-
-import org.junit.Test;
-
-import io.fixprotocol.orchestra.model.FixType;
-import io.fixprotocol.orchestra.model.FixValue;
-import io.fixprotocol.orchestra.model.FixValueOperations;
+import org.junit.jupiter.api.Test;
 
 public class FixValueTest {
 
@@ -67,10 +62,11 @@ public class FixValueTest {
     assert(fixValueOperations.add.apply(op1, op2).getValue() instanceof Instant);
   }
 
-  @Test(expected=NullPointerException.class)
+  @Test
   public void testAddIntNull() {
     FixValue<Integer> op1 = new FixValue<Integer>("op1", FixType.intType, 3);
     FixValue<Integer> op2 = new FixValue<Integer>("op2", FixType.intType);
-    fixValueOperations.add.apply(op1, op2);
+    Exception exception =
+        assertThrows(NullPointerException.class, () -> fixValueOperations.add.apply(op1, op2));
   }
 }

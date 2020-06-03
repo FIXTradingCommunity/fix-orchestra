@@ -14,16 +14,13 @@
  */
 package io.fixprotocol.orchestra.model;
 
-import static io.fixprotocol.orchestra.model.SymbolResolver.*;
-import static org.junit.Assert.*;
-
-import org.junit.Before;
-import org.junit.Test;
-
-import io.fixprotocol.orchestra.model.PathStep;
-import io.fixprotocol.orchestra.model.Scope;
-import io.fixprotocol.orchestra.model.SymbolResolver;
-import io.fixprotocol.orchestra.model.TreeSymbolTable;
+import static io.fixprotocol.orchestra.model.SymbolResolver.CODE_SET_ROOT;
+import static io.fixprotocol.orchestra.model.SymbolResolver.LOCAL_ROOT;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class SymbolResolverTest {
 
@@ -31,7 +28,7 @@ public class SymbolResolverTest {
   /**
    * @throws java.lang.Exception
    */
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     symbolResolver = new SymbolResolver();
     //symbolResolver.setTrace(true);

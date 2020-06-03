@@ -14,20 +14,17 @@
  */
 package io.fixprotocol.orchestra.model.quickfix;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 import java.io.InputStream;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import io.fixprotocol._2020.orchestra.repository.MessageType;
 import io.fixprotocol._2020.orchestra.repository.Repository;
 import io.fixprotocol.orchestra.message.TestException;
@@ -45,12 +42,12 @@ public class ValidatorTest {
   private RepositoryAccessor repositoryAdapter;
   private SessionID sessionID;
 
-  @BeforeClass
+  @BeforeAll
   public static void setupOnce() throws Exception {
     repository = unmarshal(Thread.currentThread().getContextClassLoader().getResourceAsStream("mit_2016.xml"));
   }
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     sessionID = new SessionID("FIXT.1.1", "sender", "target");
     repositoryAdapter = new RepositoryAccessor(repository);
@@ -64,9 +61,6 @@ public class ValidatorTest {
     Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
     return (Repository) jaxbUnmarshaller.unmarshal(inputFile);
   }
-
-  @After
-  public void tearDown() throws Exception {}
 
   @Test
   public void emptyMessage() {
@@ -116,13 +110,14 @@ public class ValidatorTest {
                     </fixr:rule>
     </pre>
    */
-  @Test(expected = TestException.class)
+  @Test
   public void ruleViolation() throws TestException {
     TradingSessionStatus message = new TradingSessionStatus();
     message.set(new TradingSessionID(TradingSessionID.Day));
     message.set(new TradSesStatus(TradSesStatus.RequestRejected));
     MessageType messageType = repositoryAdapter.getMessage("TradingSessionStatus", "base");
-    validator.validate(message, messageType);
+
+    assertThrows(TestException.class, () -> {validator.validate(message, messageType);});
   }
 
 }

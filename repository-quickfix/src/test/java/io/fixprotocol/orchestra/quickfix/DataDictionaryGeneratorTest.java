@@ -1,20 +1,14 @@
 package io.fixprotocol.orchestra.quickfix;
 
-import static org.junit.Assert.*;
-
 import java.io.File;
-import java.io.IOException;
-
-import javax.xml.bind.JAXBException;
-
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class DataDictionaryGeneratorTest {
 
   private DataDictionaryGenerator generator;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     generator = new DataDictionaryGenerator();
   }

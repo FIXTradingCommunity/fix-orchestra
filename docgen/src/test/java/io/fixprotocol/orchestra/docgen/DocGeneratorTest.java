@@ -17,8 +17,8 @@ package io.fixprotocol.orchestra.docgen;
 
 import java.io.File;
 import java.io.PrintStream;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Don Mendelson
@@ -26,7 +26,7 @@ import org.junit.Test;
  */
 public class DocGeneratorTest {
 
-  @BeforeClass
+  @BeforeAll
   public static void setupOnce() {
     new File(("target/test")).mkdirs();
   }

@@ -14,11 +14,10 @@
  */
 package io.fixprotocol.orchestra.dsl.antlr;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.Duration;
@@ -31,9 +30,8 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
-import org.junit.Before;
-import org.junit.Test;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreParser.AnyExpressionContext;
 import io.fixprotocol.orchestra.model.FixType;
 import io.fixprotocol.orchestra.model.FixValue;
@@ -87,7 +85,7 @@ public class ScoreVisitorImplTest {
   /**
    * @throws java.lang.Exception
    */
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     // Only resolve variables for now
     this.symbolResolver = new SymbolResolver();
@@ -105,8 +103,8 @@ public class ScoreVisitorImplTest {
   @Test
   public void testVisitAddSub() throws IOException {
     TestData[] data = new TestData[] {
-        new TestData("33 + 44", new Integer(77)),
-        new TestData("44 - 33", new Integer(11)),
+        new TestData("33 + 44", Integer.valueOf(77)),
+        new TestData("44 - 33", Integer.valueOf(11)),
         new TestData("7.12 + 2.34", new BigDecimal("9.46")),
         new TestData("65.55 - 2.34", new BigDecimal("63.21")),
         new TestData("7.12 + 2", new BigDecimal("9.12")),
@@ -365,9 +363,9 @@ public class ScoreVisitorImplTest {
   @Test
   public void testVisitMulDiv() throws IOException {
     TestData[] data = new TestData[] {
-        new TestData("33 * 4", new Integer(132)),
-        new TestData("44 / 3", new Integer(14)), 
-        new TestData("44 % 3", new Integer(2)),
+        new TestData("33 * 4", Integer.valueOf(132)),
+        new TestData("44 / 3", Integer.valueOf(14)), 
+        new TestData("44 % 3", Integer.valueOf(2)),
         new TestData("7.12 * 2.3", new BigDecimal("16.376")),
         new TestData("65.55 / 2.3", new BigDecimal("28.5")),
         new TestData("44.0 / 4", new BigDecimal("11.0")), 
@@ -385,7 +383,7 @@ public class ScoreVisitorImplTest {
   @Test
   public void testVisitMulDivError() throws IOException {
     TestData[] data = new TestData[] {
-        new TestData("44 / 0", new Integer(2)),
+        new TestData("44 / 0", Integer.valueOf(2)),
         };
 
     for (int i = 0; i < data.length; i++) {
@@ -405,8 +403,8 @@ public class ScoreVisitorImplTest {
    */
   @Test
   public void testVisitParens() throws IOException {
-    TestData[] data = new TestData[] {new TestData("2 + 3 * 5", new Integer(17)),
-        new TestData("(2 + 3) * 5", new Integer(25))};
+    TestData[] data = new TestData[] {new TestData("2 + 3 * 5", Integer.valueOf(17)),
+        new TestData("(2 + 3) * 5", Integer.valueOf(25))};
 
     for (int i = 0; i < data.length; i++) {
       ScoreParser parser = parse(data[i].getExpression());
