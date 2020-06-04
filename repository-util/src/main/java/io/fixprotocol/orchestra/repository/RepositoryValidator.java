@@ -21,7 +21,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Iterator;
 import javax.xml.XMLConstants;
@@ -98,22 +97,22 @@ public class RepositoryValidator {
 
     @Override
     public void error(SAXParseException exception) throws SAXException {
-      parentLogger.error("{}:{} {}", exception.getLineNumber(), exception.getColumnNumber(),
-          exception.getMessage());
+      parentLogger.error("RepositoryValidator: XML error at line {} col {} {}",
+          exception.getLineNumber(), exception.getColumnNumber(), exception.getMessage());
       errors++;
     }
 
     @Override
     public void fatalError(SAXParseException exception) throws SAXException {
-      parentLogger.fatal("{}:{} {}", exception.getLineNumber(), exception.getColumnNumber(),
-          exception.getMessage());
+      parentLogger.fatal("RepositoryValidator: XML fatal error at line {} col {} {}",
+          exception.getLineNumber(), exception.getColumnNumber(), exception.getMessage());
       fatalErrors++;
     }
 
     @Override
     public void warning(SAXParseException exception) throws SAXException {
-      parentLogger.warn("{}:{} {}", exception.getLineNumber(), exception.getColumnNumber(),
-          exception.getMessage());
+      parentLogger.warn("RepositoryValidator: XML warning at line {} col {} {}",
+          exception.getLineNumber(), exception.getColumnNumber(), exception.getMessage());
       warnings++;
     }
 
@@ -251,15 +250,15 @@ public class RepositoryValidator {
 
   /**
    * Execute RepositoryValidator with command line arguments
-   * 
+   *
    * @param args command line arguments
-   * 
+   *
    *        <pre>
    * -e &lt;logfile&gt; name of event log
    * -v verbose logging
    * -i &lt;orchestrafile&gt; name of input file; "-i" is optional
    *        </pre>
-   * 
+   *
    * @throws Exception if the file to validate cannot be found, read, or parsed
    */
   public static void main(String[] args) throws Exception {
@@ -288,15 +287,10 @@ public class RepositoryValidator {
   }
 
   private int errors = 0;
-
   private int fatalErrors = 0;
-
   private final InputStream inputStream;
-
   private final File logFile;
-
   private final boolean verbose;
-
   private int warnings = 0;
 
   private RepositoryValidator(Builder builder) {
@@ -349,7 +343,7 @@ public class RepositoryValidator {
   }
 
   private void validateExpressions(Document xmlDocument) {
-    XPath xPath = XPathFactory.newInstance().newXPath();
+    final XPath xPath = XPathFactory.newInstance().newXPath();
     xPath.setNamespaceContext(new NamespaceContext() {
       @Override
       public String getNamespaceURI(String arg0) {
@@ -369,27 +363,28 @@ public class RepositoryValidator {
         return null;
       }
     });
-    String expression = "//fixr:when";
+    final String expression = "//fixr:when";
     try {
-      NodeList nodeList =
+      final NodeList nodeList =
           (NodeList) xPath.compile(expression).evaluate(xmlDocument, XPathConstants.NODESET);
       for (int i = 0; i < nodeList.getLength(); i++) {
-        Node node = nodeList.item(i);
-        short nodeType = node.getNodeType();
+        final Node node = nodeList.item(i);
+        final short nodeType = node.getNodeType();
         if (nodeType == Node.ELEMENT_NODE) {
-          Element element = (Element) node;
-          String condition = element.getTextContent();
+          final Element element = (Element) node;
+          final String condition = element.getTextContent();
           try {
             Evaluator.validateSyntax(condition);
-          } catch (ScoreException exception) {
-            parentLogger.error("{}:{} {}", exception.getLineNumber(), exception.getColumnNumber(),
-                exception.getMessage());
+          } catch (final ScoreException exception) {
+            parentLogger.error(
+                "RepositoryValidator: invalid Score expression \'{}\'; {} at col. {}", condition,
+                exception.getMessage(), exception.getColumnNumber());
             errors++;
           }
         }
       }
-    } catch (XPathExpressionException e) {
-      parentLogger.error(e);
+    } catch (final XPathExpressionException e) {
+      parentLogger.error("Failed to locate Score expressions", e);
       fatalErrors++;
     }
   }

@@ -14,8 +14,10 @@
  */
 package io.fixprotocol.orchestra.transformers;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
@@ -35,7 +37,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.purl.dc.elements._1.ObjectFactory;
 import org.purl.dc.elements._1.SimpleLiteral;
@@ -59,6 +61,7 @@ import io.fixprotocol._2020.orchestra.repository.MessageType;
 import io.fixprotocol._2020.orchestra.repository.Messages;
 import io.fixprotocol._2020.orchestra.repository.Repository;
 import io.fixprotocol._2020.orchestra.repository.Sections;
+import io.fixprotocol.orchestra.util.LogUtil;
 
 /**
  * Selectively compresses an Orchestra file <br>
@@ -75,7 +78,7 @@ import io.fixprotocol._2020.orchestra.repository.Sections;
  * compressed).</li>
  * <li>Attributes of copied elements are unchanged.</li>
  * </ul>
- * 
+ *
  * @author Don Mendelson
  *
  */
@@ -86,22 +89,34 @@ public class RepositoryCompressor {
     private String inputFile;
     private Predicate<MessageType> messagePredicate;
     private String outputFile;
+    private String logFile;
+    private boolean verbose;
 
     public RepositoryCompressor build() {
       return new RepositoryCompressor(this);
     }
 
-    Builder withInputFile(String inputFile) {
+    public Builder eventLog(String logFile) {
+      this.logFile = logFile;
+      return this;
+    }
+
+    public Builder verbose(boolean verbose) {
+      this.verbose = verbose;
+      return this;
+    }
+
+    Builder inputFile(String inputFile) {
       this.inputFile = inputFile;
       return this;
     }
 
-    Builder withMessagePredicate(Predicate<MessageType> messagePredicate) {
+    Builder messagePredicate(Predicate<MessageType> messagePredicate) {
       this.messagePredicate = messagePredicate;
       return this;
     }
 
-    Builder withOutputFile(String outputFile) {
+    Builder outputFile(String outputFile) {
       this.outputFile = outputFile;
       return this;
     }
@@ -159,7 +174,7 @@ public class RepositoryCompressor {
 
     @Override
     public boolean test(String category, String section) {
-      for (CategoryType categoryType : categories) {
+      for (final CategoryType categoryType : categories) {
         if (categoryType.getName().equals(category) && categoryType.getSection().equals(section)) {
           return true;
         }
@@ -198,7 +213,7 @@ public class RepositoryCompressor {
     }
   }
 
-  private static final Logger parentLogger = LogManager.getLogger();
+  private static Logger parentLogger;
 
 
   static final IsCategoryInSection isCategoryInSection = new IsCategoryInSection();
@@ -209,28 +224,28 @@ public class RepositoryCompressor {
 
   /**
    * usage: RepositoryCompressor
-   * 
+   *
    * <pre>
-   * -?,--help display usage 
-   * -c,--category &lt;arg&gt; select messages by category 
-   * -f,--flow &lt;arg&gt; select messages by flow 
+   * -?,--help display usage
+   * -c,--category &lt;arg&gt; select messages by category
+   * -f,--flow &lt;arg&gt; select messages by flow
    * -i,--input &lt;arg&gt; path of input file
-   * -n,--notcategory &lt;arg&gt; select messages except category 
+   * -n,--notcategory &lt;arg&gt; select messages except category
    * -o,--output &lt;arg&gt; path of output file
-   * -s,--section &lt;arg&gt; select messages by section 
+   * -s,--section &lt;arg&gt; select messages by section
    * -x,--notsection &lt;arg&gt; select messages except section
    * </pre>
-   * 
+   *
    * @param args command line arguments
    * @throws Exception if an IO error occurs or a file cannot be parsed
    */
   public static void main(String[] args) throws Exception {
-    RepositoryCompressor compressor = RepositoryCompressor.parseArgs(args).build();
+    final RepositoryCompressor compressor = RepositoryCompressor.parseArgs(args).build();
     compressor.compress();
   }
 
   public static Builder parseArgs(String[] args) throws ParseException {
-    Options options = new Options();
+    final Options options = new Options();
     options.addOption(Option.builder("i").desc("path of input file").longOpt("input")
         .numberOfArgs(1).required().build());
     options.addOption(Option.builder("o").desc("path of output file").longOpt("output")
@@ -247,17 +262,17 @@ public class RepositoryCompressor {
         .longOpt("notsection").numberOfArgs(1).build());
     options.addOption(Option.builder("?").desc("display usage").longOpt("help").build());
 
-    DefaultParser parser = new DefaultParser();
+    final DefaultParser parser = new DefaultParser();
     CommandLine cmd;
 
-    Builder builder = new Builder();
+    final Builder builder = new Builder();
 
 
     try {
       cmd = parser.parse(options, args);
 
       if (cmd.hasOption("?")) {
-        HelpFormatter formatter = new HelpFormatter();
+        final HelpFormatter formatter = new HelpFormatter();
         formatter.printHelp("RepositoryCompressor", options);
         System.exit(0);
       }
@@ -266,12 +281,12 @@ public class RepositoryCompressor {
       builder.outputFile = cmd.getOptionValue("o");
 
       if (cmd.hasOption("c")) {
-        String category = cmd.getOptionValue("c");
+        final String category = cmd.getOptionValue("c");
         builder.messagePredicate = new HasCategory(category);
       }
 
       if (cmd.hasOption("notcategory")) {
-        String category = cmd.getOptionValue("notcategory");
+        final String category = cmd.getOptionValue("notcategory");
         if (builder.messagePredicate == null) {
           builder.messagePredicate = new NotCategory(category);
         } else {
@@ -280,7 +295,7 @@ public class RepositoryCompressor {
       }
 
       if (cmd.hasOption("s")) {
-        String section = cmd.getOptionValue("s");
+        final String section = cmd.getOptionValue("s");
         if (builder.messagePredicate == null) {
           builder.messagePredicate = new HasSection(section, isCategoryInSection);
         } else {
@@ -290,7 +305,7 @@ public class RepositoryCompressor {
       }
 
       if (cmd.hasOption("notsection")) {
-        String section = cmd.getOptionValue("notsection");
+        final String section = cmd.getOptionValue("notsection");
         if (builder.messagePredicate == null) {
           builder.messagePredicate = new NotSection(section, isCategoryInSection);
         } else {
@@ -300,7 +315,7 @@ public class RepositoryCompressor {
       }
 
       if (cmd.hasOption("f")) {
-        String flow = cmd.getOptionValue("f");
+        final String flow = cmd.getOptionValue("f");
         if (builder.messagePredicate == null) {
           builder.messagePredicate = new HasFlow(flow);
         } else {
@@ -315,7 +330,7 @@ public class RepositoryCompressor {
             "Must select one or more selection criteria: category / section / flow");
       }
       return builder;
-    } catch (ParseException e) {
+    } catch (final ParseException e) {
       parentLogger.fatal("RepositoryCompressor invalid arguments", e);
       throw e;
     }
@@ -333,11 +348,17 @@ public class RepositoryCompressor {
   private final String inputFile;
   private final Predicate<MessageType> messagePredicate;
   private final String outputFile;
+  private final File logFile;
+
+
+  private final boolean verbose;
 
   protected RepositoryCompressor(Builder builder) {
     this.inputFile = builder.inputFile;
     this.outputFile = builder.outputFile;
     this.messagePredicate = builder.messagePredicate;
+    this.logFile = builder.logFile != null ? new File(builder.logFile) : null;
+    this.verbose = builder.verbose;
   }
 
   public void compress() throws Exception {
@@ -349,17 +370,25 @@ public class RepositoryCompressor {
   }
 
   private void compress(InputStream is, OutputStream os,
-      Predicate<? super MessageType> messagePredicate) throws JAXBException {
+      Predicate<? super MessageType> messagePredicate) throws JAXBException, IOException {
+
+    final Level level = verbose ? Level.DEBUG : Level.ERROR;
+    if (logFile != null) {
+      parentLogger = LogUtil.initializeFileLogger(logFile.getCanonicalPath(), level, getClass());
+    } else {
+      parentLogger = LogUtil.initializeDefaultLogger(level, getClass());
+    }
+
     final Repository inRepository = unmarshal(is);
     isCategoryInSection.setCategories(inRepository.getCategories().getCategory());
     final Repository outRepository = new Repository();
     inRepository.copyTo(null, outRepository, AttributeCopyStrategy.INSTANCE);
 
-    ElementOrRefinementContainer metadata =
+    final ElementOrRefinementContainer metadata =
         (ElementOrRefinementContainer) inRepository.getMetadata().clone();
-    List<JAXBElement<SimpleLiteral>> literals = metadata.getAny();
-    ObjectFactory objectFactory = new ObjectFactory();
-    SimpleLiteral contributor = new SimpleLiteral();
+    final List<JAXBElement<SimpleLiteral>> literals = metadata.getAny();
+    final ObjectFactory objectFactory = new ObjectFactory();
+    final SimpleLiteral contributor = new SimpleLiteral();
     contributor.getContent().add("RepositoryCompressor");
     literals.add(objectFactory.createContributor(contributor));
     outRepository.setMetadata(metadata);
@@ -372,60 +401,60 @@ public class RepositoryCompressor {
     }
     final Components components = inRepository.getComponents();
     if (components != null) {
-      Components inComponents = (Components) components.clone();
+      final Components inComponents = (Components) components.clone();
       componentList = inComponents.getComponent();
     }
-    Groups inGroups = (Groups) inRepository.getGroups().clone();
+    final Groups inGroups = (Groups) inRepository.getGroups().clone();
     groupList = inGroups.getGroup();
 
-    Messages inMessages = (Messages) inRepository.getMessages().clone();
-    List<MessageType> messageList = inMessages.getMessage();
-    List<MessageType> filteredMessages =
+    final Messages inMessages = (Messages) inRepository.getMessages().clone();
+    final List<MessageType> messageList = inMessages.getMessage();
+    final List<MessageType> filteredMessages =
         messageList.stream().filter(messagePredicate).collect(Collectors.toList());
     filteredMessages.forEach(m -> walk(m.getStructure().getComponentRefOrGroupRefOrFieldRef()));
 
-    List<BigInteger> distinctFieldIds =
+    final List<BigInteger> distinctFieldIds =
         fieldIdList.stream().distinct().collect(Collectors.toList());
-    Fields inFields = (Fields) inRepository.getFields().clone();
-    List<FieldType> fieldsWithFlow = inFields.getField().stream()
+    final Fields inFields = (Fields) inRepository.getFields().clone();
+    final List<FieldType> fieldsWithFlow = inFields.getField().stream()
         .filter(f -> distinctFieldIds.contains(f.getId())).collect(Collectors.toList());
-    Fields outFields = new Fields();
+    final Fields outFields = new Fields();
     outFields.getField().addAll(fieldsWithFlow);
     outRepository.setFields(outFields);
 
-    List<String> typeList =
+    final List<String> typeList =
         fieldsWithFlow.stream().map(FieldType::getType).distinct().collect(Collectors.toList());
-    CodeSets inCodeSets = (CodeSets) inRepository.getCodeSets().clone();
-    List<CodeSetType> codeSetsWithFlow = inCodeSets.getCodeSet().stream()
+    final CodeSets inCodeSets = (CodeSets) inRepository.getCodeSets().clone();
+    final List<CodeSetType> codeSetsWithFlow = inCodeSets.getCodeSet().stream()
         .filter(cs -> typeList.contains(cs.getName())).collect(Collectors.toList());
-    CodeSets outCodeSets = new CodeSets();
+    final CodeSets outCodeSets = new CodeSets();
     outCodeSets.getCodeSet().addAll(codeSetsWithFlow);
     outRepository.setCodeSets(outCodeSets);
 
-    List<BigInteger> distinctComponentsIds =
+    final List<BigInteger> distinctComponentsIds =
         componentIdList.stream().distinct().collect(Collectors.toList());
-    List<ComponentType> componentsWithFlow = componentList.stream()
+    final List<ComponentType> componentsWithFlow = componentList.stream()
         .filter(c -> distinctComponentsIds.contains(c.getId())).collect(Collectors.toList());
-    Components outComponents = new Components();
+    final Components outComponents = new Components();
     outComponents.getComponent().addAll(componentsWithFlow);
     outRepository.setComponents(outComponents);
 
-    List<BigInteger> distinctGroupIds =
+    final List<BigInteger> distinctGroupIds =
         groupIdList.stream().distinct().collect(Collectors.toList());
-    List<GroupType> groupWithFlow = groupList.stream()
+    final List<GroupType> groupWithFlow = groupList.stream()
         .filter(c -> distinctGroupIds.contains(c.getId())).collect(Collectors.toList());
-    Groups outGroups = new Groups();
+    final Groups outGroups = new Groups();
     outGroups.getGroup().addAll(groupWithFlow);
     outRepository.setGroups(outGroups);
 
-    Messages outMessages = new Messages();
+    final Messages outMessages = new Messages();
     outMessages.getMessage().addAll(filteredMessages);
     outRepository.setMessages(outMessages);
     marshal(outRepository, os);
   }
 
   private ComponentType getComponent(BigInteger id) {
-    for (ComponentType component : componentList) {
+    for (final ComponentType component : componentList) {
       if (component.getId().equals(id)) {
         return component;
       }
@@ -434,7 +463,7 @@ public class RepositoryCompressor {
   }
 
   private List<Object> getComponentMembers(BigInteger id) {
-    ComponentType component = getComponent(id);
+    final ComponentType component = getComponent(id);
     if (component != null) {
       return component.getComponentRefOrGroupRefOrFieldRef();
     } else {
@@ -443,7 +472,7 @@ public class RepositoryCompressor {
   }
 
   private GroupType getGroup(BigInteger id) {
-    for (GroupType group : groupList) {
+    for (final GroupType group : groupList) {
       if (group.getId().equals(id)) {
         return group;
       }
@@ -452,7 +481,7 @@ public class RepositoryCompressor {
   }
 
   private List<Object> getGroupMembers(BigInteger id) {
-    GroupType component = getGroup(id);
+    final GroupType component = getGroup(id);
     if (component != null) {
       return component.getComponentRefOrGroupRefOrFieldRef();
     } else {
@@ -474,10 +503,10 @@ public class RepositoryCompressor {
   }
 
   private void walk(List<Object> list) {
-    for (Object obj : list) {
+    for (final Object obj : list) {
       if (obj instanceof GroupRefType) {
-        GroupRefType groupRef = (GroupRefType) obj;
-        GroupType group = getGroup(groupRef.getId());
+        final GroupRefType groupRef = (GroupRefType) obj;
+        final GroupType group = getGroup(groupRef.getId());
         if (group == null) {
           parentLogger.error("Group missing for groupRef; ID={}", groupRef.getId().intValue());
           return;
@@ -487,12 +516,12 @@ public class RepositoryCompressor {
         // recursion on referenced component
         walk(getGroupMembers(groupRef.getId()));
       } else if (obj instanceof ComponentRefType) {
-        ComponentRefType componentRef = (ComponentRefType) obj;
+        final ComponentRefType componentRef = (ComponentRefType) obj;
         componentIdList.add(componentRef.getId());
         // recursion on referenced component
         walk(getComponentMembers(componentRef.getId()));
       } else if (obj instanceof FieldRefType) {
-        FieldRefType fieldRef = (FieldRefType) obj;
+        final FieldRefType fieldRef = (FieldRefType) obj;
         fieldIdList.add(fieldRef.getId());
       }
     }

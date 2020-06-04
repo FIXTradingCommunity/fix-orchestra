@@ -72,7 +72,7 @@
 		<commons-cli.version>1.4</commons-cli.version>
 		<cucumber.version>1.2.6</cucumber.version>
 		<junit.version>5.6.1</junit.version>
-		<log4j.version>2.13.2</log4j.version>
+		<log4j.version>2.13.3</log4j.version>
 		<quickfixj.version>2.1.1</quickfixj.version>
 		<saxon.version>10.1</saxon.version>
 		<slf4j.version>1.7.22</slf4j.version>
@@ -80,6 +80,16 @@
 	</properties>
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-api</artifactId>
+				<version>${log4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-core</artifactId>
+				<version>${log4j.version}</version>
+			</dependency>
 			<dependency>
 				<groupId>org.junit.jupiter</groupId>
 				<artifactId>junit-jupiter-engine</artifactId>

@@ -24,7 +24,7 @@ public final class LogUtil {
     final AppenderRef ref = AppenderRef.createAppenderRef("Console", level, null);
     final AppenderRef[] refs = new AppenderRef[] {ref};
     final LoggerConfig loggerConfig =
-        LoggerConfig.createLogger(false, level, clazz.getName(), null, refs, null, config, null);
+        LoggerConfig.createLogger(true, level, clazz.getName(), null, refs, null, config, null);
     config.addLogger(clazz.getName(), loggerConfig);
     ctx.updateLoggers();
     return LogManager.getLogger(clazz);
@@ -34,10 +34,10 @@ public final class LogUtil {
     final ConfigurationBuilder<BuiltConfiguration> builder =
         ConfigurationBuilderFactory.newConfigurationBuilder();
     final AppenderComponentBuilder appenderBuilder =
-        builder.newAppender("file", "File").addAttribute("fileName", fileName).addAttribute("append", false);
+        builder.newAppender("file", "File").addAttribute("fileName", fileName);
     builder.add(appenderBuilder);
     builder.add(
-        builder.newLogger(clazz.getCanonicalName(), level).addAttribute("additivity", false).add(builder.newAppenderRef("file")));
+        builder.newLogger(clazz.getCanonicalName(), level).add(builder.newAppenderRef("file")));
     builder.add(builder.newRootLogger(level).add(builder.newAppenderRef("file")));
     final LoggerContext ctx = Configurator.initialize(builder.build());
     return LogManager.getLogger(clazz);
