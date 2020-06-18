@@ -14,6 +14,9 @@
  */
 package io.fixprotocol.orchestra.dsl.antlr;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.antlr.v4.gui.TestRig;
 
 /**
@@ -34,20 +37,60 @@ import org.antlr.v4.gui.TestRig;
  */
 public class InteractiveTest implements Runnable {
 
+  private static String[] DEFAULT_ARGS = {"-gui", "-tree", "-tokens"};
+  private static final String DEFAULT_GRAMMAR = "io.fixprotocol.orchestra.dsl.antlr.Score";
+  private static final String DEFAULT_RULE = "anyExpression";
+
   /**
    * Runs an interactive test of the DSL
    *
-   * @param args parameters to {@code TestRig}. If empty, defaults are applied.
-   * @throws Exception if parameters are invalid
+   * @param args command line arguments
+   *        <ul>
+   *        <li>-f filename of file to parse - defaults to stdin</li>
+   *        <li>-g grammar name - defaults to {@code io.fixprotocol.orchestra.dsl.antlr.Score}</li>
+   *        <li>-r start rule name - defaults to {@code anyExpression}</li>
+   *        </ul>
+   * @throws Exception if arguments are invalid
    */
   public static void main(String[] args) throws Exception {
-    String[] testArgs = args;
-    if (args.length < 2 || !args[0].contains("Score")) {
-      testArgs = new String[] {"io.fixprotocol.orchestra.dsl.antlr.Score", "anyExpression", "-gui",
-          "-tree", "-tokens"};
+    String fileName = null;
+    String grammarName = DEFAULT_GRAMMAR;
+    String ruleName = DEFAULT_RULE;
+    for (int i = 0; i < args.length; i++) {
+      switch (args[i]) {
+        case "-f":
+          fileName = args[++i];
+          break;
+        case "-g":
+          grammarName = args[++i];
+          break;
+        case "-r":
+          ruleName = args[++i];
+          break;
+        default:
+          System.err.println("Invalid argument " + args[i]);
+          usage();
+      }
     }
+
+    final List<String> defaultArgsList = Arrays.asList(DEFAULT_ARGS);
+    final List<String> testArgsList = new ArrayList<>();
+    testArgsList.add(grammarName);
+    testArgsList.add(ruleName);
+    testArgsList.addAll(defaultArgsList);
+    if (fileName != null) {
+      testArgsList.add(fileName);
+    }
+    final String[] testArgs = new String[testArgsList.size()];
+    testArgsList.toArray(testArgs);
     final InteractiveTest test = new InteractiveTest(testArgs);
     test.run();
+  }
+
+  private static void usage() {
+    System.err.println(
+        "java io.fixprotocol.orchestra.dsl.antlr.InteractiveTest [-i <fileName>] [-g <grammarName] [-r ruleName]");
+    System.exit(1);
   }
 
   private final TestRig testRig;
