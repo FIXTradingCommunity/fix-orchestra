@@ -50,6 +50,8 @@
 			<xs:any processContents="skip" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
 		<xs:attribute name="langId" type="xs:language"/>
+		<xs:attribute name="purpose" type="fixi:purpose_t"/>
+		<xs:attribute name="contentType" type="xs:string" default="text/plain"/>
 	</xs:complexType>
 	<xs:complexType name="encodingType">
 		<xs:complexContent>
@@ -58,10 +60,10 @@
 	</xs:complexType>
 	<xs:complexType name="identifierType">
 		<xs:sequence>
-			<xs:element name="value" type="xs:anyType"/>
-			<xs:element name="annotation" type="fixi:annotation" minOccurs="0"/>
+			<xs:any processContents="skip" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string"/>
+		<xs:attribute name="value" type="xs:string"/>
 	</xs:complexType>
 	<xs:element name="interfaces">
 		<xs:annotation>
@@ -194,8 +196,36 @@
 				<xs:documentation>Reliability can be implemented at transport, session, or application layers</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
+		<xs:attribute name="orchestration" type="xs:anyURI">
+			<xs:annotation>
+				<xs:documentation>URI of Orchestra rules of engagement</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 		<xs:anyAttribute processContents="lax"/>
 	</xs:complexType>
+	<xs:simpleType name="purpose_enum">
+		<xs:annotation>
+			<xs:documentation>Recommended annotation purposes</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="SYNOPSIS"/>
+			<xs:enumeration value="ELABORATION"/>
+			<xs:enumeration value="EXAMPLE"/>
+			<xs:enumeration value="DISPLAY">
+				<xs:annotation>
+					<xs:documentation>For UI when different from canonical name; may
+						have multi-language displays
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="purpose_t">
+		<xs:annotation>
+			<xs:documentation>Extensible annotation purposes</xs:documentation>
+		</xs:annotation>
+		<xs:union memberTypes="fixi:purpose_enum xs:string"/>
+	</xs:simpleType>
 	<xs:simpleType name="reliability_t">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="bestEffort"/>

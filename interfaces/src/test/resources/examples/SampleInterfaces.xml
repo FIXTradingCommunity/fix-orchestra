@@ -24,12 +24,8 @@ xsi:schemaLocation="http://fixprotocol.io/2020/orchestra/interfaces ../../../mai
 				<fixi:transport address="10.96.1.2:567" use="primary"/>
 				<fixi:transport address="10.96.2.2:567" use="secondary"/>
 				<!-- there can be any number of identifiers -->
-				<fixi:identifier name="SenderCompID">
-					<fixi:value>XYZ</fixi:value>
-				</fixi:identifier>
-				<fixi:identifier name="TargetCompID">
-					<fixi:value>ABC</fixi:value>
-				</fixi:identifier>
+				<fixi:identifier name="SenderCompID" value="XYZ"/>
+				<fixi:identifier name="TargetCompID" value="ABC"/>
 				<!-- tells when session becomes effective so it can be configured in advance -->
 				<fixi:activationTime>2019-08-07T09:30:00Z</fixi:activationTime>
 			</fixi:session>
