@@ -58,12 +58,8 @@
 			<xs:extension base="fixi:protocolType"/>
 		</xs:complexContent>
 	</xs:complexType>
-	<xs:complexType name="identifierType">
-		<xs:sequence>
-			<xs:any processContents="skip" minOccurs="0" maxOccurs="unbounded"/>
-		</xs:sequence>
+	<xs:complexType name="identifierType" mixed="true">
 		<xs:attribute name="name" type="xs:string"/>
-		<xs:attribute name="value" type="xs:string"/>
 	</xs:complexType>
 	<xs:element name="interfaces">
 		<xs:annotation>
@@ -90,7 +86,7 @@
 		<xs:complexContent>
 			<xs:extension base="fixi:baseInterfaceType">
 				<xs:sequence>
-					<xs:element name="sessions">
+					<xs:element name="sessions" minOccurs="0">
 						<xs:complexType>
 							<xs:sequence>
 								<xs:element name="session" type="fixi:sessionType" maxOccurs="unbounded"/>
