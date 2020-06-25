@@ -153,9 +153,8 @@ public class QuickFixSessionConfigurer {
         final List<IdentifierType> identifierList = sessionType.getIdentifier();
         for (final IdentifierType identifierType : identifierList) {
           final String name = identifierType.getName();
-          final Node value = (Node) identifierType.getValue();
-          final String text = value.getFirstChild().getTextContent();
-          identifierMap.put(name, text);
+          final String value = identifierType.getContent();
+          identifierMap.put(name, value);
         }
 
         final Dictionary dictionary = new Dictionary();
