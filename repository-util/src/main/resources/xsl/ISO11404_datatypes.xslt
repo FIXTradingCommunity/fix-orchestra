@@ -15,7 +15,6 @@ xmlns:fn="http://www.w3.org/2005/xpath-functions"
 			<xsl:copy-of select="@*"/>
 			<xsl:copy-of select="fixr:metadata"/>
 			<xsl:copy-of select="fixr:codeSets"/>
-			<xsl:copy-of select="fixr:abbreviations"/>
 			<xsl:apply-templates select="fixr:datatypes"/>
 			<xsl:copy-of select="fixr:categories"/>
 			<xsl:copy-of select="fixr:groups"/>

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2020 rel. 2 sp1 (x64) (http://www.altova.com) by Don Mendelson (FIX Protocol Ltd. (FPL)) -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:fixr="http://fixprotocol.io/2020/orchestra/repository" targetNamespace="http://fixprotocol.io/2020/orchestra/repository" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0">
 	<xs:annotation>
 		<xs:documentation>
@@ -83,6 +84,9 @@
 				an external reference or standard
 			</xs:documentation>
 		</xs:annotation>
+		<xs:sequence minOccurs="0" maxOccurs="unbounded">
+			<xs:any processContents="lax"/>
+		</xs:sequence>
 		<xs:attribute name="specUrl" type="xs:anyURI">
 			<xs:annotation>
 				<xs:documentation>Reference documentation</xs:documentation>
@@ -91,6 +95,7 @@
 		<xs:attribute name="langId" type="fixr:language_t"/>
 		<xs:attribute name="purpose" type="fixr:purpose_t"/>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
+		<xs:anyAttribute namespace="##other" processContents="lax"/>
 	</xs:complexType>
 	<xs:complexType name="blockAssignmentType">
 		<xs:choice maxOccurs="unbounded">
@@ -248,24 +253,6 @@
 	</xs:complexType>
 	<xs:attributeGroup name="containerAttribGrp">
 		<xs:attribute name="latestEP" type="fixr:EP_t"/>
-	</xs:attributeGroup>
-	<xs:attributeGroup name="datatypeGrp">
-		<xs:attribute name="standard" type="fixr:datatypeStandard_t" use="required"/>
-		<xs:attribute name="builtin" type="xs:boolean"/>
-		<xs:attribute name="base" type="xs:string"/>
-		<xs:attribute name="pattern" type="xs:string"/>
-		<xs:attribute name="element" type="xs:string"/>
-		<xs:attribute name="parameter" type="xs:string"/>
-		<xs:attribute name="minInclusive" type="xs:string">
-			<xs:annotation>
-				<xs:documentation>Inclusive lower bound</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
-		<xs:attribute name="maxInclusive" type="xs:string">
-			<xs:annotation>
-				<xs:documentation>Inclusive upper bound</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
 	</xs:attributeGroup>
 	<xs:simpleType name="datatypeStandard_enum">
 		<xs:restriction base="xs:string">
@@ -623,6 +610,37 @@
 	<xs:simpleType name="language_t">
 		<xs:restriction base="xs:language"/>
 	</xs:simpleType>
+	<xs:complexType name="mappedDatatype">
+		<xs:sequence>
+			<xs:element name="extension" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>A datatype may be mapped to an XML snippet in the native schema belonging to its encoding standard.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:any processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="standard" type="fixr:datatypeStandard_t" use="required"/>
+		<xs:attribute name="builtin" type="xs:boolean"/>
+		<xs:attribute name="base" type="xs:string"/>
+		<xs:attribute name="pattern" type="xs:string"/>
+		<xs:attribute name="element" type="xs:string"/>
+		<xs:attribute name="parameter" type="xs:string"/>
+		<xs:attribute name="minInclusive" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>Inclusive lower bound</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="maxInclusive" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>Inclusive upper bound</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
 	<xs:simpleType name="memberType">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="oneOf">

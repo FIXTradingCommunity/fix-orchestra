@@ -108,7 +108,7 @@
 	<xs:element name="datatype">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="fixr:mappedDatatype" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="mappedDatatype" type="fixr:mappedDatatype" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute name="name" type="fixr:Name_t" use="required"/>
@@ -162,14 +162,6 @@
 			<xs:field xpath="@id"/>
 			<xs:field xpath="@scenario"/>
 		</xs:key>
-	</xs:element>
-	<xs:element name="mappedDatatype">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:any processContents="skip" minOccurs="0" maxOccurs="unbounded"/>
-			</xs:sequence>
-			<xs:attributeGroup ref="fixr:datatypeGrp"/>
-		</xs:complexType>
 	</xs:element>
 	<xs:element name="messages">
 		<xs:complexType>

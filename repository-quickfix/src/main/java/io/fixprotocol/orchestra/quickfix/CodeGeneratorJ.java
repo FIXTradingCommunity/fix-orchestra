@@ -171,8 +171,8 @@ public class CodeGeneratorJ {
       writeMsgType(writer, "");
 
       final List<Object> members = componentType.getComponentRefOrGroupRefOrFieldRef();
-      final List<Integer> componentFields = new ArrayList<>(members.stream().filter(member -> member instanceof FieldRefType)
-              .map(member -> ((FieldRefType) member).getId().intValue()).collect(Collectors.toList()));
+      final List<Integer> componentFields = members.stream().filter(member -> member instanceof FieldRefType)
+              .map(member -> ((FieldRefType) member).getId().intValue()).collect(Collectors.toList());
       writeComponentFieldIds(writer, componentFields);
 
       final List<Integer> componentGroupFields = new ArrayList<>();
@@ -666,12 +666,8 @@ public class CodeGeneratorJ {
       if (member instanceof GroupRefType) {
         final int id = ((GroupRefType) member).getId().intValue();
         final GroupType nestedGroupType = groups.get(id);
-        if (groupType != null) {
-          writeGroupCreateCase(writer,
-              String.format("%s.%s", parentQualifiedName, numInGroupFieldName), nestedGroupType);
-        } else {
-          System.err.format("Group missing from repository; id=%d%n", id);
-        }
+        writeGroupCreateCase(writer,
+            String.format("%s.%s", parentQualifiedName, numInGroupFieldName), nestedGroupType);
 
       }
     }

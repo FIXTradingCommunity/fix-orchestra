@@ -261,8 +261,8 @@ public class DataDictionaryGenerator {
   private Writer writeElement(Writer writer, String name, int level, boolean isEmpty,
       KeyValue<?>... attributes) throws IOException {
     writer.write(String.format("%s<%s", indent(level), name));
-    for (int i = 0; i < attributes.length; i++) {
-      writer.write(String.format(" %s=\"%s\"", attributes[i].key, attributes[i].value.toString()));
+    for (KeyValue<?> attribute : attributes) {
+      writer.write(String.format(" %s=\"%s\"", attribute.key, attribute.value.toString()));
     }
     if (isEmpty) {
       writer.write("/>\n");

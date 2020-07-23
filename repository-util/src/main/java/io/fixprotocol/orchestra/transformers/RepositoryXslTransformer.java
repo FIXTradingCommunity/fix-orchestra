@@ -42,8 +42,8 @@ public class RepositoryXslTransformer {
     final TransformerFactory transFact = new TransformerFactoryImpl();
     final Transformer trans = transFact.newTransformer(xsltSource);
 
-    for (int i = 0; i < parameters.length; i++) {
-      final String[] parts = parameters[i].split("=");
+    for (String parameter : parameters) {
+      final String[] parts = parameter.split("=");
       trans.setParameter(parts[0], parts[1]);
     }
 

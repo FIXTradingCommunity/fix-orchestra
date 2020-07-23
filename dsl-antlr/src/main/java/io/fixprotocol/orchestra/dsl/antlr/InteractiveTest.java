@@ -37,7 +37,7 @@ import org.antlr.v4.gui.TestRig;
  */
 public class InteractiveTest implements Runnable {
 
-  private static String[] DEFAULT_ARGS = {"-gui", "-tree", "-tokens"};
+  private static final String[] DEFAULT_ARGS = {"-gui", "-tree", "-tokens"};
   private static final String DEFAULT_GRAMMAR = "io.fixprotocol.orchestra.dsl.antlr.Score";
   private static final String DEFAULT_RULE = "anyExpression";
 

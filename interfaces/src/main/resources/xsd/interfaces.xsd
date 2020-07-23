@@ -15,18 +15,23 @@
 			<xs:element name="appinfo" type="fixi:appinfo"/>
 		</xs:choice>
 	</xs:complexType>
-	<xs:complexType name="appinfo" mixed="true">
+<xs:complexType name="appinfo" mixed="true">
 		<xs:annotation>
 			<xs:documentation>Usage specific annotation, optionally with link to
 				an external reference or standard
 			</xs:documentation>
 		</xs:annotation>
+		<xs:sequence minOccurs="0" maxOccurs="unbounded">
+			<xs:any processContents="lax"/>
+		</xs:sequence>
 		<xs:attribute name="specUrl" type="xs:anyURI">
 			<xs:annotation>
 				<xs:documentation>Reference documentation</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attribute name="langId" type="xs:language"/>
+		<xs:attribute name="purpose" type="fixi:purpose_t"/>
+		<xs:anyAttribute namespace="##other" processContents="lax"/>
 	</xs:complexType>
 	<xs:complexType name="baseInterfaceType" abstract="true">
 		<xs:sequence>
