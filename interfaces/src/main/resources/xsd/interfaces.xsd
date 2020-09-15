@@ -15,7 +15,7 @@
 			<xs:element name="appinfo" type="fixi:appinfo"/>
 		</xs:choice>
 	</xs:complexType>
-<xs:complexType name="appinfo" mixed="true">
+	<xs:complexType name="appinfo" mixed="true">
 		<xs:annotation>
 			<xs:documentation>Usage specific annotation, optionally with link to
 				an external reference or standard
@@ -79,6 +79,13 @@
 				<xs:element name="interface" type="fixi:interfaceType" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 		</xs:complexType>
+		<xs:key name="interfaceKey">
+			<xs:annotation>
+				<xs:documentation>Enforces unique interfaces names</xs:documentation>
+			</xs:annotation>
+			<xs:selector xpath="fixi:interface"/>
+			<xs:field xpath="@name"/>
+		</xs:key>
 		<xs:key name="sessionKey">
 			<xs:annotation>
 				<xs:documentation>Enforces unique session names</xs:documentation>

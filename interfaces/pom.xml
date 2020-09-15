@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>io.fixprotocol.orchestra</groupId>
 		<artifactId>parent</artifactId>
-		<version>1.6.4</version>
+		<version>1.6.5-SNAPSHOT</version>
 	</parent>
 	<artifactId>interfaces</artifactId>
 	<name>${project.groupId}:${project.artifactId}</name>
@@ -81,6 +81,13 @@
 					<schemaIncludes>
 						<include>*.xsd</include>
 					</schemaIncludes>
+					<schemaExcludes>
+						<schemaExclude>xml.xsd</schemaExclude>
+					</schemaExcludes>
+					<bindingDirectory>src/main/resources/bindings</bindingDirectory>
+					<bindingIncludes>
+						<include>bindings.xml</include>
+					</bindingIncludes>
 					<args>
 						<arg>-Xcopyable</arg>
 					</args>
