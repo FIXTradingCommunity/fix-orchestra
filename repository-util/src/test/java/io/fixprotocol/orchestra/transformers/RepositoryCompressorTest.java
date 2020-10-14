@@ -2,6 +2,7 @@ package io.fixprotocol.orchestra.transformers;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -19,8 +20,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
-import io.fixprotocol.orchestra.repository.RepositoryValidator;
-
+import io.fixprotocol.orchestra.repository.RepositoryValidatorImpl;
 
 public class RepositoryCompressorTest {
 
@@ -30,25 +30,15 @@ public class RepositoryCompressorTest {
   }
 
   @Test
-  public void validate()
-      throws ParserConfigurationException, SAXException, IOException, URISyntaxException {
-    RepositoryValidator validator = RepositoryValidator.builder()
-        .inputStream(
-            Thread.currentThread().getContextClassLoader().getResourceAsStream("mit_2016.xml"))
-        .verbose(true).build();
-    validator.validate();
-  }
-
-  @Test
   public void tradeCaptureCategory() throws Exception {
     final String outfile = "target/test/tradecapture.xml";
     // Include every category in the "Trade" section except "CrossOrders"
     RepositoryCompressor.main(new String[] {"-i", "src/test/resources/OrchestraFIXLatest.xml", "-o",
         outfile, "--category", "TradeCapture"});
     Assertions.assertTrue(new File(outfile).exists());
-    RepositoryValidator validator = RepositoryValidator.builder()
-        .inputStream(new FileInputStream(new File(outfile))).verbose(true).build();
-    validator.validate();
+    RepositoryValidatorImpl validator = new RepositoryValidatorImpl();
+    validator.validate(new FileInputStream(new File(outfile)),
+        new FileOutputStream("target/test/tradecapture.json"), false);
   }
 
   @Test
@@ -58,9 +48,9 @@ public class RepositoryCompressorTest {
     RepositoryCompressor.main(new String[] {"-i", "src/test/resources/OrchestraFIXLatest.xml", "-o",
         outfile, "--section", "Trade", "--notcategory", "CrossOrders"});
     Assertions.assertTrue(new File(outfile).exists());
-    RepositoryValidator validator = RepositoryValidator.builder()
-        .inputStream(new FileInputStream(new File(outfile))).verbose(true).build();
-    validator.validate();
+    RepositoryValidatorImpl validator = new RepositoryValidatorImpl();
+    validator.validate(new FileInputStream(new File(outfile)),
+        new FileOutputStream("target/test/tradeX.json"), false);
   }
 
   @Test
@@ -70,9 +60,9 @@ public class RepositoryCompressorTest {
     RepositoryCompressor.main(new String[] {"-i", "src/test/resources/OrchestraFIXLatest.xml", "-o",
         outfile, "--section", "PreTrade"});
     Assertions.assertTrue(new File(outfile).exists());
-    RepositoryValidator validator = RepositoryValidator.builder()
-        .inputStream(new FileInputStream(new File(outfile))).verbose(true).build();
-    validator.validate();
+    RepositoryValidatorImpl validator = new RepositoryValidatorImpl();
+    validator.validate(new FileInputStream(new File(outfile)),
+        new FileOutputStream("target/test/pretrade.json"), false);
   }
 
   @Test
@@ -82,9 +72,9 @@ public class RepositoryCompressorTest {
     RepositoryCompressor.main(new String[] {"-i", "src/test/resources/OrchestraFIXLatest.xml", "-o",
         outfile, "--section", "PostTrade"});
     Assertions.assertTrue(new File(outfile).exists());
-    RepositoryValidator validator = RepositoryValidator.builder()
-        .inputStream(new FileInputStream(new File(outfile))).verbose(true).build();
-    validator.validate();
+    RepositoryValidatorImpl validator = new RepositoryValidatorImpl();
+    validator.validate(new FileInputStream(new File(outfile)),
+        new FileOutputStream("target/test/posttrade.json"), false);
   }
 
   @Test
@@ -94,8 +84,9 @@ public class RepositoryCompressorTest {
     RepositoryCompressor.main(new String[] {"-i", "src/test/resources/OrchestraFIXLatest.xml", "-o",
         outfile, "--section", "Session"});
     Assertions.assertTrue(new File(outfile).exists());
-    RepositoryValidator validator = RepositoryValidator.builder()
-        .inputStream(new FileInputStream(new File(outfile))).verbose(true).build();
-    validator.validate();
+    RepositoryValidatorImpl validator = new RepositoryValidatorImpl();
+    validator.validate(new FileInputStream(new File(outfile)),
+        new FileOutputStream("target/test/fixt.json"), false);
+
   }
 }

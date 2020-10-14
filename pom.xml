@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.fixprotocol.orchestra</groupId>
 	<artifactId>parent</artifactId>
-	<version>1.6.5</version>
+	<version>1.6.6-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>${project.groupId}:${project.artifactId}</name>
 	<description>Parent project for FIX Orchestra. Build Java 8 by default, multi-release jar on demand.</description>
@@ -64,6 +64,8 @@
 		<module>testgen</module>
 		<module>state-machine</module>
 		<module>repository-util</module>
+		<module>orchestra-common</module>
+		<module>interfaces-util</module>
 	</modules>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -77,6 +79,7 @@
 		<saxon.version>10.1</saxon.version>
 		<slf4j.version>1.7.22</slf4j.version>
 		<stringtemplate.version>4.3.1</stringtemplate.version>
+		<jackson.version>2.11.2</jackson.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>

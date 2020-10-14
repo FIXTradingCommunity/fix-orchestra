@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<fixr:repository xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:fixr="http://fixprotocol.io/2020/orchestra/repository" name="Rules of Engagement" version="1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<fixr:metadata/>
+	<fixr:datatypes>
+		<fixr:datatype name="UTCTimestamp"/>
+		<fixr:datatype name="int"/>
+		<fixr:datatype name="String"/>
+	</fixr:datatypes>
+	<fixr:codeSets>
+		<fixr:codeSet type="char" id="10002" name="OrdTypeCodeset">
+			<fixr:code value="1" name="Market" id="2"/>
+			<fixr:code value="2" name="Limit" id="2"/>
+		</fixr:codeSet>
+		<fixr:codeSet type="char" id="10005" name="PartyRoleCodeset">
+			<fixr:code value="10" name="ExecutingFirm" id="2"/>
+			<fixr:code value="2" name="BrokerOfCredit" id="2"/>
+		</fixr:codeSet>
+		<fixr:codeSet id="10006" name="SideCodeSet" type="A">
+			<fixr:code value="1" id="10007" name="Buy"/>
+			<fixr:code value="2" id="10008" name="Sell"/>
+			<fixr:code value="8" id="10009" name="Cross">
+				<fixr:annotation>
+					<fixr:documentation contentType="text/markdown">Cross (orders where counterparty is an exchange, valid for all messages *except* IOIs)</fixr:documentation>
+				</fixr:annotation>
+			</fixr:code>
+			<fixr:code value="C" id="10010" name="Opposite">
+				<fixr:annotation>
+					<fixr:documentation contentType="text/markdown">"Opposite" (for use with multileg instruments)</fixr:documentation>
+				</fixr:annotation>
+			</fixr:code>
+			<fixr:annotation>
+				<fixr:documentation contentType="text/markdown">Side of an order</fixr:documentation>
+			</fixr:annotation>
+		</fixr:codeSet>
+	</fixr:codeSets>
+	<fixr:fields>
+		<fixr:field type="SideCodeSet" id="54" name="Side">
+			<fixr:annotation>
+				<fixr:appinfo purpose="testcase">1</fixr:appinfo>
+			</fixr:annotation>
+		</fixr:field>
+		<fixr:field type="OrdTypeCodeset" id="40" name="OrdType">
+			<fixr:annotation>
+				<fixr:appinfo purpose="testcase">2</fixr:appinfo>
+			</fixr:annotation>
+		</fixr:field>
+		<fixr:field type="UTCTimestamp" id="6234" name="MyUserDefined1">
+			<fixr:annotation>
+				<fixr:appinfo purpose="testcase">3</fixr:appinfo>
+			</fixr:annotation>
+		</fixr:field>
+		<fixr:field id="1437" name="ContractMultiplierUnit" type="int">
+			<fixr:annotation>
+				<fixr:documentation purpose="SYNOPSIS" contentType="text/markdown">Indicates the type of multiplier being applied to the contract.</fixr:documentation>
+				<fixr:documentation purpose="ELABORATION" contentType="text/markdown">Can be optionally used to further define unit</fixr:documentation>
+			</fixr:annotation>
+		</fixr:field>
+		<fixr:field id="11" name="ClOrdID" type="String"/>
+		<fixr:field id="11" name="duplicate" type="String"/>
+		<fixr:field id="1" name="Account" type="String"/>
+		<fixr:field id="44" name="Price" type="String"/>
+		<fixr:field id="99" name="StopPx" type="String"/>
+		<fixr:field id="999" name="notype"/>
+		<fixr:field id="38" name="OrderQty" type="String"/>
+		<fixr:field id="6235" name="MyUserDefined2" type="String"/>
+		<fixr:field id="48" name="SecurityID" type="String"/>
+		<fixr:field id="8" name="SecurityIDSource" type="String"/>
+		<fixr:field id="453" name="NoParties" type="String"/>
+		<fixr:field id="448" name="PartyID" type="String"/>
+		<fixr:field id="447" name="PartyIDSource" type="String"/>
+		<fixr:field id="452" name="PartyRole" type="String"/>
+	</fixr:fields>
+	<fixr:components>
+		<fixr:component id="10003" name="Instrument">
+			<fixr:fieldRef presence="required" id="48"/>
+			<fixr:fieldRef presence="constant" value="8" id="8"/>
+			<fixr:annotation>
+				<fixr:documentation contentType="text/markdown">The `Instrument` component block contains all the fields commonly used to describe a security or instrument.</fixr:documentation>
+			</fixr:annotation>
+		</fixr:component>
+	</fixr:components>
+	<fixr:groups>
+		<fixr:group id="10004" name="Parties">
+			<fixr:numInGroup id="453"/>
+			<fixr:fieldRef presence="required" id="2"/>
+			<fixr:fieldRef id="2"/>
+			<fixr:fieldRef presence="required" id="1"/>
+			<fixr:annotation>
+				<fixr:documentation contentType="text/markdown">The Parties component block is used to identify and convey information on the entities both central and peripheral to the financial transaction represented by the FIX message containing the `Parties` Block. </fixr:documentation>
+			</fixr:annotation>
+		</fixr:group>
+	</fixr:groups>
+	<fixr:messages>
+		<fixr:message msgType="D" id="10001" name="NewOrderSingle">
+			<fixr:structure>
+				<fixr:fieldRef presence="required" id="11"/>
+				<fixr:fieldRef id="2"/>
+				<fixr:componentRef presence="optional" id="10003"/>
+				<fixr:fieldRef presence="required" id="54"/>
+				<fixr:fieldRef id="2"/>
+				<fixr:fieldRef id="2">
+					<fixr:rule presence="required">
+						<fixr:when>OrdType=3</fixr:when>
+					</fixr:rule>
+				</fixr:fieldRef>
+				<fixr:fieldRef presence="required" id="2"/>
+				<fixr:fieldRef presence="required" id="40"/>
+				<fixr:fieldRef id="6234"/>
+				<fixr:fieldRef id="6235"/>
+				<fixr:groupRef presence="optional" id="10004"/>
+			</fixr:structure>
+			<fixr:annotation>
+				<fixr:documentation purpose="SYNOPSIS" contentType="text/markdown">The new order message type is used by institutions wishing to electronically submit securities and forex orders to a broker for execution.</fixr:documentation>
+				<fixr:documentation purpose="ELABORATION" contentType="text/markdown">The NewOrderSingle(35=D) message type may also be used by institutions or retail intermediaries wishing to electronically submit Collective Investment Vehicle (CIV) orders to a broker or fund manager for execution.</fixr:documentation>
+			</fixr:annotation>
+		</fixr:message>
+	</fixr:messages>
+</fixr:repository>

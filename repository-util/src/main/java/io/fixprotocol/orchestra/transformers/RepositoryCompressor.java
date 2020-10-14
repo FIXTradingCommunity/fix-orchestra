@@ -38,6 +38,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.purl.dc.elements._1.ObjectFactory;
 import org.purl.dc.elements._1.SimpleLiteral;
@@ -61,7 +62,6 @@ import io.fixprotocol._2020.orchestra.repository.MessageType;
 import io.fixprotocol._2020.orchestra.repository.Messages;
 import io.fixprotocol._2020.orchestra.repository.Repository;
 import io.fixprotocol._2020.orchestra.repository.Sections;
-import io.fixprotocol.orchestra.util.LogUtil;
 
 /**
  * Selectively compresses an Orchestra file <br>
@@ -213,9 +213,7 @@ public class RepositoryCompressor {
     }
   }
 
-  private static Logger parentLogger;
-
-
+  private static final Logger logger = LogManager.getLogger(RepositoryCompressor.class);
   static final IsCategoryInSection isCategoryInSection = new IsCategoryInSection();
 
   public static Builder builder() {
@@ -324,14 +322,14 @@ public class RepositoryCompressor {
       }
 
       if (builder.messagePredicate == null) {
-        parentLogger.fatal(
+        logger.fatal(
             "RepositoryCompressor invalid arguments; Must select one or more selection criteria: category / section / flow");
         throw new ParseException(
             "Must select one or more selection criteria: category / section / flow");
       }
       return builder;
     } catch (final ParseException e) {
-      parentLogger.fatal("RepositoryCompressor invalid arguments", e);
+      logger.fatal("RepositoryCompressor invalid arguments", e);
       throw e;
     }
   }
@@ -373,12 +371,6 @@ public class RepositoryCompressor {
       Predicate<? super MessageType> messagePredicate) throws JAXBException, IOException {
 
     final Level level = verbose ? Level.DEBUG : Level.ERROR;
-    if (logFile != null) {
-      parentLogger = LogUtil.initializeFileLogger(logFile.getCanonicalPath(), level, getClass());
-    } else {
-      parentLogger = LogUtil.initializeDefaultLogger(level, getClass());
-    }
-
     final Repository inRepository = unmarshal(is);
     isCategoryInSection.setCategories(inRepository.getCategories().getCategory());
     final Repository outRepository = new Repository();
@@ -508,7 +500,7 @@ public class RepositoryCompressor {
         final GroupRefType groupRef = (GroupRefType) obj;
         final GroupType group = getGroup(groupRef.getId());
         if (group == null) {
-          parentLogger.error("Group missing for groupRef; ID={}", groupRef.getId().intValue());
+          logger.error("Group missing for groupRef; ID={}", groupRef.getId().intValue());
           return;
         }
         fieldIdList.add(group.getNumInGroup().getId());

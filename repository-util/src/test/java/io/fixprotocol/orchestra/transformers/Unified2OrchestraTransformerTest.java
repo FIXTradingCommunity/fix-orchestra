@@ -14,18 +14,17 @@
  */
 package io.fixprotocol.orchestra.transformers;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 import io.fixprotocol.orchestra.repository.RepositoryValidator;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.URISyntaxException;
 
 
 public class Unified2OrchestraTransformerTest {
@@ -64,7 +63,7 @@ public class Unified2OrchestraTransformerTest {
     File phrasesFile = new File(String.format("%s/FIX.5.0SP2_en_phrases.xml", sourceDir));
     new Unified2OrchestraTransformer().transform(inputXml, phrasesFile, outputXml);
     Assertions.assertTrue(outputXml.exists());
-    RepositoryValidator validator = RepositoryValidator.builder().inputStream(new FileInputStream(outputXml)).build();
+    RepositoryValidator validator = RepositoryValidator.builder().inputFile("target/test/FixRepository50SP2.xml").build();
     validator.validate();
   }
   
