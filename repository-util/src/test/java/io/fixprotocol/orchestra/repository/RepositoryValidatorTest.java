@@ -6,15 +6,17 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+import io.fixprotocol.orchestra.event.EventListener;
 
 public class RepositoryValidatorTest {
-  
-  RepositoryValidatorImpl validator;
-  
+
+  private RepositoryValidatorImpl validator;
+  private EventListener eventLogger;
+
   @BeforeAll
   public static void setupOnce() {
     new File(("target/test")).mkdirs();
@@ -22,21 +24,27 @@ public class RepositoryValidatorTest {
 
   @BeforeEach
   public void setUp() throws Exception {
-    validator = new RepositoryValidatorImpl();
+    final OutputStream jsonOutputStream =
+        new FileOutputStream("target/test/repositoryvalidator.json");
+    eventLogger = RepositoryValidatorImpl.createLogger(jsonOutputStream);
+    validator = new RepositoryValidatorImpl(eventLogger);
+  }
+
+  @AfterEach
+  public void cleanUp() throws Exception {
+    eventLogger.close();
   }
 
   @Test
   public void testValidateWithErrors() throws FileNotFoundException {
     InputStream inputStream = new FileInputStream("src/test/resources/repositorywitherrors.xml");
-    OutputStream jsonOutputStream = new FileOutputStream("target/test/repositorywitherrors.json");
-    validator.validate(inputStream, jsonOutputStream, false);
+    validator.validate(inputStream);
   }
-  
+
   @Test
   public void testValidate() throws FileNotFoundException {
     InputStream inputStream = new FileInputStream("src/test/resources/OrchestraFIXLatest.xml");
-    OutputStream jsonOutputStream = new FileOutputStream("target/test/OrchestraFIXLatest.json");
-    validator.validate(inputStream, jsonOutputStream, false);
+    validator.validate(inputStream);
   }
 
 }

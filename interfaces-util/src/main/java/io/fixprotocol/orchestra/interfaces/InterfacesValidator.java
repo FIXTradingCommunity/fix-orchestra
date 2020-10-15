@@ -97,9 +97,14 @@ public class InterfacesValidator {
   }
 
   private int errors = 0;
-  private EventListener eventLogger;
+  private final EventListener eventLogger;
   private int fatalErrors = 0;
   private int warnings = 0;
+
+  public InterfacesValidator(EventListener eventLogger) {
+    this.eventLogger = eventLogger;
+  }
+
 
   public int getErrors() {
     return errors;
@@ -124,16 +129,11 @@ public class InterfacesValidator {
    * formed XML, or if errors are produced that recoverable for the parser but would lead to an
    * invalid conversion. However, if only warnings are produced, the file is considered valid.
    *
+   * @param inputStream input schema file
    * @return Returns {@code true} if the file does not have serious errors, {@code false} if it
    *         does.
    */
-  public boolean validate(InputStream inputStream, OutputStream jsonOutputStream,
-      boolean doNotCloseEventLog) {
-    try {
-      eventLogger = createLogger(jsonOutputStream);
-    } catch (final Exception e) {
-      eventLogger.error("Failed to initialize event logger; {0}", e.getMessage());
-    }
+  public boolean validate(InputStream inputStream) {
     final ErrorListener errorHandler = new ErrorListener();
     try {
       validateSchema(inputStream, errorHandler);
@@ -142,30 +142,16 @@ public class InterfacesValidator {
       fatalErrors++;
     }
 
-    try {
-      if (getErrors() + getFatalErrors() > 0) {
-        eventLogger.fatal(
-            "InterfacesValidator complete; fatal errors={0,number,integer} errors={1,number,integer} warnings={2,number,integer}",
-            getFatalErrors(), getErrors(), getWarnings());
-        return false;
-      } else {
-        eventLogger.info(
-            "InterfacesValidator complete; fatal errors={0,number,integer} errors={1,number,integer} warnings={2,number,integer}",
-            getFatalErrors(), getErrors(), getWarnings());
-        return true;
-      }
-    } finally {
-      if (!doNotCloseEventLog) {
-        closeLogger();
-      }
-    }
-  }
-
-  private void closeLogger() {
-    try {
-      eventLogger.close();
-    } catch (Exception e) {
-
+    if (getErrors() + getFatalErrors() > 0) {
+      eventLogger.fatal(
+          "InterfacesValidator complete; fatal errors={0,number,integer} errors={1,number,integer} warnings={2,number,integer}",
+          getFatalErrors(), getErrors(), getWarnings());
+      return false;
+    } else {
+      eventLogger.info(
+          "InterfacesValidator complete; fatal errors={0,number,integer} errors={1,number,integer} warnings={2,number,integer}",
+          getFatalErrors(), getErrors(), getWarnings());
+      return true;
     }
   }
 

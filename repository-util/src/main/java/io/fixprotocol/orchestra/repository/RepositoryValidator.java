@@ -17,6 +17,7 @@ package io.fixprotocol.orchestra.repository;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import io.fixprotocol.orchestra.event.EventListener;
 
 /**
  * Validates an Orchestra file against the repository schema
@@ -80,8 +81,6 @@ public class RepositoryValidator {
     validator.validate();
   }
 
-
-  private final RepositoryValidatorImpl impl = new RepositoryValidatorImpl();
   private final String inputFile;
   private final String eventFile;
 
@@ -92,7 +91,10 @@ public class RepositoryValidator {
 
   public boolean validate() {
     try {
-      return impl.validate(new FileInputStream(inputFile), new FileOutputStream(eventFile), false);
+      EventListener eventLogger = RepositoryValidatorImpl
+          .createLogger(eventFile != null ? new FileOutputStream(eventFile) : null);
+      final RepositoryValidatorImpl impl = new RepositoryValidatorImpl(eventLogger);
+      return impl.validate(new FileInputStream(inputFile));
     } catch (final FileNotFoundException e) {
       System.err.println(e.getMessage());
       return false;

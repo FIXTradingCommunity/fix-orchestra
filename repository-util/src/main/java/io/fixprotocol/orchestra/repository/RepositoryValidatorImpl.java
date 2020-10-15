@@ -40,6 +40,11 @@ import org.xml.sax.SAXParseException;
 import io.fixprotocol.orchestra.event.EventListener;
 
 public class RepositoryValidatorImpl {
+  
+  public RepositoryValidatorImpl(EventListener eventLogger) {
+    this.eventLogger = eventLogger;
+  }
+
   private final class ErrorListener implements ErrorHandler {
 
     @Override
@@ -67,8 +72,8 @@ public class RepositoryValidatorImpl {
 
   static final String REPOSITORY_NAMESPACE = "http://fixprotocol.io/2020/orchestra/repository";
 
-  static EventListener createLogger(OutputStream jsonOutputStream) {
-    final Logger logger = LogManager.getLogger(RepositoryValidator.class);
+  public static EventListener createLogger(OutputStream jsonOutputStream) {
+    final Logger logger = LogManager.getLogger(RepositoryValidatorImpl.class);
     final EventListenerFactory factory = new EventListenerFactory();
     TeeEventListener eventListener = null;
     try {
@@ -82,19 +87,19 @@ public class RepositoryValidatorImpl {
         eventListener.addEventListener(jsonEventLogger);
       }
     } catch (Exception e) {
-      eventListener.addEventListener(new ConsoleEventListener());
-      eventListener.error("Error creating event listener; {0}", e.getMessage());
+       logger.error("Error creating event listener", e);
     }
     return eventListener;
   }
 
   private int errors = 0;
-  private EventListener eventLogger;
+  private final EventListener eventLogger;
   private int fatalErrors = 0;
   static final Predicate<String> isValidChar = t -> t.length() == 1;
   static final Predicate<String> isValidInt = t -> t.chars().allMatch(Character::isDigit);
   static final Predicate<String> isValidString = t -> !t.isEmpty();
   static final Predicate<String> isValidBoolean = t -> t.equals("Y") || t.equals("N");
+  
   private static final NamespaceContext nsContext = new NamespaceContext() {
     @Override
     public String getNamespaceURI(String arg0) {
@@ -142,13 +147,7 @@ public class RepositoryValidatorImpl {
    * @return Returns {@code true} if the repository does not have serious errors, {@code false} if
    *         it does.
    */
-  public boolean validate(InputStream inputStream, OutputStream jsonOutputStream,
-      boolean doNotCloseEventLog) {
-    try {
-      eventLogger = createLogger(jsonOutputStream);
-    } catch (final Exception e) {
-      eventLogger.error("Failed to initialize event logger; {0)", e.getMessage());
-    }
+  public boolean validate(InputStream inputStream) {
     final ErrorListener errorHandler = new ErrorListener();
     Document xmlDocument;
     try {
@@ -160,23 +159,16 @@ public class RepositoryValidatorImpl {
       fatalErrors++;
     }
 
-    try {
-      if (getErrors() + getFatalErrors() > 0) {
-        eventLogger.fatal(
-            "RepositoryValidator complete; fatal errors={0,number,integer} errors={1,number,integer} warnings={2,number,integer}",
-            getFatalErrors(), getErrors(), getWarnings());
-        return false;
-      } else {
-        eventLogger.info(
-            "RepositoryValidator complete; fatal errors={0,number,integer} errors={1,number,integer} warnings={2,number,integer}",
-            getFatalErrors(), getErrors(), getWarnings());
-        return true;
-      }
-
-    } finally {
-      if (!doNotCloseEventLog) {
-        closeLogger();
-      }
+    if (getErrors() + getFatalErrors() > 0) {
+      eventLogger.fatal(
+          "RepositoryValidator complete; fatal errors={0,number,integer} errors={1,number,integer} warnings={2,number,integer}",
+          getFatalErrors(), getErrors(), getWarnings());
+      return false;
+    } else {
+      eventLogger.info(
+          "RepositoryValidator complete; fatal errors={0,number,integer} errors={1,number,integer} warnings={2,number,integer}",
+          getFatalErrors(), getErrors(), getWarnings());
+      return true;
     }
   }
 

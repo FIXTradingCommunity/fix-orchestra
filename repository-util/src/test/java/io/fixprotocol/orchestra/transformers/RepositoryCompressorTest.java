@@ -21,6 +21,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 import io.fixprotocol.orchestra.repository.RepositoryValidatorImpl;
+import io.fixprotocol.orchestra.event.EventListener;
 
 public class RepositoryCompressorTest {
 
@@ -36,9 +37,10 @@ public class RepositoryCompressorTest {
     RepositoryCompressor.main(new String[] {"-i", "src/test/resources/OrchestraFIXLatest.xml", "-o",
         outfile, "--category", "TradeCapture"});
     Assertions.assertTrue(new File(outfile).exists());
-    RepositoryValidatorImpl validator = new RepositoryValidatorImpl();
-    validator.validate(new FileInputStream(new File(outfile)),
-        new FileOutputStream("target/test/tradecapture.json"), false);
+    final EventListener eventLogger =
+        RepositoryValidatorImpl.createLogger(new FileOutputStream("target/test/tradecapture.json"));
+    final RepositoryValidatorImpl validator = new RepositoryValidatorImpl(eventLogger);
+    validator.validate(new FileInputStream(new File(outfile)));
   }
 
   @Test
@@ -48,9 +50,10 @@ public class RepositoryCompressorTest {
     RepositoryCompressor.main(new String[] {"-i", "src/test/resources/OrchestraFIXLatest.xml", "-o",
         outfile, "--section", "Trade", "--notcategory", "CrossOrders"});
     Assertions.assertTrue(new File(outfile).exists());
-    RepositoryValidatorImpl validator = new RepositoryValidatorImpl();
-    validator.validate(new FileInputStream(new File(outfile)),
-        new FileOutputStream("target/test/tradeX.json"), false);
+    final EventListener eventLogger =
+        RepositoryValidatorImpl.createLogger(new FileOutputStream("target/test/tradeX.json"));
+    final RepositoryValidatorImpl validator = new RepositoryValidatorImpl(eventLogger);
+    validator.validate(new FileInputStream(new File(outfile)));
   }
 
   @Test
@@ -60,9 +63,10 @@ public class RepositoryCompressorTest {
     RepositoryCompressor.main(new String[] {"-i", "src/test/resources/OrchestraFIXLatest.xml", "-o",
         outfile, "--section", "PreTrade"});
     Assertions.assertTrue(new File(outfile).exists());
-    RepositoryValidatorImpl validator = new RepositoryValidatorImpl();
-    validator.validate(new FileInputStream(new File(outfile)),
-        new FileOutputStream("target/test/pretrade.json"), false);
+    final EventListener eventLogger =
+        RepositoryValidatorImpl.createLogger(new FileOutputStream("target/test/pretrade.json"));
+    final RepositoryValidatorImpl validator = new RepositoryValidatorImpl(eventLogger);
+    validator.validate(new FileInputStream(new File(outfile)));
   }
 
   @Test
@@ -72,9 +76,10 @@ public class RepositoryCompressorTest {
     RepositoryCompressor.main(new String[] {"-i", "src/test/resources/OrchestraFIXLatest.xml", "-o",
         outfile, "--section", "PostTrade"});
     Assertions.assertTrue(new File(outfile).exists());
-    RepositoryValidatorImpl validator = new RepositoryValidatorImpl();
-    validator.validate(new FileInputStream(new File(outfile)),
-        new FileOutputStream("target/test/posttrade.json"), false);
+    final EventListener eventLogger =
+        RepositoryValidatorImpl.createLogger(new FileOutputStream("target/test/posttrade.json"));
+    final RepositoryValidatorImpl validator = new RepositoryValidatorImpl(eventLogger);
+    validator.validate(new FileInputStream(new File(outfile)));
   }
 
   @Test
@@ -84,9 +89,9 @@ public class RepositoryCompressorTest {
     RepositoryCompressor.main(new String[] {"-i", "src/test/resources/OrchestraFIXLatest.xml", "-o",
         outfile, "--section", "Session"});
     Assertions.assertTrue(new File(outfile).exists());
-    RepositoryValidatorImpl validator = new RepositoryValidatorImpl();
-    validator.validate(new FileInputStream(new File(outfile)),
-        new FileOutputStream("target/test/fixt.json"), false);
-
+    final EventListener eventLogger =
+        RepositoryValidatorImpl.createLogger(new FileOutputStream("target/test/fixt.json"));
+    final RepositoryValidatorImpl validator = new RepositoryValidatorImpl(eventLogger);
+    validator.validate(new FileInputStream(new File(outfile)));
   }
 }
