@@ -22,8 +22,8 @@ public class JSONEventListener implements EventListener {
   /**
    * Creates a new listener that immediately starts writing to an OutputStream
    * 
-   * @param outputStream
-   * @throws IOException
+   * @param outputStream output stream to write JSON object to
+   * @throws IOException if an IO error occurs
    */
   public JSONEventListener(OutputStream outputStream) throws IOException {
     setOutputStream(outputStream);

@@ -141,9 +141,6 @@ public class RepositoryValidatorImpl {
    * invalid conversion. However, if only warnings are produced, the repository is considered valid.
    *
    * @param inputStream input stream of a repository file
-   * @param jsonOutputStream output stream for events
-   * @param doNotCloseEventLog if {@code true}, do not close the event log so another process can
-   *        append
    * @return Returns {@code true} if the repository does not have serious errors, {@code false} if
    *         it does.
    */

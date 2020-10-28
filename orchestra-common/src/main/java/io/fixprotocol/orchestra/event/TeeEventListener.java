@@ -17,7 +17,7 @@ public class TeeEventListener implements EventListener {
 
   /**
    * Register an EventListener for events
-   * @param listener
+   * @param listener an EventListener to add
    */
   public void addEventListener(EventListener listener) {
     listeners.add(Objects.requireNonNull(listener, "EventListener missing"));
@@ -46,7 +46,7 @@ public class TeeEventListener implements EventListener {
 
   /**
    * Removes a registered EventListener
-   * @param listener
+   * @param listener an EventListener to remove
    */
   public void removeEventListener(EventListener listener) {
     listeners.remove(listener);
