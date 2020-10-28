@@ -15,7 +15,6 @@
 package io.fixprotocol.orchestra.repository;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import io.fixprotocol.orchestra.event.EventListener;
 
@@ -90,12 +89,11 @@ public class RepositoryValidator {
   }
 
   public boolean validate() {
-    try {
-      EventListener eventLogger = RepositoryValidatorImpl
-          .createLogger(eventFile != null ? new FileOutputStream(eventFile) : null);
+    try (EventListener eventLogger = RepositoryValidatorImpl
+        .createLogger(eventFile != null ? new FileOutputStream(eventFile) : null)) {
       final RepositoryValidatorImpl impl = new RepositoryValidatorImpl(eventLogger);
       return impl.validate(new FileInputStream(inputFile));
-    } catch (final FileNotFoundException e) {
+    } catch (final Exception e) {
       System.err.println(e.getMessage());
       return false;
     }
