@@ -32,7 +32,7 @@ categories(categories, title) ::= <<
 <body>
 <ul class="minor">
 <li class="minor-title">$title$</li>
-<li class="major"><a href="AllMessages.html" target="listFrame" class="minor">All Messages</a></li>
+<li><a href="AllMessages.html" target="listFrame" class="minor">All Messages</a></li>
 $categories:{category|<li><a href="$category.name$Messages.html" target="listFrame" class="minor">$category.name$</a></li>}$
 </ul>
 </body>
