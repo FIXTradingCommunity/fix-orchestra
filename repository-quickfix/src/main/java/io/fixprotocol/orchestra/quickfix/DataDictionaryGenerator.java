@@ -22,13 +22,29 @@ import java.io.InputStream;
 import java.io.Writer;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.namespace.NamespaceContext;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 import io.fixprotocol._2020.orchestra.repository.CodeSetType;
 import io.fixprotocol._2020.orchestra.repository.CodeType;
 import io.fixprotocol._2020.orchestra.repository.ComponentRefType;
@@ -74,7 +90,7 @@ public class DataDictionaryGenerator {
    * @throws IOException an IO error occurred
    * @throws JAXBException an XML parsing error occurred
    */
-  public static void main(String[] args) throws IOException, JAXBException {
+  public static void main(String[] args) {
     final DataDictionaryGenerator generator = new DataDictionaryGenerator();
     if (args.length >= 1) {
       final File inputFile = new File(args[0]);
@@ -86,6 +102,8 @@ public class DataDictionaryGenerator {
       }
       try (FileInputStream inputStream = new FileInputStream(inputFile)) {
         generator.generate(inputStream, outputDir);
+      } catch (Exception e) {
+        e.printStackTrace(System.err);
       }
     } else {
       generator.usage();
@@ -96,13 +114,19 @@ public class DataDictionaryGenerator {
   private final Map<Integer, ComponentType> components = new HashMap<>();
   private final Map<Integer, GroupType> groups = new HashMap<>();
   private final Map<Integer, FieldType> fields = new HashMap<>();
+  private Document xmlDocument;
 
-  public void generate(InputStream inputFile, File outputDir) throws JAXBException, IOException {
+  public void generate(InputStream inputFile, File outputDir) throws JAXBException, IOException,
+      ParserConfigurationException, SAXException, XPathExpressionException {
     final Repository repository = unmarshal(inputFile);
     generate(repository, outputDir);
   }
 
-  public void generate(Repository repository, File outputDir) throws IOException {
+  public void generate(Repository repository, File outputDir)
+      throws IOException, XPathExpressionException {
+
+    Set<Integer> requiredGroupIds = getRequiredGroups();
+
     final List<CodeSetType> codeSetList = repository.getCodeSets().getCodeSet();
     for (final CodeSetType codeSet : codeSetList) {
       codeSets.put(codeSet.getName(), codeSet);
@@ -142,8 +166,8 @@ public class DataDictionaryGenerator {
       final File file = getSpecFilePath(outputDir, versionPath, ".xml");
       outputDir.mkdirs();
       try (FileWriter writer = new FileWriter(file)) {
-        writeElement(writer, "fix", 0, false, new KeyValue<Integer>("major", major),
-            new KeyValue<Integer>("minor", minor));
+        writeElement(writer, "fix", 0, false, new KeyValue<>("major", major),
+            new KeyValue<>("minor", minor));
         writeElement(writer, "header", 1, true);
         writeElement(writer, "trailer", 1, true);
         writeElement(writer, "messages", 1, false);
@@ -159,7 +183,8 @@ public class DataDictionaryGenerator {
         }
 
         for (final GroupType groupType : groupList) {
-          writeGroup(writer, groupType);
+          boolean isRequired = requiredGroupIds.contains(groupType.getId().intValue());
+          writeGroup(writer, groupType, isRequired);
         }
 
         writeElementEnd(writer, "components", 1);
@@ -182,6 +207,45 @@ public class DataDictionaryGenerator {
     return new File(outputDir, sb.toString());
   }
 
+  private Set<Integer> getRequiredGroups() throws XPathExpressionException {
+    Set<Integer> groupIds = new HashSet<>();
+    XPath xPath = XPathFactory.newInstance().newXPath();
+    xPath.setNamespaceContext(new NamespaceContext() {
+
+      @Override
+      public String getNamespaceURI(String prefix) {
+        switch (prefix) {
+          case "fixr":
+            return "http://fixprotocol.io/2020/orchestra/repository";
+          default:
+            return null;
+        }
+      }
+
+      @Override
+      public String getPrefix(String namespaceURI) {
+        return null;
+      }
+
+      @Override
+      public Iterator<String> getPrefixes(String namespaceURI) {
+        return null;
+      }
+
+    });
+    String expression = "//fixr:groupRef[@presence='required']";
+    NodeList nodeList = (NodeList) xPath.compile(expression)
+        .evaluate(xmlDocument.getDocumentElement(), XPathConstants.NODESET);
+    for (int i = 0; i < nodeList.getLength(); i++) {
+      if (nodeList.item(i).getNodeType() == Node.ELEMENT_NODE) {
+        Element element = (Element) nodeList.item(i);
+        String id = element.getAttribute("id");
+        groupIds.add(Integer.parseInt(id));
+      }
+    }
+    return groupIds;
+  }
+
   private String indent(int level) {
     final char[] chars = new char[level * SPACES_PER_LEVEL];
     Arrays.fill(chars, ' ');
@@ -202,10 +266,15 @@ public class DataDictionaryGenerator {
     return sb.toString().toUpperCase();
   }
 
-  private Repository unmarshal(InputStream inputFile) throws JAXBException {
+  private Repository unmarshal(InputStream inputFile)
+      throws JAXBException, ParserConfigurationException, SAXException, IOException {
+    DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+    builderFactory.setNamespaceAware(true);
+    DocumentBuilder builder = builderFactory.newDocumentBuilder();
+    xmlDocument = builder.parse(inputFile);
     final JAXBContext jaxbContext = JAXBContext.newInstance(Repository.class);
     final Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-    return (Repository) jaxbUnmarshaller.unmarshal(inputFile);
+    return (Repository) jaxbUnmarshaller.unmarshal(xmlDocument);
   }
 
   private void usage() {
@@ -213,23 +282,22 @@ public class DataDictionaryGenerator {
   }
 
   private Writer writeCode(Writer writer, CodeType code) throws IOException {
-    writeElement(writer, "value", 3, true, new KeyValue<String>("enum", code.getValue()),
-        new KeyValue<String>("description", toConstantName(code.getName())));
+    writeElement(writer, "value", 3, true, new KeyValue<>("enum", code.getValue()),
+        new KeyValue<>("description", toConstantName(code.getName())));
     return writer;
   }
 
   private Writer writeComponent(Writer writer, ComponentRefType componentRefType)
       throws IOException {
     final ComponentType component = components.get(componentRefType.getId().intValue());
-    writeElement(writer, "component", 3, true, new KeyValue<String>("name", component.getName()),
-        new KeyValue<String>("required",
+    writeElement(writer, "component", 3, true, new KeyValue<>("name", component.getName()),
+        new KeyValue<>("required",
             componentRefType.getPresence().equals(PresenceT.REQUIRED) ? "Y" : "N"));
     return writer;
   }
 
   private Writer writeComponent(Writer writer, ComponentType componentType) throws IOException {
-    writeElement(writer, "component", 2, false,
-        new KeyValue<String>("name", componentType.getName()));
+    writeElement(writer, "component", 2, false, new KeyValue<>("name", componentType.getName()));
     final List<Object> members = componentType.getComponentRefOrGroupRefOrFieldRef();
     for (final Object member : members) {
       if (member instanceof FieldRefType) {
@@ -279,9 +347,8 @@ public class DataDictionaryGenerator {
 
   private Writer writeField(Writer writer, FieldRefType fieldRefType) throws IOException {
     final FieldType field = fields.get(fieldRefType.getId().intValue());
-    writeElement(writer, "field", 3, true, new KeyValue<String>("name", field.getName()),
-        new KeyValue<String>("required",
-            fieldRefType.getPresence().equals(PresenceT.REQUIRED) ? "Y" : "N"));
+    writeElement(writer, "field", 3, true, new KeyValue<>("name", field.getName()), new KeyValue<>(
+        "required", fieldRefType.getPresence().equals(PresenceT.REQUIRED) ? "Y" : "N"));
     return writer;
   }
 
@@ -290,9 +357,8 @@ public class DataDictionaryGenerator {
     final CodeSetType codeSet = codeSets.get(type);
     final String fixType = codeSet == null ? type : codeSet.getType();
     writeElement(writer, "field", 2, codeSet == null,
-        new KeyValue<Integer>("number", fieldType.getId().intValue()),
-        new KeyValue<String>("name", fieldType.getName()),
-        new KeyValue<String>("type", fixType.toUpperCase()));
+        new KeyValue<>("number", fieldType.getId().intValue()),
+        new KeyValue<>("name", fieldType.getName()), new KeyValue<>("type", fixType.toUpperCase()));
     if (codeSet != null) {
       for (final CodeType code : codeSet.getCode()) {
         writeCode(writer, code);
@@ -304,17 +370,18 @@ public class DataDictionaryGenerator {
 
   private Writer writeGroup(Writer writer, GroupRefType groupRefType) throws IOException {
     final GroupType group = groups.get(groupRefType.getId().intValue());
-    writeElement(writer, "component", 3, true, new KeyValue<String>("name", group.getName()),
-        new KeyValue<String>("required",
+    writeElement(writer, "component", 3, true, new KeyValue<>("name", group.getName()),
+        new KeyValue<>("required",
             groupRefType.getPresence().equals(PresenceT.REQUIRED) ? "Y" : "N"));
     return writer;
   }
 
-  private Writer writeGroup(Writer writer, GroupType groupType) throws IOException {
-    writeElement(writer, "component", 2, false, new KeyValue<String>("name", groupType.getName()));
+  private Writer writeGroup(Writer writer, GroupType groupType, boolean isRequired)
+      throws IOException {
+    writeElement(writer, "component", 2, false, new KeyValue<>("name", groupType.getName()));
     final FieldType numInGroupField = fields.get(groupType.getNumInGroup().getId().intValue());
-    writeElement(writer, "group", 3, false,
-        new KeyValue<String>("name", numInGroupField.getName()));
+    writeElement(writer, "group", 3, false, new KeyValue<>("name", numInGroupField.getName()),
+        new KeyValue<>("required", isRequired ? "Y" : "N"));
     final List<Object> members = groupType.getComponentRefOrGroupRefOrFieldRef();
     for (final Object member : members) {
       if (member instanceof FieldRefType) {
@@ -336,9 +403,8 @@ public class DataDictionaryGenerator {
   private Writer writeMessage(Writer writer, MessageType messageType) throws IOException {
     final boolean isAdminMessage = isAdmin(messageType.getCategory());
     final String msgcat = isAdminMessage ? "admin" : "app";
-    writeElement(writer, "message", 2, false, new KeyValue<String>("name", messageType.getName()),
-        new KeyValue<String>("msgtype", messageType.getMsgType()),
-        new KeyValue<String>("msgcat", msgcat));
+    writeElement(writer, "message", 2, false, new KeyValue<>("name", messageType.getName()),
+        new KeyValue<>("msgtype", messageType.getMsgType()), new KeyValue<>("msgcat", msgcat));
 
     final List<Object> members = messageType.getStructure().getComponentRefOrGroupRefOrFieldRef();
     for (final Object member : members) {

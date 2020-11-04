@@ -16,7 +16,7 @@ public class DataDictionaryGeneratorTest {
   @Test
   public void testGenerate() throws Exception {
     generator.generate(
-        Thread.currentThread().getContextClassLoader().getResource("mit_compressed.xml").openStream(),
+        Thread.currentThread().getContextClassLoader().getResource("trade.xml").openStream(),
         new File("target/spec"));
   }
 

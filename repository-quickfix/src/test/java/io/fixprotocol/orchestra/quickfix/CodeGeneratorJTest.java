@@ -17,7 +17,7 @@ public class CodeGeneratorJTest {
   @Test
   public void testGenerate() throws IOException {
     generator.generate(
-        Thread.currentThread().getContextClassLoader().getResource("mit_compressed.xml").openStream(),
+        Thread.currentThread().getContextClassLoader().getResource("trade.xml").openStream(),
         new File("target/spec/generated-sources"));
   }
 
