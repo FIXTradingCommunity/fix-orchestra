@@ -87,8 +87,6 @@ public class DataDictionaryGenerator {
    * @param args command line arguments. The first argument is the name of a FIX Orchestra file. An
    *        optional second argument is the target directory for generated files. It defaults to
    *        directory "spec".
-   * @throws IOException an IO error occurred
-   * @throws JAXBException an XML parsing error occurred
    */
   public static void main(String[] args) {
     final DataDictionaryGenerator generator = new DataDictionaryGenerator();

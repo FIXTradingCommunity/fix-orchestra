@@ -29,6 +29,7 @@ import java.util.Optional;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.xpath.XPathExpressionException;
 
 import org.stringtemplate.v4.AutoIndentWriter;
 import org.stringtemplate.v4.ST;
@@ -67,7 +68,7 @@ public class TestGenerator {
    * @throws JAXBException if XML file unmarshaling fails
    * @throws IOException if input file is not found or cannot be read
    */
-  public static void main(String[] args) throws IOException, JAXBException {
+  public static void main(String[] args) throws IOException, JAXBException, XPathExpressionException {
     if (args.length < 1) {
       System.err.println(
           "Usage: java io.fixprotocol.orchestra.testgen.TestGenerator <input-filename> [resources-dir] [source-dir]");
@@ -143,7 +144,7 @@ public class TestGenerator {
    * 
    * @throws IOException if test features cannot be written to a file
    */
-  public void generate() throws IOException {
+  public void generate() throws IOException, XPathExpressionException {
     generateResources();
     generateSource();
   }
@@ -215,13 +216,13 @@ public class TestGenerator {
     }
   }
   
-  private void generateDataDictionaries() throws IOException {
+  private void generateDataDictionaries() throws IOException, XPathExpressionException {
     DataDictionaryGenerator generator = new DataDictionaryGenerator();
     File dataDictionaryDir = new File(resourcesDir, "quickfixj");
     generator.generate(repository, dataDictionaryDir);
   }
 
-  private void generateResources() throws IOException {
+  private void generateResources() throws IOException, XPathExpressionException {
     
     generateDataDictionaries();
     
