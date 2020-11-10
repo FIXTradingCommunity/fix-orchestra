@@ -40,7 +40,7 @@ import org.xml.sax.SAXParseException;
 import io.fixprotocol.orchestra.event.EventListener;
 
 public class RepositoryValidatorImpl {
-  
+
   public RepositoryValidatorImpl(EventListener eventLogger) {
     this.eventLogger = eventLogger;
   }
@@ -87,7 +87,7 @@ public class RepositoryValidatorImpl {
         eventListener.addEventListener(jsonEventLogger);
       }
     } catch (Exception e) {
-       logger.error("Error creating event listener", e);
+      logger.error("Error creating event listener", e);
     }
     return eventListener;
   }
@@ -95,11 +95,15 @@ public class RepositoryValidatorImpl {
   private int errors = 0;
   private final EventListener eventLogger;
   private int fatalErrors = 0;
-  static final Predicate<String> isValidChar = t -> t.length() == 1 && !Character.isWhitespace(t.charAt(0));
+  static final Predicate<String> isValidChar =
+      t -> t.length() == 1 && !Character.isWhitespace(t.charAt(0));
   static final Predicate<String> isValidInt = t -> t.chars().allMatch(Character::isDigit);
-  static final Predicate<String> isValidString = t -> t.length() > 0 && t.chars().noneMatch(Character::isWhitespace);
+  static final Predicate<String> isValidString =
+      t -> t.length() > 0 && t.chars().noneMatch(Character::isWhitespace);
   static final Predicate<String> isValidBoolean = t -> t.equals("Y") || t.equals("N");
-  
+  static final Predicate<String> isValidName = t -> t.length() > 0
+      && t.chars().noneMatch(Character::isWhitespace) && Character.isUpperCase(t.charAt(0));
+
   private static final NamespaceContext nsContext = new NamespaceContext() {
     @Override
     public String getNamespaceURI(String arg0) {
@@ -182,11 +186,19 @@ public class RepositoryValidatorImpl {
     for (int i = 0; i < codeElements.getLength(); i++) {
       final Element codeElement = (Element) codeElements.item(i);
       final String value = codeElement.getAttribute("value");
+      final String codeName = codeElement.getAttribute("name");
+      final String codesetName = codesetElement.getAttribute("name");
+      final String codesetId = codesetElement.getAttribute("id");
+
+      if (!isValidName.test(codeName)) {
+        warnings++;
+        eventLogger.warn(
+            "RepositoryValidator: code name {0} has invalid case in codeset {1} (id={2})", codeName,
+            codesetName, codesetId);
+
+      }
       if (!isCodeValid.test(value)) {
-        final String codesetName = codesetElement.getAttribute("name");
-        final String codesetId = codesetElement.getAttribute("id");    
         final String datatype = codesetElement.getAttribute("type");
-        final String codeName = codeElement.getAttribute("name");
         errors++;
         eventLogger.error(
             "RepositoryValidator: code {0} value [{1}] is invalid for datatype {2} in codeset {3} (id={4})",
@@ -207,7 +219,10 @@ public class RepositoryValidatorImpl {
         final short nodeType = codesetNode.getNodeType();
         if (nodeType == Node.ELEMENT_NODE) {
           final Element codesetElement = (Element) codesetNode;
+          final String codesetName = codesetElement.getAttribute("name");
+          final String codesetId = codesetElement.getAttribute("id");
           final String datatype = codesetElement.getAttribute("type");
+
           NodeList codeElements =
               codesetElement.getElementsByTagNameNS(REPOSITORY_NAMESPACE, "code");
           switch (datatype) {
@@ -228,9 +243,9 @@ public class RepositoryValidatorImpl {
               break;
             default:
               errors++;
-              final String codesetName = codesetElement.getAttribute("name");
-              eventLogger.error("RepositoryValidator: unexpected datatype {0} for code set {1}",
-                  datatype, codesetName);
+              eventLogger.error(
+                  "RepositoryValidator: unexpected datatype {0} for code set {1} (id={2})",
+                  datatype, codesetName, codesetId);
           }
         }
       }
