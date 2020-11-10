@@ -184,12 +184,13 @@ public class RepositoryValidatorImpl {
       final String value = codeElement.getAttribute("value");
       if (!isCodeValid.test(value)) {
         final String codesetName = codesetElement.getAttribute("name");
+        final String codesetId = codesetElement.getAttribute("id");    
         final String datatype = codesetElement.getAttribute("type");
         final String codeName = codeElement.getAttribute("name");
         errors++;
         eventLogger.error(
-            "RepositoryValidator: code {0} value [{1}] is invalid for datatype {2} in codeset {3}",
-            codeName, value, datatype, codesetName);
+            "RepositoryValidator: code {0} value [{1}] is invalid for datatype {2} in codeset {3} (id={4})",
+            codeName, value, datatype, codesetName, codesetId);
       }
     }
   }
