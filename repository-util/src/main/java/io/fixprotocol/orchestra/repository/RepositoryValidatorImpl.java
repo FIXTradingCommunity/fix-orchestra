@@ -95,9 +95,9 @@ public class RepositoryValidatorImpl {
   private int errors = 0;
   private final EventListener eventLogger;
   private int fatalErrors = 0;
-  static final Predicate<String> isValidChar = t -> t.length() == 1;
+  static final Predicate<String> isValidChar = t -> t.length() == 1 && !Character.isWhitespace(t.charAt(0));
   static final Predicate<String> isValidInt = t -> t.chars().allMatch(Character::isDigit);
-  static final Predicate<String> isValidString = t -> !t.isEmpty();
+  static final Predicate<String> isValidString = t -> t.length() > 0 && t.chars().noneMatch(Character::isWhitespace);
   static final Predicate<String> isValidBoolean = t -> t.equals("Y") || t.equals("N");
   
   private static final NamespaceContext nsContext = new NamespaceContext() {
@@ -188,7 +188,7 @@ public class RepositoryValidatorImpl {
         final String codeName = codeElement.getAttribute("name");
         errors++;
         eventLogger.error(
-            "RepositoryValidator: code {0} value {1} is invalid for datatype {2} in codeset {3}",
+            "RepositoryValidator: code {0} value [{1}] is invalid for datatype {2} in codeset {3}",
             codeName, value, datatype, codesetName);
       }
     }
