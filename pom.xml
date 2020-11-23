@@ -58,8 +58,6 @@
 		<module>dsl-antlr</module>
 		<module>message-model</module>
 		<module>docgen</module>
-		<module>testgen</module>
-		<module>state-machine</module>
 		<module>repository-util</module>
 		<module>orchestra-common</module>
 		<module>interfaces-util</module>
@@ -72,7 +70,6 @@
 		<cucumber.version>1.2.6</cucumber.version>
 		<junit.version>5.6.1</junit.version>
 		<log4j.version>2.13.3</log4j.version>
-		<quickfixj.version>2.2.0</quickfixj.version>
 		<saxon.version>10.1</saxon.version>
 		<slf4j.version>1.7.22</slf4j.version>
 		<stringtemplate.version>4.3.1</stringtemplate.version>
