@@ -53,13 +53,10 @@
 	</distributionManagement>
 	<modules>
 		<module>interfaces</module>
-		<module>session-quickfix</module>
 		<module>repository2010</module>
 		<module>repository</module>
 		<module>dsl-antlr</module>
 		<module>message-model</module>
-		<module>repository-quickfix</module>
-		<module>model-quickfix</module>
 		<module>docgen</module>
 		<module>testgen</module>
 		<module>state-machine</module>
