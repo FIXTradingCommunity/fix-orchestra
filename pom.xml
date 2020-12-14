@@ -57,10 +57,10 @@
 		<module>repository</module>
 		<module>dsl-antlr</module>
 		<module>message-model</module>
-		<module>docgen</module>
 		<module>repository-util</module>
 		<module>orchestra-common</module>
 		<module>interfaces-util</module>
+		<module>orchestra2doc</module>
 	</modules>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

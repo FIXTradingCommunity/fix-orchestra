@@ -7,7 +7,7 @@
 		<artifactId>parent</artifactId>
 		<version>1.6.9-SNAPSHOT</version>
 	</parent>
-	<artifactId>docgen</artifactId>
+	<artifactId>orchestra2doc</artifactId>
 	<description>Generates humanly readable documentation</description>
 	<name>${project.groupId}:${project.artifactId}</name>
 
