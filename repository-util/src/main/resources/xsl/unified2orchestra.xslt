@@ -2,18 +2,21 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fn="http://www.w3.org/2005/xpath-functions" xmlns:functx="http://www.functx.com" xmlns:fixr="http://fixprotocol.io/2020/orchestra/repository" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0" exclude-result-prefixes="fn">
 	<!-- argument is phrase file URL, e.g. file://FIX.5.0SP2_en_phrases.xml" -->
 	<xsl:param name="phrases-file"/>
+	<xsl:param name="name"/>
+	<xsl:param name="new-version"/>
 	<xsl:output method="xml" encoding="UTF-8" indent="yes"/>
 	<xsl:namespace-alias stylesheet-prefix="#default" result-prefix="fixr"/>
 	<xsl:variable name="phrases-doc" select="fn:document($phrases-file)"/>
-	<xsl:variable name="version" select="$phrases-doc/phrases/@version"/>
+	<xsl:variable name="old-version" select="$phrases-doc/phrases/@version"/>
 	<xsl:key name="phrases-key" match="phrase" use="@textId"/>
 	<xsl:template match="/">
 		<xsl:apply-templates/>
 	</xsl:template>
 	<xsl:template match="fixRepository">
 		<fixr:repository>
-			<xsl:attribute name="name"><xsl:value-of select="functx:substring-before-if-contains(//fix[@version=$version]/@version, '_')"/></xsl:attribute>
-			<xsl:apply-templates select="//fix[@version=$version]/@* except //fix[@version=$version]/@components"/>
+			<xsl:apply-templates select="//fix[@version=$old-version]/@* except //fix[@version=$old-version]/@version except //fix[@version=$old-version]/@components"/>
+			<xsl:attribute name="name"><xsl:value-of select="$name"/></xsl:attribute>
+			<xsl:attribute name="version"><xsl:value-of select="$new-version"/></xsl:attribute>
 			<metadata>
 				<dc:title>Orchestra</dc:title>
 				<dc:creator>unified2orchestra.xslt script</dc:creator>
@@ -31,9 +34,9 @@
 				<!-- Need to store context outside of for-each loop -->
 				<xsl:variable name="doc" select="/"/>
 				<!-- Add codesets for fields that have enums from latest fix version to contain it -->
-				<xsl:for-each select="fn:distinct-values(/fixRepository/fix[@version=$version]/fields/field[enum]/@name)">
+				<xsl:for-each select="fn:distinct-values(/fixRepository/fix[@version=$old-version]/fields/field[enum]/@name)">
 					<xsl:variable name="fieldName" select="."/>
-					<xsl:variable name="field" select="($doc/fixRepository/fix[@version=$version]/fields/field[@name=$fieldName])"/>
+					<xsl:variable name="field" select="($doc/fixRepository/fix[@version=$old-version]/fields/field[@name=$fieldName])"/>
 					<xsl:variable name="fieldId" select="$field/@id"/>
 					<xsl:variable name="fieldType" select="$field/@type"/>
 					<xsl:element name="fixr:codeSet">
@@ -49,16 +52,17 @@
 							</xsl:element>
 						</xsl:for-each>
 						<xsl:apply-templates select="$field/@textId"/>
+						<xsl:apply-templates select="$field/@textId"/>
 					</xsl:element>
 				</xsl:for-each>
 			</codeSets>
-			<xsl:apply-templates select="//fix[@version=$version]/datatypes"/>
-			<xsl:apply-templates select="//fix[@version=$version]/categories"/>
-			<xsl:apply-templates select="//fix[@version=$version]/sections"/>
-			<xsl:apply-templates select="//fix[@version=$version]/fields"/>
-			<xsl:apply-templates select="//fix[@version=$version]/components" mode="component"/>
-			<xsl:apply-templates select="//fix[@version=$version]/components" mode="group"/>
-			<xsl:apply-templates select="//fix[@version=$version]/messages"/>
+			<xsl:apply-templates select="//fix[@version=$old-version]/datatypes"/>
+			<xsl:apply-templates select="//fix[@version=$old-version]/categories"/>
+			<xsl:apply-templates select="//fix[@version=$old-version]/sections"/>
+			<xsl:apply-templates select="//fix[@version=$old-version]/fields"/>
+			<xsl:apply-templates select="//fix[@version=$old-version]/components" mode="component"/>
+			<xsl:apply-templates select="//fix[@version=$old-version]/components" mode="group"/>
+			<xsl:apply-templates select="//fix[@version=$old-version]/messages"/>
 		</fixr:repository>
 	</xsl:template>
 	<xsl:template match="datatypes">

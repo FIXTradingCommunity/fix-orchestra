@@ -37,10 +37,12 @@ public class Unified2OrchestraTransformerTest {
   public void transformEP() throws TransformerException, URISyntaxException {
     File inputXml = new File(Thread.currentThread().getContextClassLoader()
         .getResource("FixRepositoryUnifiedEP247.xml").toURI());
-    File outputXml = new File("target/test/FixRepository50SP2EP247.xml");
+    File outputXml = new File("target/test/OrchestraEP247.xml");
     String sourceDir = inputXml.getParent();
     File phrasesFile = new File(String.format("%s/FIX.5.0SP2_EP247_en_phrases.xml", sourceDir));
-    new Unified2OrchestraTransformer().transform(inputXml, phrasesFile, outputXml);
+    String name = "FIX.LATEST";
+    String version = "EP247";
+    new Unified2OrchestraTransformer().transform(inputXml, phrasesFile, outputXml, name, version);
     Assertions.assertTrue(outputXml.exists());
     // new RepositoryValidator().validate(new FileInputStream(outFile));
   }
@@ -58,10 +60,12 @@ public class Unified2OrchestraTransformerTest {
   public void transform50() throws TransformerException, URISyntaxException, FileNotFoundException, ParserConfigurationException, SAXException, IOException {
     File inputXml = new File(Thread.currentThread().getContextClassLoader()
         .getResource("FixRepositoryUnified.xml").toURI());
-    File outputXml = new File("target/test/FixRepository50SP2.xml");
+    File outputXml = new File("target/test/Orchestra50SP2.xml");
     String sourceDir = inputXml.getParent();
     File phrasesFile = new File(String.format("%s/FIX.5.0SP2_en_phrases.xml", sourceDir));
-    new Unified2OrchestraTransformer().transform(inputXml, phrasesFile, outputXml);
+    String name = "FIX.5.0SP2";
+    String version = "FIX.5.0SP2";
+    new Unified2OrchestraTransformer().transform(inputXml, phrasesFile, outputXml, name, version);
     Assertions.assertTrue(outputXml.exists());
     RepositoryValidator validator = RepositoryValidator.builder().inputFile("target/test/FixRepository50SP2.xml").build();
     validator.validate();
@@ -76,11 +80,13 @@ public class Unified2OrchestraTransformerTest {
   @Test
   public void transform44() throws TransformerException, URISyntaxException {
     File inputXml = new File(Thread.currentThread().getContextClassLoader()
-        .getResource("FixRepositoryUnified.xml").toURI());
-    File outputXml = new File("target/test/FixRepository44.xml");
+        .getResource("FixRepositoryUnified44.xml").toURI());
+    File outputXml = new File("target/test/Orchestra44.xml");
     String sourceDir = inputXml.getParent();
     File phrasesFile = new File(String.format("%s/FIX.4.4_en_phrases.xml", sourceDir));
-    new Unified2OrchestraTransformer().transform(inputXml, phrasesFile, outputXml);
+    String name = "FIX.4.4";
+    String version = "FIX.4.4";
+    new Unified2OrchestraTransformer().transform(inputXml, phrasesFile, outputXml, name, version);
     Assertions.assertTrue(outputXml.exists());
   }
   
@@ -97,7 +103,9 @@ public class Unified2OrchestraTransformerTest {
     File outputXml = new File("target/test/FixRepository42.xml");
     String sourceDir = inputXml.getParent();
     File phrasesFile = new File(String.format("%s/FIX.4.2_en_phrases.xml", sourceDir));
-    new Unified2OrchestraTransformer().transform(inputXml, phrasesFile, outputXml);
+    String name = "FIX.4.2";
+    String version = "FIX.4.2";
+    new Unified2OrchestraTransformer().transform(inputXml, phrasesFile, outputXml, name, version);
     Assertions.assertTrue(outputXml.exists());
   }
 }

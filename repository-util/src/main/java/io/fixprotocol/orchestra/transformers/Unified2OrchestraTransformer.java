@@ -17,9 +17,10 @@ public class Unified2OrchestraTransformer {
    * @param args command line arguments
    *        <ol>
    *        <li>Name of Unified Repository file to transform</li>
-   *        <li>Name of Repository phrases file
-   *        <li>
+   *        <li>Name of Repository phrases file</li>
    *        <li>Name of Orchestra file to create</li>
+   *        <li>Name attribute of new Orchestra file</li>
+   *        <li>Version attribute of new Orchestra file</li>
    *        </ol>
    * @throws TransformerException If an unrecoverable error occurs during the course of the
    *         transformation.
@@ -34,7 +35,7 @@ public class Unified2OrchestraTransformer {
     transformer.transform(args);
   }
 
-  public void transform(File inputXml, File phrasesFile, File outputXml)
+  public void transform(File inputXml, File phrasesFile, File outputXml, String name, String version)
       throws TransformerException {
     final File parentFile = outputXml.getParentFile();
     if (parentFile != null) {
@@ -50,6 +51,8 @@ public class Unified2OrchestraTransformer {
     final TransformerFactory transFact = new TransformerFactoryImpl();
     final Transformer trans = transFact.newTransformer(xsltSource);
     trans.setParameter("phrases-file", phrasesFile.toURI().toString());
+    trans.setParameter("name", name);
+    trans.setParameter("new-version", version);
     trans.transform(xmlSource, result);
   }
 
@@ -58,7 +61,7 @@ public class Unified2OrchestraTransformer {
     final File inputXml = new File(args[0]);
     final File phrasesFile = new File(args[1]);
     final File outputXml = new File(args[2]);
-    transform(inputXml, phrasesFile, outputXml);
+    transform(inputXml, phrasesFile, outputXml, args[3], args[4]);
   }
 
 }
