@@ -15,36 +15,68 @@
 package io.fixprotocol.orchestra.transformers;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URISyntaxException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
+import io.fixprotocol.orchestra.event.EventListener;
 import io.fixprotocol.orchestra.repository.RepositoryValidator;
+import io.fixprotocol.orchestra.repository.RepositoryValidatorImpl;
 
 
 public class Unified2OrchestraTransformerTest {
+  
+  @BeforeAll
+  public static void setupOnce() {
+    new File(("target/test")).mkdirs();
+  }
 
+  /*
+  private EventListener eventLogger;
+  private RepositoryValidatorImpl validator;
+
+  @BeforeEach
+  public void setUp() throws Exception {
+    final OutputStream jsonOutputStream =
+        new FileOutputStream("target/test/transformer.json");
+    eventLogger = RepositoryValidatorImpl.createLogger(jsonOutputStream);
+    validator = new RepositoryValidatorImpl(eventLogger);
+  }
+  
+  @AfterEach
+  public void cleanUp() throws Exception {
+    eventLogger.close();
+  }
+  */
+  
   /**
    * 
    * Transform FIX Repository 2010 Edition unified repositories to Orchestra schema for FIX 5.0SP2
+   * @throws FileNotFoundException 
    */
   @Test
-  public void transformEP() throws TransformerException, URISyntaxException {
+  public void transformEP() throws Exception {
     File inputXml = new File(Thread.currentThread().getContextClassLoader()
         .getResource("FixRepositoryUnifiedEP247.xml").toURI());
     File outputXml = new File("target/test/OrchestraEP247.xml");
     String sourceDir = inputXml.getParent();
     File phrasesFile = new File(String.format("%s/FIX.5.0SP2_EP247_en_phrases.xml", sourceDir));
-    String name = "FIX.LATEST";
-    String version = "EP247";
+    String name = "FIX.Latest";
+    String version = "FIX.Latest_EP247";
     new Unified2OrchestraTransformer().transform(inputXml, phrasesFile, outputXml, name, version);
     Assertions.assertTrue(outputXml.exists());
-    // new RepositoryValidator().validate(new FileInputStream(outFile));
+    //validator.validate(new FileInputStream(outputXml));
   }
   
   /**
