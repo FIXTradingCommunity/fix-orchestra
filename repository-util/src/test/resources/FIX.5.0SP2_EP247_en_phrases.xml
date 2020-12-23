@@ -2614,8 +2614,7 @@
          <para>Offshore</para>
       </text>
    </phrase>
--
-				<phrase textId="CAT_AccountReporting">
+    <phrase textId="CAT_AccountReporting">
       <text purpose="SYNOPSIS">
          <para>Account Reporting</para>
       </text>
