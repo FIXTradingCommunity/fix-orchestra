@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.fixprotocol.orchestra</groupId>
 	<artifactId>parent</artifactId>
-	<version>1.6.9-SNAPSHOT</version>
+	<version>1.6.9</version>
 	<packaging>pom</packaging>
 	<name>${project.groupId}:${project.artifactId}</name>
 	<description>Parent project for FIX Orchestra. Build Java 8 by default, multi-release jar on demand.</description>
