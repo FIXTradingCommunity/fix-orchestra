@@ -49,6 +49,6 @@ This Maven module may be included as a dependency in a project as follows (subst
 <dependency>
   <groupId>io.fixprotocol.orchestra</groupId>
   <artifactId>repository-util</artifactId>
-  <version>1.6.0</version>
+  <version>1.6.10</version>
 </dependency>
 ```

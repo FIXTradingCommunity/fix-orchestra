@@ -55,9 +55,8 @@ public class RepositoryValidator {
    * @param args command line arguments
    *
    *        <pre>
+   * Usage: RepositoryValidator [options] &lt;input-file&gt;
    * -e &lt;logfile&gt; name of event log
-   * -v verbose logging
-   * -i &lt;orchestrafile&gt; name of input file; "-i" is optional
    *        </pre>
    *
    * @throws Exception if the file to validate cannot be found, read, or parsed

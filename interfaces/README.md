@@ -14,6 +14,6 @@ In addition to providing the XML schema as a resource, this module builds Java b
 <dependency>
   <groupId>io.fixprotocol.orchestra</groupId>
   <artifactId>interfaces</artifactId>
-  <version>1.5.0</version>
+  <version>1.6.10</version>
 </dependency>
 ```
