@@ -20,7 +20,9 @@ See [Orchestra tutorials](https://github.com/FIXTradingCommunity/fix-orchestra/w
 
 ## Standards Versions
 
-Version 1.6 of this project conforms to Orchestra version 1.0 Draft Standard.
+### Version 1.0 Technical Standard
+
+Orchestra version 1.0 Draft Standard was promoted to Technical Standard with minor enhancements and corrections on February 17, 2021. Version 1.6.10 of this project conforms to Orchestra version 1.0 Techncial Standard.
 
 ### Version 1.0 Draft Standard
 
@@ -101,7 +103,7 @@ This module generates code that is conformant to the QuickFIX/J API for validati
 A demonstration of session configuration for QuickFIX open-source FIX engine. It consumes an XML file in the `interfaces` schema.
 
 ## License
-© Copyright 2016-2020 FIX Protocol Limited
+© Copyright 2016-2021 FIX Protocol Limited
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
