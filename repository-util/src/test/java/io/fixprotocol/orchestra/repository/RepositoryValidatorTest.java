@@ -16,7 +16,7 @@ import io.fixprotocol.orchestra.event.EventListener;
 public class RepositoryValidatorTest {
 
   private RepositoryValidatorImpl validator;
-  private EventListener eventLogger;
+  private io.fixprotocol.orchestra.event.EventListener eventLogger;
 
   @BeforeAll
   public static void setupOnce() {
