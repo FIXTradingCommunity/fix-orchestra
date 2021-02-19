@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
@@ -372,7 +373,8 @@ public class RepositoryCompressor {
 
     final Level level = verbose ? Level.DEBUG : Level.ERROR;
     final Repository inRepository = unmarshal(is);
-    isCategoryInSection.setCategories(inRepository.getCategories().getCategory());
+    final Categories categories = inRepository.getCategories();
+    isCategoryInSection.setCategories(categories.getCategory());
     final Repository outRepository = new Repository();
     inRepository.copyTo(null, outRepository, AttributeCopyStrategy.INSTANCE);
 
@@ -384,9 +386,18 @@ public class RepositoryCompressor {
     contributor.getContent().add("RepositoryCompressor");
     literals.add(objectFactory.createContributor(contributor));
     outRepository.setMetadata(metadata);
-    outRepository.setCategories((Categories) inRepository.getCategories().clone());
-    outRepository.setSections((Sections) inRepository.getSections().clone());
-    outRepository.setDatatypes((Datatypes) inRepository.getDatatypes().clone());
+    
+    if (categories != null) {
+      outRepository.setCategories((Categories) categories.clone());
+    }
+    final Sections sections = inRepository.getSections();
+    if (sections != null) {
+      outRepository.setSections((Sections) sections.clone());
+    }
+    final Datatypes datatypes = inRepository.getDatatypes();
+    if (datatypes != null) {
+      outRepository.setDatatypes((Datatypes) datatypes.clone());
+    }
     final Actors actors = inRepository.getActors();
     if (actors != null) {
       outRepository.setActors((Actors) actors.clone());
@@ -396,11 +407,21 @@ public class RepositoryCompressor {
       final Components inComponents = (Components) components.clone();
       componentList = inComponents.getComponent();
     }
-    final Groups inGroups = (Groups) inRepository.getGroups().clone();
-    groupList = inGroups.getGroup();
+    final Groups groups = inRepository.getGroups();
+    if (groups != null) {
+      final Groups inGroups = (Groups) groups.clone();
+      groupList = inGroups.getGroup();
+    }
 
-    final Messages inMessages = (Messages) inRepository.getMessages().clone();
-    final List<MessageType> messageList = inMessages.getMessage();
+
+    final Messages messages = inRepository.getMessages();
+    final List<MessageType> messageList;
+    if (messages != null) {
+      final Messages inMessages = (Messages) messages.clone();
+      messageList = inMessages.getMessage();
+    } else {
+      messageList = Collections.emptyList();
+    }
     final List<MessageType> filteredMessages =
         messageList.stream().filter(messagePredicate).collect(Collectors.toList());
     filteredMessages.forEach(m -> walk(m.getStructure().getComponentRefOrGroupRefOrFieldRef()));
