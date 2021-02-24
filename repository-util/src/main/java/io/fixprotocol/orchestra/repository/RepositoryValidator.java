@@ -88,9 +88,9 @@ public class RepositoryValidator {
   }
 
   public boolean validate() {
-    try (EventListener eventLogger = RepositoryValidatorImpl
+    try (EventListener eventLogger = FixRepositoryValidator
         .createLogger(eventFile != null ? new FileOutputStream(eventFile) : null)) {
-      final RepositoryValidatorImpl impl = new RepositoryValidatorImpl(eventLogger);
+      final FixRepositoryValidator impl = new FixRepositoryValidator(eventLogger);
       return impl.validate(new FileInputStream(inputFile));
     } catch (final Exception e) {
       System.err.println(e.getMessage());

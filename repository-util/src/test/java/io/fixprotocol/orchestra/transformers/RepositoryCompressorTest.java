@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
-import io.fixprotocol.orchestra.repository.RepositoryValidatorImpl;
+import io.fixprotocol.orchestra.repository.FixRepositoryValidator;
 import io.fixprotocol.orchestra.event.EventListener;
 
 public class RepositoryCompressorTest {
@@ -38,8 +38,8 @@ public class RepositoryCompressorTest {
         outfile, "--category", "TradeCapture"});
     Assertions.assertTrue(new File(outfile).exists());
     final EventListener eventLogger =
-        RepositoryValidatorImpl.createLogger(new FileOutputStream("target/test/tradecapture.json"));
-    final RepositoryValidatorImpl validator = new RepositoryValidatorImpl(eventLogger);
+        FixRepositoryValidator.createLogger(new FileOutputStream("target/test/tradecapture.json"));
+    final FixRepositoryValidator validator = new FixRepositoryValidator(eventLogger);
     validator.validate(new FileInputStream(new File(outfile)));
   }
 
@@ -51,8 +51,8 @@ public class RepositoryCompressorTest {
         outfile, "--section", "Trade", "--notcategory", "CrossOrders"});
     Assertions.assertTrue(new File(outfile).exists());
     final EventListener eventLogger =
-        RepositoryValidatorImpl.createLogger(new FileOutputStream("target/test/tradeX.json"));
-    final RepositoryValidatorImpl validator = new RepositoryValidatorImpl(eventLogger);
+        FixRepositoryValidator.createLogger(new FileOutputStream("target/test/tradeX.json"));
+    final FixRepositoryValidator validator = new FixRepositoryValidator(eventLogger);
     validator.validate(new FileInputStream(new File(outfile)));
   }
 
@@ -64,8 +64,8 @@ public class RepositoryCompressorTest {
         outfile, "--section", "PreTrade"});
     Assertions.assertTrue(new File(outfile).exists());
     final EventListener eventLogger =
-        RepositoryValidatorImpl.createLogger(new FileOutputStream("target/test/pretrade.json"));
-    final RepositoryValidatorImpl validator = new RepositoryValidatorImpl(eventLogger);
+        FixRepositoryValidator.createLogger(new FileOutputStream("target/test/pretrade.json"));
+    final FixRepositoryValidator validator = new FixRepositoryValidator(eventLogger);
     validator.validate(new FileInputStream(new File(outfile)));
   }
 
@@ -77,8 +77,8 @@ public class RepositoryCompressorTest {
         outfile, "--section", "PostTrade"});
     Assertions.assertTrue(new File(outfile).exists());
     final EventListener eventLogger =
-        RepositoryValidatorImpl.createLogger(new FileOutputStream("target/test/posttrade.json"));
-    final RepositoryValidatorImpl validator = new RepositoryValidatorImpl(eventLogger);
+        FixRepositoryValidator.createLogger(new FileOutputStream("target/test/posttrade.json"));
+    final FixRepositoryValidator validator = new FixRepositoryValidator(eventLogger);
     validator.validate(new FileInputStream(new File(outfile)));
   }
 
@@ -90,8 +90,8 @@ public class RepositoryCompressorTest {
         outfile, "--section", "Session"});
     Assertions.assertTrue(new File(outfile).exists());
     final EventListener eventLogger =
-        RepositoryValidatorImpl.createLogger(new FileOutputStream("target/test/fixt.json"));
-    final RepositoryValidatorImpl validator = new RepositoryValidatorImpl(eventLogger);
+        FixRepositoryValidator.createLogger(new FileOutputStream("target/test/fixt.json"));
+    final FixRepositoryValidator validator = new FixRepositoryValidator(eventLogger);
     validator.validate(new FileInputStream(new File(outfile)));
   }
 }

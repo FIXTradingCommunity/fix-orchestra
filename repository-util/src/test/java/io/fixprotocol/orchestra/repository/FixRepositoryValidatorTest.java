@@ -9,13 +9,11 @@ import java.io.OutputStream;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import io.fixprotocol.orchestra.event.EventListener;
 
-public class RepositoryValidatorTest {
+public class FixRepositoryValidatorTest {
 
-  private RepositoryValidatorImpl validator;
+  private FixRepositoryValidator validator;
   private io.fixprotocol.orchestra.event.EventListener eventLogger;
 
   @BeforeAll
@@ -27,8 +25,8 @@ public class RepositoryValidatorTest {
   public void setUp() throws Exception {
     final OutputStream jsonOutputStream =
         new FileOutputStream("target/test/repositoryvalidator.json");
-    eventLogger = RepositoryValidatorImpl.createLogger(jsonOutputStream);
-    validator = new RepositoryValidatorImpl(eventLogger);
+    eventLogger = FixRepositoryValidator.createLogger(jsonOutputStream);
+    validator = new FixRepositoryValidator(eventLogger);
   }
 
   @AfterEach

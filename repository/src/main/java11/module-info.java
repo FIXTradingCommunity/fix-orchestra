@@ -1,7 +1,6 @@
 module orchestra.repository {
   requires transitive java.xml.bind;
   requires transitive jaxb2.basics.runtime;
-  requires Saxon.HE;
   
   exports io.fixprotocol._2020.orchestra.repository;
   opens io.fixprotocol._2020.orchestra.repository;

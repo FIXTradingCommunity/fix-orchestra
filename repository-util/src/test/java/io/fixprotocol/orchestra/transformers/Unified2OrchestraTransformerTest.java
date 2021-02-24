@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 import io.fixprotocol.orchestra.event.EventListener;
 import io.fixprotocol.orchestra.repository.RepositoryValidator;
-import io.fixprotocol.orchestra.repository.RepositoryValidatorImpl;
+import io.fixprotocol.orchestra.repository.FixRepositoryValidator;
 
 
 public class Unified2OrchestraTransformerTest {
@@ -44,14 +44,14 @@ public class Unified2OrchestraTransformerTest {
 
   /*
   private EventListener eventLogger;
-  private RepositoryValidatorImpl validator;
+  private FixRepositoryValidator validator;
 
   @BeforeEach
   public void setUp() throws Exception {
     final OutputStream jsonOutputStream =
         new FileOutputStream("target/test/transformer.json");
-    eventLogger = RepositoryValidatorImpl.createLogger(jsonOutputStream);
-    validator = new RepositoryValidatorImpl(eventLogger);
+    eventLogger = FixRepositoryValidator.createLogger(jsonOutputStream);
+    validator = new FixRepositoryValidator(eventLogger);
   }
   
   @AfterEach
