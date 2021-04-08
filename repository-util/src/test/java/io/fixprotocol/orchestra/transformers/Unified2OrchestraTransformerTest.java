@@ -15,24 +15,17 @@
 package io.fixprotocol.orchestra.transformers;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.URISyntaxException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
-import io.fixprotocol.orchestra.event.EventListener;
 import io.fixprotocol.orchestra.repository.RepositoryValidator;
-import io.fixprotocol.orchestra.repository.FixRepositoryValidator;
 
 
 public class Unified2OrchestraTransformerTest {

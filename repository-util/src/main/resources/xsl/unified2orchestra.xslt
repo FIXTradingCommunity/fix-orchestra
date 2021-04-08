@@ -159,14 +159,14 @@
 		<fixr:components>
 			<xsl:apply-templates select="@*"/>
 			<!-- repeating attribute not always present; assume its a component rather than a group then -->
-			<xsl:apply-templates select="component[not(@repeating='1')]"/>
+			<xsl:apply-templates select="component[not(@repeating=1)]"/>
 		</fixr:components>
 	</xsl:template>
 	<xsl:template match="components" mode="group">
 		<fixr:groups>
 			<xsl:apply-templates select="@*"/>
 			<!-- FIX 4.4 or later -->
-			<xsl:apply-templates select="component[@repeating='1']" mode="group"/>
+			<xsl:apply-templates select="component[@repeating=1]" mode="group"/>
 			<!-- FIX 4.2 -->
 			<!-- Need to store context outside of for-each loop -->
 			<xsl:variable name="fix" select="ancestor::fix"/>
@@ -252,7 +252,7 @@
 	</xsl:template>
 	<xsl:template match="componentRef" mode="#all">
 		<xsl:choose>
-			<xsl:when test="//component[@id=current()/@id and @repeating='1']">
+			<xsl:when test="//component[@id=current()/@id and @repeating=1]">
 				<fixr:groupRef>
 					<xsl:apply-templates select="@* except @name except @textId"/>
 					<xsl:apply-templates select="@textId"/>
@@ -277,12 +277,12 @@
 		<xsl:attribute name="type" select="concat($fieldName, 'CodeSet')"/>
 	</xsl:template>
 	<xsl:template match="@addedEP">
-		<xsl:if test="current() != '-1'">
+		<xsl:if test="current() != -1">
 			<xsl:copy/>
 		</xsl:if>
 	</xsl:template>
 	<xsl:template match="@required">
-		<xsl:if test="current() = '1'">
+		<xsl:if test="current() = 1">
 			<xsl:attribute name="presence">required</xsl:attribute>
 		</xsl:if>
 	</xsl:template>
@@ -298,7 +298,7 @@
 	<xsl:template match="@associatedDataTag"/>
 	<!-- copy attributes by default -->
 	<xsl:template match="@*">
-		<xsl:if test="not(. = '')">
+		<xsl:if test="not(string(.) = '')">
 			<xsl:copy>
 				<xsl:apply-templates select="../@*"/>
 			</xsl:copy>
