@@ -3,25 +3,11 @@ package io.fixprotocol.orchestra.transformers;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import javax.xml.parsers.ParserConfigurationException;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.core.appender.ConsoleAppender;
-import org.apache.logging.log4j.core.config.Configurator;
-import org.apache.logging.log4j.core.config.builder.api.AppenderComponentBuilder;
-import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilder;
-import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilderFactory;
-import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
-import org.apache.logging.log4j.spi.LoggerContextFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.xml.sax.SAXException;
-import io.fixprotocol.orchestra.repository.FixRepositoryValidator;
 import io.fixprotocol.orchestra.event.EventListener;
+import io.fixprotocol.orchestra.repository.FixRepositoryValidator;
 
 public class RepositoryCompressorTest {
 

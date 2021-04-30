@@ -16,6 +16,7 @@
 package io.fixprotocol.orchestra.docgen;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.PrintStream;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -33,16 +34,14 @@ public class DocGeneratorTest {
 
   @Test
   public void generateFile() throws Exception {
-    DocGenerator generator = new DocGenerator(
-        Thread.currentThread().getContextClassLoader().getResourceAsStream("mit_2016.xml"),
+    DocGenerator generator = new DocGenerator(new FileInputStream("src/test/resources/mit_2016.xml"),
         "target/test/doc", new PrintStream("target/test/doc-err.txt"));
     generator.generate();
   }
 
   @Test
   public void generateZip() throws Exception {
-    DocGenerator generator = new DocGenerator(
-        Thread.currentThread().getContextClassLoader().getResourceAsStream("mit_2016.xml"),
+    DocGenerator generator = new DocGenerator(new FileInputStream("src/test/resources/mit_2016.xml"),
         "target/test/doc.zip", new PrintStream("target/test/zip-err.txt"));
     generator.generate();
   }

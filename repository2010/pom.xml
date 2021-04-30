@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>io.fixprotocol.orchestra</groupId>
 		<artifactId>parent</artifactId>
-		<version>1.7.0-SNAPSHOT</version>
+		<version>1.7.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>repository2010</artifactId>
 	<name>${project.groupId}:${project.artifactId}</name>

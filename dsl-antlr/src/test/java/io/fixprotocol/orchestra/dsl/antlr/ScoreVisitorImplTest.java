@@ -80,7 +80,7 @@ public class ScoreVisitorImplTest {
     boolean hasError() {
       return msg != null;
     }
-  };
+  }
 
   /**
    * @throws java.lang.Exception

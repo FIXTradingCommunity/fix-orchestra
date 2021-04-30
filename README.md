@@ -24,12 +24,6 @@ See [Orchestra tutorials](https://github.com/FIXTradingCommunity/fix-orchestra/w
 
 Orchestra version 1.0 Draft Standard was promoted to Technical Standard with minor enhancements and corrections on February 17, 2021. Version 1.6.10 of this project conforms to Orchestra version 1.0 Techncial Standard.
 
-### Version 1.0 Draft Standard
-
-Release candidate 5 was promoted to Draft Standard with minor enhancements and corrections on February 20, 2020. A draft standard must have at least two interoperable implementations in order to be promoted to a final Technical Standard.
-
-The XML schemas in the `repository` and `interfaces` modules are considered normative for the Orchestra standard. However, demonstration code in this project may be maintained and enhanced between versions of the standard.
-
 ## Normative Modules
 The following modules are **normative**.
 
@@ -53,7 +47,7 @@ The Score grammar is provided in the notation of ANTLR4, and the project builds 
 ### repository2010
 Repository 2010 Edition was the version of the FIX Repository prior to FIX Orchestra. This module provides a parser for its XML schema. It may be used to process existing Repository files and to convert their message structures to Orchestra format.
 
-### docgen
+### orchestra2doc
 This utility generates documentation for an Orchestra file that can be view in any web browser. The output of the generator may be used locally or from a web server.
 
 ### repository-util
@@ -128,6 +122,6 @@ Data files in this project under `test/resources` are strictly for testing and t
 ## Build
 The project is built with Maven version 3.3 or later. 
 
-The project builds a multi-release jar (MRJAR) so libraries can be used with either Java 8 or Java 11 or later using Java Platform Module System (JPMS). To build the full project requires a [Maven toolchain configuration](https://maven.apache.org/guides/mini/guide-using-toolchains.html) for each version of Java.
+The project requires Java 11 or later. Some modules use Java Platform Module System (JPMS). To build the full project requires a [Maven toolchain configuration](https://maven.apache.org/guides/mini/guide-using-toolchains.html) for each version of Java.
 
 

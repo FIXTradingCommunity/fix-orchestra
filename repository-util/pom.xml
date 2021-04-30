@@ -5,11 +5,15 @@
 	<parent>
 		<groupId>io.fixprotocol.orchestra</groupId>
 		<artifactId>parent</artifactId>
-		<version>1.7.0-SNAPSHOT</version>
+		<version>1.7.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>repository-util</artifactId>
 	<name>${project.groupId}:${project.artifactId}</name>
 	<description>Repository utilities</description>
+	
+	<properties>
+		<tablature.version>0.4.6-SNAPSHOT</tablature.version>
+	</properties>
 
 	<dependencies>
 		<dependency>
@@ -44,13 +48,6 @@
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
-		</dependency>
-		<!-- not required for Java 8 -->
-		<dependency>
-			<groupId>javax.xml.bind</groupId>
-			<artifactId>jaxb-api</artifactId>
-			<version>2.3.1</version>
-			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>com.sun.xml.bind</groupId>

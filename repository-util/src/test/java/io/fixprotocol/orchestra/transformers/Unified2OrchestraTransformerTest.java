@@ -15,6 +15,7 @@
 package io.fixprotocol.orchestra.transformers;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -25,7 +26,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
-import io.fixprotocol.orchestra.repository.RepositoryValidator;
+import io.fixprotocol.orchestra.event.EventListener;
+import io.fixprotocol.orchestra.event.ConsoleEventListener;
+import io.fixprotocol.orchestra.repository.FixRepositoryValidator;
 
 
 public class Unified2OrchestraTransformerTest {
@@ -92,8 +95,9 @@ public class Unified2OrchestraTransformerTest {
     String version = "FIX.5.0SP2";
     new Unified2OrchestraTransformer().transform(inputXml, phrasesFile, outputXml, name, version);
     Assertions.assertTrue(outputXml.exists());
-    RepositoryValidator validator = RepositoryValidator.builder().inputFile("target/test/FixRepository50SP2.xml").build();
-    validator.validate();
+    EventListener eventLogger = new ConsoleEventListener();
+    FixRepositoryValidator validator = new FixRepositoryValidator(eventLogger);
+    validator.validate(new FileInputStream("target/test/FixRepository50SP2.xml"));
   }
   
   /**
@@ -103,7 +107,7 @@ public class Unified2OrchestraTransformerTest {
    */
   @Disabled
   @Test
-  public void transform44() throws TransformerException, URISyntaxException {
+  public void transform44() throws Exception {
     File inputXml = new File(Thread.currentThread().getContextClassLoader()
         .getResource("FixRepositoryUnified44.xml").toURI());
     File outputXml = new File("target/test/Orchestra44.xml");
@@ -122,7 +126,7 @@ public class Unified2OrchestraTransformerTest {
    */
   @Disabled
   @Test
-  public void transform42() throws TransformerException, URISyntaxException {
+  public void transform42() throws Exception {
     File inputXml = new File(Thread.currentThread().getContextClassLoader()
         .getResource("FixRepositoryUnified.xml").toURI());
     File outputXml = new File("target/test/FixRepository42.xml");
