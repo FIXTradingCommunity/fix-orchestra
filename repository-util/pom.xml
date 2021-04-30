@@ -10,9 +10,9 @@
 	<artifactId>repository-util</artifactId>
 	<name>${project.groupId}:${project.artifactId}</name>
 	<description>Repository utilities</description>
-	
+
 	<properties>
-		<tablature.version>0.4.6-SNAPSHOT</tablature.version>
+		<md-grammar.version>1.0.0</md-grammar.version>
 	</properties>
 
 	<dependencies>
@@ -25,6 +25,11 @@
 			<groupId>io.fixprotocol.orchestra</groupId>
 			<artifactId>dsl-antlr</artifactId>
 			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.fixprotocol</groupId>
+			<artifactId>md-grammar</artifactId>
+			<version>${md-grammar.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.saxon</groupId>

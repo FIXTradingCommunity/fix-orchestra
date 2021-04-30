@@ -1,5 +1,6 @@
 package io.fixprotocol.orchestra.repository;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -31,6 +32,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
+import io.fixprotocol.md.event.DocumentParser;
 import io.fixprotocol.orchestra.dsl.antlr.Evaluator;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreException;
 import io.fixprotocol.orchestra.event.EventListener;
@@ -174,8 +176,9 @@ public class BasicRepositoryValidator {
       xmlDocument = validateSchema(inputStream, errorHandler);
       validateCodesets(xmlDocument);
       validateExpressions(xmlDocument);
+      validateMarkdown(xmlDocument);
     } catch (final Exception e) {
-      eventLogger.fatal("Failed to validate Score expressions, {0}", e.getMessage());
+      eventLogger.fatal("Failed to validate, {0}", e.getMessage());
       fatalError();
     }
 
@@ -300,6 +303,41 @@ public class BasicRepositoryValidator {
       fatalError();
     }
   }
+  
+  protected void validateMarkdown(Document xmlDocument) {
+    final XPath xPath = XPathFactory.newInstance().newXPath();
+    xPath.setNamespaceContext(nsContext);
+    final String expression = "//fixr:documentation[@contentType='text/markdown']";
+    try {
+      final NodeList nodeList =
+          (NodeList) xPath.compile(expression).evaluate(xmlDocument, XPathConstants.NODESET);
+      for (int i = 0; i < nodeList.getLength(); i++) {
+        final Node node = nodeList.item(i);
+        final short nodeType = node.getNodeType();
+        if (nodeType == Node.ELEMENT_NODE) {
+          final Element element = (Element) node;
+          final String document = element.getTextContent();
+          DocumentParser parser = new DocumentParser();
+          parser.validate(new ByteArrayInputStream(document.getBytes()), (line, charPositionInLine, msg) -> {
+            eventLogger.error(
+                "RepositoryValidator: invalid markdown documentation '{0}'; {1} at position {2}", document,
+                msg, charPositionInLine);
+            error();
+          });
+
+          }
+        }
+    } catch (final XPathExpressionException e) {
+      eventLogger.error("Failed to locate markdown documentation");
+      eventLogger.fatal(e.getMessage());
+      fatalError();
+    } catch (IOException e) {
+      eventLogger.error("Failed to parse markdown documentation");
+      eventLogger.fatal(e.getMessage());
+      fatalError();
+    }
+  }
+
 
   protected Document validateSchema(InputStream inputStream, ErrorListener errorHandler)
       throws ParserConfigurationException, SAXException, IOException {

@@ -122,6 +122,6 @@ Data files in this project under `test/resources` are strictly for testing and t
 ## Build
 The project is built with Maven version 3.3 or later. 
 
-The project requires Java 11 or later. Some modules use Java Platform Module System (JPMS). To build the full project requires a [Maven toolchain configuration](https://maven.apache.org/guides/mini/guide-using-toolchains.html) for each version of Java.
+The project requires Java 11 or later. Some modules use Java Platform Module System (JPMS).
 
 
