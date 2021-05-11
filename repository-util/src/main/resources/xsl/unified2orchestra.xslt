@@ -52,7 +52,6 @@
 							</xsl:element>
 						</xsl:for-each>
 						<xsl:apply-templates select="$field/@textId"/>
-						<xsl:apply-templates select="$field/@textId"/>
 					</xsl:element>
 				</xsl:for-each>
 			</codeSets>
@@ -305,7 +304,6 @@
 		</xsl:if>
 	</xsl:template>
 	<xsl:template match="@textId">
-		<xsl:variable name="index" select="index-of(/fixRepository/fix, current()/ancestor::fix)"/>
 		<xsl:element name="fixr:annotation">
 			<xsl:for-each select="fn:key('phrases-key', ../@textId, $phrases-doc)/text">
 				<xsl:element name="fixr:documentation">
