@@ -12,7 +12,7 @@
 	<description>Repository utilities</description>
 
 	<properties>
-		<md-grammar.version>1.0.0</md-grammar.version>
+		<md-grammar.version>1.0.1</md-grammar.version>
 	</properties>
 
 	<dependencies>

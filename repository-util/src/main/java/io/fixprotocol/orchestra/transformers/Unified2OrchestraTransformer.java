@@ -50,7 +50,7 @@ public class Unified2OrchestraTransformer {
 
     final TransformerFactory transFact = new TransformerFactoryImpl();
     final Transformer trans = transFact.newTransformer(xsltSource);
-    trans.setParameter("phrases-file", phrasesFile.toURI().toString());
+    trans.setParameter("phrases-file", phrasesFile.toURI().toASCIIString());
     trans.setParameter("name", name);
     trans.setParameter("new-version", version);
     trans.transform(xmlSource, result);
