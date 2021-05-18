@@ -174,7 +174,11 @@ public class BasicRepositoryValidator {
     Document xmlDocument;
     try {
       xmlDocument = validateSchema(inputStream, errorHandler);
+      validateFields(xmlDocument);
       validateCodesets(xmlDocument);
+      validateComponents(xmlDocument);
+      validateGroups(xmlDocument);
+      validateMessages(xmlDocument);
       validateExpressions(xmlDocument);
       validateMarkdown(xmlDocument);
     } catch (final Exception e) {
@@ -268,7 +272,41 @@ public class BasicRepositoryValidator {
         }
       }
     } catch (final XPathExpressionException e) {
-      eventLogger.error("Failed to locate Score expressions");
+      eventLogger.error("Failed to locate codesets");
+      eventLogger.fatal(e.getMessage());
+      fatalError();
+    }
+  }
+  
+  protected void validateComponents(Document xmlDocument) {
+    final XPath xPath = XPathFactory.newInstance().newXPath();
+    xPath.setNamespaceContext(nsContext);
+    final String expression = "//fixr:component";
+    try {
+      final NodeList nodeList =
+          (NodeList) xPath.compile(expression).evaluate(xmlDocument, XPathConstants.NODESET);
+      for (int i = 0; i < nodeList.getLength(); i++) {
+        final Node node = nodeList.item(i);
+        final short nodeType = node.getNodeType();
+        if (nodeType == Node.ELEMENT_NODE) {
+          final Element element = (Element) node;
+          final String name = element.getAttribute("name");
+          final String id = element.getAttribute("id");
+          final String abbrName = element.getAttribute("abbrName");
+          if (!isValidName.test(name)) {
+            warning();
+            eventLogger.warn(
+                "RepositoryValidator: component name {0} is invalid (id={1})", name, id);
+          }
+          if (abbrName != null && !isValidName.test(abbrName)) {
+            warning();
+            eventLogger.warn(
+                "RepositoryValidator: component abbrName {0} is invalid (id={1})", abbrName, id);
+          }
+        }
+      }
+    } catch (final XPathExpressionException e) {
+      eventLogger.error("Failed to locate components");
       eventLogger.fatal(e.getMessage());
       fatalError();
     }
@@ -304,6 +342,76 @@ public class BasicRepositoryValidator {
     }
   }
   
+  protected void validateFields(Document xmlDocument) {
+    final XPath xPath = XPathFactory.newInstance().newXPath();
+    xPath.setNamespaceContext(nsContext);
+    final String expression = "//fixr:field";
+    try {
+      final NodeList nodeList =
+          (NodeList) xPath.compile(expression).evaluate(xmlDocument, XPathConstants.NODESET);
+      for (int i = 0; i < nodeList.getLength(); i++) {
+        final Node node = nodeList.item(i);
+        final short nodeType = node.getNodeType();
+        if (nodeType == Node.ELEMENT_NODE) {
+          final Element element = (Element) node;
+          final String name = element.getAttribute("name");
+          final String id = element.getAttribute("id");
+          final String abbrName = element.getAttribute("abbrName");
+          if (!isValidName.test(name)) {
+            warning();
+            eventLogger.warn(
+                "RepositoryValidator: field name {0} is invalid (id={1})", name, id);
+
+          }
+          if (abbrName != null && !isValidName.test(abbrName)) {
+            warning();
+            eventLogger.warn(
+                "RepositoryValidator: field abbrName {0} is invalid (id={1})", abbrName, id);
+          }
+        }
+      }
+    } catch (final XPathExpressionException e) {
+      eventLogger.error("Failed to locate fields");
+      eventLogger.fatal(e.getMessage());
+      fatalError();
+    }
+  }
+  
+  protected void validateGroups(Document xmlDocument) {
+    final XPath xPath = XPathFactory.newInstance().newXPath();
+    xPath.setNamespaceContext(nsContext);
+    final String expression = "//fixr:group";
+    try {
+      final NodeList nodeList =
+          (NodeList) xPath.compile(expression).evaluate(xmlDocument, XPathConstants.NODESET);
+      for (int i = 0; i < nodeList.getLength(); i++) {
+        final Node node = nodeList.item(i);
+        final short nodeType = node.getNodeType();
+        if (nodeType == Node.ELEMENT_NODE) {
+          final Element element = (Element) node;
+          final String name = element.getAttribute("name");
+          final String id = element.getAttribute("id");
+          final String abbrName = element.getAttribute("abbrName");
+          if (!isValidName.test(name)) {
+            warning();
+            eventLogger.warn(
+                "RepositoryValidator: group name {0} is invalid (id={1})", name, id);
+
+          }
+          if (abbrName != null && !isValidName.test(abbrName)) {
+            warning();
+            eventLogger.warn(
+                "RepositoryValidator: group abbrName {0} is invalid (id={1})", abbrName, id);
+          }
+        }
+      }
+    } catch (final XPathExpressionException e) {
+      eventLogger.error("Failed to locate groups");
+      eventLogger.fatal(e.getMessage());
+      fatalError();
+    }
+  }
+  
   protected void validateMarkdown(Document xmlDocument) {
     final XPath xPath = XPathFactory.newInstance().newXPath();
     xPath.setNamespaceContext(nsContext);
@@ -333,6 +441,40 @@ public class BasicRepositoryValidator {
       fatalError();
     } catch (IOException e) {
       eventLogger.error("Failed to parse markdown documentation");
+      eventLogger.fatal(e.getMessage());
+      fatalError();
+    }
+  }
+  
+  protected void validateMessages(Document xmlDocument) {
+    final XPath xPath = XPathFactory.newInstance().newXPath();
+    xPath.setNamespaceContext(nsContext);
+    final String expression = "//fixr:message";
+    try {
+      final NodeList nodeList =
+          (NodeList) xPath.compile(expression).evaluate(xmlDocument, XPathConstants.NODESET);
+      for (int i = 0; i < nodeList.getLength(); i++) {
+        final Node node = nodeList.item(i);
+        final short nodeType = node.getNodeType();
+        if (nodeType == Node.ELEMENT_NODE) {
+          final Element element = (Element) node;
+          final String name = element.getAttribute("name");
+          final String id = element.getAttribute("id");
+          final String abbrName = element.getAttribute("abbrName");
+          if (!isValidName.test(name)) {
+            warning();
+            eventLogger.warn(
+                "RepositoryValidator: message name {0} is invalid (id={1})", name, id);
+          }
+          if (abbrName != null && !isValidName.test(abbrName)) {
+            warning();
+            eventLogger.warn(
+                "RepositoryValidator: message abbrName {0} is invalid (id={1})", abbrName, id);
+          }
+        }
+      }
+    } catch (final XPathExpressionException e) {
+      eventLogger.error("Failed to locate groups");
       eventLogger.fatal(e.getMessage());
       fatalError();
     }
