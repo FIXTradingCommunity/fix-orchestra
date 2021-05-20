@@ -19,16 +19,27 @@ import java.io.FileOutputStream;
 import io.fixprotocol.orchestra.event.EventListener;
 
 /**
- * Validates an Orchestra file against the repository schema
- *
+ * Validates an Orchestra repository file 
+ * 
+ * <p>Validations include:</p>
+ * <ul>
+ * <li>Conformance to the repository XML schema</li>
+ * <li>Syntax of Score DSL expressions</li>
+ * <li>Syntax of markdown documentation</li>
+ * <li>Conformance to FIX style rules or basic validation</li
+ * </ul>
+ * 
+ * <p>Rules for other protocols may be added in future.</p>
+ * 
  * @author Don Mendelson
  *
  */
 public class RepositoryValidator {
 
   public static class Builder {
-    private String inputFile;
     private String eventFile;
+    private String inputFile;
+    private String style = FIX_STYLE;
 
     public RepositoryValidator build() {
       return new RepositoryValidator(this);
@@ -43,7 +54,14 @@ public class RepositoryValidator {
       this.inputFile = inputFilename;
       return this;
     }
+    
+    public Builder style(String style) {
+      this.style = style;
+      return this;
+    }
   }
+
+  public static final String FIX_STYLE = "FIX";
 
   public static Builder builder() {
     return new Builder();
@@ -79,18 +97,25 @@ public class RepositoryValidator {
     validator.validate();
   }
 
-  private final String inputFile;
   private final String eventFile;
+  private final String inputFile;
+  private final String style;
 
   private RepositoryValidator(Builder builder) {
     this.eventFile = builder.eventFile;
     this.inputFile = builder.inputFile;
+    this.style = builder.style;
   }
 
   public boolean validate() {
     try (EventListener eventLogger = FixRepositoryValidator
         .createLogger(eventFile != null ? new FileOutputStream(eventFile) : null)) {
-      final FixRepositoryValidator impl = new FixRepositoryValidator(eventLogger);
+      BasicRepositoryValidator impl;
+      if (FIX_STYLE.equals(this.style)) {
+        impl = new FixRepositoryValidator(eventLogger);
+      } else {
+        impl = new BasicRepositoryValidator(eventLogger);
+      }
       return impl.validate(new FileInputStream(inputFile));
     } catch (final Exception e) {
       System.err.println(e.getMessage());

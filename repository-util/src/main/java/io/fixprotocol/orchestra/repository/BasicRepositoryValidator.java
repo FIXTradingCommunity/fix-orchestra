@@ -180,7 +180,7 @@ public class BasicRepositoryValidator {
       validateGroups(xmlDocument);
       validateMessages(xmlDocument);
       validateExpressions(xmlDocument);
-      validateMarkdown(xmlDocument);
+      validateDocumentation(xmlDocument);
     } catch (final Exception e) {
       eventLogger.fatal("Failed to validate, {0}", e.getMessage());
       fatalError();
@@ -312,6 +312,42 @@ public class BasicRepositoryValidator {
     }
   }
 
+  protected void validateDocumentation(Document xmlDocument) {
+    final XPath xPath = XPathFactory.newInstance().newXPath();
+    xPath.setNamespaceContext(nsContext);
+    final String expression = "//fixr:documentation";
+    try {
+      final NodeList nodeList =
+          (NodeList) xPath.compile(expression).evaluate(xmlDocument, XPathConstants.NODESET);
+      for (int i = 0; i < nodeList.getLength(); i++) {
+        final Node node = nodeList.item(i);
+        final short nodeType = node.getNodeType();
+        if (nodeType == Node.ELEMENT_NODE) {
+          final Element element = (Element) node;
+          final String document = element.getTextContent();
+          if (document.isBlank()) {
+            Node parent = element.getParentNode();
+            if (parent != null) {
+              Node grandParent = parent.getParentNode();
+              eventLogger.warn("RepositoryValidator: empty documentation at element '{0}'",
+                  grandParent.getTextContent());
+              warning();
+            }
+          } else {
+            final String contentType = element.getAttribute("contentType");
+            if ("text/markdown".equals(contentType)) {
+              validateMarkdown(document);
+            }
+          }
+        }
+      }
+    } catch (final XPathExpressionException e) {
+      eventLogger.error("Failed to locate markdown documentation");
+      eventLogger.fatal(e.getMessage());
+      fatalError();
+    }
+  }
+  
   protected void validateExpressions(Document xmlDocument) {
     final XPath xPath = XPathFactory.newInstance().newXPath();
     xPath.setNamespaceContext(nsContext);
@@ -411,41 +447,7 @@ public class BasicRepositoryValidator {
       fatalError();
     }
   }
-  
-  protected void validateMarkdown(Document xmlDocument) {
-    final XPath xPath = XPathFactory.newInstance().newXPath();
-    xPath.setNamespaceContext(nsContext);
-    final String expression = "//fixr:documentation[@contentType='text/markdown']";
-    try {
-      final NodeList nodeList =
-          (NodeList) xPath.compile(expression).evaluate(xmlDocument, XPathConstants.NODESET);
-      for (int i = 0; i < nodeList.getLength(); i++) {
-        final Node node = nodeList.item(i);
-        final short nodeType = node.getNodeType();
-        if (nodeType == Node.ELEMENT_NODE) {
-          final Element element = (Element) node;
-          final String document = element.getTextContent();
-          DocumentParser parser = new DocumentParser();
-          parser.validate(new ByteArrayInputStream(document.getBytes()), (line, charPositionInLine, msg) -> {
-            eventLogger.error(
-                "RepositoryValidator: invalid markdown documentation '{0}'; {1} at position {2}", document,
-                msg, charPositionInLine);
-            error();
-          });
 
-          }
-        }
-    } catch (final XPathExpressionException e) {
-      eventLogger.error("Failed to locate markdown documentation");
-      eventLogger.fatal(e.getMessage());
-      fatalError();
-    } catch (IOException e) {
-      eventLogger.error("Failed to parse markdown documentation");
-      eventLogger.fatal(e.getMessage());
-      fatalError();
-    }
-  }
-  
   protected void validateMessages(Document xmlDocument) {
     final XPath xPath = XPathFactory.newInstance().newXPath();
     xPath.setNamespaceContext(nsContext);
@@ -479,8 +481,7 @@ public class BasicRepositoryValidator {
       fatalError();
     }
   }
-
-
+  
   protected Document validateSchema(InputStream inputStream, ErrorListener errorHandler)
       throws ParserConfigurationException, SAXException, IOException {
     // parse an XML document into a DOM tree
@@ -513,6 +514,24 @@ public class BasicRepositoryValidator {
     // validate the DOM tree
     validator.validate(new DOMSource(document));
     return document;
+  }
+
+
+  private void validateMarkdown(final String document) {
+    try {
+      DocumentParser parser = new DocumentParser();
+      parser.validate(new ByteArrayInputStream(document.getBytes()),
+          (line, charPositionInLine, msg) -> {
+            eventLogger.error(
+                "RepositoryValidator: invalid markdown documentation '{0}'; {1} at position {2}",
+                document, msg, charPositionInLine);
+            error();
+          });
+    } catch (IOException e) {
+      eventLogger.error("Failed to parse markdown documentation");
+      eventLogger.fatal(e.getMessage());
+      fatalError();
+    }
   }
 
 }
