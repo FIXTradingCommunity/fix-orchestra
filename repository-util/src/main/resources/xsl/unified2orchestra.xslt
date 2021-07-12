@@ -43,6 +43,13 @@
 						<xsl:attribute name="name"><xsl:value-of select="concat($fieldName, 'CodeSet')"/></xsl:attribute>
 						<xsl:attribute name="id"><xsl:value-of select="$fieldId"/></xsl:attribute>
 						<xsl:attribute name="type"><xsl:value-of select="$fieldType"/></xsl:attribute>
+						<!-- copy pedigree from field -->
+						<xsl:apply-templates select="$field/@added"/> 
+						<xsl:apply-templates select="$field/@addedEP"/> 
+						<xsl:apply-templates select="$field/@updated"/> 
+						<xsl:apply-templates select="$field/@updatedEP"/> 
+						<xsl:apply-templates select="$field/@deprecated"/> 
+						<xsl:apply-templates select="$field/@deprecatedEP"/> 
 						<xsl:for-each select="$field/enum">
 							<xsl:element name="fixr:code">
 								<xsl:attribute name="name"><xsl:value-of select="current()/@symbolicName"/></xsl:attribute>
