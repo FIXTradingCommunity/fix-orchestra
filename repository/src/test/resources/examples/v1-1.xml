@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fixr:repository xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:fixr="http://fixprotocol.io/2020/orchestra/repository" xmlns:functx="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" name="FIX.Latest" version="FIX.Latest_EP266" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://fixprotocol.io/2020/orchestra/repository file:///C:/Users/donme/GitHub/fix-orchestra/repository/src/main/resources/xsd/repository.xsd">
+	<fixr:metadata/>
+	<fixr:datatypes>
+		<fixr:datatype name="String">
+			<fixr:mappedDatatype standard="XML" builtin="true" base="xs:string"/>
+		</fixr:datatype>
+		<fixr:datatype name="String" scenario="normalized">
+			<fixr:mappedDatatype standard="XML" builtin="true" base="xs:token"/>
+		</fixr:datatype>
+		<fixr:datatype name="int" scenario="short">
+			<fixr:mappedDatatype standard="XML" builtin="true" base="xs:short"/>
+		</fixr:datatype>
+		<fixr:datatype name="int" scenario="long" >
+			<fixr:mappedDatatype standard="XML" builtin="true" base="xs:long"/>
+		</fixr:datatype>
+	</fixr:datatypes>
+	<fixr:codeSets>
+		<fixr:codeSet type="String" id="22" name="SecurityIDSourceCodeSet" scenario="Test1">
+			<fixr:code value="1" id="37785" name="CUSIP"/>
+		</fixr:codeSet>
+		<fixr:codeSet type="String" id="22" name="SecurityIDSourceCodeSet" scenario="Test2">
+			<fixr:code value="4" id="7965" name="ISIN"/>
+		</fixr:codeSet>
+	</fixr:codeSets>
+	<fixr:fields>
+		<fixr:field added="FIX.2.7" id="1" name="Account" type="String" abbrName="Acct">
+			<fixr:annotation>
+				<fixr:documentation purpose="SYNOPSIS">
+         Account mnemonic as agreed between buy and sell sides, e.g. broker and institution or investor/intermediary and fund manager.
+      </fixr:documentation>
+			</fixr:annotation>
+		</fixr:field>
+		<fixr:field added="FIX.2.7" id="22" name="SecurityIDSource" type="SecurityIDSourceCodeSet" updated="FIX.5.0SP2" updatedEP="161" abbrName="Src" unionDataType="Reserved100Plus" scenario="Test1">
+			<fixr:annotation>
+				<fixr:documentation purpose="SYNOPSIS">
+         Identifies class or source of the SecurityID(48) value.
+      </fixr:documentation>
+			</fixr:annotation>
+		</fixr:field>
+		<fixr:field added="FIX.2.7" id="22" name="SecurityIDSource" type="SecurityIDSourceCodeSet" updated="FIX.5.0SP2" updatedEP="161" abbrName="Src" unionDataType="Reserved100Plus" scenario="Test2">
+			<fixr:annotation>
+				<fixr:documentation purpose="SYNOPSIS">
+         Identifies class or source of the SecurityID(48) value.
+      </fixr:documentation>
+			</fixr:annotation>
+		</fixr:field>
+		<fixr:field type="String" id="48" name="SecurityID" abbrName="ID" added="FIX.2.7">
+			<fixr:annotation>
+				<fixr:documentation purpose="SYNOPSIS">
+         Security identifier value of SecurityIDSource (22) type (e.g. CUSIP, SEDOL, ISIN, etc). Requires SecurityIDSource.
+      </fixr:documentation>
+			</fixr:annotation>
+		</fixr:field>
+	</fixr:fields>
+	<fixr:components>
+		<fixr:component category="Common" added="FIX.4.3" id="1003" name="Instrument" abbrName="Instrmt">
+			<fixr:fieldRef id="48"/>
+			<fixr:fieldRef id="22"/>
+		</fixr:component>
+	</fixr:components>
+	<fixr:messages>
+		<fixr:message msgType="D" category="SingleGeneralOrderHandling" flow="OrderEntry" id="14" name="NewOrderSingle" abbrName="Order" added="FIX.2.7">
+			<fixr:structure>
+				<fixr:componentRef id="1003"/>
+			</fixr:structure>
+		</fixr:message>
+	</fixr:messages>
+</fixr:repository>
