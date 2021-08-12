@@ -82,7 +82,7 @@ public class BasicRepositoryValidator {
 
 
   static final String REPOSITORY_NAMESPACE = "http://fixprotocol.io/2020/orchestra/repository";
-  
+
   private static final NamespaceContext nsContext = new NamespaceContext() {
     @Override
     public String getNamespaceURI(String arg0) {
@@ -138,11 +138,13 @@ public class BasicRepositoryValidator {
     this.eventLogger = eventLogger;
   }
 
-  public int error() {
+  public int error(String format, Object... args) {
+    eventLogger.error(format, args);
     return errors++;
   }
 
-  public int fatalError() {
+  public int fatalError(String format, Object... args) {
+    eventLogger.fatal(format, args);
     return fatalErrors++;
   }
 
@@ -182,8 +184,7 @@ public class BasicRepositoryValidator {
       validateExpressions(xmlDocument);
       validateDocumentation(xmlDocument);
     } catch (final Exception e) {
-      eventLogger.fatal("Failed to validate, {0}", e.getMessage());
-      fatalError();
+      fatalError("Failed to validate, {0}", e.getMessage());
     }
 
     if (getFatalErrors() > 0) {
@@ -199,7 +200,8 @@ public class BasicRepositoryValidator {
     }
   }
 
-  public int warning() {
+  public int warning(String format, Object... args) {
+    eventLogger.warn(format, args);
     return warnings++;
   }
 
@@ -213,18 +215,20 @@ public class BasicRepositoryValidator {
       final String codesetId = codesetElement.getAttribute("id");
 
       if (!isValidName.test(codeName)) {
-        warning();
-        eventLogger.warn(
-            "RepositoryValidator: code name {0} has invalid case in codeset {1} (id={2})", codeName,
-            codesetName, codesetId);
-
+        warning("RepositoryValidator: code name {0} has invalid case in codeset {1} (id={2})",
+            codeName, codesetName, codesetId);
       }
       if (!isCodeValid.test(value)) {
         final String datatype = codesetElement.getAttribute("type");
-        error();
-        eventLogger.error(
+        error(
             "RepositoryValidator: code {0} value [{1}] is invalid for datatype {2} in codeset {3} (id={4})",
             codeName, value, datatype, codesetName, codesetId);
+      }
+
+      if (codeElement.getAttribute("deprecated").length() > 0
+          || codeElement.getAttribute("deprecatedEP").length() > 0) {
+        warning("RepositoryValidator: code {0} value [{1}] in codeset {2} (id={3}) is deprecated",
+            codeName, value, codesetName, codesetId);
       }
     }
   }
@@ -245,6 +249,12 @@ public class BasicRepositoryValidator {
           final String codesetId = codesetElement.getAttribute("id");
           final String datatype = codesetElement.getAttribute("type");
 
+          if (codesetElement.getAttribute("deprecated").length() > 0
+              || codesetElement.getAttribute("deprecatedEP").length() > 0) {
+            warning("RepositoryValidator: codeset {0} (id={1}) is deprecated",
+                codesetName, codesetId);
+          }
+          
           NodeList codeElements =
               codesetElement.getElementsByTagNameNS(REPOSITORY_NAMESPACE, "code");
           switch (datatype) {
@@ -264,20 +274,16 @@ public class BasicRepositoryValidator {
               validateCodes(codeElements, codesetElement, isValidBoolean);
               break;
             default:
-              error();
-              eventLogger.error(
-                  "RepositoryValidator: unexpected datatype {0} for code set {1} (id={2})",
+              error("RepositoryValidator: unexpected datatype {0} for code set {1} (id={2})",
                   datatype, codesetName, codesetId);
           }
         }
       }
     } catch (final XPathExpressionException e) {
-      eventLogger.error("Failed to locate codesets");
-      eventLogger.fatal(e.getMessage());
-      fatalError();
+      fatalError("Failed to locate codesets; {}", e.getMessage());
     }
   }
-  
+
   protected void validateComponents(Document xmlDocument) {
     final XPath xPath = XPathFactory.newInstance().newXPath();
     xPath.setNamespaceContext(nsContext);
@@ -294,21 +300,21 @@ public class BasicRepositoryValidator {
           final String id = element.getAttribute("id");
           final String abbrName = element.getAttribute("abbrName");
           if (!isValidName.test(name)) {
-            warning();
-            eventLogger.warn(
-                "RepositoryValidator: component name {0} is invalid (id={1})", name, id);
+            warning("RepositoryValidator: component name {0} is invalid (id={1})", name, id);
           }
-          if (abbrName != null && !isValidName.test(abbrName)) {
-            warning();
-            eventLogger.warn(
-                "RepositoryValidator: component abbrName {0} is invalid (id={1})", abbrName, id);
+          if (abbrName.length() > 0 && !isValidName.test(abbrName)) {
+            warning("RepositoryValidator: component abbrName {0} is invalid (id={1})", abbrName,
+                id);
+          }
+          if (element.getAttribute("deprecated").length() > 0
+              || element.getAttribute("deprecatedEP").length() > 0) {
+            warning("RepositoryValidator: component {0} (id={1}) is deprecated",
+                name, id);
           }
         }
       }
     } catch (final XPathExpressionException e) {
-      eventLogger.error("Failed to locate components");
-      eventLogger.fatal(e.getMessage());
-      fatalError();
+      fatalError("Failed to locate components; {}", e.getMessage());
     }
   }
 
@@ -326,12 +332,17 @@ public class BasicRepositoryValidator {
           final Element element = (Element) node;
           final String document = element.getTextContent();
           if (document.isBlank()) {
+            String id = "";
             Node parent = element.getParentNode();
             if (parent != null) {
               Node grandParent = parent.getParentNode();
-              eventLogger.warn("RepositoryValidator: empty documentation at element '{0}'",
-                  grandParent.getTextContent());
-              warning();
+              if (nodeType == Node.ELEMENT_NODE) {
+                final Element gpElement = (Element) grandParent;
+                id = gpElement.getAttribute("id");
+              }             
+              warning("RepositoryValidator: empty documentation at element type {0} id={1}",
+                  grandParent.getLocalName(),
+                  id);
             }
           } else {
             final String contentType = element.getAttribute("contentType");
@@ -342,12 +353,10 @@ public class BasicRepositoryValidator {
         }
       }
     } catch (final XPathExpressionException e) {
-      eventLogger.error("Failed to locate markdown documentation");
-      eventLogger.fatal(e.getMessage());
-      fatalError();
+      fatalError("Failed to locate markdown documentation; {}", e.getMessage());
     }
   }
-  
+
   protected void validateExpressions(Document xmlDocument) {
     final XPath xPath = XPathFactory.newInstance().newXPath();
     xPath.setNamespaceContext(nsContext);
@@ -364,20 +373,16 @@ public class BasicRepositoryValidator {
           try {
             Evaluator.validateSyntax(condition);
           } catch (final ScoreException exception) {
-            eventLogger.error(
-                "RepositoryValidator: invalid Score expression '{0}'; {1} at col. {2}", condition,
+            error("RepositoryValidator: invalid Score expression '{0}'; {1} at col. {2}", condition,
                 exception.getMessage(), exception.getColumnNumber());
-            error();
           }
         }
       }
     } catch (final XPathExpressionException e) {
-      eventLogger.error("Failed to locate Score expressions");
-      eventLogger.fatal(e.getMessage());
-      fatalError();
+      fatalError("Failed to locate Score expressions; {}", e.getMessage());
     }
   }
-  
+
   protected void validateFields(Document xmlDocument) {
     final XPath xPath = XPathFactory.newInstance().newXPath();
     xPath.setNamespaceContext(nsContext);
@@ -394,25 +399,24 @@ public class BasicRepositoryValidator {
           final String id = element.getAttribute("id");
           final String abbrName = element.getAttribute("abbrName");
           if (!isValidName.test(name)) {
-            warning();
-            eventLogger.warn(
-                "RepositoryValidator: field name {0} is invalid (id={1})", name, id);
+            warning("RepositoryValidator: field name {0} is invalid (id={1})", name, id);
 
           }
-          if (abbrName != null && !isValidName.test(abbrName)) {
-            warning();
-            eventLogger.warn(
-                "RepositoryValidator: field abbrName {0} is invalid (id={1})", abbrName, id);
+          if (abbrName.length() > 0 && !isValidName.test(abbrName)) {
+            warning("RepositoryValidator: field abbrName {0} is invalid (id={1})", abbrName, id);
+          }
+          if (element.getAttribute("deprecated").length() > 0
+              || element.getAttribute("deprecatedEP").length() > 0) {
+            warning("RepositoryValidator: field {0}({1}) is deprecated",
+                name, id);
           }
         }
       }
     } catch (final XPathExpressionException e) {
-      eventLogger.error("Failed to locate fields");
-      eventLogger.fatal(e.getMessage());
-      fatalError();
+      fatalError("Failed to locate fields; {}", e.getMessage());
     }
   }
-  
+
   protected void validateGroups(Document xmlDocument) {
     final XPath xPath = XPathFactory.newInstance().newXPath();
     xPath.setNamespaceContext(nsContext);
@@ -429,22 +433,21 @@ public class BasicRepositoryValidator {
           final String id = element.getAttribute("id");
           final String abbrName = element.getAttribute("abbrName");
           if (!isValidName.test(name)) {
-            warning();
-            eventLogger.warn(
-                "RepositoryValidator: group name {0} is invalid (id={1})", name, id);
+            warning("RepositoryValidator: group name {0} is invalid (id={1})", name, id);
 
           }
-          if (abbrName != null && !isValidName.test(abbrName)) {
-            warning();
-            eventLogger.warn(
-                "RepositoryValidator: group abbrName {0} is invalid (id={1})", abbrName, id);
+          if (abbrName.length() > 0  && !isValidName.test(abbrName)) {
+            warning("RepositoryValidator: group abbrName {0} is invalid (id={1})", abbrName, id);
+          }
+          if (element.getAttribute("deprecated").length() > 0
+              || element.getAttribute("deprecatedEP").length() > 0) {
+            warning("RepositoryValidator: group {0} (id={1}) is deprecated",
+                name, id);
           }
         }
       }
     } catch (final XPathExpressionException e) {
-      eventLogger.error("Failed to locate groups");
-      eventLogger.fatal(e.getMessage());
-      fatalError();
+      fatalError("Failed to locate groups; {}", e.getMessage());
     }
   }
 
@@ -464,24 +467,23 @@ public class BasicRepositoryValidator {
           final String id = element.getAttribute("id");
           final String abbrName = element.getAttribute("abbrName");
           if (!isValidName.test(name)) {
-            warning();
-            eventLogger.warn(
-                "RepositoryValidator: message name {0} is invalid (id={1})", name, id);
+            warning("RepositoryValidator: message name {0} is invalid (id={1})", name, id);
           }
-          if (abbrName != null && !isValidName.test(abbrName)) {
-            warning();
-            eventLogger.warn(
-                "RepositoryValidator: message abbrName {0} is invalid (id={1})", abbrName, id);
+          if (abbrName.length() > 0 && !isValidName.test(abbrName)) {
+            warning("RepositoryValidator: message abbrName {0} is invalid (id={1})", abbrName, id);
+          }
+          if (element.getAttribute("deprecated").length() > 0
+              || element.getAttribute("deprecatedEP").length() > 0) {
+            warning("RepositoryValidator: message {0} (id={1}) is deprecated",
+                name, id);
           }
         }
       }
     } catch (final XPathExpressionException e) {
-      eventLogger.error("Failed to locate groups");
-      eventLogger.fatal(e.getMessage());
-      fatalError();
+      fatalError("Failed to locate groups; {}", e.getMessage());
     }
   }
-  
+
   protected Document validateSchema(InputStream inputStream, ErrorListener errorHandler)
       throws ParserConfigurationException, SAXException, IOException {
     // parse an XML document into a DOM tree
@@ -522,17 +524,12 @@ public class BasicRepositoryValidator {
       DocumentParser parser = new DocumentParser();
       parser.validate(new ByteArrayInputStream(document.getBytes()),
           (line, charPositionInLine, msg) -> {
-            eventLogger.error(
-                "RepositoryValidator: invalid markdown documentation '{0}'; {1} at position {2}",
+            error("RepositoryValidator: invalid markdown documentation '{0}'; {1} at position {2}",
                 document, msg, charPositionInLine);
-            error();
           });
     } catch (IOException e) {
-      eventLogger.error("Failed to parse markdown documentation");
-      eventLogger.fatal(e.getMessage());
-      fatalError();
+      fatalError("Failed to parse markdown documentation; {}", e.getMessage());
     }
   }
 
 }
-
