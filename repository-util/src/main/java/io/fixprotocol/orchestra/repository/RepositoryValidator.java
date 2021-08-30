@@ -16,7 +16,12 @@ package io.fixprotocol.orchestra.repository;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.OutputStream;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import io.fixprotocol.orchestra.event.EventListener;
+import io.fixprotocol.orchestra.event.EventListenerFactory;
+import io.fixprotocol.orchestra.event.TeeEventListener;
 
 /**
  * Validates an Orchestra repository file 
@@ -62,6 +67,7 @@ public class RepositoryValidator {
   }
 
   public static final String FIX_STYLE = "FIX";
+  final Logger logger = LogManager.getLogger(RepositoryValidator.class);
 
   public static Builder builder() {
     return new Builder();
@@ -76,10 +82,8 @@ public class RepositoryValidator {
    * Usage: RepositoryValidator [options] &lt;input-file&gt;
    * -e &lt;logfile&gt; name of event log
    *        </pre>
-   *
-   * @throws Exception if the file to validate cannot be found, read, or parsed
    */
-  public static void main(String[] args) throws Exception {
+  public static void main(String[] args) {
     final Builder builder = RepositoryValidator.builder();
 
     for (int i = 0; i < args.length;) {
@@ -94,7 +98,7 @@ public class RepositoryValidator {
       i++;
     }
     final RepositoryValidator validator = builder.build();
-    validator.validate();
+    System.exit(validator.validate() ? 0 : 1);
   }
 
   private final String eventFile;
@@ -108,8 +112,7 @@ public class RepositoryValidator {
   }
 
   public boolean validate() {
-    try (EventListener eventLogger = FixRepositoryValidator
-        .createLogger(eventFile != null ? new FileOutputStream(eventFile) : null)) {
+    try (EventListener eventLogger = createLogger(eventFile != null ? new FileOutputStream(eventFile) : null)) {
       BasicRepositoryValidator impl;
       if (FIX_STYLE.equals(this.style)) {
         impl = new FixRepositoryValidator(eventLogger);
@@ -118,9 +121,29 @@ public class RepositoryValidator {
       }
       return impl.validate(new FileInputStream(inputFile));
     } catch (final Exception e) {
-      System.err.println(e.getMessage());
+      logger.fatal("RepositoryValidator failed", e);
       return false;
     }
+  }
+  
+  public static EventListener createLogger(OutputStream jsonOutputStream) {
+    final Logger logger = LogManager.getLogger(RepositoryValidator.class);
+    final EventListenerFactory factory = new EventListenerFactory();
+    TeeEventListener eventListener = null;
+    try {
+      eventListener = new TeeEventListener();
+      final EventListener logEventLogger = factory.getInstance("LOG4J");
+      logEventLogger.setResource(logger);
+      eventListener.addEventListener(logEventLogger);
+      if (jsonOutputStream != null) {
+        final EventListener jsonEventLogger = factory.getInstance("JSON");
+        jsonEventLogger.setResource(jsonOutputStream);
+        eventListener.addEventListener(jsonEventLogger);
+      }
+    } catch (Exception e) {
+      logger.error("Error creating event listener", e);
+    }
+    return eventListener;
   }
 
 }

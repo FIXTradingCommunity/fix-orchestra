@@ -38,7 +38,6 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.purl.dc.elements._1.ObjectFactory;
@@ -91,7 +90,6 @@ public class RepositoryCompressor {
     private Predicate<MessageType> messagePredicate;
     private String outputFile;
     private String logFile;
-    private boolean verbose;
 
     public RepositoryCompressor build() {
       return new RepositoryCompressor(this);
@@ -99,11 +97,6 @@ public class RepositoryCompressor {
 
     public Builder eventLog(String logFile) {
       this.logFile = logFile;
-      return this;
-    }
-
-    public Builder verbose(boolean verbose) {
-      this.verbose = verbose;
       return this;
     }
 
@@ -236,11 +229,16 @@ public class RepositoryCompressor {
    * </pre>
    *
    * @param args command line arguments
-   * @throws Exception if an IO error occurs or a file cannot be parsed
    */
-  public static void main(String[] args) throws Exception {
-    final RepositoryCompressor compressor = RepositoryCompressor.parseArgs(args).build();
-    compressor.compress();
+  public static void main(String[] args) {
+    RepositoryCompressor compressor;
+    try {
+      compressor = RepositoryCompressor.parseArgs(args).build();
+      System.exit(compressor.compress() ? 0 : 1);
+    } catch (ParseException e) {
+      System.err.println(e.getMessage());
+      System.exit(1);
+    }
   }
 
   public static Builder parseArgs(String[] args) throws ParseException {
@@ -349,121 +347,127 @@ public class RepositoryCompressor {
   private final String outputFile;
   private final File logFile;
 
-
-  private final boolean verbose;
-
   protected RepositoryCompressor(Builder builder) {
     this.inputFile = builder.inputFile;
     this.outputFile = builder.outputFile;
     this.messagePredicate = builder.messagePredicate;
     this.logFile = builder.logFile != null ? new File(builder.logFile) : null;
-    this.verbose = builder.verbose;
   }
 
-  public void compress() throws Exception {
+  public boolean compress() {
 
     try (InputStream is = new FileInputStream(this.inputFile);
         OutputStream os = new FileOutputStream(this.outputFile)) {
-      compress(is, os, this.messagePredicate);
+      return compress(is, os, this.messagePredicate);
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+      
+      return false;
     }
   }
 
-  private void compress(InputStream is, OutputStream os,
-      Predicate<? super MessageType> messagePredicate) throws JAXBException, IOException {
+  private boolean compress(InputStream is, OutputStream os,
+      Predicate<? super MessageType> messagePredicate) {
+    try {
+      final Repository inRepository = unmarshal(is);
+      final Categories categories = inRepository.getCategories();
+      isCategoryInSection.setCategories(categories.getCategory());
+      final Repository outRepository = new Repository();
+      inRepository.copyTo(null, outRepository, AttributeCopyStrategy.INSTANCE);
 
-    final Level level = verbose ? Level.DEBUG : Level.ERROR;
-    final Repository inRepository = unmarshal(is);
-    final Categories categories = inRepository.getCategories();
-    isCategoryInSection.setCategories(categories.getCategory());
-    final Repository outRepository = new Repository();
-    inRepository.copyTo(null, outRepository, AttributeCopyStrategy.INSTANCE);
+      final ElementOrRefinementContainer metadata =
+          (ElementOrRefinementContainer) inRepository.getMetadata().clone();
+      final List<JAXBElement<SimpleLiteral>> literals = metadata.getAny();
+      final ObjectFactory objectFactory = new ObjectFactory();
+      final SimpleLiteral contributor = new SimpleLiteral();
+      contributor.getContent().add("RepositoryCompressor");
+      literals.add(objectFactory.createContributor(contributor));
+      outRepository.setMetadata(metadata);
 
-    final ElementOrRefinementContainer metadata =
-        (ElementOrRefinementContainer) inRepository.getMetadata().clone();
-    final List<JAXBElement<SimpleLiteral>> literals = metadata.getAny();
-    final ObjectFactory objectFactory = new ObjectFactory();
-    final SimpleLiteral contributor = new SimpleLiteral();
-    contributor.getContent().add("RepositoryCompressor");
-    literals.add(objectFactory.createContributor(contributor));
-    outRepository.setMetadata(metadata);
-    
-    if (categories != null) {
-      outRepository.setCategories((Categories) categories.clone());
+      if (categories != null) {
+        outRepository.setCategories((Categories) categories.clone());
+      }
+      final Sections sections = inRepository.getSections();
+      if (sections != null) {
+        outRepository.setSections((Sections) sections.clone());
+      }
+      final Datatypes datatypes = inRepository.getDatatypes();
+      if (datatypes != null) {
+        outRepository.setDatatypes((Datatypes) datatypes.clone());
+      }
+      final Actors actors = inRepository.getActors();
+      if (actors != null) {
+        outRepository.setActors((Actors) actors.clone());
+      }
+      final Components components = inRepository.getComponents();
+      if (components != null) {
+        final Components inComponents = (Components) components.clone();
+        componentList = inComponents.getComponent();
+      }
+      final Groups groups = inRepository.getGroups();
+      if (groups != null) {
+        final Groups inGroups = (Groups) groups.clone();
+        groupList = inGroups.getGroup();
+      }
+
+
+      final Messages messages = inRepository.getMessages();
+      final List<MessageType> messageList;
+      if (messages != null) {
+        final Messages inMessages = (Messages) messages.clone();
+        messageList = inMessages.getMessage();
+      } else {
+        messageList = Collections.emptyList();
+      }
+      final List<MessageType> filteredMessages =
+          messageList.stream().filter(messagePredicate).collect(Collectors.toList());
+      filteredMessages.forEach(m -> walk(m.getStructure().getComponentRefOrGroupRefOrFieldRef()));
+
+      final List<BigInteger> distinctFieldIds =
+          fieldIdList.stream().distinct().collect(Collectors.toList());
+      final Fields inFields = (Fields) inRepository.getFields().clone();
+      final List<FieldType> fieldsWithFlow = inFields.getField().stream()
+          .filter(f -> distinctFieldIds.contains(f.getId())).collect(Collectors.toList());
+      final Fields outFields = new Fields();
+      outFields.getField().addAll(fieldsWithFlow);
+      outRepository.setFields(outFields);
+
+      final List<String> typeList =
+          fieldsWithFlow.stream().map(FieldType::getType).distinct().collect(Collectors.toList());
+      final CodeSets inCodeSets = (CodeSets) inRepository.getCodeSets().clone();
+      final List<CodeSetType> codeSetsWithFlow = inCodeSets.getCodeSet().stream()
+          .filter(cs -> typeList.contains(cs.getName())).collect(Collectors.toList());
+      final CodeSets outCodeSets = new CodeSets();
+      outCodeSets.getCodeSet().addAll(codeSetsWithFlow);
+      outRepository.setCodeSets(outCodeSets);
+
+      final List<BigInteger> distinctComponentsIds =
+          componentIdList.stream().distinct().collect(Collectors.toList());
+      final List<ComponentType> componentsWithFlow = componentList.stream()
+          .filter(c -> distinctComponentsIds.contains(c.getId())).collect(Collectors.toList());
+      final Components outComponents = new Components();
+      outComponents.getComponent().addAll(componentsWithFlow);
+      outRepository.setComponents(outComponents);
+
+      final List<BigInteger> distinctGroupIds =
+          groupIdList.stream().distinct().collect(Collectors.toList());
+      final List<GroupType> groupWithFlow = groupList.stream()
+          .filter(c -> distinctGroupIds.contains(c.getId())).collect(Collectors.toList());
+      final Groups outGroups = new Groups();
+      outGroups.getGroup().addAll(groupWithFlow);
+      outRepository.setGroups(outGroups);
+
+      final Messages outMessages = new Messages();
+      outMessages.getMessage().addAll(filteredMessages);
+      outRepository.setMessages(outMessages);
+
+      marshal(outRepository, os);
+      return true;
+    } catch (JAXBException e) {
+      logger.fatal("RepositoryCompressor failed", e);
+      return false;
     }
-    final Sections sections = inRepository.getSections();
-    if (sections != null) {
-      outRepository.setSections((Sections) sections.clone());
-    }
-    final Datatypes datatypes = inRepository.getDatatypes();
-    if (datatypes != null) {
-      outRepository.setDatatypes((Datatypes) datatypes.clone());
-    }
-    final Actors actors = inRepository.getActors();
-    if (actors != null) {
-      outRepository.setActors((Actors) actors.clone());
-    }
-    final Components components = inRepository.getComponents();
-    if (components != null) {
-      final Components inComponents = (Components) components.clone();
-      componentList = inComponents.getComponent();
-    }
-    final Groups groups = inRepository.getGroups();
-    if (groups != null) {
-      final Groups inGroups = (Groups) groups.clone();
-      groupList = inGroups.getGroup();
-    }
-
-
-    final Messages messages = inRepository.getMessages();
-    final List<MessageType> messageList;
-    if (messages != null) {
-      final Messages inMessages = (Messages) messages.clone();
-      messageList = inMessages.getMessage();
-    } else {
-      messageList = Collections.emptyList();
-    }
-    final List<MessageType> filteredMessages =
-        messageList.stream().filter(messagePredicate).collect(Collectors.toList());
-    filteredMessages.forEach(m -> walk(m.getStructure().getComponentRefOrGroupRefOrFieldRef()));
-
-    final List<BigInteger> distinctFieldIds =
-        fieldIdList.stream().distinct().collect(Collectors.toList());
-    final Fields inFields = (Fields) inRepository.getFields().clone();
-    final List<FieldType> fieldsWithFlow = inFields.getField().stream()
-        .filter(f -> distinctFieldIds.contains(f.getId())).collect(Collectors.toList());
-    final Fields outFields = new Fields();
-    outFields.getField().addAll(fieldsWithFlow);
-    outRepository.setFields(outFields);
-
-    final List<String> typeList =
-        fieldsWithFlow.stream().map(FieldType::getType).distinct().collect(Collectors.toList());
-    final CodeSets inCodeSets = (CodeSets) inRepository.getCodeSets().clone();
-    final List<CodeSetType> codeSetsWithFlow = inCodeSets.getCodeSet().stream()
-        .filter(cs -> typeList.contains(cs.getName())).collect(Collectors.toList());
-    final CodeSets outCodeSets = new CodeSets();
-    outCodeSets.getCodeSet().addAll(codeSetsWithFlow);
-    outRepository.setCodeSets(outCodeSets);
-
-    final List<BigInteger> distinctComponentsIds =
-        componentIdList.stream().distinct().collect(Collectors.toList());
-    final List<ComponentType> componentsWithFlow = componentList.stream()
-        .filter(c -> distinctComponentsIds.contains(c.getId())).collect(Collectors.toList());
-    final Components outComponents = new Components();
-    outComponents.getComponent().addAll(componentsWithFlow);
-    outRepository.setComponents(outComponents);
-
-    final List<BigInteger> distinctGroupIds =
-        groupIdList.stream().distinct().collect(Collectors.toList());
-    final List<GroupType> groupWithFlow = groupList.stream()
-        .filter(c -> distinctGroupIds.contains(c.getId())).collect(Collectors.toList());
-    final Groups outGroups = new Groups();
-    outGroups.getGroup().addAll(groupWithFlow);
-    outRepository.setGroups(outGroups);
-
-    final Messages outMessages = new Messages();
-    outMessages.getMessage().addAll(filteredMessages);
-    outRepository.setMessages(outMessages);
-    marshal(outRepository, os);
   }
 
   private ComponentType getComponent(BigInteger id) {

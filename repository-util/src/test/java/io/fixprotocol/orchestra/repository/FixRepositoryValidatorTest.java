@@ -25,7 +25,7 @@ public class FixRepositoryValidatorTest {
   public void setUp() throws Exception {
     final OutputStream jsonOutputStream =
         new FileOutputStream("target/test/repositoryvalidator.json");
-    eventLogger = FixRepositoryValidator.createLogger(jsonOutputStream);
+    eventLogger = RepositoryValidator.createLogger(jsonOutputStream);
     validator = new FixRepositoryValidator(eventLogger);
   }
 

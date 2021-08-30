@@ -3,7 +3,6 @@ package io.fixprotocol.orchestra.repository;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.Objects;
@@ -23,8 +22,6 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -36,8 +33,6 @@ import io.fixprotocol.md.event.DocumentParser;
 import io.fixprotocol.orchestra.dsl.antlr.Evaluator;
 import io.fixprotocol.orchestra.dsl.antlr.ScoreException;
 import io.fixprotocol.orchestra.event.EventListener;
-import io.fixprotocol.orchestra.event.EventListenerFactory;
-import io.fixprotocol.orchestra.event.TeeEventListener;
 
 /**
  * Validates that an Orchestra repository file conforms to the schema but does not apply
@@ -103,25 +98,7 @@ public class BasicRepositoryValidator {
     }
   };
 
-  public static EventListener createLogger(OutputStream jsonOutputStream) {
-    final Logger logger = LogManager.getLogger(BasicRepositoryValidator.class);
-    final EventListenerFactory factory = new EventListenerFactory();
-    TeeEventListener eventListener = null;
-    try {
-      eventListener = new TeeEventListener();
-      final EventListener logEventLogger = factory.getInstance("LOG4J");
-      logEventLogger.setResource(logger);
-      eventListener.addEventListener(logEventLogger);
-      if (jsonOutputStream != null) {
-        final EventListener jsonEventLogger = factory.getInstance("JSON");
-        jsonEventLogger.setResource(jsonOutputStream);
-        eventListener.addEventListener(jsonEventLogger);
-      }
-    } catch (Exception e) {
-      logger.error("Error creating event listener", e);
-    }
-    return eventListener;
-  }
+
 
   protected Predicate<String> isValidBoolean = t -> true;
   protected Predicate<String> isValidChar = t -> t.length() == 1;
