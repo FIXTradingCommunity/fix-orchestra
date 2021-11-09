@@ -4,8 +4,10 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Predicate;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
@@ -110,6 +112,7 @@ public class BasicRepositoryValidator {
   private final EventListener eventLogger;
   private int fatalErrors = 0;
   private int warnings = 0;
+  private Set<String> deprecatedFieldTags = new HashSet<>();
 
   public BasicRepositoryValidator(EventListener eventLogger) {
     this.eventLogger = eventLogger;
@@ -153,6 +156,7 @@ public class BasicRepositoryValidator {
     Document xmlDocument;
     try {
       xmlDocument = validateSchema(inputStream, errorHandler);
+      // must validate fields first because it collects deprecated fields
       validateFields(xmlDocument);
       validateCodesets(xmlDocument);
       validateComponents(xmlDocument);
@@ -283,15 +287,43 @@ public class BasicRepositoryValidator {
             warning("RepositoryValidator: component abbrName {0} is invalid (id={1})", abbrName,
                 id);
           }
-          if (element.getAttribute("deprecated").length() > 0
-              || element.getAttribute("deprecatedEP").length() > 0) {
+          final boolean isDeprecated = element.getAttribute("deprecated").length() > 0
+              || element.getAttribute("deprecatedEP").length() > 0;
+          if (isDeprecated) {
             warning("RepositoryValidator: component {0} (id={1}) is deprecated",
                 name, id);
           }
+          validateMembers(node, name, id);
         }
       }
     } catch (final XPathExpressionException e) {
       fatalError("Failed to locate components; {}", e.getMessage());
+    }
+  }
+
+  private void validateMembers(Node parentNode, String parentName, String parentId) {
+    final XPath xPath = XPathFactory.newInstance().newXPath();
+    xPath.setNamespaceContext(nsContext);
+    final String expression = "fixr:fieldRef";
+    try {
+      final NodeList nodeList =
+          (NodeList) xPath.compile(expression).evaluate(parentNode, XPathConstants.NODESET);
+      for (int i = 0; i < nodeList.getLength(); i++) {
+        final Node node = nodeList.item(i);
+        final short nodeType = node.getNodeType();
+        if (nodeType == Node.ELEMENT_NODE) {
+          final Element element = (Element) node;
+          final String id = element.getAttribute("id");
+          final boolean isDeprecated = element.getAttribute("deprecated").length() > 0
+              || element.getAttribute("deprecatedEP").length() > 0;
+          if (!isDeprecated && this.deprecatedFieldTags.contains(id)) {
+            warning("RepositoryValidator: {0} has deprecated field id={1} as member",
+                parentName, id);
+          }
+        }
+      }
+    } catch (final XPathExpressionException e) {
+      fatalError("Failed to locate members; {}", e.getMessage());
     }
   }
 
@@ -382,8 +414,10 @@ public class BasicRepositoryValidator {
           if (abbrName.length() > 0 && !isValidName.test(abbrName)) {
             warning("RepositoryValidator: field abbrName {0} is invalid (id={1})", abbrName, id);
           }
-          if (element.getAttribute("deprecated").length() > 0
-              || element.getAttribute("deprecatedEP").length() > 0) {
+          final boolean isDeprecated = element.getAttribute("deprecated").length() > 0
+              || element.getAttribute("deprecatedEP").length() > 0;
+          if (isDeprecated) {
+            this.deprecatedFieldTags.add(id);
             warning("RepositoryValidator: field {0}({1}) is deprecated",
                 name, id);
           }
@@ -416,11 +450,13 @@ public class BasicRepositoryValidator {
           if (abbrName.length() > 0  && !isValidName.test(abbrName)) {
             warning("RepositoryValidator: group abbrName {0} is invalid (id={1})", abbrName, id);
           }
-          if (element.getAttribute("deprecated").length() > 0
-              || element.getAttribute("deprecatedEP").length() > 0) {
+          final boolean isDeprecated = element.getAttribute("deprecated").length() > 0
+              || element.getAttribute("deprecatedEP").length() > 0;
+          if (isDeprecated) {
             warning("RepositoryValidator: group {0} (id={1}) is deprecated",
                 name, id);
           }
+          validateMembers(node, name, id);
         }
       }
     } catch (final XPathExpressionException e) {
@@ -449,10 +485,16 @@ public class BasicRepositoryValidator {
           if (abbrName.length() > 0 && !isValidName.test(abbrName)) {
             warning("RepositoryValidator: message abbrName {0} is invalid (id={1})", abbrName, id);
           }
-          if (element.getAttribute("deprecated").length() > 0
-              || element.getAttribute("deprecatedEP").length() > 0) {
+          final boolean isDeprecated = element.getAttribute("deprecated").length() > 0
+              || element.getAttribute("deprecatedEP").length() > 0;
+          if (isDeprecated) {
             warning("RepositoryValidator: message {0} (id={1}) is deprecated",
                 name, id);
+          }
+          NodeList children = element.getElementsByTagName("fixr:structure");
+          Node structureNode = children.item(0);
+          if (structureNode != null) {
+            validateMembers(structureNode, name, id);
           }
         }
       }
