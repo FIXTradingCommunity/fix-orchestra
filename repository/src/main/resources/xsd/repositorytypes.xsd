@@ -725,10 +725,12 @@
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="Name_t">
-		<xs:restriction base="xs:string">
+		<xs:annotation>
+			<xs:documentation>Names are from 1-64 characters. The XML processor will remove line feeds, carriage returns, tabs, leading and trailing spaces, and multiple spaces. Internal spaces are allowed by the schema but may be restricted by an external style.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:token">
 			<xs:minLength value="1"/>
-			<xs:maxLength value="255"/>
-			<xs:pattern value="([A-Z]|[a-z])([0-9]|[A-Z]|[a-z]|_)*"/>
+			<xs:maxLength value="64"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:attributeGroup name="oidGrp">
