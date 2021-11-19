@@ -166,7 +166,7 @@
 		</xs:sequence>
 		<xs:attributeGroup ref="fixr:oidGrp"/>
 		<xs:attribute name="value" type="xs:string" use="required"/>
-		<xs:attribute name="sort" type="xs:string"/>
+		<xs:attribute name="sort" type="xs:nonNegativeInteger"/>
 		<xs:attribute name="group" type="xs:string"/>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 	</xs:complexType>
@@ -863,9 +863,6 @@
 		<xs:attribute name="FIXMLFileName" type="fixr:Name_t"/>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 	</xs:complexType>
-	<xs:simpleType name="Sort_t">
-		<xs:restriction base="xs:nonNegativeInteger"/>
-	</xs:simpleType>
 	<xs:complexType name="stateMachineType">
 		<xs:sequence>
 			<xs:element name="initial" type="fixr:stateType">
