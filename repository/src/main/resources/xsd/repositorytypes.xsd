@@ -165,8 +165,16 @@
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attributeGroup ref="fixr:oidGrp"/>
-		<xs:attribute name="value" type="xs:string" use="required"/>
-		<xs:attribute name="sort" type="xs:nonNegativeInteger"/>
+		<xs:attribute name="value" type="xs:token" use="required">
+			<xs:annotation>
+				<xs:documentation>The XML processor will remove line feeds, carriage returns, tabs, leading and trailing spaces, and multiple spaces. However, single internal spaces are allowed. May be further restricted by an external style.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="sort" type="xs:nonNegativeInteger">
+			<xs:annotation>
+				<xs:documentation>Sort and group may be used to organize visualization of a code set.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 		<xs:attribute name="group" type="xs:string"/>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 	</xs:complexType>
@@ -726,7 +734,7 @@
 	</xs:simpleType>
 	<xs:simpleType name="Name_t">
 		<xs:annotation>
-			<xs:documentation>Names are from 1-64 characters. The XML processor will remove line feeds, carriage returns, tabs, leading and trailing spaces, and multiple spaces. Internal spaces are allowed by the schema but may be restricted by an external style.</xs:documentation>
+			<xs:documentation>Names are from 1-64 characters. The XML processor will remove line feeds, carriage returns, tabs, leading and trailing spaces, and multiple spaces. Single internal spaces are allowed by the schema but may be restricted by an external style.</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:token">
 			<xs:minLength value="1"/>
