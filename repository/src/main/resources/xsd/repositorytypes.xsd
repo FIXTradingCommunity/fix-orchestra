@@ -685,7 +685,7 @@
 	</xs:complexType>
 	<xs:complexType name="messageType">
 		<xs:sequence>
-			<xs:element name="structure">
+			<xs:element name="structure" minOccurs="0">
 				<xs:complexType>
 					<xs:choice maxOccurs="unbounded">
 						<xs:element name="componentRef" type="fixr:componentRefType"/>
@@ -933,9 +933,6 @@
 			</xs:enumeration>
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:simpleType name="Term_t">
-		<xs:restriction base="xs:string"/>
-	</xs:simpleType>
 	<xs:simpleType name="timerOperation">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="START"/>
@@ -1028,9 +1025,6 @@
 			<xs:enumeration value="Reserved4000Plus"/>
 			<xs:enumeration value="Tenor"/>
 		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="Usage_t">
-		<xs:restriction base="xs:string"/>
 	</xs:simpleType>
 	<xs:simpleType name="Version_t">
 		<xs:restriction base="xs:token">
