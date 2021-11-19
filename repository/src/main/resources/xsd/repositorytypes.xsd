@@ -1029,13 +1029,12 @@
 		<xs:restriction base="xs:string"/>
 	</xs:simpleType>
 	<xs:simpleType name="Version_t">
-		<xs:restriction base="xs:string">
+		<xs:restriction base="xs:token">
 			<xs:annotation>
-				<xs:documentation>Enumerated FIX versions or major.minor or date as
-					yyyymmdd of any protocol
+				<xs:documentation>Uniquely identifies a revision. Many formats are impossible, including but not limited to protocol version label, semantic versioning, date, or simple integer.
+				The format may be restricted by an external style.
 				</xs:documentation>
 			</xs:annotation>
-			<xs:pattern value="(FIX.2.7)|(FIX.3.0)|(FIX\.4\.[0-4])|((FIX.Latest|(FIX\.5\.0(SP\d{1,2})?))(_EP((9[8-9])|([1-9][0-9][0-9])))?)|(FIXT.1.1)|([0-9]+)\.([0-9]+)|(\d{8})"/>
 		</xs:restriction>
 	</xs:simpleType>
 </xs:schema>
