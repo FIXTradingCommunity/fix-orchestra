@@ -22,6 +22,7 @@
 					<xs:element name="actor" type="fixr:actorType"/>
 					<xs:element name="flow" type="fixr:flowType"/>
 				</xs:choice>
+				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute ref="xml:base"/>
 		</xs:complexType>
@@ -46,6 +47,7 @@
 						<xs:documentation>A business process category, a subcategory of a businessArea</xs:documentation>
 					</xs:annotation>
 				</xs:element>
+				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
 			<xs:attribute ref="xml:base"/>
@@ -60,6 +62,7 @@
 						<xs:field xpath="@name"/>
 					</xs:key>
 				</xs:element>
+				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute ref="xml:base"/>
 		</xs:complexType>
@@ -78,6 +81,7 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="component" type="fixr:componentType" maxOccurs="unbounded"/>
+				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
 			<xs:attribute ref="xml:base"/>
@@ -97,6 +101,7 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="concept" type="fixr:conceptType" maxOccurs="unbounded"/>
+				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute ref="xml:base"/>
 		</xs:complexType>
@@ -121,6 +126,7 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="fixr:datatype" maxOccurs="unbounded"/>
+				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
 			<xs:attribute ref="xml:base"/>
@@ -130,6 +136,7 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="field" type="fixr:fieldType" maxOccurs="unbounded"/>
+				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute name="latestEP" type="fixr:EP_t"/>
 			<xs:attribute ref="xml:base"/>
@@ -149,6 +156,7 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="group" type="fixr:groupType" maxOccurs="unbounded"/>
+				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
 			<xs:attribute ref="xml:base"/>
@@ -168,6 +176,7 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="message" type="fixr:messageType" maxOccurs="unbounded"/>
+				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
 			<xs:attribute ref="xml:base"/>
@@ -251,6 +260,7 @@
 						<xs:documentation>A large-grained business process category</xs:documentation>
 					</xs:annotation>
 				</xs:element>
+				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
 			<xs:attribute ref="xml:base"/>
