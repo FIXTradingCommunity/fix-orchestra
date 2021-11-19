@@ -674,7 +674,6 @@
 		<xs:sequence>
 			<xs:element name="identifiers" type="fixr:identifiersType" minOccurs="0"/>
 		</xs:sequence>
-		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
 		<xs:attribute name="msgType" type="fixr:MsgType_t"/>
 		<xs:attributeGroup ref="fixr:refidGrp"/>
 		<xs:attribute name="implMinOccurs" type="xs:positiveInteger" default="1"/>
@@ -816,6 +815,7 @@
 				<xs:documentation>Numeric identifier generally must be unique within a file for an element type, e.g. unique field tag</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
+		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
 		<xs:attribute name="scenario" type="fixr:Name_t" default="base">
 			<xs:annotation>
 				<xs:documentation>The use case of an element, distinguished by workflow, asset class, etc.</xs:documentation>
