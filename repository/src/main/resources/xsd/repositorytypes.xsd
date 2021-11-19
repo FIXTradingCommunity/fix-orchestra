@@ -815,7 +815,11 @@
 				<xs:documentation>Numeric identifier generally must be unique within a file for an element type, e.g. unique field tag</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
+		<xs:attribute name="name" type="fixr:Name_t">
+			<xs:annotation>
+				<xs:documentation>Name is optional for convenience, but it is not enforced by referential integrity. Only the name of the referred object is authoritative.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 		<xs:attribute name="scenario" type="fixr:Name_t" default="base">
 			<xs:annotation>
 				<xs:documentation>The use case of an element, distinguished by workflow, asset class, etc.</xs:documentation>
