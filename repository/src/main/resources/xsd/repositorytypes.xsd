@@ -256,9 +256,6 @@
 		</xs:sequence>
 		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
 	</xs:complexType>
-	<xs:attributeGroup name="containerAttribGrp">
-		<xs:attribute name="latestEP" type="fixr:EP_t"/>
-	</xs:attributeGroup>
 	<xs:simpleType name="datatypeStandard_enum">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="ISO11404">

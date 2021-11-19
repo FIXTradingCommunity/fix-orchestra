@@ -49,7 +49,6 @@
 				</xs:element>
 				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
-			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
 			<xs:attribute ref="xml:base"/>
 		</xs:complexType>
 	</xs:element>
@@ -83,7 +82,6 @@
 				<xs:element name="component" type="fixr:componentType" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
-			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
 			<xs:attribute ref="xml:base"/>
 		</xs:complexType>
 		<xs:key name="componentNameKey">
@@ -128,7 +126,6 @@
 				<xs:element ref="fixr:datatype" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
-			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
 			<xs:attribute ref="xml:base"/>
 		</xs:complexType>
 	</xs:element>
@@ -158,7 +155,6 @@
 				<xs:element name="group" type="fixr:groupType" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
-			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
 			<xs:attribute ref="xml:base"/>
 		</xs:complexType>
 		<xs:key name="groupNameKey">
@@ -178,7 +174,6 @@
 				<xs:element name="message" type="fixr:messageType" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
-			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
 			<xs:attribute ref="xml:base"/>
 		</xs:complexType>
 		<xs:key name="messageNameKey">
@@ -222,7 +217,6 @@
 				</xs:annotation>
 			</xs:attribute>
 			<xs:attribute name="version" type="fixr:Version_t" use="required"/>
-			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
 			<xs:attribute name="guid" type="xs:string"/>
 			<xs:attribute name="specUrl" type="xs:anyURI">
 				<xs:annotation>
@@ -262,7 +256,6 @@
 				</xs:element>
 				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
-			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
 			<xs:attribute ref="xml:base"/>
 		</xs:complexType>
 	</xs:element>
