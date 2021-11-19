@@ -117,7 +117,7 @@
 				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute name="name" type="fixr:Name_t" use="required"/>
-			<xs:attribute name="scenario" type="fixr:Scenario_t" default="base"/>
+			<xs:attribute name="scenario" type="fixr:Name_t" default="base"/>
 			<xs:attribute name="baseType" type="fixr:Name_t"/>
 			<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 		</xs:complexType>

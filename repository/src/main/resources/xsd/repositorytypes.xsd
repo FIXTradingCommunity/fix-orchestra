@@ -8,9 +8,6 @@
 			International Public License
 		</xs:documentation>
 	</xs:annotation>
-	<xs:simpleType name="Abbreviation_t">
-		<xs:restriction base="xs:string"/>
-	</xs:simpleType>
 	<xs:complexType name="actionType">
 		<xs:sequence>
 			<xs:choice id="parameters" minOccurs="0" maxOccurs="unbounded">
@@ -666,7 +663,7 @@
 	<xs:attributeGroup name="messageAttribGrp">
 		<xs:attribute name="msgType" type="fixr:MsgType_t"/>
 		<xs:attribute name="category" type="fixr:Name_t"/>
-		<xs:attribute name="abbrName" type="fixr:Abbreviation_t"/>
+		<xs:attribute name="abbrName" type="fixr:Name_t"/>
 		<xs:attribute name="rendering" type="xs:string">
 			<xs:annotation>
 				<xs:documentation>A hint to processes about how to interpret the element. Not validated.</xs:documentation>
@@ -751,8 +748,8 @@
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
-		<xs:attribute name="abbrName" type="fixr:Abbreviation_t"/>
-		<xs:attribute name="scenario" type="fixr:Scenario_t" default="base">
+		<xs:attribute name="abbrName" type="fixr:Name_t"/>
+		<xs:attribute name="scenario" type="fixr:Name_t" default="base">
 			<xs:annotation>
 				<xs:documentation>The use case of an element, distinguished by workflow, asset class, etc.</xs:documentation>
 			</xs:annotation>
@@ -819,7 +816,7 @@
 				<xs:documentation>Numeric identifier generally must be unique within a file for an element type, e.g. unique field tag</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="scenario" type="fixr:Scenario_t" default="base">
+		<xs:attribute name="scenario" type="fixr:Name_t" default="base">
 			<xs:annotation>
 				<xs:documentation>The use case of an element, distinguished by workflow, asset class, etc.</xs:documentation>
 			</xs:annotation>
@@ -857,13 +854,6 @@
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
-	<xs:simpleType name="Scenario_t">
-		<xs:restriction base="xs:string">
-			<xs:minLength value="1"/>
-			<xs:maxLength value="255"/>
-			<xs:pattern value="([A-Z]|[a-z])([0-9]|[A-Z]|[a-z]|_|-)*"/>
-		</xs:restriction>
-	</xs:simpleType>
 	<xs:complexType name="sectionType">
 		<xs:sequence>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
