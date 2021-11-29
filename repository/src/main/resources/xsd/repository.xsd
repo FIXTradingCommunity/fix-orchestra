@@ -73,7 +73,7 @@
 		<xs:key name="codeSetIdKey">
 			<xs:selector xpath="fixr:codeSet"/>
 			<xs:field xpath="@id"/>
-			<xs:field xpath="@scenario"/>
+			<xs:field xpath="@scenarioId"/>
 		</xs:key>
 	</xs:element>
 	<xs:element name="components">
@@ -92,7 +92,7 @@
 		<xs:key name="componentIdKey">
 			<xs:selector xpath="fixr:component"/>
 			<xs:field xpath="@id"/>
-			<xs:field xpath="@scenario"/>
+			<xs:field xpath="@scenarioId"/>
 		</xs:key>
 	</xs:element>
 	<xs:element name="concepts">
@@ -146,7 +146,7 @@
 		<xs:key name="fieldIdKey">
 			<xs:selector xpath="fixr:field"/>
 			<xs:field xpath="@id"/>
-			<xs:field xpath="@scenario"/>
+			<xs:field xpath="@scenarioId"/>
 		</xs:key>
 	</xs:element>
 	<xs:element name="groups">
@@ -165,8 +165,8 @@
 		<xs:key name="groupIdKey">
 			<xs:selector xpath="fixr:group"/>
 			<xs:field xpath="@id"/>
-			<xs:field xpath="@scenario"/>
-		</xs:key>
+			<xs:field xpath="@scenarioId"/>
+		</xs:key>	
 	</xs:element>
 	<xs:element name="messages">
 		<xs:complexType>
@@ -192,7 +192,7 @@
 			</xs:annotation>
 			<xs:selector xpath="fixr:message"/>
 			<xs:field xpath="@id"/>
-			<xs:field xpath="@scenario"/>
+			<xs:field xpath="@scenarioId"/>
 		</xs:key>
 	</xs:element>
 	<xs:element name="repository">
@@ -209,6 +209,7 @@
 				<xs:element ref="fixr:groups" minOccurs="0"/>
 				<xs:element ref="fixr:messages"/>
 				<xs:element ref="fixr:concepts" minOccurs="0"/>
+				<xs:element ref="fixr:scenarios" minOccurs="0"/>
 				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:all>
 			<xs:attribute name="name" type="xs:string" use="required">
@@ -245,6 +246,44 @@
 			<xs:field xpath="@type"/>
 			<xs:field xpath="@scenario"/>
 		</xs:keyref>
+		<xs:key name="scenarioNameKey">
+			<xs:selector xpath="fixr:scenarios/fixr:scenario"/>
+			<xs:field xpath="@name"/>
+		</xs:key>
+		<xs:key name="scenarioIdKey">
+			<xs:selector xpath="fixr:scenarios/fixr:scenario"/>
+			<xs:field xpath="@id"/>
+		</xs:key>
+		<xs:keyref name="codeSetScenarioKeyRef" refer="fixr:scenarioIdKey">
+			<xs:selector xpath="fixr:codeSet"/>
+			<xs:field xpath="@scenarioId"/>
+		</xs:keyref>
+		<xs:keyref name="componentScenarioKeyRef" refer="fixr:scenarioIdKey">
+			<xs:selector xpath="fixr:component"/>
+			<xs:field xpath="@scenarioId"/>
+		</xs:keyref>
+		<xs:keyref name="groupScenarioKeyRef" refer="fixr:scenarioIdKey">
+			<xs:selector xpath="fixr:group"/>
+			<xs:field xpath="@scenarioId"/>
+		</xs:keyref>
+		<xs:keyref name="messageScenarioKeyRef" refer="fixr:scenarioIdKey">
+			<xs:selector xpath="fixr:message"/>
+			<xs:field xpath="@scenarioId"/>
+		</xs:keyref>	
+	</xs:element>
+	<xs:element name="scenarios">
+		<xs:annotation>
+			<xs:documentation>
+		The default scenario is id='1' name='base'.
+	</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="scenario" type="fixr:scenarioType" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
+			</xs:sequence>
+			<xs:attribute ref="xml:base"/>
+		</xs:complexType>
 	</xs:element>
 	<xs:element name="sections">
 		<xs:complexType>
