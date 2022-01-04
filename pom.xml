@@ -68,7 +68,7 @@
 		<base.java.version>11</base.java.version>
 		<commons-cli.version>1.4</commons-cli.version>
 		<junit.version>5.8.1</junit.version>
-		<log4j.version>2.17.0</log4j.version>
+		<log4j.version>2.17.1</log4j.version>
 		<saxon.version>10.6</saxon.version>
 		<slf4j.version>1.7.22</slf4j.version>
 		<stringtemplate.version>4.3.1</stringtemplate.version>
