@@ -198,6 +198,16 @@
 		</xs:sequence>
 		<xs:attribute name="name" type="fixi:protocolName_t"/>
 		<xs:attribute name="version" type="xs:string"/>
+		<xs:attribute name="activationTime" type="xs:dateTime">
+			<xs:annotation>
+				<xs:documentation>When this version becomes effective</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="deactivationTime" type="xs:dateTime">
+			<xs:annotation>
+				<xs:documentation>When this version is no longer effective</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 		<xs:attribute name="layer" type="fixi:layer_t"/>
 		<xs:attribute name="reliability" type="fixi:reliability_t">
 			<xs:annotation>

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<fixi:interfaces xmlns:dcterms="http://purl.org/dc/terms/" xmlns:fixi="http://fixprotocol.io/2020/orchestra/interfaces" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-xsi:schemaLocation="http://fixprotocol.io/2020/orchestra/interfaces ../../../main/resources/xsd/interfaces.xsd">
+<fixi:interfaces xmlns:dcterms="http://purl.org/dc/terms/" xmlns:fixi="http://fixprotocol.io/2020/orchestra/interfaces" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://fixprotocol.io/2020/orchestra/interfaces ../../../main/resources/xsd/interfaces.xsd">
 	<fixi:metadata>
 		<dcterms:subject>Service offerings and sessions example file</dcterms:subject>
 		<dcterms:date>2019-08-07T09:30:00Z</dcterms:date>
@@ -42,7 +41,7 @@ xsi:schemaLocation="http://fixprotocol.io/2020/orchestra/interfaces ../../../mai
 		</fixi:sessions>
 	</fixi:interface>
 	<fixi:interface name="OrderRouting">
-		<fixi:service name="orderRouting" orchestration="https://mydomain.com/orchestra/orderRouting.xml"/>
+		<fixi:service name="orderRouting" version="2.3" activationTime="2022-12-17T09:30:00Z" orchestration="https://mydomain.com/orchestra/orderRouting.xml"/>
 		<fixi:encoding name="GPB" messageSchema="file://something.proto">
 			<fixi:annotation>
 				<fixi:documentation>Message schema attribute demonstrates extensibility</fixi:documentation>
@@ -55,7 +54,7 @@ xsi:schemaLocation="http://fixprotocol.io/2020/orchestra/interfaces ../../../mai
 		</fixi:protocol>
 		<fixi:sessions>
 			<fixi:session name="OR1">
-			<fixi:securityKeys><![CDATA[
+				<fixi:securityKeys><![CDATA[
 -----BEGIN CERTIFICATE-----
 MIIFOzCCAyOgAwIBAgIRAJ7vjU69WHIyjOvNNQ+M6lEwDQYJKoZIhvcNAQELBQAw
 czELMAkGA1UEBhMCVVMxETAPBgNVBAgTCE5FVyBZT1JLMREwDwYDVQQHEwhORVcg
