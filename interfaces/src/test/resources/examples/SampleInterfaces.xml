@@ -17,7 +17,7 @@
 		</fixi:sessionProtocol>
 		<fixi:transport name="TCP"/>
 		<fixi:sessions>
-			<fixi:session name="XYZ-ABC">
+			<fixi:session name="XYZ-ABC" activationTime="2019-08-07T09:30:00Z">
 				<!-- inherits services and protocols from interface -->
 				<!-- alternate addresses are supported -->
 				<fixi:transport address="10.96.1.2:567" use="primary"/>
@@ -25,11 +25,11 @@
 				<!-- there can be any number of identifiers -->
 				<fixi:identifier name="SenderCompID">XYZ</fixi:identifier>
 				<fixi:identifier name="TargetCompID">ABC</fixi:identifier>
-				<!-- tells when session becomes effective so it can be configured in advance -->
-				<fixi:activationTime>2019-08-07T09:30:00Z</fixi:activationTime>
+				<fixi:role>initiator</fixi:role>
 			</fixi:session>
 		</fixi:sessions>
 	</fixi:interface>
+	<fixi:interface name="OldService" deprecated="2020-08-07"/>
 	<fixi:interface name="Public">
 		<fixi:service name="marketData" orchestration="https://mydomain.com/orchestra/marketData.xml"/>
 		<!-- the protcol stack -->
