@@ -18,10 +18,11 @@
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:choice maxOccurs="unbounded">
+				<xs:choice minOccurs="0" maxOccurs="unbounded">
 					<xs:element name="actor" type="fixr:actorType"/>
 					<xs:element name="flow" type="fixr:flowType"/>
 				</xs:choice>
+				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute ref="xml:base"/>
 		</xs:complexType>
@@ -41,25 +42,26 @@
 	<xs:element name="categories">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="category" type="fixr:categoryType" maxOccurs="unbounded">
+				<xs:element name="category" type="fixr:categoryType" minOccurs="0" maxOccurs="unbounded">
 					<xs:annotation>
 						<xs:documentation>A business process category, a subcategory of a businessArea</xs:documentation>
 					</xs:annotation>
 				</xs:element>
+				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
-			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
 			<xs:attribute ref="xml:base"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="codeSets">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="codeSet" type="fixr:codeSetType" maxOccurs="unbounded">
+				<xs:element name="codeSet" type="fixr:codeSetType" minOccurs="0" maxOccurs="unbounded">
 					<xs:key name="codeKey">
 						<xs:selector xpath="fixr:code"/>
 						<xs:field xpath="@name"/>
 					</xs:key>
 				</xs:element>
+				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute ref="xml:base"/>
 		</xs:complexType>
@@ -77,9 +79,9 @@
 	<xs:element name="components">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="component" type="fixr:componentType" maxOccurs="unbounded"/>
+				<xs:element name="component" type="fixr:componentType" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
-			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
 			<xs:attribute ref="xml:base"/>
 		</xs:complexType>
 		<xs:key name="componentNameKey">
@@ -96,7 +98,8 @@
 	<xs:element name="concepts">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="concept" type="fixr:conceptType" maxOccurs="unbounded"/>
+				<xs:element name="concept" type="fixr:conceptType" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute ref="xml:base"/>
 		</xs:complexType>
@@ -112,6 +115,7 @@
 				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute name="name" type="fixr:Name_t" use="required"/>
+			<xs:attribute name="scenario" type="fixr:Name_t" default="base"/>
 			<xs:attribute name="baseType" type="fixr:Name_t"/>
 			<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 		</xs:complexType>
@@ -119,16 +123,17 @@
 	<xs:element name="datatypes">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="fixr:datatype" maxOccurs="unbounded"/>
+				<xs:element ref="fixr:datatype" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
-			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
 			<xs:attribute ref="xml:base"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="fields">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="field" type="fixr:fieldType" maxOccurs="unbounded"/>
+				<xs:element name="field" type="fixr:fieldType" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute name="latestEP" type="fixr:EP_t"/>
 			<xs:attribute ref="xml:base"/>
@@ -147,9 +152,9 @@
 	<xs:element name="groups">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="group" type="fixr:groupType" maxOccurs="unbounded"/>
+				<xs:element name="group" type="fixr:groupType" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
-			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
 			<xs:attribute ref="xml:base"/>
 		</xs:complexType>
 		<xs:key name="groupNameKey">
@@ -166,9 +171,9 @@
 	<xs:element name="messages">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="message" type="fixr:messageType" maxOccurs="unbounded"/>
+				<xs:element name="message" type="fixr:messageType" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
-			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
 			<xs:attribute ref="xml:base"/>
 		</xs:complexType>
 		<xs:key name="messageNameKey">
@@ -212,7 +217,6 @@
 				</xs:annotation>
 			</xs:attribute>
 			<xs:attribute name="version" type="fixr:Version_t" use="required"/>
-			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
 			<xs:attribute name="guid" type="xs:string"/>
 			<xs:attribute name="specUrl" type="xs:anyURI">
 				<xs:annotation>
@@ -234,22 +238,24 @@
 		<xs:key name="typeKey">
 			<xs:selector xpath="fixr:codeSets/fixr:codeSet|fixr:datatypes/fixr:datatype"/>
 			<xs:field xpath="@name"/>
+			<xs:field xpath="@scenario"/>
 		</xs:key>
 		<xs:keyref name="typeKeyref" refer="fixr:typeKey">
 			<xs:selector xpath="fixr:fields/fixr:field"/>
 			<xs:field xpath="@type"/>
+			<xs:field xpath="@scenario"/>
 		</xs:keyref>
 	</xs:element>
 	<xs:element name="sections">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="section" type="fixr:sectionType" maxOccurs="unbounded">
+				<xs:element name="section" type="fixr:sectionType" minOccurs="0" maxOccurs="unbounded">
 					<xs:annotation>
 						<xs:documentation>A large-grained business process category</xs:documentation>
 					</xs:annotation>
 				</xs:element>
+				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
-			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
 			<xs:attribute ref="xml:base"/>
 		</xs:complexType>
 	</xs:element>

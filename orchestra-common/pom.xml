@@ -5,7 +5,6 @@
 	<parent>
 		<groupId>io.fixprotocol.orchestra</groupId>
 		<artifactId>parent</artifactId>
-		<version>1.7.4-SNAPSHOT</version>
 	</parent>
 	<artifactId>orchestra-common</artifactId>
 	<name>${project.groupId}:${project.artifactId}</name>
