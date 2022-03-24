@@ -1,3 +1,5 @@
+[![Java CI with Maven](https://github.com/FIXTradingCommunity/fix-orchestra/actions/workflows/maven.yml/badge.svg)](https://github.com/FIXTradingCommunity/fix-orchestra/actions/workflows/maven.yml)
+
 ![](FIXorchestraLogo.png)
 
 # FIX Orchestra Resources
