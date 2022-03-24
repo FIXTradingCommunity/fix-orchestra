@@ -8,7 +8,7 @@
 	<version>1.8.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>${project.groupId}:${project.artifactId}</name>
-	<description>Parent project for FIX Orchestra. Build Java 8 by default, multi-release jar on demand.</description>
+	<description>Parent project for FIX Orchestra</description>
 	<url>https://github.com/FIXTradingCommunity/fix-orchestra/wiki</url>
 	<inceptionYear>2016</inceptionYear>
 	<prerequisites>
@@ -64,13 +64,12 @@
 	</modules>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<antlr.version>4.9.2</antlr.version>
+		<antlr.version>4.9.3</antlr.version>
 		<base.java.version>11</base.java.version>
 		<commons-cli.version>1.4</commons-cli.version>
-		<cucumber.version>1.2.6</cucumber.version>
-		<junit.version>5.6.1</junit.version>
-		<log4j.version>2.14.1</log4j.version>
-		<saxon.version>10.5</saxon.version>
+		<junit.version>5.8.1</junit.version>
+		<log4j.version>2.17.1</log4j.version>
+		<saxon.version>10.6</saxon.version>
 		<slf4j.version>1.7.22</slf4j.version>
 		<stringtemplate.version>4.3.1</stringtemplate.version>
 		<jackson.version>2.12.3</jackson.version>

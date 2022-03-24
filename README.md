@@ -122,6 +122,9 @@ Data files in this project under `test/resources` are strictly for testing and t
 ## Build
 The project is built with Maven version 3.3 or later. 
 
-The project requires Java 11 or later. Some modules use Java Platform Module System (JPMS).
+This project requires Java 11 or later. It should run on any platform for which a JVM is supported. Some modules use Java Platform Module System (JPMS).
+
+Several open-source JDK implementations are available, including [Eclipse Temurin](https://adoptium.net/) and [Azul Zulu](https://www.azul.com/downloads/?package=jdk).
+
 
 

@@ -5,7 +5,6 @@
 	<parent>
 		<groupId>io.fixprotocol.orchestra</groupId>
 		<artifactId>parent</artifactId>
-		<version>1.8.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>orchestra-common</artifactId>
 	<name>${project.groupId}:${project.artifactId}</name>
@@ -35,10 +34,6 @@
 	
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-toolchains-plugin</artifactId>
-			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>

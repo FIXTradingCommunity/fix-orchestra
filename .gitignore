@@ -6,3 +6,4 @@ jaxb
 .idea
 *.iml
 *.versionsBackup
+.DS_Store
