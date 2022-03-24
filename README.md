@@ -2,7 +2,7 @@
 
 # FIX Orchestra Resources
 
-This project contains resources and sample code for FIX Orchestra version 1.0. Technical specifications for FIX Orchestra are in project [fix-orchestra-spec](https://github.com/FIXTradingCommunity/fix-orchestra-spec).
+This project contains resources and sample code for FIX Orchestra version 1.1. Technical specifications for FIX Orchestra are in project [fix-orchestra-spec](https://github.com/FIXTradingCommunity/fix-orchestra-spec).
 
 FIX Orchestra is intended to provide a standard and some reference implementation for *machine readable rules of engagement* between counterparties. The goal is to reduce the time to get counterparties trading, and improve accuracy of implementations.
 
@@ -97,7 +97,7 @@ This module generates code that is conformant to the QuickFIX/J API for validati
 A demonstration of session configuration for QuickFIX open-source FIX engine. It consumes an XML file in the `interfaces` schema.
 
 ## License
-© Copyright 2016-2021 FIX Protocol Limited
+© Copyright 2016-2022 FIX Protocol Limited
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

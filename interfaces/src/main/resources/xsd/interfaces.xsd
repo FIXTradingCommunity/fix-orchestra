@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fixi="http://fixprotocol.io/2020/orchestra/interfaces" xmlns:dcterms="http://purl.org/dc/terms/" targetNamespace="http://fixprotocol.io/2020/orchestra/interfaces" elementFormDefault="qualified" version="1.0">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fixi="http://fixprotocol.io/2022/orchestra/interfaces" xmlns:dcterms="http://purl.org/dc/terms/" targetNamespace="http://fixprotocol.io/2022/orchestra/interfaces" elementFormDefault="qualified" version="1.1">
 	<xs:annotation>
 		<xs:documentation>
 			FIX interface configuration
-			© Copyright 2016-2020 FIX Protocol Limited
+			© Copyright 2016-2022 FIX Protocol Limited
 			Creative Commons Attribution-NoDerivatives 4.0
 			International Public License
 		</xs:documentation>

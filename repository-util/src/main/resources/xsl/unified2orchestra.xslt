@@ -4,7 +4,7 @@
 	xmlns:xs="http://www.w3.org/2001/XMLSchema"
 	xmlns:fn="http://www.w3.org/2005/xpath-functions"
 	xmlns:functx="http://www.functx.com"
-	xmlns:fixr="http://fixprotocol.io/2020/orchestra/repository"
+	xmlns:fixr="http://fixprotocol.io/2022/orchestra/repository"
 	xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0"
 	exclude-result-prefixes="fn functx">
 	<!-- argument is phrase file URL, e.g. file://FIX.5.0SP2_en_phrases.xml" -->

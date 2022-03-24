@@ -4,7 +4,7 @@ This module provides an XML schema for message structures and workflow. Users ma
 
 See documentation of the schema in [Orchestra specifications](https://github.com/FIXTradingCommunity/fix-orchestra-spec/tree/master/v1-0-DRAFT)
 
-The XML namespace for the schema is `http://fixprotocol.io/2020/orchestra/repository`.
+The XML namespace for the schema is `http://fixprotocol.io/2022/orchestra/repository`.
 
 ## Project Features
 
@@ -26,6 +26,6 @@ This Maven module may be included as a dependency in a project as follows (subst
 <dependency>
   <groupId>io.fixprotocol.orchestra</groupId>
   <artifactId>repository</artifactId>
-  <version>1.6.10</version>
+  <version>1.8.0</version>
 </dependency>
 ```
