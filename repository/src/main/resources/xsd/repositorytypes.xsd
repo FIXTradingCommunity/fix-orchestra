@@ -627,18 +627,35 @@
 		</xs:sequence>
 		<xs:attribute name="standard" type="fixr:datatypeStandard_t" use="required"/>
 		<xs:attribute name="builtin" type="xs:boolean"/>
-		<xs:attribute name="base" type="xs:string"/>
-		<xs:attribute name="pattern" type="xs:string"/>
-		<xs:attribute name="element" type="xs:string"/>
+		<xs:attribute name="base" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>A datatype from which a subtype is created by restriction or a derived type is created by a generator</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="pattern" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>A lexical restriction from a base type</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="element" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>Element type of an aggregate type such as an array or sequence</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="size" type="xs:nonNegativeInteger">
+			<xs:annotation>
+				<xs:documentation>Size of an aggregate type such as an array. That is, the number of elements.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 		<xs:attribute name="parameter" type="xs:string"/>
 		<xs:attribute name="minInclusive" type="xs:string">
 			<xs:annotation>
-				<xs:documentation>Inclusive lower bound</xs:documentation>
+				<xs:documentation>Inclusive lower bound of values</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attribute name="maxInclusive" type="xs:string">
 			<xs:annotation>
-				<xs:documentation>Inclusive upper bound</xs:documentation>
+				<xs:documentation>Inclusive upper bound of values</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 	</xs:complexType>
