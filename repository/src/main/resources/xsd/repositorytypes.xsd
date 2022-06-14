@@ -154,7 +154,8 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
+		<xs:attributeGroup ref="fixr:entityAttribGrp"/>		
+		<xs:attribute name="unionDataType" type="fixr:UnionDataType_t"/>
 	</xs:complexType>
 	<xs:complexType name="codeType">
 		<xs:sequence>
@@ -498,7 +499,6 @@
 		</xs:attribute>
 		<xs:attribute name="baseCategory" type="fixr:Name_t"/>
 		<xs:attribute name="baseCategoryAbbrName" type="fixr:Name_t"/>
-		<xs:attribute name="unionDataType" type="fixr:UnionDataType_t"/>
 	</xs:complexType>
 	<xs:complexType name="flowType">
 		<xs:annotation>
