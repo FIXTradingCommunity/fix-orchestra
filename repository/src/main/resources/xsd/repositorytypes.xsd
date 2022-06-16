@@ -154,7 +154,7 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attributeGroup ref="fixr:entityAttribGrp"/>		
+		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 		<xs:attribute name="unionDataType" type="fixr:UnionDataType_t"/>
 	</xs:complexType>
 	<xs:complexType name="codeType">
@@ -499,6 +499,7 @@
 		</xs:attribute>
 		<xs:attribute name="baseCategory" type="fixr:Name_t"/>
 		<xs:attribute name="baseCategoryAbbrName" type="fixr:Name_t"/>
+		<xs:attribute name="unionDataType" type="fixr:UnionDataType_t"/>
 	</xs:complexType>
 	<xs:complexType name="flowType">
 		<xs:annotation>
@@ -1059,6 +1060,9 @@
 		<xs:union memberTypes="xs:nonNegativeInteger fixr:unbounded"/>
 	</xs:simpleType>
 	<xs:simpleType name="UnionDataType_t">
+		<xs:annotation>
+			<xs:documentation>A second domain of valid values. The 'Reserved' types should only be applied Code Sets.</xs:documentation>
+		</xs:annotation>
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="Qty"/>
 			<xs:enumeration value="Reserved100Plus"/>
