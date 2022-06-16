@@ -408,10 +408,11 @@
 		</xs:attribute>
 		<xs:attribute name="baseFieldId" type="fixr:id_t">
 			<xs:annotation>
-				<xs:documentation>Identifies a non-encoded field related to an encoded field
+				<xs:documentation>Identifies a related field such as a non-encoded field related to an encoded field
+				or an alternate tag derived from encoding rules. However, this is not intended to represent semantic relationships.
 				</xs:documentation>
 			</xs:annotation>
-		</xs:attribute>	
+		</xs:attribute>
 		<xs:attributeGroup ref="fixr:fieldAttribGrp"/>
 		<xs:attribute name="instanceName" type="fixr:Name_t">
 			<xs:annotation>
@@ -498,10 +499,11 @@
 		</xs:attribute>
 		<xs:attribute name="baseFieldId" type="fixr:id_t">
 			<xs:annotation>
-				<xs:documentation>Identifies a non-encoded field related to an encoded field
+				<xs:documentation>Identifies a related field such as a non-encoded field related to an encoded field
+				or an alternate tag derived from encoding rules. However, this is not intended to represent semantic relationships.
 				</xs:documentation>
 			</xs:annotation>
-		</xs:attribute>		
+		</xs:attribute>
 		<xs:attribute name="discriminatorId" type="fixr:id_t">
 			<xs:annotation>
 				<xs:documentation>Identifies a field used as a discriminator for this field's domain
