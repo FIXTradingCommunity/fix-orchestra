@@ -244,11 +244,11 @@
 				</xs:annotation>
 			</xs:attribute>
 			<xs:attribute name="applVerId" type="xs:string"/>
-			<xs:attribute name="expressionLanguage" type="xs:string" default="Score">
+			<xs:attributeGroup ref="fixr:expressionGrp">
 				<xs:annotation>
-					<xs:documentation>The syntax of 'expressionType'</xs:documentation>
+					<xs:documentation>Global syntax of 'expressionType'</xs:documentation>
 				</xs:annotation>
-			</xs:attribute>
+			</xs:attributeGroup>
 		</xs:complexType>
 		<xs:key name="typeKey">
 			<xs:selector xpath="fixr:codeSets/fixr:codeSet|fixr:datatypes/fixr:datatype"/>

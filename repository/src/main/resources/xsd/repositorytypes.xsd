@@ -327,15 +327,28 @@
 	<xs:simpleType name="EP_t">
 		<xs:restriction base="xs:integer"/>
 	</xs:simpleType>
-	<xs:simpleType name="expressionType">
+	<xs:attributeGroup name="expressionGrp">
+		<xs:annotation>
+			<xs:documentation>Attributes of expressions
+			</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="expressionLanguage" type="xs:string" default="Score">
+			<xs:annotation>
+				<xs:documentation>Name of a scripting language or DSL</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:attributeGroup>
+	<xs:complexType name="expressionType">
 		<xs:annotation>
 			<xs:documentation>Expressed in a Domain Specific Language
 			</xs:documentation>
 		</xs:annotation>
-		<xs:restriction base="xs:string">
-			<xs:maxLength value="1024"/>
-		</xs:restriction>
-	</xs:simpleType>
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attributeGroup ref="fixr:expressionGrp"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
 	<xs:attributeGroup name="fieldAttribGrp">
 		<xs:annotation>
 			<xs:documentation>Attributes of a field that be overridden by a rule
@@ -435,7 +448,6 @@
 					<xs:annotation>
 						<xs:documentation>Content of element holds an assignment expression
 							for a message field or state variable.
-							This can be used for field validation.
 						</xs:documentation>
 					</xs:annotation>
 				</xs:element>
