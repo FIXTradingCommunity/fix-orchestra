@@ -216,7 +216,7 @@
 				<xs:element ref="fixr:categories" minOccurs="0"/>
 				<xs:element ref="fixr:sections" minOccurs="0"/>
 				<xs:element ref="fixr:datatypes"/>
-				<xs:element ref="fixr:codeSets"/>
+				<xs:element ref="fixr:codeSets" minOccurs="0"/>
 				<xs:element ref="fixr:fields"/>
 				<xs:element ref="fixr:actors" minOccurs="0"/>
 				<xs:element ref="fixr:components" minOccurs="0"/>
