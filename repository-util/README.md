@@ -12,9 +12,22 @@ This module provides these applications:
 
 ### Running RepositoryValidator
 
-RepositoryValidator ensures that an Orchestra file conforms to the Repository XML schema. Other validations may be added in the future.
+RepositoryValidator supports two validation styles:
+* Basic validation (the default) merely ensures that an Orchestra file conforms to the Repository XML schema.
+* FIX style validation additionally checks contents for conformance to FIX style rules. This is invoked with command line argument `-s FIX`.
 
-RepositoryValidator takes one command line argument, the name of an Orchestra Repository file to validate. Output goes to the console by default.
+Other validations may be added in the future.
+
+RepositoryValidator requires one command line argument, the name of an Orchestra Repository file to validate. Output goes to the console by default
+but may be directed to a JSON event file suitable for rendering.
+
+Command line arguments:
+```
+usage: RepositoryValidator [options] <input-file>
+ -?,--help             display usage
+ -e,--eventlog <arg>   path of JSON event file
+ -s,--style <arg>      validation style
+ ```
 
 ### Running RepositoryCompressor
 
@@ -49,6 +62,6 @@ This Maven module may be included as a dependency in a project as follows (subst
 <dependency>
   <groupId>io.fixprotocol.orchestra</groupId>
   <artifactId>repository-util</artifactId>
-  <version>1.6.10</version>
+  <version>1.7.4</version>
 </dependency>
 ```

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2020 FIX Protocol Ltd
+ * Copyright 2019-2022 FIX Protocol Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -17,16 +17,25 @@ package io.fixprotocol.orchestra.repository;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import io.fixprotocol.orchestra.event.EventListener;
 import io.fixprotocol.orchestra.event.EventListenerFactory;
 import io.fixprotocol.orchestra.event.TeeEventListener;
 
+
 /**
- * Validates an Orchestra repository file 
+ * Validates an Orchestra repository file
  * 
- * <p>Validations include:</p>
+ * <p>
+ * Validations include:
+ * </p>
  * <ul>
  * <li>Conformance to the repository XML schema</li>
  * <li>Syntax of Score DSL expressions</li>
@@ -34,7 +43,9 @@ import io.fixprotocol.orchestra.event.TeeEventListener;
  * <li>Conformance to FIX style rules or basic validation</li
  * </ul>
  * 
- * <p>Rules for other protocols may be added in future.</p>
+ * <p>
+ * Rules for other protocols may be added in future.
+ * </p>
  * 
  * @author Don Mendelson
  *
@@ -59,73 +70,27 @@ public class RepositoryValidator {
       this.inputFile = inputFilename;
       return this;
     }
-    
+
     public Builder style(String style) {
       this.style = style;
       return this;
     }
   }
 
+  /**
+   * Basic validation only validates XML schema conformance
+   */
+  public static final String BASIC_STYLE = "BASIC";
+
+  /**
+   * FIX validation performs basic validation plus conformance to FIX style rules
+   */
   public static final String FIX_STYLE = "FIX";
-  final Logger logger = LogManager.getLogger(RepositoryValidator.class);
 
   public static Builder builder() {
     return new Builder();
   }
 
-  /**
-   * Execute RepositoryValidator with command line arguments
-   *
-   * @param args command line arguments
-   *
-   *        <pre>
-   * Usage: RepositoryValidator [options] &lt;input-file&gt;
-   * -e &lt;logfile&gt; name of event log
-   *        </pre>
-   */
-  public static void main(String[] args) {
-    final Builder builder = RepositoryValidator.builder();
-
-    for (int i = 0; i < args.length;) {
-      if ("-e".equals(args[i])) {
-        if (i < args.length - 1) {
-          builder.eventLog(args[i + 1]);
-          i++;
-        }
-      } else {
-        builder.inputFile(args[i]);
-      }
-      i++;
-    }
-    final RepositoryValidator validator = builder.build();
-    System.exit(validator.validate() ? 0 : 1);
-  }
-
-  private final String eventFile;
-  private final String inputFile;
-  private final String style;
-
-  private RepositoryValidator(Builder builder) {
-    this.eventFile = builder.eventFile;
-    this.inputFile = builder.inputFile;
-    this.style = builder.style;
-  }
-
-  public boolean validate() {
-    try (EventListener eventLogger = createLogger(eventFile != null ? new FileOutputStream(eventFile) : null)) {
-      BasicRepositoryValidator impl;
-      if (FIX_STYLE.equals(this.style)) {
-        impl = new FixRepositoryValidator(eventLogger);
-      } else {
-        impl = new BasicRepositoryValidator(eventLogger);
-      }
-      return impl.validate(new FileInputStream(inputFile));
-    } catch (final Exception e) {
-      logger.fatal("RepositoryValidator failed", e);
-      return false;
-    }
-  }
-  
   public static EventListener createLogger(OutputStream jsonOutputStream) {
     final Logger logger = LogManager.getLogger(RepositoryValidator.class);
     final EventListenerFactory factory = new EventListenerFactory();
@@ -144,6 +109,102 @@ public class RepositoryValidator {
       logger.error("Error creating event listener", e);
     }
     return eventListener;
+  }
+
+  /**
+   * Execute RepositoryValidator with command line arguments
+   *
+   * @param args command line arguments
+   *
+   *        <pre>
+usage: RepositoryValidator [options] &lt;input-file&gt;
+ -?,--help             display usage
+ -e,--eventlog &lt;arg&gt;   path of JSON event file
+ -s,--style &lt;arg&gt;      validation style
+   *        </pre>
+   */
+  public static void main(String[] args) {
+    RepositoryValidator validator;
+    try {
+      validator = RepositoryValidator.parseArgs(args).build();
+      validator.validate();
+    } catch (ParseException e) {
+      System.exit(1);
+    }
+  }
+
+  static Builder parseArgs(String[] args) throws ParseException {
+    final Options options = new Options();
+    options.addOption(Option.builder("e").desc("path of JSON event file").longOpt("eventlog")
+        .numberOfArgs(1).build());
+    options.addOption(
+        Option.builder("s").desc("validation style").longOpt("style").numberOfArgs(1).build());
+    options.addOption(Option.builder("?").desc("display usage").longOpt("help").build());
+
+    final DefaultParser parser = new DefaultParser();
+    CommandLine cmd;
+
+    final Builder builder = new Builder();
+
+    try {
+      cmd = parser.parse(options, args);
+
+      if (cmd.hasOption("?")) {
+        showHelp(options);
+        System.exit(0);
+      }
+
+      builder.inputFile = !cmd.getArgList().isEmpty() ? cmd.getArgList().get(0) : null;
+
+      if (cmd.hasOption("e")) {
+        builder.eventFile = cmd.getOptionValue("e");
+      }
+
+      if (cmd.hasOption("s")) {
+        builder.style = cmd.getOptionValue("s");
+      }
+
+      return builder;
+    } catch (final ParseException e) {
+      System.err.println(e.getMessage());
+      showHelp(options);
+      throw e;
+    }
+  }
+
+  static void showHelp(final Options options) {
+    final HelpFormatter formatter = new HelpFormatter();
+    formatter.printHelp("RepositoryValidator [options] <input-file>", options);
+  }
+
+  final Logger logger = LogManager.getLogger(RepositoryValidator.class);
+  private final String eventFile;
+  private final String inputFile;
+  private final String style;
+
+  private RepositoryValidator(Builder builder) {
+    this.eventFile = builder.eventFile;
+    this.inputFile = builder.inputFile;
+    this.style = builder.style;
+  }
+
+  public boolean validate() {
+    try (EventListener eventLogger =
+        createLogger(eventFile != null ? new FileOutputStream(eventFile) : null)) {
+      BasicRepositoryValidator impl;
+      if (FIX_STYLE.equalsIgnoreCase(this.style)) {
+        impl = new FixRepositoryValidator(eventLogger);
+      } else {
+        impl = new BasicRepositoryValidator(eventLogger);
+      }
+      if (inputFile == null) {
+        throw new IllegalArgumentException("No input file specified");
+      }
+      return impl.validate(new FileInputStream(inputFile));
+    } catch (final Exception e) {
+      logger.fatal("RepositoryValidator failed", e);
+      return false;
+    }
   }
 
 }
