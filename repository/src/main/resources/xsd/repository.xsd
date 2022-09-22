@@ -146,7 +146,12 @@
 	<xs:element name="fields">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="field" type="fixr:fieldType" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="field" type="fixr:fieldType" minOccurs="0" maxOccurs="unbounded">
+					<xs:key name="typeKey">
+						<xs:selector xpath="."/>
+						<xs:field xpath="@type|@codeSet"/>
+					</xs:key>
+				</xs:element>
 				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute name="latestEP" type="fixr:EP_t"/>
@@ -250,14 +255,24 @@
 				</xs:annotation>
 			</xs:attribute>
 		</xs:complexType>
-		<xs:key name="typeKey">
-			<xs:selector xpath="fixr:codeSets/fixr:codeSet|fixr:datatypes/fixr:datatype"/>
+		<xs:key name="datatypeRefKey">
+			<xs:selector xpath="fixr:datatypes/fixr:datatype"/>
 			<xs:field xpath="@name"/>
 			<xs:field xpath="@scenarioId"/>
 		</xs:key>
-		<xs:keyref name="typeKeyref" refer="fixr:typeKey">
+		<xs:keyref name="typeKeyref" refer="fixr:datatypeRefKey">
 			<xs:selector xpath="fixr:fields/fixr:field"/>
 			<xs:field xpath="@type"/>
+			<xs:field xpath="@scenarioId"/>
+		</xs:keyref>
+		<xs:key name="codesetRefKey">
+			<xs:selector xpath="fixr:codeSets/fixr:codeSet"/>
+			<xs:field xpath="@name"/>
+			<xs:field xpath="@scenarioId"/>
+		</xs:key>
+		<xs:keyref name="codesetKeyref" refer="fixr:codesetRefKey">
+			<xs:selector xpath="fixr:fields/fixr:field"/>
+			<xs:field xpath="@codeSet"/>
 			<xs:field xpath="@scenarioId"/>
 		</xs:keyref>
 		<xs:key name="scenarioNameKey">
