@@ -728,6 +728,12 @@
 					<xs:attribute name="which" type="fixr:memberType"/>
 				</xs:complexType>
 			</xs:element>
+			<xs:element name="when" type="fixr:expressionType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>A condition that distinguishes when a scenario of a message type applies. It could be used to generate a decision tree to correlate an incoming message to its scenario, or to decide which scenario of a request message to send.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 			<xs:element name="responses" minOccurs="0">
 				<xs:complexType>
 					<xs:sequence>
