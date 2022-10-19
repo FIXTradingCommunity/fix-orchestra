@@ -455,7 +455,7 @@
 				<xs:documentation>Name of this rule</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="type" type="xs:string">
+		<xs:attribute name="type" type="fixr:Name_t">
 			<xs:annotation>
 				<xs:documentation>Overrides the type of the referenced field.
 				</xs:documentation>
@@ -484,10 +484,15 @@
 		</xs:sequence>
 		<xs:attributeGroup ref="fixr:oidGrp"/>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
-		<xs:attribute name="type" type="xs:string" use="required">
+		<xs:attribute name="type" type="fixr:Name_t">
 			<xs:annotation>
-				<xs:documentation>Attribute type refers to either a datatype or a
-					codeSet, which carries an underlying datatype.
+				<xs:documentation>Attribute type refers to a datatype name
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="codeSet" type="fixr:Name_t">
+			<xs:annotation>
+				<xs:documentation>Attribute codeSet refers to a codeSet name
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
