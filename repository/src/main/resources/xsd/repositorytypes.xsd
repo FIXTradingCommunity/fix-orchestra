@@ -380,6 +380,46 @@
 			</xs:annotation>
 		</xs:attribute>
 	</xs:attributeGroup>
+	<xs:attributeGroup name="fieldTypeAttribGrp">
+		<xs:annotation>
+			<xs:documentation>Attributes of a field that specify its type (data type or code set)
+			</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="type" type="fixr:Name_t">
+			<xs:annotation>
+				<xs:documentation>Attribute type refers to a datatype name
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="typeScenario" type="fixr:Name_t" default="base">
+			<xs:annotation>
+				<xs:documentation>Scenario of the datatype
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="typeScenarioId" type="fixr:id_t" default="1">
+			<xs:annotation>
+				<xs:documentation>Unique identifier of the datatype scenario. Default is '1' for base scenario.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="codeSet" type="fixr:Name_t">
+			<xs:annotation>
+				<xs:documentation>Attribute codeSet refers to a codeSet name
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="codeSetScenario" type="fixr:Name_t" default="base">
+			<xs:annotation>
+				<xs:documentation>Scenario of the codeSet
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="codeSetScenarioId" type="fixr:id_t" default="1">
+			<xs:annotation>
+				<xs:documentation>Unique identifier of the codeSet scenario. Default is '1' for base scenario.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:attributeGroup>
 	<xs:complexType name="fieldRefType">
 		<xs:sequence>
 			<xs:element name="rule" type="fixr:fieldRuleType" minOccurs="0" maxOccurs="unbounded">
@@ -484,18 +524,7 @@
 		</xs:sequence>
 		<xs:attributeGroup ref="fixr:oidGrp"/>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
-		<xs:attribute name="type" type="fixr:Name_t">
-			<xs:annotation>
-				<xs:documentation>Attribute type refers to a datatype name
-				</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
-		<xs:attribute name="codeSet" type="fixr:Name_t">
-			<xs:annotation>
-				<xs:documentation>Attribute codeSet refers to a codeSet name
-				</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
+		<xs:attributeGroup ref="fixr:fieldTypeAttribGrp"/>
 		<xs:attributeGroup ref="fixr:fieldAttribGrp"/>
 		<xs:attribute name="lengthId" type="fixr:id_t">
 			<xs:annotation>

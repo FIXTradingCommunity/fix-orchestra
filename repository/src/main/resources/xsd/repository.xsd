@@ -150,6 +150,7 @@
 					<xs:key name="typeKey">
 						<xs:selector xpath="."/>
 						<xs:field xpath="@type|@codeSet"/>
+						<xs:field xpath="@typeScenarioId|@codeSetScenarioId"/>
 					</xs:key>
 				</xs:element>
 				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
@@ -263,7 +264,7 @@
 		<xs:keyref name="typeKeyref" refer="fixr:datatypeRefKey">
 			<xs:selector xpath="fixr:fields/fixr:field"/>
 			<xs:field xpath="@type"/>
-			<xs:field xpath="@scenarioId"/>
+			<xs:field xpath="@typeScenarioId"/>
 		</xs:keyref>
 		<xs:key name="codesetRefKey">
 			<xs:selector xpath="fixr:codeSets/fixr:codeSet"/>
@@ -273,7 +274,7 @@
 		<xs:keyref name="codesetKeyref" refer="fixr:codesetRefKey">
 			<xs:selector xpath="fixr:fields/fixr:field"/>
 			<xs:field xpath="@codeSet"/>
-			<xs:field xpath="@scenarioId"/>
+			<xs:field xpath="@codeSetScenarioId"/>
 		</xs:keyref>
 		<xs:key name="scenarioNameKey">
 			<xs:selector xpath="fixr:scenarios/fixr:scenario"/>
