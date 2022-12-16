@@ -420,6 +420,34 @@
 			</xs:annotation>
 		</xs:attribute>
 	</xs:attributeGroup>
+	<xs:attributeGroup name="fieldRefTypeAttribGrp">
+		<xs:annotation>
+			<xs:documentation>Attributes of a field reference that allow overriding the scenario of the referenced field definition's type (data type or code set)
+			</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="typeScenario" type="fixr:Name_t">
+			<xs:annotation>
+				<xs:documentation>Scenario override for the datatype
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="typeScenarioId" type="fixr:id_t">
+			<xs:annotation>
+				<xs:documentation>Unique identifier of the datatype scenario override.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="codeSetScenario" type="fixr:Name_t">
+			<xs:annotation>
+				<xs:documentation>Scenario override for the codeSet
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="codeSetScenarioId" type="fixr:id_t">
+			<xs:annotation>
+				<xs:documentation>Unique identifier of the codeSet scenario override.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:attributeGroup>
 	<xs:complexType name="fieldRefType">
 		<xs:sequence>
 			<xs:element name="rule" type="fixr:fieldRuleType" minOccurs="0" maxOccurs="unbounded">
@@ -440,6 +468,7 @@
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attributeGroup ref="fixr:refidGrp"/>
+		<xs:attributeGroup ref="fixr:fieldRefTypeAttribGrp"/>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 		<xs:attribute name="lengthId" type="fixr:id_t">
 			<xs:annotation>
