@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fixr:repository name="FIX.Latest" version="FIX.Latest_EP276" xmlns="http://purl.org/dc/elements/1.1/" xmlns:fixr="http://fixprotocol.io/2022/orchestra/repository" xmlns:dc="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://fixprotocol.io/2022/orchestra/repository ../../../main/resources/xsd/repository.xsd">
+	<fixr:metadata>
+		<dc:title>Orchestra 1.1 Type Scenarios Example</dc:title>
+		<dc:creator>FIX Trading Community</dc:creator>
+		<dc:publisher>FIX Trading Community</dc:publisher>
+		<dc:rights>Copyright 2023, FIX Protocol, Limited</dc:rights>
+		<dc:date>2023-02-17T18:00:00.000+09:00</dc:date>
+		<dc:format>Orchestra Repository 1.1</dc:format>
+	</fixr:metadata>
+	<fixr:scenarios>
+		<fixr:scenario id="1" name="base"/>
+		<fixr:scenario id="2" name="OrdinaryString"/>
+		<fixr:scenario id="3" name="SpecialString"/>
+		<fixr:scenario id="4" name="Trade"/>
+		<fixr:scenario id="5" name="PostTrade"/>
+	</fixr:scenarios>
+	<fixr:datatypes>
+		<!-- base scenario -->
+		<fixr:datatype name="String"/>
+		<!-- in 1.1 data types can have scenarios too -->
+		<fixr:datatype name="String" scenarioId="2" scenario="OrdinaryString"/>
+		<fixr:datatype name="String" scenarioId="3" scenario="SpecialString"/> 
+	</fixr:datatypes>
+	<fixr:codeSets>
+		<!-- in 1.1 code sets specify the scenario of the data type they point to using the typeScenarioId attribute -->
+		<fixr:codeSet name="AdvTransTypeCodeSet" id="5" type="String" typeScenarioId="3" typeScenario="SpecialString"/> 
+		<fixr:codeSet name="AdvTransTypeCodeSet" id="5" scenarioId="4" scenario="Trade" type="String" typeScenarioId="3" typeScenario="SpecialString"/>
+		<fixr:codeSet name="AdvTransTypeCodeSet" id="5" scenarioId="5" scenario="PostTrade" type="String" typeScenarioId="3" typeScenario="SpecialString"/>
+	</fixr:codeSets>
+	<fixr:fields>
+		<!-- base scenario of the field pointing to base scenario of the code set -->
+		<fixr:field id="5" name="AdvTransType" codeSet="AdvTransTypeCodeSet"/> 
+		<!-- in 1.1 the field can point to a non-base scenario of the code set using the codeSetScenarioId attribute (field's scenarioId and codeSetScenarioId don't need to be the same) -->
+		<fixr:field id="5" name="AdvTransType" scenarioId="4" scenario="Trade" codeSet="AdvTransTypeCodeSet" codeSetScenarioId="5" codeSetScenario="PostTrade"/>
+		<!-- it works similarly for fields that use data type (rather than code set) -->
+		<!-- base scenario of the field pointing to base scenario of the data type -->
+		<fixr:field id="11" name="ClOrdID" type="String"/>
+		<!-- in 1.1 the field can point to a non-base scenario of the data type using the typeScenarioId attribute (field's scenarioId and typeScenarioId don't need to be the same) -->
+		<fixr:field id="11" name="ClOrdID" scenarioId="4" scenario="Trade" type="String" typeScenarioId="3" typeScenario="SpecialString"/>
+	</fixr:fields>
+	<fixr:messages>
+		<fixr:message msgType="0" abbrName="Example" id="1" name="Example" scenarioId="5" scenario="PostTrade">
+            <fixr:structure>
+                <!-- in 1.1 a field reference can override the codeSetScenarioId of the field definition -->
+				<fixr:fieldRef id="5" name="AdvTransType" codeSetScenarioId="4" codeSetScenario="Trade" presence="required"/>
+				<!-- in 1.1 a field reference can override the typeScenarioId of the field definition -->
+				<fixr:fieldRef id="11" name="ClOrdID" typeScenarioId="2" typeScenario="OrdinaryString" presence="required"/>
+            </fixr:structure>
+        </fixr:message>
+		<fixr:message msgType="0" abbrName="Example" id="1" name="Example" scenarioId="4" scenario="Trade">
+            <fixr:structure>
+                <!-- in 1.1 if the field reference doesn't specify a codeSetScenarioId, then it's inherited from the field definition (in this example, it's codeSetScenarioId="5" codeSetScenario="PostTrade") -->
+				<fixr:fieldRef id="5" name="AdvTransType" scenarioId="4" scenario="Trade" presence="required"/>
+				<!-- in 1.1 if the field reference doesn't specify a typeScenarioId, then it's inherited from the field definition (in this example, it's typeScenarioId="3" typeScenario="SpecialString") -->
+				<fixr:fieldRef id="11" name="ClOrdID" scenarioId="4" scenario="Trade" presence="required"/>
+            </fixr:structure>
+        </fixr:message>
+	</fixr:messages>
+	<fixr:sections/>
+	<fixr:categories/>
+	<fixr:components/>
+	<fixr:groups/>
+</fixr:repository>
