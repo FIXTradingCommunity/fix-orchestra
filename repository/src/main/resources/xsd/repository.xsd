@@ -56,6 +56,11 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="codeSet" type="fixr:codeSetType" minOccurs="0" maxOccurs="unbounded">
+					<xs:key name="typeKey">
+						<xs:selector xpath="."/>
+						<xs:field xpath="@type"/>
+						<xs:field xpath="@typeScenarioId"/>
+					</xs:key>
 					<xs:key name="codeKey">
 						<xs:selector xpath="fixr:code"/>
 						<xs:field xpath="@name"/>
@@ -147,7 +152,7 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="field" type="fixr:fieldType" minOccurs="0" maxOccurs="unbounded">
-					<xs:key name="typeKey">
+					<xs:key name="typeCodeSetKey">
 						<xs:selector xpath="."/>
 						<xs:field xpath="@type|@codeSet"/>
 						<xs:field xpath="@typeScenarioId|@codeSetScenarioId"/>

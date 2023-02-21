@@ -141,12 +141,7 @@
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attributeGroup ref="fixr:oidGrp"/>
-		<xs:attribute name="type" type="fixr:Name_t" use="required">
-			<xs:annotation>
-				<xs:documentation>Underlying FIX datatype of codes
-				</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
+		<xs:attributeGroup ref="fixr:codeSetTypeAttribGrp"/>
 		<xs:attribute name="default" type="xs:string"/>
 		<xs:attribute name="specUrl" type="xs:anyURI">
 			<xs:annotation>
@@ -377,6 +372,29 @@
 		<xs:attribute name="rendering" type="xs:string">
 			<xs:annotation>
 				<xs:documentation>A hint to processes about how to interpret the element. Not validated.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:attributeGroup>
+	<xs:attributeGroup name="codeSetTypeAttribGrp">
+		<xs:annotation>
+			<xs:documentation>Attributes of a code set that specify its type (data type)
+			</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="type" type="fixr:Name_t" use="required">
+			<xs:annotation>
+				<xs:documentation>Underlying FIX datatype of codes
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="typeScenario" type="fixr:Name_t" default="base">
+			<xs:annotation>
+				<xs:documentation>Scenario of the datatype
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="typeScenarioId" type="fixr:id_t" default="1">
+			<xs:annotation>
+				<xs:documentation>Unique identifier of the datatype scenario. Default is '1' for base scenario.</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 	</xs:attributeGroup>
