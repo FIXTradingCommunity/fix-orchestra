@@ -40,7 +40,7 @@
 					<xs:documentation>An application layer protocol with orchestration</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="userInterface" type="fixi:userIntefaceType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="userInterface" type="fixi:userInterfaceType" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="encoding" type="fixi:encodingType" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="sessionProtocol" type="fixi:sessionProtocolType" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="protocol" type="fixi:protocolType" minOccurs="0" maxOccurs="unbounded"/>
