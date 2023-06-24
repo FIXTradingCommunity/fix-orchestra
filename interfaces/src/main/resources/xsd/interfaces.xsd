@@ -299,7 +299,7 @@
 		</xs:annotation>
 		<xs:union memberTypes="fixi:transportUse_enum xs:string"/>
 	</xs:simpleType>
-	<xs:complexType name="userIntefaceType">
+	<xs:complexType name="userInterfaceType">
 		<xs:complexContent>
 			<xs:extension base="fixi:protocolType"/>
 		</xs:complexContent>
