@@ -154,7 +154,6 @@
 				</xs:element>
 				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
-			<xs:attribute name="latestEP" type="fixr:EP_t"/>
 			<xs:attribute ref="xml:base"/>
 		</xs:complexType>
 		<xs:key name="fieldNameKey">
