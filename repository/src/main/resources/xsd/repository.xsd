@@ -205,7 +205,7 @@
 		</xs:key>
 		<xs:key name="messageIdKey">
 			<xs:annotation>
-				<xs:documentation>Combination of message id and scenario name must be
+				<xs:documentation>Combination of message id and scenario ID must be
 					unique</xs:documentation>
 			</xs:annotation>
 			<xs:selector xpath="fixr:message"/>
