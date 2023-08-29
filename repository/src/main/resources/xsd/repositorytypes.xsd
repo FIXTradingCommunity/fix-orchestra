@@ -305,11 +305,6 @@
 		<xs:attribute name="contentType" type="fixr:mime_t" default="text/plain"/>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 	</xs:complexType>
-	<xs:simpleType name="Edition_t">
-		<xs:restriction base="xs:string">
-			<xs:maxLength value="8"/>
-		</xs:restriction>
-	</xs:simpleType>
 	<xs:attributeGroup name="entityAttribGrp">
 		<xs:attribute name="added" type="fixr:Version_t"/>
 		<xs:attribute name="addedEP" type="fixr:EP_t"/>
@@ -432,7 +427,7 @@
 						<xs:sequence>
 							<xs:element name="fieldRef" type="fixr:fieldRefType" minOccurs="0" maxOccurs="unbounded">
 								<xs:annotation>
-									<xs:documentation>Other field or fields that scope uniqueness. 
+									<xs:documentation>Other field or fields that scope uniqueness.
 									If none provided, then the field value must be globally unique.</xs:documentation>
 								</xs:annotation>
 							</xs:element>
