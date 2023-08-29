@@ -264,12 +264,12 @@
 			<xs:field xpath="@type"/>
 			<xs:field xpath="@scenarioId"/>
 		</xs:keyref>
-		<xs:key name="codesetRefKey">
+		<xs:key name="codeSetRefKey">
 			<xs:selector xpath="fixr:codeSets/fixr:codeSet"/>
 			<xs:field xpath="@name"/>
 			<xs:field xpath="@scenarioId"/>
 		</xs:key>
-		<xs:keyref name="codesetKeyref" refer="fixr:codesetRefKey">
+		<xs:keyref name="codeSetKeyref" refer="fixr:codeSetRefKey">
 			<xs:selector xpath="fixr:fields/fixr:field"/>
 			<xs:field xpath="@codeSet"/>
 			<xs:field xpath="@scenarioId"/>
