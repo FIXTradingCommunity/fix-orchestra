@@ -856,7 +856,7 @@
 		</xs:attribute>
 		<xs:attribute name="name" type="fixr:Name_t">
 			<xs:annotation>
-				<xs:documentation>Name is optional for convenience, but it is not enforced by referential integrity. Only the name of the referred object is authoritative.</xs:documentation>
+				<xs:documentation>The name is optional as part of a reference and only for convenience. It is not enforced by referential integrity. However, the name of the referred object is authoritative. A validator may check the consistency between the name used for the reference and the name of the referred object.</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attribute name="scenario" type="fixr:Name_t" default="base">
