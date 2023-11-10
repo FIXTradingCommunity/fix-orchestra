@@ -1,7 +1,7 @@
 # Module dsl-antlr
-This module provides a grammar for the Score Domain Specific Language (DSL) in Orchestra. The DSL expresses conditions and rules about message elements and tells when responses are triggered in a workflow. Also, expressions can be written to assign values to field in outgoing messages or state variables. 
+This module provides a grammar for the Score Domain Specific Language (DSL) in Orchestra. The DSL expresses conditions and rules about message elements and tells when responses are triggered in a workflow. Also, expressions can be written to assign values to field in outgoing messages or state variables.
 
-See documentation of the grammar in [Orchestra specifications](https://github.com/FIXTradingCommunity/fix-orchestra-spec/tree/master/v1-0-RC2)
+See documentation of the grammar in [Orchestra specifications](https://github.com/FIXTradingCommunity/fix-orchestra-spec/tree/master/v1-0-STANDARD)
 
 This module uses the [ANTLR4 language framework](http://www.antlr.org/)
 
