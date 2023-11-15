@@ -402,10 +402,9 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="baseFieldId" type="fixr:id_t">
+		<xs:attribute name="nonEncodedFieldId" type="fixr:id_t">
 			<xs:annotation>
-				<xs:documentation>Identifies a related field such as a non-encoded field related to an encoded field
-				or an alternate tag derived from encoding rules. However, this is not intended to represent semantic relationships.
+				<xs:documentation>Identifies a non-encoded field related to an encoded field
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
@@ -498,10 +497,9 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="baseFieldId" type="fixr:id_t">
+		<xs:attribute name="nonEncodedFieldId" type="fixr:id_t">
 			<xs:annotation>
-				<xs:documentation>Identifies a related field such as a non-encoded field related to an encoded field
-				or an alternate tag derived from encoding rules. However, this is not intended to represent semantic relationships.
+				<xs:documentation>Identifies a non-encoded field related to an encoded field
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
