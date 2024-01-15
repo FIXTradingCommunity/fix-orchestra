@@ -26,12 +26,12 @@ import org.stringtemplate.v4.STErrorListener;
 import org.stringtemplate.v4.STGroupFile;
 import org.stringtemplate.v4.STWriter;
 
-import io.fixprotocol._2020.orchestra.repository.FlowType;
-import io.fixprotocol._2020.orchestra.repository.MessageRefType;
-import io.fixprotocol._2020.orchestra.repository.MessageType;
-import io.fixprotocol._2020.orchestra.repository.ResponseType;
-import io.fixprotocol._2020.orchestra.repository.StateMachineType;
-import io.fixprotocol._2020.orchestra.repository.Synchronization;
+import io.fixprotocol._2022.orchestra.repository.FlowType;
+import io.fixprotocol._2022.orchestra.repository.MessageRefType;
+import io.fixprotocol._2022.orchestra.repository.MessageType;
+import io.fixprotocol._2022.orchestra.repository.ResponseType;
+import io.fixprotocol._2022.orchestra.repository.StateMachineType;
+import io.fixprotocol._2022.orchestra.repository.Synchronization;
 import net.sourceforge.plantuml.SourceStringReader;
 
 public class ImgGenerator {

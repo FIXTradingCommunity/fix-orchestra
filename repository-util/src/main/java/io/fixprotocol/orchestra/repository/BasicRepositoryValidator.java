@@ -78,7 +78,7 @@ public class BasicRepositoryValidator {
   }
 
 
-  static final String REPOSITORY_NAMESPACE = "http://fixprotocol.io/2020/orchestra/repository";
+  static final String REPOSITORY_NAMESPACE = "http://fixprotocol.io/2022/orchestra/repository";
 
   private static final NamespaceContext nsContext = new NamespaceContext() {
     @Override

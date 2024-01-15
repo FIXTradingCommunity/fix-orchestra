@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fixr="http://fixprotocol.io/2020/orchestra/repository" xmlns:dcterms="http://purl.org/dc/terms/" targetNamespace="http://fixprotocol.io/2020/orchestra/repository" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fixr="http://fixprotocol.io/2023/orchestra/repository" xmlns:dcterms="http://purl.org/dc/terms/" targetNamespace="http://fixprotocol.io/2023/orchestra/repository" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.1-rc1">
 	<xs:annotation>
 		<xs:documentation>
 			FIX Repository standard structure of messages with workflow
-			© Copyright 2016-2020 FIX Protocol Limited
+			© Copyright 2016-2023 FIX Protocol Limited
 			Creative Commons Attribution-NoDerivatives 4.0
 			International Public License
 		</xs:documentation>
 	</xs:annotation>
 	<!-- includes xml:base to support XInclude -->
-	<xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="http://www.w3.org/2001/03/xml.xsd"/>
+	<xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd"/>
 	<xs:include schemaLocation="repositorytypes.xsd"/>
 	<xs:import namespace="http://purl.org/dc/terms/" schemaLocation="dcterms.xsd"/>
 	<xs:element name="actors">
@@ -18,10 +18,11 @@
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:choice maxOccurs="unbounded">
+				<xs:choice minOccurs="0" maxOccurs="unbounded">
 					<xs:element name="actor" type="fixr:actorType"/>
 					<xs:element name="flow" type="fixr:flowType"/>
 				</xs:choice>
+				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute ref="xml:base"/>
 		</xs:complexType>
@@ -41,25 +42,26 @@
 	<xs:element name="categories">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="category" type="fixr:categoryType" maxOccurs="unbounded">
+				<xs:element name="category" type="fixr:categoryType" minOccurs="0" maxOccurs="unbounded">
 					<xs:annotation>
 						<xs:documentation>A business process category, a subcategory of a businessArea</xs:documentation>
 					</xs:annotation>
 				</xs:element>
+				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
-			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
 			<xs:attribute ref="xml:base"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="codeSets">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="codeSet" type="fixr:codeSetType" maxOccurs="unbounded">
+				<xs:element name="codeSet" type="fixr:codeSetType" minOccurs="0" maxOccurs="unbounded">
 					<xs:key name="codeKey">
 						<xs:selector xpath="fixr:code"/>
 						<xs:field xpath="@name"/>
 					</xs:key>
 				</xs:element>
+				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute ref="xml:base"/>
 		</xs:complexType>
@@ -71,15 +73,15 @@
 		<xs:key name="codeSetIdKey">
 			<xs:selector xpath="fixr:codeSet"/>
 			<xs:field xpath="@id"/>
-			<xs:field xpath="@scenario"/>
+			<xs:field xpath="@scenarioId"/>
 		</xs:key>
 	</xs:element>
 	<xs:element name="components">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="component" type="fixr:componentType" maxOccurs="unbounded"/>
+				<xs:element name="component" type="fixr:componentType" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
-			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
 			<xs:attribute ref="xml:base"/>
 		</xs:complexType>
 		<xs:key name="componentNameKey">
@@ -90,13 +92,14 @@
 		<xs:key name="componentIdKey">
 			<xs:selector xpath="fixr:component"/>
 			<xs:field xpath="@id"/>
-			<xs:field xpath="@scenario"/>
+			<xs:field xpath="@scenarioId"/>
 		</xs:key>
 	</xs:element>
 	<xs:element name="concepts">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="concept" type="fixr:conceptType" maxOccurs="unbounded"/>
+				<xs:element name="concept" type="fixr:conceptType" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute ref="xml:base"/>
 		</xs:complexType>
@@ -112,6 +115,16 @@
 				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute name="name" type="fixr:Name_t" use="required"/>
+			<xs:attribute name="scenario" type="fixr:Name_t" default="base">
+				<xs:annotation>
+					<xs:documentation>The use case of a datatype by name</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="scenarioId" type="fixr:id_t" default="1">
+				<xs:annotation>
+					<xs:documentation>Unique identifier of a scenario. Default is '1' for base scenario.</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
 			<xs:attribute name="baseType" type="fixr:Name_t"/>
 			<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 		</xs:complexType>
@@ -119,18 +132,28 @@
 	<xs:element name="datatypes">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="fixr:datatype" maxOccurs="unbounded"/>
+				<xs:element ref="fixr:datatype" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
-			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
 			<xs:attribute ref="xml:base"/>
 		</xs:complexType>
+		<xs:key name="datatypeKey">
+			<xs:selector xpath="fixr:datatype"/>
+			<xs:field xpath="@name"/>
+			<xs:field xpath="@scenarioId"/>
+		</xs:key>
 	</xs:element>
 	<xs:element name="fields">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="field" type="fixr:fieldType" maxOccurs="unbounded"/>
+				<xs:element name="field" type="fixr:fieldType" minOccurs="0" maxOccurs="unbounded">
+					<xs:key name="typeKey">
+						<xs:selector xpath="."/>
+						<xs:field xpath="@type|@codeSet"/>
+					</xs:key>
+				</xs:element>
+				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
-			<xs:attribute name="latestEP" type="fixr:EP_t"/>
 			<xs:attribute ref="xml:base"/>
 		</xs:complexType>
 		<xs:key name="fieldNameKey">
@@ -141,15 +164,15 @@
 		<xs:key name="fieldIdKey">
 			<xs:selector xpath="fixr:field"/>
 			<xs:field xpath="@id"/>
-			<xs:field xpath="@scenario"/>
+			<xs:field xpath="@scenarioId"/>
 		</xs:key>
 	</xs:element>
 	<xs:element name="groups">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="group" type="fixr:groupType" maxOccurs="unbounded"/>
+				<xs:element name="group" type="fixr:groupType" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
-			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
 			<xs:attribute ref="xml:base"/>
 		</xs:complexType>
 		<xs:key name="groupNameKey">
@@ -160,15 +183,15 @@
 		<xs:key name="groupIdKey">
 			<xs:selector xpath="fixr:group"/>
 			<xs:field xpath="@id"/>
-			<xs:field xpath="@scenario"/>
+			<xs:field xpath="@scenarioId"/>
 		</xs:key>
 	</xs:element>
 	<xs:element name="messages">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="message" type="fixr:messageType" maxOccurs="unbounded"/>
+				<xs:element name="message" type="fixr:messageType" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
-			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
 			<xs:attribute ref="xml:base"/>
 		</xs:complexType>
 		<xs:key name="messageNameKey">
@@ -182,12 +205,12 @@
 		</xs:key>
 		<xs:key name="messageIdKey">
 			<xs:annotation>
-				<xs:documentation>Combination of message id and scenario name must be
+				<xs:documentation>Combination of message id and scenario ID must be
 					unique</xs:documentation>
 			</xs:annotation>
 			<xs:selector xpath="fixr:message"/>
 			<xs:field xpath="@id"/>
-			<xs:field xpath="@scenario"/>
+			<xs:field xpath="@scenarioId"/>
 		</xs:key>
 	</xs:element>
 	<xs:element name="repository">
@@ -197,13 +220,14 @@
 				<xs:element ref="fixr:categories" minOccurs="0"/>
 				<xs:element ref="fixr:sections" minOccurs="0"/>
 				<xs:element ref="fixr:datatypes"/>
-				<xs:element ref="fixr:codeSets"/>
+				<xs:element ref="fixr:codeSets" minOccurs="0"/>
 				<xs:element ref="fixr:fields"/>
 				<xs:element ref="fixr:actors" minOccurs="0"/>
 				<xs:element ref="fixr:components" minOccurs="0"/>
 				<xs:element ref="fixr:groups" minOccurs="0"/>
 				<xs:element ref="fixr:messages"/>
 				<xs:element ref="fixr:concepts" minOccurs="0"/>
+				<xs:element ref="fixr:scenarios" minOccurs="0"/>
 				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:all>
 			<xs:attribute name="name" type="xs:string" use="required">
@@ -212,7 +236,6 @@
 				</xs:annotation>
 			</xs:attribute>
 			<xs:attribute name="version" type="fixr:Version_t" use="required"/>
-			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
 			<xs:attribute name="guid" type="xs:string"/>
 			<xs:attribute name="specUrl" type="xs:anyURI">
 				<xs:annotation>
@@ -231,25 +254,79 @@
 				</xs:annotation>
 			</xs:attribute>
 		</xs:complexType>
-		<xs:key name="typeKey">
-			<xs:selector xpath="fixr:codeSets/fixr:codeSet|fixr:datatypes/fixr:datatype"/>
+		<xs:key name="datatypeRefKey">
+			<xs:selector xpath="fixr:datatypes/fixr:datatype"/>
 			<xs:field xpath="@name"/>
+			<xs:field xpath="@scenarioId"/>
 		</xs:key>
-		<xs:keyref name="typeKeyref" refer="fixr:typeKey">
+		<xs:keyref name="typeKeyref" refer="fixr:datatypeRefKey">
 			<xs:selector xpath="fixr:fields/fixr:field"/>
 			<xs:field xpath="@type"/>
+			<xs:field xpath="@scenarioId"/>
 		</xs:keyref>
+		<xs:key name="codeSetRefKey">
+			<xs:selector xpath="fixr:codeSets/fixr:codeSet"/>
+			<xs:field xpath="@name"/>
+			<xs:field xpath="@scenarioId"/>
+		</xs:key>
+		<xs:keyref name="codeSetKeyref" refer="fixr:codeSetRefKey">
+			<xs:selector xpath="fixr:fields/fixr:field"/>
+			<xs:field xpath="@codeSet"/>
+			<xs:field xpath="@scenarioId"/>
+		</xs:keyref>
+		<xs:key name="scenarioNameKey">
+			<xs:selector xpath="fixr:scenarios/fixr:scenario"/>
+			<xs:field xpath="@name"/>
+		</xs:key>
+		<xs:key name="scenarioIdKey">
+			<xs:selector xpath="fixr:scenarios/fixr:scenario"/>
+			<xs:field xpath="@id"/>
+		</xs:key>
+		<xs:keyref name="codeSetScenarioKeyRef" refer="fixr:scenarioIdKey">
+			<xs:selector xpath="fixr:codeSet"/>
+			<xs:field xpath="@scenarioId"/>
+		</xs:keyref>
+		<xs:keyref name="datatypeScenarioKeyRef" refer="fixr:scenarioIdKey">
+			<xs:selector xpath="fixr:datatype"/>
+			<xs:field xpath="@scenarioId"/>
+		</xs:keyref>
+		<xs:keyref name="componentScenarioKeyRef" refer="fixr:scenarioIdKey">
+			<xs:selector xpath="fixr:component"/>
+			<xs:field xpath="@scenarioId"/>
+		</xs:keyref>
+		<xs:keyref name="groupScenarioKeyRef" refer="fixr:scenarioIdKey">
+			<xs:selector xpath="fixr:group"/>
+			<xs:field xpath="@scenarioId"/>
+		</xs:keyref>
+		<xs:keyref name="messageScenarioKeyRef" refer="fixr:scenarioIdKey">
+			<xs:selector xpath="fixr:message"/>
+			<xs:field xpath="@scenarioId"/>
+		</xs:keyref>
+	</xs:element>
+	<xs:element name="scenarios">
+		<xs:annotation>
+			<xs:documentation>
+		The default scenario is id='1' name='base'.
+	</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="scenario" type="fixr:scenarioType" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
+			</xs:sequence>
+			<xs:attribute ref="xml:base"/>
+		</xs:complexType>
 	</xs:element>
 	<xs:element name="sections">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="section" type="fixr:sectionType" maxOccurs="unbounded">
+				<xs:element name="section" type="fixr:sectionType" minOccurs="0" maxOccurs="unbounded">
 					<xs:annotation>
 						<xs:documentation>A large-grained business process category</xs:documentation>
 					</xs:annotation>
 				</xs:element>
+				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
-			<xs:attributeGroup ref="fixr:containerAttribGrp"/>
 			<xs:attribute ref="xml:base"/>
 		</xs:complexType>
 	</xs:element>

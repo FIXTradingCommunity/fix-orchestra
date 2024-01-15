@@ -1,16 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- edited with XMLSpy v2020 rel. 2 sp1 (x64) (http://www.altova.com) by Don Mendelson (FIX Protocol Ltd. (FPL)) -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:fixr="http://fixprotocol.io/2020/orchestra/repository" targetNamespace="http://fixprotocol.io/2020/orchestra/repository" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:fixr="http://fixprotocol.io/2023/orchestra/repository" targetNamespace="http://fixprotocol.io/2023/orchestra/repository" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.1-rc1">
 	<xs:annotation>
 		<xs:documentation>
-			© Copyright 2016-2020 FIX Protocol Limited Creative
+			© Copyright 2016-2023 FIX Protocol Limited Creative
 			Commons Attribution-NoDerivatives 4.0
 			International Public License
 		</xs:documentation>
 	</xs:annotation>
-	<xs:simpleType name="Abbreviation_t">
-		<xs:restriction base="xs:string"/>
-	</xs:simpleType>
 	<xs:complexType name="actionType">
 		<xs:sequence>
 			<xs:choice id="parameters" minOccurs="0" maxOccurs="unbounded">
@@ -159,14 +155,23 @@
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
+		<xs:attribute name="unionDataType" type="fixr:UnionDataType_t"/>
 	</xs:complexType>
 	<xs:complexType name="codeType">
 		<xs:sequence>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attributeGroup ref="fixr:oidGrp"/>
-		<xs:attribute name="value" type="xs:string" use="required"/>
-		<xs:attribute name="sort" type="xs:string"/>
+		<xs:attribute name="value" type="xs:token" use="required">
+			<xs:annotation>
+				<xs:documentation>The XML processor will remove line feeds, carriage returns, tabs, leading and trailing spaces, and multiple spaces. However, single internal spaces are allowed. May be further restricted by an external style.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="sort" type="xs:nonNegativeInteger">
+			<xs:annotation>
+				<xs:documentation>Sort and group may be used to organize visualization of a code set.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 		<xs:attribute name="group" type="xs:string"/>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 	</xs:complexType>
@@ -251,9 +256,6 @@
 		</xs:sequence>
 		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
 	</xs:complexType>
-	<xs:attributeGroup name="containerAttribGrp">
-		<xs:attribute name="latestEP" type="fixr:EP_t"/>
-	</xs:attributeGroup>
 	<xs:simpleType name="datatypeStandard_enum">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="ISO11404">
@@ -303,11 +305,6 @@
 		<xs:attribute name="contentType" type="fixr:mime_t" default="text/plain"/>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 	</xs:complexType>
-	<xs:simpleType name="Edition_t">
-		<xs:restriction base="xs:string">
-			<xs:maxLength value="8"/>
-		</xs:restriction>
-	</xs:simpleType>
 	<xs:attributeGroup name="entityAttribGrp">
 		<xs:attribute name="added" type="fixr:Version_t"/>
 		<xs:attribute name="addedEP" type="fixr:EP_t"/>
@@ -405,6 +402,12 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
+		<xs:attribute name="nonEncodedFieldId" type="fixr:id_t">
+			<xs:annotation>
+				<xs:documentation>Identifies a non-encoded field related to an encoded field
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 		<xs:attributeGroup ref="fixr:fieldAttribGrp"/>
 		<xs:attribute name="instanceName" type="fixr:Name_t">
 			<xs:annotation>
@@ -423,7 +426,7 @@
 						<xs:sequence>
 							<xs:element name="fieldRef" type="fixr:fieldRefType" minOccurs="0" maxOccurs="unbounded">
 								<xs:annotation>
-									<xs:documentation>Other field or fields that scope uniqueness. 
+									<xs:documentation>Other field or fields that scope uniqueness.
 									If none provided, then the field value must be globally unique.</xs:documentation>
 								</xs:annotation>
 							</xs:element>
@@ -446,7 +449,7 @@
 				<xs:documentation>Name of this rule</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="type" type="xs:string">
+		<xs:attribute name="type" type="fixr:Name_t">
 			<xs:annotation>
 				<xs:documentation>Overrides the type of the referenced field.
 				</xs:documentation>
@@ -475,10 +478,15 @@
 		</xs:sequence>
 		<xs:attributeGroup ref="fixr:oidGrp"/>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
-		<xs:attribute name="type" type="xs:string" use="required">
+		<xs:attribute name="type" type="fixr:Name_t">
 			<xs:annotation>
-				<xs:documentation>Attribute type refers to either a datatype or a
-					codeSet, which carries an underlying datatype.
+				<xs:documentation>Attribute type refers to a datatype name
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="codeSet" type="fixr:Name_t">
+			<xs:annotation>
+				<xs:documentation>Attribute codeSet refers to a codeSet name
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
@@ -486,6 +494,12 @@
 		<xs:attribute name="lengthId" type="fixr:id_t">
 			<xs:annotation>
 				<xs:documentation>Identifies a field used as a length prefix
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="nonEncodedFieldId" type="fixr:id_t">
+			<xs:annotation>
+				<xs:documentation>Identifies a non-encoded field related to an encoded field
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
@@ -626,18 +640,35 @@
 		</xs:sequence>
 		<xs:attribute name="standard" type="fixr:datatypeStandard_t" use="required"/>
 		<xs:attribute name="builtin" type="xs:boolean"/>
-		<xs:attribute name="base" type="xs:string"/>
-		<xs:attribute name="pattern" type="xs:string"/>
-		<xs:attribute name="element" type="xs:string"/>
+		<xs:attribute name="base" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>A datatype from which a subtype is created by restriction or a derived type is created by a generator</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="pattern" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>A lexical restriction from a base type</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="element" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>Element type of an aggregate type such as an array or sequence</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="size" type="xs:nonNegativeInteger">
+			<xs:annotation>
+				<xs:documentation>Size of an aggregate type such as an array. That is, the number of elements.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 		<xs:attribute name="parameter" type="xs:string"/>
 		<xs:attribute name="minInclusive" type="xs:string">
 			<xs:annotation>
-				<xs:documentation>Inclusive lower bound</xs:documentation>
+				<xs:documentation>Inclusive lower bound of values</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attribute name="maxInclusive" type="xs:string">
 			<xs:annotation>
-				<xs:documentation>Inclusive upper bound</xs:documentation>
+				<xs:documentation>Inclusive upper bound of values</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 	</xs:complexType>
@@ -658,7 +689,7 @@
 	<xs:attributeGroup name="messageAttribGrp">
 		<xs:attribute name="msgType" type="fixr:MsgType_t"/>
 		<xs:attribute name="category" type="fixr:Name_t"/>
-		<xs:attribute name="abbrName" type="fixr:Abbreviation_t"/>
+		<xs:attribute name="abbrName" type="fixr:Name_t"/>
 		<xs:attribute name="rendering" type="xs:string">
 			<xs:annotation>
 				<xs:documentation>A hint to processes about how to interpret the element. Not validated.</xs:documentation>
@@ -669,7 +700,6 @@
 		<xs:sequence>
 			<xs:element name="identifiers" type="fixr:identifiersType" minOccurs="0"/>
 		</xs:sequence>
-		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
 		<xs:attribute name="msgType" type="fixr:MsgType_t"/>
 		<xs:attributeGroup ref="fixr:refidGrp"/>
 		<xs:attribute name="implMinOccurs" type="xs:positiveInteger" default="1"/>
@@ -681,7 +711,7 @@
 	</xs:complexType>
 	<xs:complexType name="messageType">
 		<xs:sequence>
-			<xs:element name="structure">
+			<xs:element name="structure" minOccurs="0">
 				<xs:complexType>
 					<xs:choice maxOccurs="unbounded">
 						<xs:element name="componentRef" type="fixr:componentRefType"/>
@@ -690,6 +720,12 @@
 					</xs:choice>
 					<xs:attribute name="which" type="fixr:memberType"/>
 				</xs:complexType>
+			</xs:element>
+			<xs:element name="when" type="fixr:expressionType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>A condition that distinguishes when a scenario of a message type applies. It could be used to generate a decision tree to correlate an incoming message to its scenario, or to decide which scenario of a request message to send.
+					</xs:documentation>
+				</xs:annotation>
 			</xs:element>
 			<xs:element name="responses" minOccurs="0">
 				<xs:complexType>
@@ -725,10 +761,12 @@
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="Name_t">
-		<xs:restriction base="xs:string">
+		<xs:annotation>
+			<xs:documentation>Names are from 1-64 characters. The XML processor will remove line feeds, carriage returns, tabs, leading and trailing spaces, and multiple spaces. Single internal spaces are allowed by the schema but may be restricted by an external style.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:token">
 			<xs:minLength value="1"/>
-			<xs:maxLength value="255"/>
-			<xs:pattern value="([A-Z]|[a-z])([0-9]|[A-Z]|[a-z]|_)*"/>
+			<xs:maxLength value="64"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:attributeGroup name="oidGrp">
@@ -741,10 +779,15 @@
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
-		<xs:attribute name="abbrName" type="fixr:Abbreviation_t"/>
-		<xs:attribute name="scenario" type="fixr:Scenario_t" default="base">
+		<xs:attribute name="abbrName" type="fixr:Name_t"/>
+		<xs:attribute name="scenario" type="fixr:Name_t" default="base">
 			<xs:annotation>
 				<xs:documentation>The use case of an element, distinguished by workflow, asset class, etc.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="scenarioId" type="fixr:id_t" default="1">
+			<xs:annotation>
+				<xs:documentation>Unique identifier of a scenario. Default is '1' for base scenario.</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 	</xs:attributeGroup>
@@ -809,9 +852,19 @@
 				<xs:documentation>Numeric identifier generally must be unique within a file for an element type, e.g. unique field tag</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="scenario" type="fixr:Scenario_t" default="base">
+		<xs:attribute name="name" type="fixr:Name_t">
+			<xs:annotation>
+				<xs:documentation>The name is optional as part of a reference and only for convenience. It is not enforced by referential integrity. However, the name of the referred object is authoritative. A validator may check the consistency between the name used for the reference and the name of the referred object.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="scenario" type="fixr:Name_t" default="base">
 			<xs:annotation>
 				<xs:documentation>The use case of an element, distinguished by workflow, asset class, etc.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="scenarioId" type="fixr:id_t" default="1">
+			<xs:annotation>
+				<xs:documentation>Unique identifier of a scenario. Default is '1' for base scenario.</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 	</xs:attributeGroup>
@@ -847,13 +900,24 @@
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
-	<xs:simpleType name="Scenario_t">
-		<xs:restriction base="xs:string">
-			<xs:minLength value="1"/>
-			<xs:maxLength value="255"/>
-			<xs:pattern value="([A-Z]|[a-z])([0-9]|[A-Z]|[a-z]|_|-)*"/>
-		</xs:restriction>
-	</xs:simpleType>
+	<xs:complexType name="scenarioType">
+		<xs:annotation>
+			<xs:documentation>The use case of an element, distinguished by workflow, asset class, etc.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="id" type="fixr:id_t" default="1">
+			<xs:annotation>
+				<xs:documentation>Unique numeric identifier. Default is '1' is for base scenario.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="name" type="fixr:Name_t" default="base">
+			<xs:annotation>
+				<xs:documentation>Unique name</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
 	<xs:complexType name="sectionType">
 		<xs:sequence>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
@@ -863,9 +927,6 @@
 		<xs:attribute name="FIXMLFileName" type="fixr:Name_t"/>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 	</xs:complexType>
-	<xs:simpleType name="Sort_t">
-		<xs:restriction base="xs:nonNegativeInteger"/>
-	</xs:simpleType>
 	<xs:complexType name="stateMachineType">
 		<xs:sequence>
 			<xs:element name="initial" type="fixr:stateType">
@@ -931,9 +992,6 @@
 				</xs:annotation>
 			</xs:enumeration>
 		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="Term_t">
-		<xs:restriction base="xs:string"/>
 	</xs:simpleType>
 	<xs:simpleType name="timerOperation">
 		<xs:restriction base="xs:string">
@@ -1020,6 +1078,9 @@
 		<xs:union memberTypes="xs:nonNegativeInteger fixr:unbounded"/>
 	</xs:simpleType>
 	<xs:simpleType name="UnionDataType_t">
+		<xs:annotation>
+			<xs:documentation>A second domain of valid values. The 'Reserved' types should only be applied Code Sets.</xs:documentation>
+		</xs:annotation>
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="Qty"/>
 			<xs:enumeration value="Reserved100Plus"/>
@@ -1028,17 +1089,13 @@
 			<xs:enumeration value="Tenor"/>
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:simpleType name="Usage_t">
-		<xs:restriction base="xs:string"/>
-	</xs:simpleType>
 	<xs:simpleType name="Version_t">
-		<xs:restriction base="xs:string">
+		<xs:restriction base="xs:token">
 			<xs:annotation>
-				<xs:documentation>Enumerated FIX versions or major.minor or date as
-					yyyymmdd of any protocol
+				<xs:documentation>Uniquely identifies a revision. Many formats are possible, including but not limited to protocol version label, semantic versioning, date, or simple integer.
+				The format may be restricted by an external style.
 				</xs:documentation>
 			</xs:annotation>
-			<xs:pattern value="(FIX.2.7)|(FIX.3.0)|(FIX\.4\.[0-4])|((FIX.Latest|(FIX\.5\.0(SP\d{1,2})?))(_EP((9[8-9])|([1-9][0-9][0-9])))?)|(FIXT.1.1)|([0-9]+)\.([0-9]+)|(\d{8})"/>
 		</xs:restriction>
 	</xs:simpleType>
 </xs:schema>

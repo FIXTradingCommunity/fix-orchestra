@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fixi="http://fixprotocol.io/2020/orchestra/interfaces" xmlns:dcterms="http://purl.org/dc/terms/" targetNamespace="http://fixprotocol.io/2020/orchestra/interfaces" elementFormDefault="qualified" version="1.0">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fixi="http://fixprotocol.io/2023/orchestra/interfaces" xmlns:dcterms="http://purl.org/dc/terms/" targetNamespace="http://fixprotocol.io/2023/orchestra/interfaces" elementFormDefault="qualified" version="1.1-rc1">
 	<xs:annotation>
 		<xs:documentation>
 			FIX interface configuration
-			© Copyright 2016-2020 FIX Protocol Limited
+			© Copyright 2016-2023 FIX Protocol Limited
 			Creative Commons Attribution-NoDerivatives 4.0
 			International Public License
 		</xs:documentation>
 	</xs:annotation>
+	<xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd"/>
 	<xs:import namespace="http://purl.org/dc/terms/" schemaLocation="dcterms.xsd"/>
 	<xs:complexType name="annotation">
 		<xs:choice maxOccurs="unbounded">
@@ -40,14 +41,14 @@
 					<xs:documentation>An application layer protocol with orchestration</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="userInterface" type="fixi:userIntefaceType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="userInterface" type="fixi:userInterfaceType" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="encoding" type="fixi:encodingType" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="sessionProtocol" type="fixi:sessionProtocolType" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="protocol" type="fixi:protocolType" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="transport" type="fixi:transportProtocolType" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="annotation" type="fixi:annotation" minOccurs="0"/>
 		</xs:sequence>
-		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="name" type="xs:token" use="required"/>
 		<xs:anyAttribute processContents="lax"/>
 	</xs:complexType>
 	<xs:complexType name="documentation" mixed="true">
@@ -56,7 +57,7 @@
 		</xs:sequence>
 		<xs:attribute name="langId" type="xs:language"/>
 		<xs:attribute name="purpose" type="fixi:purpose_t"/>
-		<xs:attribute name="contentType" type="xs:string" default="text/plain"/>
+		<xs:attribute name="contentType" type="xs:token" default="text/plain"/>
 	</xs:complexType>
 	<xs:complexType name="encodingType">
 		<xs:complexContent>
@@ -64,7 +65,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:complexType name="identifierType" mixed="true">
-		<xs:attribute name="name" type="xs:string"/>
+		<xs:attribute name="name" type="xs:token"/>
 	</xs:complexType>
 	<xs:element name="interfaces">
 		<xs:annotation>
@@ -110,7 +111,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:simpleType name="layer_t">
-		<xs:restriction base="xs:string">
+		<xs:restriction base="xs:token">
 			<xs:enumeration value="application"/>
 			<xs:enumeration value="presentation"/>
 			<xs:enumeration value="session"/>
@@ -118,7 +119,7 @@
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="messageCast_t">
-		<xs:restriction base="xs:string">
+		<xs:restriction base="xs:token">
 			<xs:enumeration value="unicast"/>
 			<xs:enumeration value="multicast"/>
 			<xs:enumeration value="broadcast"/>
@@ -128,7 +129,7 @@
 		<xs:annotation>
 			<xs:documentation>List of FIX protocols to standardize spelling</xs:documentation>
 		</xs:annotation>
-		<xs:restriction base="xs:string">
+		<xs:restriction base="xs:token">
 			<xs:enumeration value="FIX4">
 				<xs:annotation>
 					<xs:documentation>FIX 4.x session layer</xs:documentation>
@@ -190,14 +191,29 @@
 		<xs:annotation>
 			<xs:documentation>Protocol names are not constrained to FIX protocols</xs:documentation>
 		</xs:annotation>
-		<xs:union memberTypes="fixi:protocolEnum_t xs:string"/>
+		<xs:union memberTypes="fixi:protocolEnum_t xs:token"/>
 	</xs:simpleType>
 	<xs:complexType name="protocolType">
 		<xs:sequence>
 			<xs:element name="annotation" type="fixi:annotation" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attribute name="name" type="fixi:protocolName_t"/>
-		<xs:attribute name="version" type="xs:string"/>
+		<xs:attribute name="version" type="xs:token"/>
+		<xs:attribute name="activationTime" type="xs:dateTime">
+			<xs:annotation>
+				<xs:documentation>When this version becomes effective</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="deactivationTime" type="xs:dateTime">
+			<xs:annotation>
+				<xs:documentation>When this version is no longer effective</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="deprecated" type="xs:dateTime">
+			<xs:annotation>
+				<xs:documentation>When this version was deprecated; may be replaced or removed in the future</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 		<xs:attribute name="layer" type="fixi:layer_t"/>
 		<xs:attribute name="reliability" type="fixi:reliability_t">
 			<xs:annotation>
@@ -215,7 +231,7 @@
 		<xs:annotation>
 			<xs:documentation>Recommended annotation purposes</xs:documentation>
 		</xs:annotation>
-		<xs:restriction base="xs:string">
+		<xs:restriction base="xs:token">
 			<xs:enumeration value="SYNOPSIS"/>
 			<xs:enumeration value="ELABORATION"/>
 			<xs:enumeration value="EXAMPLE"/>
@@ -232,17 +248,17 @@
 		<xs:annotation>
 			<xs:documentation>Extensible annotation purposes</xs:documentation>
 		</xs:annotation>
-		<xs:union memberTypes="fixi:purpose_enum xs:string"/>
+		<xs:union memberTypes="fixi:purpose_enum xs:token"/>
 	</xs:simpleType>
 	<xs:simpleType name="reliability_t">
-		<xs:restriction base="xs:string">
+		<xs:restriction base="xs:token">
 			<xs:enumeration value="bestEffort"/>
 			<xs:enumeration value="idempotent"/>
 			<xs:enumeration value="recoverable"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="role_t">
-		<xs:restriction base="xs:string">
+		<xs:restriction base="xs:token">
 			<xs:enumeration value="initiator"/>
 			<xs:enumeration value="acceptor"/>
 			<xs:enumeration value="client"/>
@@ -264,8 +280,6 @@
 			<xs:extension base="fixi:baseInterfaceType">
 				<xs:sequence>
 					<xs:element name="identifier" type="fixi:identifierType" minOccurs="0" maxOccurs="unbounded"/>
-					<xs:element name="activationTime" type="xs:dateTime" minOccurs="0"/>
-					<xs:element name="deactivationTime" type="xs:dateTime" minOccurs="0"/>
 					<xs:element name="role" type="fixi:role_t" minOccurs="0"/>
 					<xs:element name="securityKeys" type="xs:string" minOccurs="0">
 						<xs:annotation>
@@ -273,13 +287,23 @@
 						</xs:annotation>
 					</xs:element>
 				</xs:sequence>
+				<xs:attribute name="activationTime" type="xs:dateTime">
+					<xs:annotation>
+						<xs:documentation>When this session becomes effective</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="deactivationTime" type="xs:dateTime">
+					<xs:annotation>
+						<xs:documentation>When this session is no longer effective</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:complexType name="transportProtocolType">
 		<xs:complexContent>
 			<xs:extension base="fixi:protocolType">
-				<xs:attribute name="address" type="xs:string"/>
+				<xs:attribute name="address" type="xs:token"/>
 				<xs:attribute name="messageCast" type="fixi:messageCast_t" default="unicast"/>
 				<xs:attribute name="use" type="fixi:transportUse_t"/>
 				<xs:anyAttribute processContents="lax"/>
@@ -287,7 +311,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:simpleType name="transportUse_enum">
-		<xs:restriction base="xs:string">
+		<xs:restriction base="xs:token">
 			<xs:enumeration value="primary"/>
 			<xs:enumeration value="secondary"/>
 			<xs:enumeration value="alternate"/>
@@ -297,9 +321,9 @@
 		<xs:annotation>
 			<xs:documentation>Extensible transport use</xs:documentation>
 		</xs:annotation>
-		<xs:union memberTypes="fixi:transportUse_enum xs:string"/>
+		<xs:union memberTypes="fixi:transportUse_enum xs:token"/>
 	</xs:simpleType>
-	<xs:complexType name="userIntefaceType">
+	<xs:complexType name="userInterfaceType">
 		<xs:complexContent>
 			<xs:extension base="fixi:protocolType"/>
 		</xs:complexContent>
