@@ -20,12 +20,12 @@ For use with Java 11 or later, the name of the produced Java module is `orchestr
 
 ### Maven dependency
 
-This Maven module may be included as a dependency in a project as follows (substitute current verion as needed):
+This Maven module may be included as a dependency in a project as follows (substitute current version as needed):
 
 ```xml
 <dependency>
   <groupId>io.fixprotocol.orchestra</groupId>
   <artifactId>repository</artifactId>
-  <version>1.7.3</version>
+  <version>1.8.0</version>
 </dependency>
 ```

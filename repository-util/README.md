@@ -35,14 +35,14 @@ RepositoryCompressor extracts a subset of an existing Orchestra file.
 
 Command line arguments:
 ```
-usage: RepositoryCompressor 
--?,--help display usage 
--c,--category <arg> select messages by category 
--f,--flow <arg> select messages by flow 
+usage: RepositoryCompressor
+-?,--help display usage
+-c,--category <arg> select messages by category
+-f,--flow <arg> select messages by flow
 -i,--input <arg> path of input file
--n,--notcategory <arg> select messages except category 
+-n,--notcategory <arg> select messages except category
 -o,--output <arg> path of output file
--s,--section <arg> select messages by section 
+-s,--section <arg> select messages by section
 -x,--notsection <arg> select messages except section
 ```
 
@@ -56,12 +56,12 @@ For use with Java 11 or later, the name of the produced Java module is `orchestr
 
 ### Maven dependency
 
-This Maven module may be included as a dependency in a project as follows (substitute current verion as needed):
+This Maven module may be included as a dependency in a project as follows (substitute current version as needed):
 
 ```xml
 <dependency>
   <groupId>io.fixprotocol.orchestra</groupId>
   <artifactId>repository-util</artifactId>
-  <version>1.7.4</version>
+  <version>1.8.0</version>
 </dependency>
 ```
