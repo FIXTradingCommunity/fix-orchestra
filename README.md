@@ -22,9 +22,13 @@ See [Orchestra tutorials](https://github.com/FIXTradingCommunity/fix-orchestra/w
 
 ## Standards Versions
 
+### Version 1.1 Release Candidate
+
+The first Release Candidate for Orchestra version 1.1 was released for public review  in November 2023. A second Release Candidate is currently work in progress in the Orchestra Subcommittee of the FIX Trading Community.
+
 ### Version 1.0 Technical Standard
 
-Orchestra version 1.0 Draft Standard was promoted to Technical Standard with minor enhancements and corrections on February 17, 2021. Version 1.6.10 of this project conforms to Orchestra version 1.0 Techncial Standard.
+Orchestra version 1.0 Draft Standard was promoted to Technical Standard with minor enhancements and corrections on February 17, 2021. Version 1.6.10 of this project conforms to Orchestra version 1.0 Technical Standard.
 
 ## Normative Modules
 The following modules are **normative**.
@@ -32,7 +36,7 @@ The following modules are **normative**.
 ### repository
 This module contains an XML schema for Orchestra. It is used to convey message structures and their components, as well as FIX application behaviors. Users may express workflow as responses to messages under different scenarios, as well as external state information that may influence behaviors.
 
-In addition to providing the XML schema as a resource, the module builds Java bindings for the schema. 
+In addition to providing the XML schema as a resource, the module builds Java bindings for the schema.
 
 ### interfaces
 
@@ -85,12 +89,12 @@ Google Protocol Buffers schemas from an Orchestra file.
 
 ### FIX Engine Provisioning
 
-Modules specific to QuickFIX have been moved to repository [fix-orchestra-quickfix](https://github.com/FIXTradingCommunity/fix-orchestra-quickfix). 
+Modules specific to QuickFIX have been moved to repository [fix-orchestra-quickfix](https://github.com/FIXTradingCommunity/fix-orchestra-quickfix).
 Some models in this project are intended to be operational while others are proofs of concept.
 
 ### repository-quickfix
 
-This module generates a QuickFIX data dictionary from an Orchestra file. The format can be consumed by the C++, Java and .NET versions. Additionally, the module generates message classes for QuickFIX/J directly from an Orchestra file. Although the QuickFIX data dictionary format is not as richly featured as Orchestra, it is hoped that this utility will help with Orchestra adoption. 
+This module generates a QuickFIX data dictionary from an Orchestra file. The format can be consumed by the C++, Java and .NET versions. Additionally, the module generates message classes for QuickFIX/J directly from an Orchestra file. Although the QuickFIX data dictionary format is not as richly featured as Orchestra, it is hoped that this utility will help with Orchestra adoption.
 
 ### model-quickfix
 This module generates code that is conformant to the QuickFIX/J API for validating and populating messages. It is dependent on `repository-quickfix`.
@@ -99,7 +103,7 @@ This module generates code that is conformant to the QuickFIX/J API for validati
 A demonstration of session configuration for QuickFIX open-source FIX engine. It consumes an XML file in the `interfaces` schema.
 
 ## License
-© Copyright 2016-2022 FIX Protocol Limited
+© Copyright 2016-2024 FIX Protocol Limited
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -122,11 +126,8 @@ Note that the related Technical Specifications project has a different license t
 Data files in this project under `test/resources` are strictly for testing and to serve as examples for format. They are non-normative for FIX standards and may not be up to date.
 
 ## Build
-The project is built with Maven version 3.3 or later. 
+The project is built with Maven version 3.3 or later.
 
 This project requires Java 11 or later. It should run on any platform for which a JVM is supported. Some modules use Java Platform Module System (JPMS).
 
 Several open-source JDK implementations are available, including [Eclipse Temurin](https://adoptium.net/) and [Azul Zulu](https://www.azul.com/downloads/?package=jdk).
-
-
-
