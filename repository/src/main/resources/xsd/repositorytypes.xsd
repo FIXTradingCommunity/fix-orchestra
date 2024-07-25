@@ -137,7 +137,10 @@
 	</xs:simpleType>
 	<xs:complexType name="codeSetType">
 		<xs:sequence>
-			<xs:element name="code" type="fixr:codeType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:choice maxOccurs="unbounded">
+				<xs:element name="code" type="fixr:codeType" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="codeUndef" type="fixr:codeUndefType"/>
+			</xs:choice>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attributeGroup ref="fixr:oidGrp"/>
@@ -156,6 +159,7 @@
 		</xs:attribute>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 		<xs:attribute name="unionDataType" type="fixr:UnionDataType_t"/>
+		<xs:attributeGroup ref="fixr:positionRefGrp"/>
 	</xs:complexType>
 	<xs:complexType name="codeType">
 		<xs:sequence>
@@ -209,6 +213,7 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
+		<xs:attributeGroup ref="fixr:positionRefTypedGrp"/>
 	</xs:complexType>
 	<xs:complexType name="componentRuleType">
 		<xs:sequence>
@@ -231,6 +236,9 @@
 				<xs:element name="componentRef" type="fixr:componentRefType"/>
 				<xs:element name="groupRef" type="fixr:groupRefType"/>
 				<xs:element name="fieldRef" type="fixr:fieldRefType"/>
+				<xs:element name="componentUnref" type="fixr:elementUnrefType"/>
+				<xs:element name="groupUnref" type="fixr:elementUnrefType"/>
+				<xs:element name="fieldUnref" type="fixr:elementUnrefType"/>
 			</xs:choice>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
@@ -417,6 +425,38 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
+		<xs:attributeGroup ref="fixr:positionRefTypedGrp"/>
+	</xs:complexType>
+	<xs:complexType name="codeUndefType">
+		<xs:sequence>
+			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="id" type="fixr:id_t">
+			<xs:annotation>
+				<xs:documentation>Identifier of a code to undefine</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="elementUnrefType">
+		<xs:sequence>
+			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="id" type="fixr:id_t">
+			<xs:annotation>
+				<xs:documentation>Identifier of an element to unreference</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="scenarioId" type="fixr:id_t">
+			<xs:annotation>
+				<xs:documentation>Identifier of a scenario of an element to unreference</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="instanceName" type="fixr:Name_t">
+			<xs:annotation>
+				<xs:documentation>Optional instance name if a reference to remove has it's name overridden.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 	</xs:complexType>
 	<xs:complexType name="fieldRuleType">
 		<xs:sequence>
@@ -556,6 +596,9 @@
 				<xs:element name="componentRef" type="fixr:componentRefType"/>
 				<xs:element name="groupRef" type="fixr:groupRefType"/>
 				<xs:element name="fieldRef" type="fixr:fieldRefType"/>
+				<xs:element name="componentUnref" type="fixr:elementUnrefType"/>
+				<xs:element name="groupUnref" type="fixr:elementUnrefType"/>
+				<xs:element name="fieldUnref" type="fixr:elementUnrefType"/>
 			</xs:choice>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
@@ -717,6 +760,9 @@
 						<xs:element name="componentRef" type="fixr:componentRefType"/>
 						<xs:element name="groupRef" type="fixr:groupRefType"/>
 						<xs:element name="fieldRef" type="fixr:fieldRefType"/>
+						<xs:element name="componentUnref" type="fixr:elementUnrefType"/>
+						<xs:element name="groupUnref" type="fixr:elementUnrefType"/>
+						<xs:element name="fieldUnref" type="fixr:elementUnrefType"/>
 					</xs:choice>
 					<xs:attribute name="which" type="fixr:memberType"/>
 				</xs:complexType>
@@ -790,7 +836,91 @@
 				<xs:documentation>Unique identifier of a scenario. Default is '1' for base scenario.</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
+		<xs:attribute name="inheritsScenarioId" type="fixr:id_t">
+			<xs:annotation>
+				<xs:documentation>An identifier of a scenario to inherit from.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 	</xs:attributeGroup>
+	<xs:attributeGroup name="positionRefGrp">
+		<xs:annotation>
+			<xs:documentation>The reference to a message element used while positioning additions</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="position" type="fixr:positionType_t">
+			<xs:annotation>
+				<xs:documentation>Where the new element should be placed, e.g., before the referenced element</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="positionRefId" type="fixr:id_t">
+			<xs:annotation>
+				<xs:documentation>The identifier of the referenced element</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="positionRefScenarioId" type="fixr:id_t" default="1">
+			<xs:annotation>
+				<xs:documentation>The identifier of the scenario of the referenced element. Default is '1' for base scenario.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:attributeGroup>
+	<xs:attributeGroup name="positionRefTypedGrp">
+		<xs:annotation>
+			<xs:documentation>The reference to a message element used while positioning additions</xs:documentation>
+		</xs:annotation>
+		<xs:attributeGroup ref="fixr:positionRefGrp"/>
+		<xs:attribute name="positionRefType" type="fixr:positionRefType_t">
+			<xs:annotation>
+				<xs:documentation>The type of the referenced element (component, group, or field)</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="positionRefInstanceName" type="fixr:Name_t">
+			<xs:annotation>
+				<xs:documentation>The instanceName of the reference</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:attributeGroup>
+	<xs:simpleType name="positionType_t">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="first">
+				<xs:annotation>
+					<xs:documentation>Place first.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="after">
+				<xs:annotation>
+					<xs:documentation>Place after the referenced element</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="before">
+				<xs:annotation>
+					<xs:documentation>Place before the referenced element</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="last">
+				<xs:annotation>
+					<xs:documentation>Place last</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="positionRefType_t">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="field">
+				<xs:annotation>
+					<xs:documentation>The referenced element is a field</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="component">
+				<xs:annotation>
+					<xs:documentation>The referenced element is a component</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="group">
+				<xs:annotation>
+					<xs:documentation>The referenced element is a group</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
 	<xs:simpleType name="presence_t">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="optional">

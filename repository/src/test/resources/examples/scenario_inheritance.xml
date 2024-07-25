@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fixr:repository xmlns:dcterms="http://purl.org/dc/terms/"
+ xmlns:fixr="http://fixprotocol.io/2023/orchestra/repository"
+ xsi:schemaLocation="http://fixprotocol.io/2023/orchestra/repository ../../../main/resources/xsd/repository.xsd"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ version="FIX.Latest_EP282" name="FIX.Latest">
+ 
+ 	<fixr:messages>
+		<!-- The base scenario of a message -->
+		<fixr:message msgType="D" id="14" name="NewOrderSingle">
+			<fixr:structure>
+				<fixr:fieldRef id="11" name="ClOrdID"/>
+			    <fixr:fieldRef id="55" name="Symbol"/>
+			    <fixr:fieldRef id="54" name="Side"/>
+			    <fixr:fieldRef id="40" name="OrdType"/>
+			    <fixr:fieldRef id="40" name="OrdType" instanceName="OrdType2"/>
+			    <fixr:fieldRef id="38" name="OrderQty"/>
+			    <fixr:fieldRef id="44" name="Price"/>
+			    <fixr:componentRef id="1012" name="Parties">
+					<fixr:annotation>
+						<fixr:documentation purpose="SYNOPSIS">Parties component description</fixr:documentation>
+					</fixr:annotation>
+				</fixr:componentRef>
+			    <fixr:fieldRef id="1" name="Account" scenarioId="2"/>
+		    </fixr:structure>
+		</fixr:message>
+		
+		<fixr:message msgType="D" id="14" name="NewOrderSingle" scenario="A" scenarioId="2" inheritsScenarioId="1">
+			<!-- At this point the scenario A is the same as base -->
+		</fixr:message>
+	
+		<!-- Remove elements -->
+		<fixr:message msgType="D" id="14" name="NewOrderSingle" scenario="B" scenarioId="3" inheritsScenarioId="1">
+			<fixr:structure>
+				<fixr:fieldUnref id="40" instanceName="OrdType2"/>
+				<fixr:componentUnref id="1012"/>
+			</fixr:structure>
+		</fixr:message>
+	
+		<!-- Change elements -->
+		<fixr:message msgType="D" id="14" name="NewOrderSingle" scenario="C" scenarioId="4" inheritsScenarioId="1">
+			<fixr:structure>
+				<!-- Change optional field to required -->
+				<fixr:fieldRef id="44" name="Price" presence="required"/>
+				
+				<!-- Change scenario of component, also change synopsis -->
+				<fixr:componentRef id="1012" scenarioId="2">
+					<fixr:annotation>
+						<fixr:documentation purpose="SYNOPSIS">Specific Parties component description</fixr:documentation>
+					</fixr:annotation>
+				</fixr:componentRef>
+			</fixr:structure>
+		</fixr:message>
+		
+		<!-- Add elements -->
+		<fixr:message msgType="D" id="14" name="NewOrderSingle" scenario="D" scenarioId="5" inheritsScenarioId="1">
+			<fixr:structure>
+			    <!-- After the specified field -->
+			    <fixr:fieldRef id="20002" name="Client2UDF" position="after" positionRefType="field" positionRefId="44"/>
+			
+			    <!-- After the specified field, refining the name -->
+			    <fixr:fieldRef id="20003" name="Client2KLC" position="after" positionRefType="field" positionRefId="40" positionRefInstanceName="OrdType2"/>
+			
+			    <!-- Before the specified field, which references the scenario -->
+			    <fixr:fieldRef id="20013" name="Client2NAC" position="before" positionRefType="field" positionRefId="1" positionRefScenarioId="2"/>
+			
+			    <!-- Before the specified component -->
+			    <fixr:fieldRef id="20009" name="Client2IDK" position="before" positionRefType="component" positionRefId="1012"/>
+			
+			    <!-- After Price in this order -->
+			    <fixr:fieldRef id="20027" name="NewField1" position="after" positionRefType="field" positionRefId="44"/>
+			    <fixr:fieldRef id="20028" name="NewField2" position="after" positionRefType="field" positionRefId="44"/>
+			    <fixr:fieldRef id="20029" name="NewField3" position="after" positionRefType="field" positionRefId="44"/>
+			
+			    <!-- At the very beginning of the message (container) -->
+			    <fixr:fieldRef id="20010" name="Client2ADK" position="first"/>
+			
+			    <!-- At the very end of the message (container) -->
+			    <fixr:fieldRef id="20011" name="Client2DKE" position="last"/>
+			
+			    <!-- This is the same as the one above, adding the field to the end of the message
+			        <fixr:fieldRef id="20011" name="Client2DKE"/>
+			     -->
+		     </fixr:structure>
+		</fixr:message>
+		
+		<!-- Replace elements -->
+		<fixr:message msgType="D" id="14" name="NewOrderSingle" scenario="E" scenarioId="6" inheritsScenarioId="1">
+			<fixr:structure>
+				<fixr:fieldUnref id="44"/>
+				<fixr:fieldRef id="66" position="after" positionRefType="field" positionRefId="38"/>
+			</fixr:structure>
+		</fixr:message>
+		
+		<fixr:message msgType="D" id="14" name="NewOrderSingle" scenario="F" scenarioId="7" inheritsScenarioId="1">
+			<fixr:structure>
+				<fixr:fieldRef id="44" scenarioId="2" presence="required"/>
+			</fixr:structure>
+		</fixr:message>
+ 	</fixr:messages>
+	
+	<fixr:codeSets>
+		<fixr:codeSet type="char" id="13" name="CommTypeCodeSet">
+			<fixr:code value="1" sort="1" id="13001" name="PerUnit"/>
+			<fixr:code value="2" sort="2" id="13002" name="Percent"/>
+			<fixr:code value="3" sort="3" id="13003" name="Absolute"/>
+			<fixr:code value="4" sort="4" id="13004" name="BasisPoints"/>
+			<fixr:code value="5" sort="5" id="13005" name="AmountPerContract"/>
+		</fixr:codeSet>
+		
+		<fixr:codeSet type="char" id="13" name="CommTypeCodeSet" scenario="A" scenarioId="2" inheritsScenarioId="1">
+			<fixr:codeUndef id="13004"/>
+		</fixr:codeSet>
+	</fixr:codeSets>
+	
+	<fixr:fields>
+		<fixr:field name="Symbol" type="String" id="55">
+			<fixr:annotation>
+				<fixr:documentation purpose="SYNOPSIS">
+					Ticker symbol.
+				</fixr:documentation>
+			</fixr:annotation>
+		</fixr:field>
+		
+		<fixr:field name="Symbol" id="55" codeSet="CommTypeCodeSet" implLength="4" scenario="A" scenarioId="2" inheritsScenarioId="1">
+			<fixr:annotation>
+				<fixr:documentation purpose="SYNOPSIS">
+					Four-character ticker symbol.
+				</fixr:documentation>
+			</fixr:annotation>
+		</fixr:field>
+	</fixr:fields>
+	
+	<fixr:datatypes>
+		<fixr:datatype name="String"></fixr:datatype>
+	</fixr:datatypes>
+	
+	<fixr:scenarios>
+		<fixr:scenario id="1" name="base"/>
+		<fixr:scenario id="2" name="A"/>
+		<fixr:scenario id="3" name="B"/>
+		<fixr:scenario id="4" name="C"/>
+		<fixr:scenario id="5" name="D"/>
+		<fixr:scenario id="6" name="E"/>
+		<fixr:scenario id="7" name="F"/>
+	</fixr:scenarios>
+	
+	<fixr:concepts></fixr:concepts>
+	<fixr:categories></fixr:categories>
+	<fixr:actors></fixr:actors>
+	<fixr:groups></fixr:groups>
+	<fixr:sections></fixr:sections>
+	<fixr:annotation><fixr:documentation></fixr:documentation></fixr:annotation>
+	<fixr:metadata></fixr:metadata>
+</fixr:repository>
