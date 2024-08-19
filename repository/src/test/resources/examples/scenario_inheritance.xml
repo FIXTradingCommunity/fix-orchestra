@@ -101,11 +101,11 @@
 	
 	<fixr:codeSets>
 		<fixr:codeSet type="char" id="13" name="CommTypeCodeSet">
-			<fixr:code value="1" sort="1" id="13001" name="PerUnit"/>
-			<fixr:code value="2" sort="2" id="13002" name="Percent"/>
-			<fixr:code value="3" sort="3" id="13003" name="Absolute"/>
-			<fixr:code value="4" sort="4" id="13004" name="BasisPoints"/>
-			<fixr:code value="5" sort="5" id="13005" name="AmountPerContract"/>
+			<fixr:code value="1" id="13001" name="PerUnit"/>
+			<fixr:code value="2" id="13002" name="Percent"/>
+			<fixr:code value="3" id="13003" name="Absolute"/>
+			<fixr:code value="4" id="13004" name="BasisPoints"/>
+			<fixr:code value="5" id="13005" name="AmountPerContract"/>
 		</fixr:codeSet>
 		
 		<fixr:codeSet type="char" id="13" name="CommTypeCodeSet" scenario="A" scenarioId="2" inheritsScenarioId="1">

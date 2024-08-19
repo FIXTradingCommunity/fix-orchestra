@@ -170,12 +170,11 @@
 				<xs:documentation>The XML processor will remove line feeds, carriage returns, tabs, leading and trailing spaces, and multiple spaces. However, single internal spaces are allowed. May be further restricted by an external style.</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="sort" type="xs:nonNegativeInteger">
+		<xs:attribute name="group" type="xs:string">
 			<xs:annotation>
-				<xs:documentation>Sort and group may be used to organize visualization of a code set.</xs:documentation>
+				<xs:documentation>Group may be used to organize visualization of a code set.</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="group" type="xs:string"/>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 		<xs:attributeGroup ref="fixr:positionRefGrp"/>
 	</xs:complexType>
