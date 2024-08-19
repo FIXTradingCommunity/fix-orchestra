@@ -235,9 +235,9 @@
 				<xs:element name="componentRef" type="fixr:componentRefType"/>
 				<xs:element name="groupRef" type="fixr:groupRefType"/>
 				<xs:element name="fieldRef" type="fixr:fieldRefType"/>
-				<xs:element name="componentUnref" type="fixr:elementUnrefType"/>
-				<xs:element name="groupUnref" type="fixr:elementUnrefType"/>
-				<xs:element name="fieldUnref" type="fixr:elementUnrefType"/>
+				<xs:element name="componentUnref" type="fixr:componentUnrefType"/>
+				<xs:element name="groupUnref" type="fixr:groupUnrefType"/>
+				<xs:element name="fieldUnref" type="fixr:fieldUnrefType"/>
 			</xs:choice>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
@@ -457,6 +457,21 @@
 			</xs:annotation>
 		</xs:attribute>
 	</xs:complexType>
+	<xs:complexType name="fieldUnrefType">
+		<xs:complexContent>
+			<xs:extension base="fixr:elementUnrefType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="groupUnrefType">
+		<xs:complexContent>
+			<xs:extension base="fixr:elementUnrefType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="componentUnrefType">
+		<xs:complexContent>
+			<xs:extension base="fixr:elementUnrefType"/>
+		</xs:complexContent>
+	</xs:complexType>
 	<xs:complexType name="fieldRuleType">
 		<xs:sequence>
 			<xs:sequence>
@@ -595,9 +610,9 @@
 				<xs:element name="componentRef" type="fixr:componentRefType"/>
 				<xs:element name="groupRef" type="fixr:groupRefType"/>
 				<xs:element name="fieldRef" type="fixr:fieldRefType"/>
-				<xs:element name="componentUnref" type="fixr:elementUnrefType"/>
-				<xs:element name="groupUnref" type="fixr:elementUnrefType"/>
-				<xs:element name="fieldUnref" type="fixr:elementUnrefType"/>
+				<xs:element name="componentUnref" type="fixr:componentUnrefType"/>
+				<xs:element name="groupUnref" type="fixr:groupUnrefType"/>
+				<xs:element name="fieldUnref" type="fixr:fieldUnrefType"/>
 			</xs:choice>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
@@ -759,9 +774,9 @@
 						<xs:element name="componentRef" type="fixr:componentRefType"/>
 						<xs:element name="groupRef" type="fixr:groupRefType"/>
 						<xs:element name="fieldRef" type="fixr:fieldRefType"/>
-						<xs:element name="componentUnref" type="fixr:elementUnrefType"/>
-						<xs:element name="groupUnref" type="fixr:elementUnrefType"/>
-						<xs:element name="fieldUnref" type="fixr:elementUnrefType"/>
+						<xs:element name="componentUnref" type="fixr:componentUnrefType"/>
+						<xs:element name="groupUnref" type="fixr:groupUnrefType"/>
+						<xs:element name="fieldUnref" type="fixr:fieldUnrefType"/>
 					</xs:choice>
 					<xs:attribute name="which" type="fixr:memberType"/>
 				</xs:complexType>
