@@ -159,7 +159,6 @@
 		</xs:attribute>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 		<xs:attribute name="unionDataType" type="fixr:UnionDataType_t"/>
-		<xs:attributeGroup ref="fixr:positionRefGrp"/>
 	</xs:complexType>
 	<xs:complexType name="codeType">
 		<xs:sequence>
@@ -178,6 +177,7 @@
 		</xs:attribute>
 		<xs:attribute name="group" type="xs:string"/>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
+		<xs:attributeGroup ref="fixr:positionRefGrp"/>
 	</xs:complexType>
 	<xs:simpleType name="CompID_t">
 		<xs:restriction base="xs:positiveInteger">

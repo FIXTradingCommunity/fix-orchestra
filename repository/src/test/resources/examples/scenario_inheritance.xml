@@ -110,6 +110,7 @@
 		
 		<fixr:codeSet type="char" id="13" name="CommTypeCodeSet" scenario="A" scenarioId="2" inheritsScenarioId="1">
 			<fixr:codeUndef id="13004"/>
+			<fixr:code value="11" id="13011" name="PerBond" position="after" positionRefId="13001"/>
 		</fixr:codeSet>
 	</fixr:codeSets>
 	
