@@ -14,7 +14,7 @@
  */
 package io.fixprotocol.orchestra.message;
 
-import io.fixprotocol._2022.orchestra.repository.MessageType;
+import io.fixprotocol._2024.orchestra.repository.MessageType;
 import io.fixprotocol.orchestra.model.ModelException;
 
 /**
