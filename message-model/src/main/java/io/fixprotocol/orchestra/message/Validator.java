@@ -14,7 +14,7 @@
  */
 package io.fixprotocol.orchestra.message;
 
-import io.fixprotocol._2022.orchestra.repository.MessageType;
+import io.fixprotocol._2023.orchestra.repository.MessageType;
 
 /**
  * Validate a message against an Orchestra file
