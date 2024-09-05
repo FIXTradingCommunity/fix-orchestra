@@ -609,6 +609,11 @@
 				<xs:documentation>Field ID assigned or correlated in a message reference</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
+		<xs:attribute name="name" type="fixr:Name_t">
+			<xs:annotation>
+				<xs:documentation>Name is optional for convenience</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 		<xs:attribute name="sourceId" type="fixr:id_t">
 			<xs:annotation>
 				<xs:documentation>Field ID correlated from source message. If not present, assumed to be same tag as 'id'.</xs:documentation>
