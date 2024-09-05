@@ -686,16 +686,6 @@
 			</xs:enumeration>
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:attributeGroup name="messageAttribGrp">
-		<xs:attribute name="msgType" type="fixr:MsgType_t"/>
-		<xs:attribute name="category" type="fixr:Name_t"/>
-		<xs:attribute name="abbrName" type="fixr:Name_t"/>
-		<xs:attribute name="rendering" type="xs:string">
-			<xs:annotation>
-				<xs:documentation>A hint to processes about how to interpret the element. Not validated.</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
-	</xs:attributeGroup>
 	<xs:complexType name="messageRefType">
 		<xs:sequence>
 			<xs:element name="identifiers" type="fixr:identifiersType" minOccurs="0"/>
