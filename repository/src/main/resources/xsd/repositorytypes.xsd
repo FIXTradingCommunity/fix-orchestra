@@ -106,12 +106,6 @@
 			<xs:enumeration value="Message"/>
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:simpleType name="CategoryComponentType_t">
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="Field"/>
-			<xs:enumeration value="Message"/>
-		</xs:restriction>
-	</xs:simpleType>
 	<xs:complexType name="categoryType">
 		<xs:sequence>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
@@ -175,11 +169,6 @@
 		<xs:attribute name="group" type="xs:string"/>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 	</xs:complexType>
-	<xs:simpleType name="CompID_t">
-		<xs:restriction base="xs:positiveInteger">
-			<xs:minInclusive value="1000"/>
-		</xs:restriction>
-	</xs:simpleType>
 	<xs:simpleType name="ComponentName_t">
 		<xs:restriction base="fixr:Name_t"/>
 	</xs:simpleType>
@@ -535,9 +524,6 @@
 		</xs:attribute>
 		<xs:attribute name="reliability" type="fixr:reliability_t"/>
 	</xs:complexType>
-	<xs:simpleType name="GroupName_t">
-		<xs:restriction base="xs:string"/>
-	</xs:simpleType>
 	<xs:complexType name="groupRefType">
 		<xs:complexContent>
 			<xs:extension base="fixr:componentRefType">
@@ -615,12 +601,6 @@
 			</xs:annotation>
 		</xs:attribute>
 	</xs:complexType>
-	<xs:simpleType name="IncludeFile_t">
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="components"/>
-			<xs:enumeration value="fields"/>
-		</xs:restriction>
-	</xs:simpleType>
 	<xs:simpleType name="language_t">
 		<xs:restriction base="xs:language"/>
 	</xs:simpleType>
