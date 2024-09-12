@@ -854,7 +854,6 @@
 				<xs:annotation>
 					<xs:documentation>
 						Short message or hint that appears when hovering over the element, usually explaining its function or use.</xs:documentation>
-					</xs:documentation>
 				</xs:annotation>
 			<xs:enumeration value="DEFINITION">
 				<xs:annotation>
