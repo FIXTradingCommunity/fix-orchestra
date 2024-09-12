@@ -108,27 +108,6 @@
 			<xs:field xpath="@name"/>
 		</xs:key>
 	</xs:element>
-	<xs:element name="datatype">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="mappedDatatype" type="fixr:mappedDatatype" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
-			</xs:sequence>
-			<xs:attribute name="name" type="fixr:Name_t" use="required"/>
-			<xs:attribute name="scenario" type="fixr:Name_t" default="base">
-				<xs:annotation>
-					<xs:documentation>The use case of a datatype by name</xs:documentation>
-				</xs:annotation>
-			</xs:attribute>
-			<xs:attribute name="scenarioId" type="fixr:id_t" default="1">
-				<xs:annotation>
-					<xs:documentation>Unique identifier of a scenario. Default is '1' for base scenario.</xs:documentation>
-				</xs:annotation>
-			</xs:attribute>
-			<xs:attribute name="baseType" type="fixr:Name_t"/>
-			<xs:attributeGroup ref="fixr:entityAttribGrp"/>
-		</xs:complexType>
-	</xs:element>
 	<xs:element name="datatypes">
 		<xs:complexType>
 			<xs:sequence>
