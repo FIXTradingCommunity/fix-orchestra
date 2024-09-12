@@ -15,3 +15,6 @@ Some features to note:
 * An orderAck response of NewOrderSingle starts an expiration timer for the accepted order. When the timer fires, it triggers Expired transition in the OrderState state machine.
 * The attribute `which="oneOf"` on a component indicates that exactly one of its members must be present.
 
+## scenario_inheritance.xml
+
+This example shows scenario selective inheritance, which is used to define variations of entities.
