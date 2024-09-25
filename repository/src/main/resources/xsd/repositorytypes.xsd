@@ -757,7 +757,7 @@
 	<xs:simpleType name="MsgType_t">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="1"/>
-			<xs:maxLength value="2"/>
+			<xs:maxLength value="6"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="Name_t">
