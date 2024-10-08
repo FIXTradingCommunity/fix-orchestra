@@ -735,6 +735,11 @@
 		<xs:attributeGroup ref="fixr:oidGrp"/>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 		<xs:attribute name="flow" type="fixr:Name_t"/>
+		<xs:attribute name="rendering" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>A hint to processes about how to interpret the element. Not validated.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 	</xs:complexType>
 	<xs:simpleType name="mime_t">
 		<xs:annotation>
