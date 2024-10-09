@@ -247,7 +247,6 @@
 					<xs:documentation>An associated namespace as URI</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
-			<xs:attribute name="applVerId" type="xs:string"/>
 			<xs:attribute name="expressionLanguage" type="xs:string" default="Score">
 				<xs:annotation>
 					<xs:documentation>The syntax of 'expressionType'</xs:documentation>
