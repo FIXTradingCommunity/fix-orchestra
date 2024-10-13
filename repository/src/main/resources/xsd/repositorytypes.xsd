@@ -874,14 +874,14 @@
 	</xs:attributeGroup>
 	<xs:attributeGroup name="scenarioRefGrp">
 		<xs:annotation>
-			<xs:documentation>A reference to a scenario by its key identifiers</xs:documentation>
+			<xs:documentation>A reference to a scenario by its key identifiers. There are no defaults as scenario references are optional.</xs:documentation>
 		</xs:annotation>
-		<xs:attribute name="scenarioRefId" type="fixr:id_t" default="1" use="required">
+		<xs:attribute name="scenarioRefId" type="fixr:id_t" use="required">
 			<xs:annotation>
 				<xs:documentation>Unique identifier of a scenario. Default is '1' for base scenario.</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="scenarioRef" type="fixr:Name_t" default="base">
+		<xs:attribute name="scenarioRef" type="fixr:Name_t">
 			<xs:annotation>
 				<xs:documentation>Name of a scenario. The name is optional as part of a reference and only for convenience.</xs:documentation>
 			</xs:annotation>
