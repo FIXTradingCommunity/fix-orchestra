@@ -141,7 +141,7 @@
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attributeGroup ref="fixr:oidGrp"/>
-		<xs:attributeGroup ref="fixr:scenarioRefGrp">
+		<xs:attributeGroup ref="fixr:scenarioRefGrp"/>
 		<xs:attribute name="type" type="fixr:Name_t" use="required">
 			<xs:annotation>
 				<xs:documentation>Underlying FIX datatype of codes
@@ -237,7 +237,7 @@
 		</xs:sequence>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 		<xs:attributeGroup ref="fixr:oidGrp"/>
-		<xs:attributeGroup ref="fixr:scenarioRefGrp">
+		<xs:attributeGroup ref="fixr:scenarioRefGrp"/>
 		<xs:attribute name="category" type="fixr:Name_t"/>
 		<xs:attribute name="rendering" type="xs:string">
 			<xs:annotation>
@@ -563,7 +563,7 @@
 		</xs:sequence>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 		<xs:attributeGroup ref="fixr:oidGrp"/>
-		<xs:attributeGroup ref="fixr:scenarioRefGrp">
+		<xs:attributeGroup ref="fixr:scenarioRefGrp"/>
 		<xs:attribute name="category" type="fixr:Name_t"/>
 		<xs:attribute name="rendering" type="xs:string">
 			<xs:annotation>
@@ -746,7 +746,7 @@
 		<xs:attribute name="msgType" type="fixr:MsgType_t"/>
 		<xs:attribute name="category" type="fixr:Name_t"/>
 		<xs:attributeGroup ref="fixr:oidGrp"/>
-		<xs:attributeGroup ref="fixr:scenarioRefGrp">
+		<xs:attributeGroup ref="fixr:scenarioRefGrp"/>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 		<xs:attribute name="flow" type="fixr:Name_t"/>
 	</xs:complexType>
