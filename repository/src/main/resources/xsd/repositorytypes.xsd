@@ -572,7 +572,7 @@
 				<xs:documentation>Lower bound of group instances (numInGroup)</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="implMaxOccurs" type="fixr:unboundedIntType" default="unbounded">
+		<xs:attribute name="implMaxOccurs" type="fixr:unboundedIntType">
 			<xs:annotation>
 				<xs:documentation>Upper bound of group instances (numInGroup)</xs:documentation>
 			</xs:annotation>
