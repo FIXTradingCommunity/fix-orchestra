@@ -831,14 +831,46 @@
 			<xs:documentation>Recommended annotation purposes</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="SYNOPSIS"/>
-			<xs:enumeration value="ELABORATION"/>
-			<xs:enumeration value="EXAMPLE"/>
+			<xs:enumeration value="SYNOPSIS">
+				<xs:annotation>
+					<xs:documentation>
+						Brief summary of the element, typically highlighting its key function or purpose, restricted to one paragraph for conciseness.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ELABORATION">
+				<xs:annotation>
+					<xs:documentation>
+						Detailed explanation of the element, clarifying its usage, functionality, or background.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="EXAMPLE">
+				<xs:annotation>
+					<xs:documentation>
+						Sample or illustration demonstrating how the element is used in practice.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
 			<xs:enumeration value="DISPLAY">
 				<xs:annotation>
-					<xs:documentation>For UI when different from canonical name; may
-						have multi-language displays
-					</xs:documentation>
+					<xs:documentation>
+						For UI when different from canonical name; may have multi-language displays.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CAPTION">
+				<xs:annotation>
+					<xs:documentation>
+						Descriptive label or title for the element, may be used for tables, figures, headings or brief annotations.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TOOLTIP">
+				<xs:annotation>
+					<xs:documentation>
+						Short message or hint that appears when hovering over the element, usually explaining its function or use.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DEFINITION">
+				<xs:annotation>
+					<xs:documentation>
+						Precise and formal explanation of the element, restricted to one sentence in length to ensure brevity.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
 		</xs:restriction>
