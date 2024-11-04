@@ -110,10 +110,10 @@
 		<xs:sequence>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
-		<xs:attribute name="name" type="fixr:Name_t"/>
+		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
 		<xs:attribute name="FIXMLFileName" type="fixr:Name_t"/>
 		<xs:attribute name="componentType" type="fixr:CatComponentType_t"/>
-		<xs:attribute name="section" type="fixr:Name_t"/>
+		<xs:attribute name="section" type="fixr:Name_t" use="required"/>
 		<xs:attribute name="includeFile" type="fixr:CatIncludeFile_t"/>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 	</xs:complexType>
@@ -928,7 +928,7 @@
 		<xs:sequence>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
-		<xs:attribute name="name" type="fixr:Name_t"/>
+		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
 		<xs:attribute name="displayOrder" type="xs:int"/>
 		<xs:attribute name="FIXMLFileName" type="fixr:Name_t"/>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
