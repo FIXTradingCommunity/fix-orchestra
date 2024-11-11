@@ -878,7 +878,7 @@
 		</xs:annotation>
 		<xs:attribute name="scenarioRefId" type="fixr:id_t" use="required">
 			<xs:annotation>
-				<xs:documentation>Unique identifier of a scenario. Default is '1' for base scenario.</xs:documentation>
+				<xs:documentation>Unique identifier of a scenario.</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attribute name="scenarioRef" type="fixr:Name_t">
