@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:fixr="http://fixprotocol.io/2023/orchestra/repository" targetNamespace="http://fixprotocol.io/2023/orchestra/repository" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.1-rc1">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:fixr="http://fixprotocol.io/2024/orchestra/repository" targetNamespace="http://fixprotocol.io/2024/orchestra/repository" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.1-rc2">
 	<xs:annotation>
 		<xs:documentation>
-			© Copyright 2016-2023 FIX Protocol Limited Creative
+			© Copyright 2016-2024 FIX Protocol Limited Creative
 			Commons Attribution-NoDerivatives 4.0
 			International Public License
 		</xs:documentation>
@@ -106,20 +106,14 @@
 			<xs:enumeration value="Message"/>
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:simpleType name="CategoryComponentType_t">
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="Field"/>
-			<xs:enumeration value="Message"/>
-		</xs:restriction>
-	</xs:simpleType>
 	<xs:complexType name="categoryType">
 		<xs:sequence>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
-		<xs:attribute name="name" type="fixr:Name_t"/>
+		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
 		<xs:attribute name="FIXMLFileName" type="fixr:Name_t"/>
 		<xs:attribute name="componentType" type="fixr:CatComponentType_t"/>
-		<xs:attribute name="section" type="fixr:Name_t"/>
+		<xs:attribute name="section" type="fixr:Name_t" use="required"/>
 		<xs:attribute name="includeFile" type="fixr:CatIncludeFile_t"/>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 	</xs:complexType>
@@ -141,6 +135,7 @@
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attributeGroup ref="fixr:oidGrp"/>
+		<xs:attributeGroup ref="fixr:scenarioRefGrp"/>
 		<xs:attribute name="type" type="fixr:Name_t" use="required">
 			<xs:annotation>
 				<xs:documentation>Underlying FIX datatype of codes
@@ -175,11 +170,6 @@
 		<xs:attribute name="group" type="xs:string"/>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 	</xs:complexType>
-	<xs:simpleType name="CompID_t">
-		<xs:restriction base="xs:positiveInteger">
-			<xs:minInclusive value="1000"/>
-		</xs:restriction>
-	</xs:simpleType>
 	<xs:simpleType name="ComponentName_t">
 		<xs:restriction base="fixr:Name_t"/>
 	</xs:simpleType>
@@ -236,6 +226,7 @@
 		</xs:sequence>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 		<xs:attributeGroup ref="fixr:oidGrp"/>
+		<xs:attributeGroup ref="fixr:scenarioRefGrp"/>
 		<xs:attribute name="category" type="fixr:Name_t"/>
 		<xs:attribute name="rendering" type="xs:string">
 			<xs:annotation>
@@ -256,6 +247,27 @@
 		</xs:sequence>
 		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
 	</xs:complexType>
+	<xs:element name="datatype">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="mappedDatatype" type="fixr:mappedDatatype" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
+			</xs:sequence>
+			<xs:attribute name="name" type="fixr:Name_t" use="required"/>
+			<xs:attribute name="scenario" type="fixr:Name_t" default="base">
+				<xs:annotation>
+					<xs:documentation>The use case of a datatype by name</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="scenarioId" type="fixr:id_t" default="1">
+				<xs:annotation>
+					<xs:documentation>Unique identifier of a scenario. Default is '1' for base scenario.</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="baseType" type="fixr:Name_t"/>
+			<xs:attributeGroup ref="fixr:entityAttribGrp"/>
+		</xs:complexType>
+	</xs:element>
 	<xs:simpleType name="datatypeStandard_enum">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="ISO11404">
@@ -535,9 +547,6 @@
 		</xs:attribute>
 		<xs:attribute name="reliability" type="fixr:reliability_t"/>
 	</xs:complexType>
-	<xs:simpleType name="GroupName_t">
-		<xs:restriction base="xs:string"/>
-	</xs:simpleType>
 	<xs:complexType name="groupRefType">
 		<xs:complexContent>
 			<xs:extension base="fixr:componentRefType">
@@ -561,6 +570,7 @@
 		</xs:sequence>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 		<xs:attributeGroup ref="fixr:oidGrp"/>
+		<xs:attributeGroup ref="fixr:scenarioRefGrp"/>
 		<xs:attribute name="category" type="fixr:Name_t"/>
 		<xs:attribute name="rendering" type="xs:string">
 			<xs:annotation>
@@ -572,7 +582,7 @@
 				<xs:documentation>Lower bound of group instances (numInGroup)</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="implMaxOccurs" type="fixr:unboundedIntType" default="unbounded">
+		<xs:attribute name="implMaxOccurs" type="fixr:unboundedIntType">
 			<xs:annotation>
 				<xs:documentation>Upper bound of group instances (numInGroup)</xs:documentation>
 			</xs:annotation>
@@ -609,18 +619,17 @@
 				<xs:documentation>Field ID assigned or correlated in a message reference</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
+		<xs:attribute name="name" type="fixr:Name_t">
+			<xs:annotation>
+				<xs:documentation>Name is optional for convenience</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 		<xs:attribute name="sourceId" type="fixr:id_t">
 			<xs:annotation>
 				<xs:documentation>Field ID correlated from source message. If not present, assumed to be same tag as 'id'.</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 	</xs:complexType>
-	<xs:simpleType name="IncludeFile_t">
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="components"/>
-			<xs:enumeration value="fields"/>
-		</xs:restriction>
-	</xs:simpleType>
 	<xs:simpleType name="language_t">
 		<xs:restriction base="xs:language"/>
 	</xs:simpleType>
@@ -686,16 +695,6 @@
 			</xs:enumeration>
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:attributeGroup name="messageAttribGrp">
-		<xs:attribute name="msgType" type="fixr:MsgType_t"/>
-		<xs:attribute name="category" type="fixr:Name_t"/>
-		<xs:attribute name="abbrName" type="fixr:Name_t"/>
-		<xs:attribute name="rendering" type="xs:string">
-			<xs:annotation>
-				<xs:documentation>A hint to processes about how to interpret the element. Not validated.</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
-	</xs:attributeGroup>
 	<xs:complexType name="messageRefType">
 		<xs:sequence>
 			<xs:element name="identifiers" type="fixr:identifiersType" minOccurs="0"/>
@@ -743,8 +742,14 @@
 		<xs:attribute name="msgType" type="fixr:MsgType_t"/>
 		<xs:attribute name="category" type="fixr:Name_t"/>
 		<xs:attributeGroup ref="fixr:oidGrp"/>
+		<xs:attributeGroup ref="fixr:scenarioRefGrp"/>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 		<xs:attribute name="flow" type="fixr:Name_t"/>
+		<xs:attribute name="rendering" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>A hint to processes about how to interpret the element. Not validated.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 	</xs:complexType>
 	<xs:simpleType name="mime_t">
 		<xs:annotation>
@@ -757,7 +762,7 @@
 	<xs:simpleType name="MsgType_t">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="1"/>
-			<xs:maxLength value="2"/>
+			<xs:maxLength value="6"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="Name_t">
@@ -825,14 +830,46 @@
 			<xs:documentation>Recommended annotation purposes</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="SYNOPSIS"/>
-			<xs:enumeration value="ELABORATION"/>
-			<xs:enumeration value="EXAMPLE"/>
+			<xs:enumeration value="SYNOPSIS">
+				<xs:annotation>
+					<xs:documentation>
+						Brief summary of the element, typically highlighting its key function or purpose, restricted to one paragraph for conciseness.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ELABORATION">
+				<xs:annotation>
+					<xs:documentation>
+						Detailed explanation of the element, clarifying its usage, functionality, or background.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="EXAMPLE">
+				<xs:annotation>
+					<xs:documentation>
+						Sample or illustration demonstrating how the element is used in practice.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
 			<xs:enumeration value="DISPLAY">
 				<xs:annotation>
-					<xs:documentation>For UI when different from canonical name; may
-						have multi-language displays
-					</xs:documentation>
+					<xs:documentation>
+						For UI when different from canonical name; may have multi-language displays.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CAPTION">
+				<xs:annotation>
+					<xs:documentation>
+						Descriptive label or title for the element, may be used for tables, figures, headings or brief annotations.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TOOLTIP">
+				<xs:annotation>
+					<xs:documentation>
+						Short message or hint that appears when hovering over the element, usually explaining its function or use.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DEFINITION">
+				<xs:annotation>
+					<xs:documentation>
+						Precise and formal explanation of the element, restricted to one sentence in length to ensure brevity.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
 		</xs:restriction>
@@ -865,6 +902,21 @@
 		<xs:attribute name="scenarioId" type="fixr:id_t" default="1">
 			<xs:annotation>
 				<xs:documentation>Unique identifier of a scenario. Default is '1' for base scenario.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:attributeGroup>
+	<xs:attributeGroup name="scenarioRefGrp">
+		<xs:annotation>
+			<xs:documentation>A reference to a scenario by its key identifiers. There are no defaults as scenario references are optional.</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="scenarioRefId" type="fixr:id_t">
+			<xs:annotation>
+				<xs:documentation>Unique identifier of a scenario. The identifier is required when referencing another scenario.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="scenarioRef" type="fixr:Name_t">
+			<xs:annotation>
+				<xs:documentation>Name of a scenario. The name is optional as part of a reference and only for convenience.</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 	</xs:attributeGroup>
@@ -922,7 +974,7 @@
 		<xs:sequence>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
-		<xs:attribute name="name" type="fixr:Name_t"/>
+		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
 		<xs:attribute name="displayOrder" type="xs:int"/>
 		<xs:attribute name="FIXMLFileName" type="fixr:Name_t"/>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>

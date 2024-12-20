@@ -24,7 +24,7 @@ See [Orchestra tutorials](https://github.com/FIXTradingCommunity/fix-orchestra/w
 
 ### Version 1.1 Release Candidate
 
-The first Release Candidate for Orchestra version 1.1 was released for public review  in November 2023. A second Release Candidate is currently work in progress in the Orchestra Subcommittee of the FIX Trading Community.
+The first Release Candidate for Orchestra version 1.1 was released for public review in November 2023. A second Release Candidate is currently work in progress in the Orchestra Subcommittee of the FIX Trading Community.
 
 ### Version 1.0 Technical Standard
 

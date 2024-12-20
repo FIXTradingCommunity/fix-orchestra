@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fixr="http://fixprotocol.io/2023/orchestra/repository" xmlns:dcterms="http://purl.org/dc/terms/" targetNamespace="http://fixprotocol.io/2023/orchestra/repository" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.1-rc1">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fixr="http://fixprotocol.io/2024/orchestra/repository" xmlns:dcterms="http://purl.org/dc/terms/" targetNamespace="http://fixprotocol.io/2024/orchestra/repository" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.1-rc2">
 	<xs:annotation>
 		<xs:documentation>
 			FIX Repository standard structure of messages with workflow
-			© Copyright 2016-2023 FIX Protocol Limited
+			© Copyright 2016-2024 FIX Protocol Limited
 			Creative Commons Attribution-NoDerivatives 4.0
 			International Public License
 		</xs:documentation>
@@ -107,27 +107,6 @@
 			<xs:selector xpath="fixr:concept"/>
 			<xs:field xpath="@name"/>
 		</xs:key>
-	</xs:element>
-	<xs:element name="datatype">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="mappedDatatype" type="fixr:mappedDatatype" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
-			</xs:sequence>
-			<xs:attribute name="name" type="fixr:Name_t" use="required"/>
-			<xs:attribute name="scenario" type="fixr:Name_t" default="base">
-				<xs:annotation>
-					<xs:documentation>The use case of a datatype by name</xs:documentation>
-				</xs:annotation>
-			</xs:attribute>
-			<xs:attribute name="scenarioId" type="fixr:id_t" default="1">
-				<xs:annotation>
-					<xs:documentation>Unique identifier of a scenario. Default is '1' for base scenario.</xs:documentation>
-				</xs:annotation>
-			</xs:attribute>
-			<xs:attribute name="baseType" type="fixr:Name_t"/>
-			<xs:attributeGroup ref="fixr:entityAttribGrp"/>
-		</xs:complexType>
 	</xs:element>
 	<xs:element name="datatypes">
 		<xs:complexType>
@@ -247,7 +226,6 @@
 					<xs:documentation>An associated namespace as URI</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
-			<xs:attribute name="applVerId" type="xs:string"/>
 			<xs:attribute name="expressionLanguage" type="xs:string" default="Score">
 				<xs:annotation>
 					<xs:documentation>The syntax of 'expressionType'</xs:documentation>
