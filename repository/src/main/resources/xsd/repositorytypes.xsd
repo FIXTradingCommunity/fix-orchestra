@@ -138,7 +138,7 @@
 		<xs:attributeGroup ref="fixr:scenarioRefGrp"/>
 		<xs:attribute name="type" type="fixr:Name_t" use="required">
 			<xs:annotation>
-				<xs:documentation>Underlying FIX datatype of codes
+				<xs:documentation>Underlying datatype of codes
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
