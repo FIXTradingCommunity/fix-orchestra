@@ -2,8 +2,8 @@ module orchestra.interfaces {
   requires transitive java.xml.bind;
   requires transitive jaxb2.basics.runtime;
 
-  exports io.fixprotocol._2024.orchestra.interfaces;
-  opens io.fixprotocol._2024.orchestra.interfaces;
+  exports io.fixprotocol._2026.orchestra.interfaces;
+  opens io.fixprotocol._2026.orchestra.interfaces;
   exports org.purl.dc.elements._1;
   opens org.purl.dc.elements._1;
   exports org.purl.dc.terms;
