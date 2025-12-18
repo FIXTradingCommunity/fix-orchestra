@@ -268,46 +268,6 @@
 			<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:simpleType name="datatypeStandard_enum">
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="ISO11404">
-				<xs:annotation>
-					<xs:documentation>General Purpose Datatypes</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="GPB">
-				<xs:annotation>
-					<xs:documentation>Google Protocol Buffers</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="JSON">
-				<xs:annotation>
-					<xs:documentation>JSON Schema</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="SBE">
-				<xs:annotation>
-					<xs:documentation>Simple Binary Encoding</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="XML">
-				<xs:annotation>
-					<xs:documentation>XML Schema and FIXML</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="TAG_VALUE">
-				<xs:annotation>
-					<xs:documentation>FIX classic encoding</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="datatypeStandard_t">
-		<xs:annotation>
-			<xs:documentation>Extensible datatype standards</xs:documentation>
-		</xs:annotation>
-		<xs:union memberTypes="fixr:datatypeStandard_enum xs:string"/>
-	</xs:simpleType>
 	<xs:complexType name="documentation" mixed="true">
 		<xs:sequence>
 			<xs:any processContents="skip" minOccurs="0" maxOccurs="unbounded"/>
@@ -647,7 +607,7 @@
 			</xs:element>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
-		<xs:attribute name="standard" type="fixr:datatypeStandard_t" use="required"/>
+		<xs:attribute name="standard" type="fixr:Name_t" use="required"/>
 		<xs:attribute name="builtin" type="xs:boolean"/>
 		<xs:attribute name="base" type="xs:string">
 			<xs:annotation>
