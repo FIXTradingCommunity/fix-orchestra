@@ -100,7 +100,12 @@
 			<xs:element name="fieldRef" type="fixr:fieldRefType"/>
 		</xs:choice>
 	</xs:complexType>
-	<xs:complexType name="categoryType">
+	<xs:simpleType name="CatComponentType_t">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Field"/>
+			<xs:enumeration value="Message"/>
+		</xs:restriction>
+	</xs:simpleType>	<xs:complexType name="categoryType">
 		<xs:sequence>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
