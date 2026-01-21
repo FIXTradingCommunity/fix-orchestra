@@ -15,8 +15,8 @@
 package io.fixprotocol.orchestra.message;
 
 import java.util.List;
-import io.fixprotocol._2024.orchestra.repository.CodeSetType;
-import io.fixprotocol._2024.orchestra.repository.CodeType;
+import io.fixprotocol._2026.orchestra.repository.CodeSetType;
+import io.fixprotocol._2026.orchestra.repository.CodeType;
 import io.fixprotocol.orchestra.model.FixNode;
 import io.fixprotocol.orchestra.model.FixType;
 import io.fixprotocol.orchestra.model.FixValue;

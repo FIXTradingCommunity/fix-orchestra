@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:fixr="http://fixprotocol.io/2024/orchestra/repository" targetNamespace="http://fixprotocol.io/2024/orchestra/repository" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.1-rc2">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:fixr="http://fixprotocol.io/2026/orchestra/repository" targetNamespace="http://fixprotocol.io/2026/orchestra/repository" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.1-rc3">
 	<xs:annotation>
 		<xs:documentation>
-			© Copyright 2016-2024 FIX Protocol Limited Creative
-			Commons Attribution-NoDerivatives 4.0
+			Repository standard types for messages with workflow
+			© Copyright 2016-2026 FIX Protocol Limited
+			Creative Commons Attribution-NoDerivatives 4.0
 			International Public License
 		</xs:documentation>
 	</xs:annotation>
@@ -138,7 +139,7 @@
 		<xs:attributeGroup ref="fixr:scenarioRefGrp"/>
 		<xs:attribute name="type" type="fixr:Name_t" use="required">
 			<xs:annotation>
-				<xs:documentation>Underlying FIX datatype of codes
+				<xs:documentation>Underlying datatype of codes
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
