@@ -198,13 +198,13 @@
 				<xs:element name="metadata" type="dcterms:elementOrRefinementContainer"/>
 				<xs:element ref="fixr:categories" minOccurs="0"/>
 				<xs:element ref="fixr:sections" minOccurs="0"/>
-				<xs:element ref="fixr:datatypes"/>
+				<xs:element ref="fixr:datatypes" minOccurs="0"/>
 				<xs:element ref="fixr:codeSets" minOccurs="0"/>
-				<xs:element ref="fixr:fields"/>
+				<xs:element ref="fixr:fields" minOccurs="0"/>
 				<xs:element ref="fixr:actors" minOccurs="0"/>
 				<xs:element ref="fixr:components" minOccurs="0"/>
 				<xs:element ref="fixr:groups" minOccurs="0"/>
-				<xs:element ref="fixr:messages"/>
+				<xs:element ref="fixr:messages" minOccurs="0"/>
 				<xs:element ref="fixr:concepts" minOccurs="0"/>
 				<xs:element ref="fixr:scenarios" minOccurs="0"/>
 				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
