@@ -47,7 +47,8 @@ import org.stringtemplate.v4.misc.STMessage;
 
 import io.fixprotocol._2026.orchestra.repository.ActorType;
 import io.fixprotocol._2026.orchestra.repository.Actors;
-import io.fixprotocol._2026.orchestra.repository.CatComponentTypeT;
+// Category component types removed with Orchestra v1.1 RC3
+// import io.fixprotocol._2026.orchestra.repository.CatComponentTypeT;
 import io.fixprotocol._2026.orchestra.repository.Categories;
 import io.fixprotocol._2026.orchestra.repository.CategoryType;
 import io.fixprotocol._2026.orchestra.repository.CodeSetType;
@@ -270,7 +271,11 @@ public class DocGenerator {
 
     final List<CategoryType> sortedCategoryList =
         optCategories.orElse(new Categories()).getCategory().stream()
-            .filter(c -> c.getComponentType() == CatComponentTypeT.MESSAGE).sorted((o1, o2) -> {
+            // Category component types removed with Orchestra v1.1 RC3 (moved to FIXML encoding)
+            // Removal of filter creates two additional (empty) html files for "Fields" and "ImplFields"
+            // TODO: analyse relevance of categories "Fields" and "ImplFields" for FIX Latest
+            // .filter(c -> c.getComponentType() == CatComponentTypeT.MESSAGE).sorted((o1, o2) -> {
+            .sorted((o1, o2) -> {
               final String sectionValue1 = o1.getSection() != null ? o1.getSection() : "";
               final String sectionValue2 = o2.getSection() != null ? o2.getSection() : "";
               int retv = sectionValue1.compareTo(sectionValue2);
