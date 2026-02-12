@@ -1101,6 +1101,25 @@
 			</xs:annotation>
 		</xs:restriction>
 	</xs:simpleType>
+	<!-- General encoding information for a single standard -->
+	<xs:element name="encodingStandard">
+	  <xs:complexType>
+	    <xs:sequence>
+				<xs:element name="encoding" type="fixr:unnamedEncoding" minOccurs="0"/>
+				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
+	    </xs:sequence>
+	    <xs:attribute name="name" type="fixr:Name_t" use="required"/>
+	    <xs:attribute name="displayName" type="xs:string"/>
+	  </xs:complexType>
+	</xs:element>
+	<!-- Encoding information for a single standard and a specific element type -->
+	<xs:element name="encodings">
+	  <xs:complexType>
+	    <xs:sequence>
+	      <xs:element name="encoding" type="fixr:namedEncoding" minOccurs="0" maxOccurs="unbounded"/>
+	    </xs:sequence>
+	  </xs:complexType>
+	</xs:element>
 	<!-- Generic (abstract) type that is to be used for actual encoding information -->
 	<xs:complexType name="baseEncoding" abstract="true">
 	  <xs:sequence>

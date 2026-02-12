@@ -61,6 +61,7 @@
 						<xs:field xpath="@name"/>
 					</xs:key>
 				</xs:element>
+				<xs:element ref="fixr:encodings" minOccurs="0"/>
 				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute ref="xml:base"/>
@@ -80,6 +81,7 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="component" type="fixr:componentType" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="fixr:encodings" minOccurs="0"/>
 				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute ref="xml:base"/>
@@ -150,6 +152,7 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="group" type="fixr:groupType" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="fixr:encodings" minOccurs="0"/>
 				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute ref="xml:base"/>
@@ -169,6 +172,7 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="message" type="fixr:messageType" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="fixr:encodings" minOccurs="0"/>
 				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute ref="xml:base"/>
@@ -321,24 +325,5 @@
 	    <xs:selector xpath="fixr:encodingStandard"/>
 	    <xs:field xpath="@name"/>
 	  </xs:key>
-	</xs:element>
-	<!-- General encoding information for a single standard -->
-	<xs:element name="encodingStandard">
-	  <xs:complexType>
-	    <xs:sequence>
-				<xs:element name="encoding" type="fixr:unnamedEncoding" minOccurs="0"/>
-				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
-	    </xs:sequence>
-	    <xs:attribute name="name" type="fixr:Name_t" use="required"/>
-	    <xs:attribute name="displayName" type="xs:string"/>
-	  </xs:complexType>
-	</xs:element>
-	<!-- Encoding information for a single standard and a specific element type -->
-	<xs:element name="encodings">
-	  <xs:complexType>
-	    <xs:sequence>
-	      <xs:element name="encoding" type="fixr:namedEncoding" minOccurs="0" maxOccurs="unbounded"/>
-	    </xs:sequence>
-	  </xs:complexType>
 	</xs:element>
 </xs:schema>
