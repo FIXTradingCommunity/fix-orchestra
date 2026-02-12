@@ -1087,4 +1087,27 @@
 			</xs:annotation>
 		</xs:restriction>
 	</xs:simpleType>
+	<!-- Generic (abstract) type that is to be used for actual encoding information -->
+	<xs:complexType name="baseEncoding" abstract="true">
+	  <xs:sequence>
+	    <xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
+	    <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+	  </xs:sequence>
+	</xs:complexType>
+	<!-- Encoding information where the context does not identify its name -->
+	<xs:complexType name="namedEncoding">
+	  <xs:complexContent>
+	    <xs:extension base="fixr:baseEncoding">
+	      <xs:attribute name="standard" type="fixr:Name_t" use="required"/>
+	    </xs:extension>
+	  </xs:complexContent>
+	</xs:complexType>
+	<!-- Encoding information where the context already identifies its name -->
+	<xs:complexType name="unnamedEncoding">
+	  <xs:complexContent>
+	    <xs:extension base="fixr:baseEncoding">
+	      <xs:attribute name="standard" type="fixr:Name_t" use="prohibited"/>
+	    </xs:extension>
+	  </xs:complexContent>
+	</xs:complexType>
 </xs:schema>
