@@ -184,8 +184,7 @@
 		</xs:complexType>
 		<xs:key name="messageNameKey">
 			<xs:annotation>
-				<xs:documentation>Combination of message name and scenario name must be
-					unique</xs:documentation>
+				<xs:documentation>Combination of message name and scenario name must be unique</xs:documentation>
 			</xs:annotation>
 			<xs:selector xpath="fixr:message"/>
 			<xs:field xpath="@name"/>
@@ -193,8 +192,7 @@
 		</xs:key>
 		<xs:key name="messageIdKey">
 			<xs:annotation>
-				<xs:documentation>Combination of message id and scenario ID must be
-					unique</xs:documentation>
+				<xs:documentation>Combination of message id and scenario ID must be unique</xs:documentation>
 			</xs:annotation>
 			<xs:selector xpath="fixr:message"/>
 			<xs:field xpath="@id"/>
