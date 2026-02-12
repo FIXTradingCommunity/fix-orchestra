@@ -579,18 +579,10 @@
 	<xs:simpleType name="language_t">
 		<xs:restriction base="xs:language"/>
 	</xs:simpleType>
+	<!-- Mapping of logical datatype to a physical one for the standard defined here -->
 	<xs:complexType name="mappedDatatype">
 		<xs:sequence>
-			<xs:element name="extension" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>A datatype may be mapped to an XML snippet in the native schema belonging to its encoding standard.</xs:documentation>
-				</xs:annotation>
-				<xs:complexType>
-					<xs:sequence>
-						<xs:any processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
+			<xs:element name="encoding" type="fixr:unnamedEncoding" minOccurs="0"/>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attribute name="standard" type="fixr:Name_t" use="required"/>
