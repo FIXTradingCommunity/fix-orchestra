@@ -199,7 +199,7 @@
 			<xs:field xpath="@scenarioId"/>
 		</xs:key>
 	</xs:element>
-	<!-- Root element with definitions of uniqueness of elements -->
+	<!-- Main schema element with references to all supported elements -->
 	<xs:element name="repository">
 		<xs:complexType>
 			<xs:all>
