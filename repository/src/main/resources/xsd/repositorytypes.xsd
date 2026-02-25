@@ -103,6 +103,7 @@
 	</xs:complexType>
 	<xs:complexType name="categoryType">
 		<xs:sequence>
+			<xs:element ref="fixr:encodings" minOccurs="0"/>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
@@ -119,20 +120,19 @@
 		<xs:sequence>
 			<xs:element name="code" type="fixr:codeType" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
+			<xs:element ref="fixr:encodings" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attributeGroup ref="fixr:oidGrp"/>
 		<xs:attributeGroup ref="fixr:scenarioRefGrp"/>
 		<xs:attribute name="type" type="fixr:Name_t" use="required">
 			<xs:annotation>
-				<xs:documentation>Underlying datatype of codes
-				</xs:documentation>
+				<xs:documentation>Underlying datatype of codes</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attribute name="default" type="xs:string"/>
 		<xs:attribute name="specUrl" type="xs:anyURI">
 			<xs:annotation>
-				<xs:documentation>Reference documentation for an external code set
-				</xs:documentation>
+				<xs:documentation>Reference documentation for an external code set</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
@@ -168,10 +168,10 @@
 			</xs:element>
 			<xs:element name="rule" type="fixr:componentRuleType" minOccurs="0" maxOccurs="unbounded">
 				<xs:annotation>
-					<xs:documentation>Rule to tell when a conditionally require component
-					</xs:documentation>
+					<xs:documentation>Rule to tell when a conditionally require component</xs:documentation>
 				</xs:annotation>
 			</xs:element>
+			<xs:element ref="fixr:encodings" minOccurs="0"/>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attributeGroup ref="fixr:refidGrp"/>
@@ -208,6 +208,7 @@
 				<xs:element name="groupRef" type="fixr:groupRefType"/>
 				<xs:element name="fieldRef" type="fixr:fieldRefType"/>
 			</xs:choice>
+			<xs:element ref="fixr:encodings" minOccurs="0"/>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
@@ -347,6 +348,7 @@
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
+			<xs:element ref="fixr:encodings" minOccurs="0"/>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attributeGroup ref="fixr:refidGrp"/>
@@ -359,8 +361,7 @@
 		</xs:attribute>
 		<xs:attribute name="nonEncodedFieldId" type="fixr:id_t">
 			<xs:annotation>
-				<xs:documentation>Identifies a non-encoded field related to an encoded field
-				</xs:documentation>
+				<xs:documentation>Identifies a non-encoded field related to an encoded field</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attributeGroup ref="fixr:fieldAttribGrp"/>
@@ -382,7 +383,8 @@
 							<xs:element name="fieldRef" type="fixr:fieldRefType" minOccurs="0" maxOccurs="unbounded">
 								<xs:annotation>
 									<xs:documentation>Other field or fields that scope uniqueness.
-									If none provided, then the field value must be globally unique.</xs:documentation>
+										If none provided, then the field value must be globally unique.
+									</xs:documentation>
 								</xs:annotation>
 							</xs:element>
 						</xs:sequence>
@@ -429,6 +431,7 @@
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
+			<xs:element ref="fixr:encodings" minOccurs="0"/>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attributeGroup ref="fixr:oidGrp"/>
@@ -509,6 +512,7 @@
 				<xs:element name="groupRef" type="fixr:groupRefType"/>
 				<xs:element name="fieldRef" type="fixr:fieldRefType"/>
 			</xs:choice>
+			<xs:element ref="fixr:encodings" minOccurs="0"/>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
@@ -672,6 +676,7 @@
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
+			<xs:element ref="fixr:encodings" minOccurs="0"/>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attribute name="msgType" type="fixr:MsgType_t"/>
@@ -908,6 +913,7 @@
 	</xs:complexType>
 	<xs:complexType name="sectionType">
 		<xs:sequence>
+			<xs:element ref="fixr:encodings" minOccurs="0"/>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
@@ -1085,6 +1091,25 @@
 			</xs:annotation>
 		</xs:restriction>
 	</xs:simpleType>
+	<!-- General encoding information for a single standard -->
+	<xs:element name="encodingStandard">
+	  <xs:complexType>
+	    <xs:sequence>
+				<xs:element name="encoding" type="fixr:unnamedEncoding" minOccurs="0"/>
+				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
+	    </xs:sequence>
+	    <xs:attribute name="name" type="fixr:Name_t" use="required"/>
+	    <xs:attribute name="displayName" type="xs:string"/>
+	  </xs:complexType>
+	</xs:element>
+	<!-- Encoding information for a single standard and a specific element type -->
+	<xs:element name="encodings">
+	  <xs:complexType>
+	    <xs:sequence>
+	      <xs:element name="encoding" type="fixr:namedEncoding" minOccurs="0" maxOccurs="unbounded"/>
+	    </xs:sequence>
+	  </xs:complexType>
+	</xs:element>
 	<!-- Generic (abstract) type that is to be used for actual encoding information -->
 	<xs:complexType name="baseEncoding" abstract="true">
 	  <xs:sequence>

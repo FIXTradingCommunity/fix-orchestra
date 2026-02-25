@@ -61,6 +61,7 @@
 						<xs:field xpath="@name"/>
 					</xs:key>
 				</xs:element>
+				<xs:element ref="fixr:encodings" minOccurs="0"/>
 				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute ref="xml:base"/>
@@ -80,6 +81,7 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="component" type="fixr:componentType" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="fixr:encodings" minOccurs="0"/>
 				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute ref="xml:base"/>
@@ -150,6 +152,7 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="group" type="fixr:groupType" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="fixr:encodings" minOccurs="0"/>
 				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute ref="xml:base"/>
@@ -169,6 +172,7 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="message" type="fixr:messageType" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="fixr:encodings" minOccurs="0"/>
 				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute ref="xml:base"/>
@@ -198,6 +202,7 @@
 				<xs:element name="metadata" type="dcterms:elementOrRefinementContainer"/>
 				<xs:element ref="fixr:categories" minOccurs="0"/>
 				<xs:element ref="fixr:sections" minOccurs="0"/>
+				<xs:element ref="fixr:encodingStandards" minOccurs="0"/>
 				<xs:element ref="fixr:datatypes" minOccurs="0"/>
 				<xs:element ref="fixr:codeSets" minOccurs="0"/>
 				<xs:element ref="fixr:fields" minOccurs="0"/>
@@ -307,5 +312,18 @@
 			</xs:sequence>
 			<xs:attribute ref="xml:base"/>
 		</xs:complexType>
+	</xs:element>
+	<!-- General encoding information -->
+	<xs:element name="encodingStandards">
+	  <xs:complexType>
+	    <xs:sequence>
+	      <xs:element ref="fixr:encodingStandard" minOccurs="0" maxOccurs="unbounded"/>
+	    </xs:sequence>
+	    <xs:attribute ref="xml:base"/>
+	  </xs:complexType>
+	  <xs:key name="encodingStandardKey">
+	    <xs:selector xpath="fixr:encodingStandard"/>
+	    <xs:field xpath="@name"/>
+	  </xs:key>
 	</xs:element>
 </xs:schema>
