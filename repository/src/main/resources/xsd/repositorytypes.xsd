@@ -915,6 +915,7 @@
 				<xs:documentation>Unique name</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
+		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 	</xs:complexType>
 	<xs:complexType name="sectionType">
 		<xs:sequence>
