@@ -20,7 +20,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -337,10 +336,10 @@ public class RepositoryCompressor {
     return m -> m.getFlow() != null;
   }
 
-  private final List<BigInteger> componentIdList = new ArrayList<>();
+  private final List<Integer> componentIdList = new ArrayList<>();
   private List<ComponentType> componentList = new ArrayList<>();
-  private final List<BigInteger> fieldIdList = new ArrayList<>();
-  private final List<BigInteger> groupIdList = new ArrayList<>();
+  private final List<Integer> fieldIdList = new ArrayList<>();
+  private final List<Integer> groupIdList = new ArrayList<>();
   private List<GroupType> groupList;
   private final String inputFile;
   private final Predicate<MessageType> messagePredicate;
@@ -424,7 +423,7 @@ public class RepositoryCompressor {
           messageList.stream().filter(messagePredicate).collect(Collectors.toList());
       filteredMessages.forEach(m -> walk(m.getStructure().getComponentRefOrGroupRefOrFieldRef()));
 
-      final List<BigInteger> distinctFieldIds =
+      final List<Integer> distinctFieldIds =
           fieldIdList.stream().distinct().collect(Collectors.toList());
       final Fields inFields = (Fields) inRepository.getFields().clone();
       final List<FieldType> fieldsWithFlow = inFields.getField().stream()
@@ -442,7 +441,7 @@ public class RepositoryCompressor {
       outCodeSets.getCodeSet().addAll(codeSetsWithFlow);
       outRepository.setCodeSets(outCodeSets);
 
-      final List<BigInteger> distinctComponentsIds =
+      final List<Integer> distinctComponentsIds =
           componentIdList.stream().distinct().collect(Collectors.toList());
       final List<ComponentType> componentsWithFlow = componentList.stream()
           .filter(c -> distinctComponentsIds.contains(c.getId())).collect(Collectors.toList());
@@ -450,7 +449,7 @@ public class RepositoryCompressor {
       outComponents.getComponent().addAll(componentsWithFlow);
       outRepository.setComponents(outComponents);
 
-      final List<BigInteger> distinctGroupIds =
+      final List<Integer> distinctGroupIds =
           groupIdList.stream().distinct().collect(Collectors.toList());
       final List<GroupType> groupWithFlow = groupList.stream()
           .filter(c -> distinctGroupIds.contains(c.getId())).collect(Collectors.toList());
@@ -470,16 +469,16 @@ public class RepositoryCompressor {
     }
   }
 
-  private ComponentType getComponent(BigInteger id) {
+  private ComponentType getComponent(int id) {
     for (final ComponentType component : componentList) {
-      if (component.getId().equals(id)) {
+      if (component.getId() == id) {
         return component;
       }
     }
     return null;
   }
 
-  private List<Object> getComponentMembers(BigInteger id) {
+  private List<Object> getComponentMembers(int id) {
     final ComponentType component = getComponent(id);
     if (component != null) {
       return component.getComponentRefOrGroupRefOrFieldRef();
@@ -488,16 +487,16 @@ public class RepositoryCompressor {
     }
   }
 
-  private GroupType getGroup(BigInteger id) {
+  private GroupType getGroup(int id) {
     for (final GroupType group : groupList) {
-      if (group.getId().equals(id)) {
+      if (group.getId() == id) {
         return group;
       }
     }
     return null;
   }
 
-  private List<Object> getGroupMembers(BigInteger id) {
+  private List<Object> getGroupMembers(int id) {
     final GroupType component = getGroup(id);
     if (component != null) {
       return component.getComponentRefOrGroupRefOrFieldRef();
@@ -525,7 +524,7 @@ public class RepositoryCompressor {
         final GroupRefType groupRef = (GroupRefType) obj;
         final GroupType group = getGroup(groupRef.getId());
         if (group == null) {
-          logger.error("Group missing for groupRef; ID={}", groupRef.getId().intValue());
+          logger.error("Group missing for groupRef; ID={}", groupRef.getId());
           return;
         }
         fieldIdList.add(group.getNumInGroup().getId());

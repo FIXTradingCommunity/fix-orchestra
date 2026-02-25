@@ -571,7 +571,7 @@ public class DocGenerator {
     final ST stGroupStart;
     stGroupStart = stGroup.getInstanceOf("groupStart");
     stGroupStart.add("groupType", group);
-    final FieldType field = getField(group.getNumInGroup().getId().intValue());
+    final FieldType field = getField(group.getNumInGroup().getId());
     stGroupStart.add("fieldType", field);
 
     final ST stComponentEnd = stGroup.getInstanceOf("componentEnd");
@@ -597,7 +597,7 @@ public class DocGenerator {
   private void generateMembers(final List<Object> members, final STWriter writer) {
     for (final Object member : members) {
       if (member instanceof FieldRefType) {
-        final FieldType field = getField(((FieldRefType) member).getId().intValue());
+        final FieldType field = getField(((FieldRefType) member).getId());
         final ST stField = stGroup.getInstanceOf("fieldMember");
         stField.add("field", field);
         if (((FieldRefType) member).getSupported() == SupportType.SUPPORTED) {
@@ -608,7 +608,7 @@ public class DocGenerator {
         stField.add("assign", ((FieldRefType) member).getAssign());
         stField.write(writer, templateErrorListener);
       } else if (member instanceof GroupRefType) {
-        final GroupType component = getGroup(((GroupRefType) member).getId().intValue());
+        final GroupType component = getGroup(((GroupRefType) member).getId());
         final ST stComponent = stGroup.getInstanceOf("componentMember");
         stComponent.add("component", component);
         if (((ComponentRefType) member).getSupported() == SupportType.SUPPORTED) {
@@ -619,7 +619,7 @@ public class DocGenerator {
         }
         stComponent.write(writer, templateErrorListener);
       } else if (member instanceof ComponentRefType) {
-        final ComponentType component = getComponent(((ComponentRefType) member).getId().intValue());
+        final ComponentType component = getComponent(((ComponentRefType) member).getId());
         final ST stComponent = stGroup.getInstanceOf("componentMember");
         stComponent.add("component", component);
         if (((ComponentRefType) member).getSupported() == SupportType.SUPPORTED) {
@@ -725,7 +725,7 @@ public class DocGenerator {
   private ComponentType getComponent(final int componentId) {
     final List<ComponentType> components = repository.getComponents().getComponent();
     for (final ComponentType component : components) {
-      if (component.getId().intValue() == componentId) {
+      if (component.getId() == componentId) {
         return component;
       }
     }
@@ -735,7 +735,7 @@ public class DocGenerator {
   private FieldType getField(final int id) {
     final List<FieldType> fields = repository.getFields().getField();
     for (final FieldType fieldType : fields) {
-      if (fieldType.getId().intValue() == id) {
+      if (fieldType.getId() == id) {
         return fieldType;
       }
     }
@@ -780,7 +780,7 @@ public class DocGenerator {
   private GroupType getGroup(final int componentId) {
     final List<GroupType> groups = repository.getGroups().getGroup();
     for (final GroupType group : groups) {
-      if (group.getId().intValue() == componentId) {
+      if (group.getId() == componentId) {
         return group;
       }
     }

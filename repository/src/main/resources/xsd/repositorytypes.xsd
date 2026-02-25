@@ -530,8 +530,11 @@
 			</xs:annotation>
 		</xs:attribute>
 	</xs:complexType>
+	<!-- Define numeric identifiers to be limited to signed 4-byte integers -->
 	<xs:simpleType name="id_t">
-		<xs:restriction base="xs:positiveInteger"/>
+		<xs:restriction base="xs:positiveInteger">
+        <xs:maxInclusive value="2147483647"/>
+    </xs:restriction>
 	</xs:simpleType>
 	<xs:complexType name="identifiersType">
 		<xs:sequence>
