@@ -255,9 +255,6 @@
 		</xs:complexType>
 	</xs:element>
 	<xs:complexType name="documentation" mixed="true">
-		<xs:sequence>
-			<xs:any processContents="skip" minOccurs="0" maxOccurs="unbounded"/>
-		</xs:sequence>
 		<xs:attribute name="langId" type="fixr:language_t"/>
 		<xs:attribute name="purpose" type="fixr:purpose_t"/>
 		<xs:attribute name="contentType" type="fixr:mime_t" default="text/plain"/>
