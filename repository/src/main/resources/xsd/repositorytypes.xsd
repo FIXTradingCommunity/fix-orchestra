@@ -203,7 +203,7 @@
 	</xs:complexType>
 	<xs:complexType name="componentType">
 		<xs:sequence>
-			<xs:choice maxOccurs="unbounded">
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
 				<xs:element name="componentRef" type="fixr:componentRefType"/>
 				<xs:element name="groupRef" type="fixr:groupRefType"/>
 				<xs:element name="fieldRef" type="fixr:fieldRefType"/>
@@ -256,9 +256,6 @@
 		</xs:complexType>
 	</xs:element>
 	<xs:complexType name="documentation" mixed="true">
-		<xs:sequence>
-			<xs:any processContents="skip" minOccurs="0" maxOccurs="unbounded"/>
-		</xs:sequence>
 		<xs:attribute name="langId" type="fixr:language_t"/>
 		<xs:attribute name="purpose" type="fixr:purpose_t"/>
 		<xs:attribute name="contentType" type="fixr:mime_t" default="text/plain"/>
@@ -510,7 +507,7 @@
 		</xs:annotation>
 		<xs:sequence>
 			<xs:element name="numInGroup" type="fixr:fieldRefType" minOccurs="0"/>
-			<xs:choice maxOccurs="unbounded">
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
 				<xs:element name="componentRef" type="fixr:componentRefType"/>
 				<xs:element name="groupRef" type="fixr:groupRefType"/>
 				<xs:element name="fieldRef" type="fixr:fieldRefType"/>
@@ -583,18 +580,10 @@
 	<xs:simpleType name="language_t">
 		<xs:restriction base="xs:language"/>
 	</xs:simpleType>
+	<!-- Mapping of logical datatype to a physical one for the standard defined here -->
 	<xs:complexType name="mappedDatatype">
 		<xs:sequence>
-			<xs:element name="extension" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>A datatype may be mapped to an XML snippet in the native schema belonging to its encoding standard.</xs:documentation>
-				</xs:annotation>
-				<xs:complexType>
-					<xs:sequence>
-						<xs:any processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
+			<xs:element name="encoding" type="fixr:unnamedEncoding" minOccurs="0"/>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attribute name="standard" type="fixr:Name_t" use="required"/>
@@ -662,7 +651,7 @@
 		<xs:sequence>
 			<xs:element name="structure" minOccurs="0">
 				<xs:complexType>
-					<xs:choice maxOccurs="unbounded">
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
 						<xs:element name="componentRef" type="fixr:componentRefType"/>
 						<xs:element name="groupRef" type="fixr:groupRefType"/>
 						<xs:element name="fieldRef" type="fixr:fieldRefType"/>
@@ -920,6 +909,7 @@
 				<xs:documentation>Unique name</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
+		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 	</xs:complexType>
 	<xs:complexType name="sectionType">
 		<xs:sequence>
