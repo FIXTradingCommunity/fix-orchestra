@@ -723,11 +723,6 @@
 				<xs:documentation>The use case of an element, distinguished by workflow, asset class, etc.</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="scenarioId" type="fixr:id_t" default="1">
-			<xs:annotation>
-				<xs:documentation>Unique identifier of a scenario. Default is '1' for base scenario.</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
 	</xs:attributeGroup>
 	<xs:simpleType name="presence_t">
 		<xs:restriction base="xs:string">
@@ -832,11 +827,6 @@
 				<xs:documentation>The use case of an element, distinguished by workflow, asset class, etc.</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="scenarioId" type="fixr:id_t" default="1">
-			<xs:annotation>
-				<xs:documentation>Unique identifier of a scenario. Default is '1' for base scenario.</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
 	</xs:attributeGroup>
 	<xs:attributeGroup name="scenarioRefGrp">
 		<xs:annotation>
@@ -892,11 +882,6 @@
 		<xs:sequence>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
-		<xs:attribute name="id" type="fixr:id_t" default="1">
-			<xs:annotation>
-				<xs:documentation>Unique numeric identifier. Default is '1' is for base scenario.</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
 		<xs:attribute name="name" type="fixr:Name_t" default="base">
 			<xs:annotation>
 				<xs:documentation>Unique name</xs:documentation>
