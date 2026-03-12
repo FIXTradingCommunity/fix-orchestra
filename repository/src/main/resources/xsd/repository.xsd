@@ -63,10 +63,6 @@
 						<xs:selector xpath="fixr:code"/>
 						<xs:field xpath="@name"/>
 					</xs:key>
-					<xs:key name="codeIdKey">
-						<xs:selector xpath="fixr:code"/>
-						<xs:field xpath="@id"/>
-					</xs:key>
 				</xs:element>
 				<xs:element ref="fixr:encodings" minOccurs="0"/>
 				<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
@@ -249,21 +245,41 @@
 			</xs:attribute>
 		</xs:complexType>
 		<!-- Type attribute of a code set definition must reference a valid datatype name -->
-		<xs:keyref name="codeSetTypeRef" refer="fixr:datatypeKey">
+		<xs:keyref name="codeSetTypeKeyRef" refer="fixr:datatypeKey">
 			<xs:selector xpath="fixr:codeSets/fixr:codeSet"/>
 			<xs:field xpath="@type"/>
 		</xs:keyref>
 		<!-- Type attribute of a field definition must reference a valid datatype name -->
-		<xs:keyref name="fieldTypeRef" refer="fixr:datatypeKey">
+		<xs:keyref name="fieldTypeKeyRef" refer="fixr:datatypeKey">
 			<xs:selector xpath="fixr:fields/fixr:field"/>
 			<xs:field xpath="@type"/>
 		</xs:keyref>
 		<!-- Code set and scenario attributes in a field definition must reference a valid code set name and scenario -->
-		<xs:keyref name="fieldCodeSetRef" refer="fixr:codeSetNameKey">
+		<xs:keyref name="fieldCodeSetKeyRef" refer="fixr:codeSetNameKey">
 			<xs:selector xpath="fixr:fields/fixr:field"/>
 			<xs:field xpath="@codeSet"/>
 			<xs:field xpath="@scenario"/>
 		</xs:keyref>
+        <!-- A scenario used in a code set definition must be a valid scenario defined in the list of scenarios -->
+        <xs:keyref name="codeSetScenarioKeyRef" refer="fixr:scenarioKey">
+            <xs:selector xpath="fixr:codeSets/fixr:codeSet"/>
+            <xs:field xpath="@scenario"/>
+        </xs:keyref>
+        <!-- A scenario used in a component definition must be a valid scenario defined in the list of scenarios -->
+        <xs:keyref name="componentScenarioKeyRef" refer="fixr:scenarioKey">
+            <xs:selector xpath="fixr:components/fixr:component"/>
+            <xs:field xpath="@scenario"/>
+        </xs:keyref>
+        <!-- A scenario used in a group definition must be a valid scenario defined in the list of scenarios -->
+        <xs:keyref name="groupScenarioKeyRef" refer="fixr:scenarioKey">
+            <xs:selector xpath="fixr:groups/fixr:group"/>
+            <xs:field xpath="@scenario"/>
+        </xs:keyref>
+        <!-- A scenario used in a message definition must be a valid scenario defined in the list of scenarios -->
+        <xs:keyref name="messageScenarioKeyRef" refer="fixr:scenarioKey">
+            <xs:selector xpath="fixr:messages/fixr:message"/>
+            <xs:field xpath="@scenario"/>
+        </xs:keyref>
 	</xs:element>
 	<!-- Scenario definitions -->
 	<xs:element name="scenarios">
