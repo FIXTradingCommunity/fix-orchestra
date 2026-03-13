@@ -195,7 +195,7 @@
 		</xs:key>
 		<xs:key name="messageIdKey">
 			<xs:annotation>
-				<xs:documentation>Combination of message id and scenario ID must be unique</xs:documentation>
+				<xs:documentation>Combination of message id and scenario must be unique</xs:documentation>
 			</xs:annotation>
 			<xs:selector xpath="fixr:message"/>
 			<xs:field xpath="@id"/>
@@ -260,31 +260,11 @@
 			<xs:field xpath="@codeSet"/>
 			<xs:field xpath="@scenario"/>
 		</xs:keyref>
-        <!-- A scenario used in a code set definition must be a valid scenario defined in the list of scenarios -->
-        <xs:keyref name="codeSetScenarioKeyRef" refer="fixr:scenarioKey">
-            <xs:selector xpath="fixr:codeSets/fixr:codeSet"/>
-            <xs:field xpath="@scenario"/>
-        </xs:keyref>
-        <!-- A scenario used in a component definition must be a valid scenario defined in the list of scenarios -->
-        <xs:keyref name="componentScenarioKeyRef" refer="fixr:scenarioKey">
-            <xs:selector xpath="fixr:components/fixr:component"/>
-            <xs:field xpath="@scenario"/>
-        </xs:keyref>
-        <!-- A scenario used in a group definition must be a valid scenario defined in the list of scenarios -->
-        <xs:keyref name="groupScenarioKeyRef" refer="fixr:scenarioKey">
-            <xs:selector xpath="fixr:groups/fixr:group"/>
-            <xs:field xpath="@scenario"/>
-        </xs:keyref>
-        <!-- A scenario used in a message definition must be a valid scenario defined in the list of scenarios -->
-        <xs:keyref name="messageScenarioKeyRef" refer="fixr:scenarioKey">
-            <xs:selector xpath="fixr:messages/fixr:message"/>
-            <xs:field xpath="@scenario"/>
-        </xs:keyref>
 	</xs:element>
 	<!-- Scenario definitions -->
 	<xs:element name="scenarios">
 		<xs:annotation>
-			<xs:documentation>The default scenario is id='1' name='base'.</xs:documentation>
+			<xs:documentation>The default scenario is name='base'.</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
