@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <fixr:repository xmlns:dc="http://purl.org/dc/elements/1.1/"
-                 xmlns:fixr="http://fixprotocol.io/2024/orchestra/repository"
+                 xmlns:fixr="http://fixprotocol.io/2026/orchestra/repository"
                  xmlns:functx="http://www.functx.com"
                  xmlns:xs="http://www.w3.org/2001/XMLSchema"
                  name="FIX.Latest"
