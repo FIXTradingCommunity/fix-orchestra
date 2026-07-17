@@ -135,6 +135,11 @@
 				<xs:documentation>Reference documentation for an external code set</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
+		<xs:attributeGroup ref="fixr:fieldAttribGrp">
+			<xs:annotation>
+				<xs:documentation>Length and range information for values in the code set</xs:documentation>
+			</xs:annotation>
+		</xs:attributeGroup>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 		<xs:attribute name="unionDataType" type="fixr:Name_t"/>
 	</xs:complexType>
@@ -300,7 +305,6 @@
 		</xs:attribute>
 		<xs:attribute name="implMinLength" type="xs:short"/>
 		<xs:attribute name="implMaxLength" type="xs:short"/>
-		<xs:attribute name="presence" type="fixr:presence_t" default="optional"/>
 		<xs:attribute name="encoding" type="xs:string">
 			<xs:annotation>
 				<xs:documentation>Character encoding if other than US-ASCII
@@ -355,6 +359,7 @@
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attributeGroup ref="fixr:fieldAttribGrp"/>
+		<xs:attribute name="presence" type="fixr:presence_t" default="optional"/>
 		<xs:attribute name="instanceName" type="fixr:Name_t">
 			<xs:annotation>
 				<xs:documentation>Override the field name for this instance, for
