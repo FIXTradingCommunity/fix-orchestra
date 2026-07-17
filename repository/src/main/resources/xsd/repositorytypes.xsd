@@ -159,7 +159,7 @@
 	<xs:simpleType name="ComponentName_t">
 		<xs:restriction base="fixr:Name_t"/>
 	</xs:simpleType>
-	<xs:complexType name="componentRefType">
+	<xs:group name="refTypeContent">
 		<xs:sequence>
 			<xs:element name="blockAssignment" type="fixr:blockAssignmentType" minOccurs="0" maxOccurs="unbounded">
 				<xs:annotation>
@@ -168,12 +168,14 @@
 			</xs:element>
 			<xs:element name="rule" type="fixr:componentRuleType" minOccurs="0" maxOccurs="unbounded">
 				<xs:annotation>
-					<xs:documentation>Rule to tell when a conditionally require component</xs:documentation>
+					<xs:documentation>Rule to tell when a component is conditionally required</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element ref="fixr:encodings" minOccurs="0"/>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
+	</xs:group>
+	<xs:attributeGroup name="refTypeAttribGrp">
 		<xs:attributeGroup ref="fixr:refidGrp"/>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 		<xs:attribute name="presence" type="fixr:presence_t" default="optional"/>
@@ -185,6 +187,26 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
+	</xs:attributeGroup>
+	<xs:complexType name="componentRefType">
+	    <xs:group ref="fixr:refTypeContent"/>
+	    <xs:attributeGroup ref="fixr:refTypeAttribGrp"/>
+	    <xs:attribute name="implMinOccurs" type="xs:nonNegativeInteger"/>
+	    <xs:attribute name="implMaxOccurs" type="fixr:unboundedIntType" default="1">
+				<xs:annotation>
+					<xs:documentation>Single instance of a component by default.</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="groupRefType">
+	    <xs:group ref="fixr:refTypeContent"/>
+	    <xs:attributeGroup ref="fixr:refTypeAttribGrp"/>
+	    <xs:attribute name="implMinOccurs" type="xs:nonNegativeInteger"/>
+	    <xs:attribute name="implMaxOccurs" type="fixr:unboundedIntType" default="unbounded">
+				<xs:annotation>
+					<xs:documentation>Unlimited instances of a repeating group by default.</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
 	</xs:complexType>
 	<xs:complexType name="componentRuleType">
 		<xs:sequence>
@@ -342,6 +364,12 @@
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attributeGroup ref="fixr:refidGrp"/>
+		<xs:attribute name="implMinOccurs" type="xs:nonNegativeInteger"/>
+		<xs:attribute name="implMaxOccurs" type="fixr:unboundedIntType" default="1">
+			<xs:annotation>
+				<xs:documentation>Single instance of a field by default.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 		<xs:attribute name="lengthId" type="fixr:id_t">
 			<xs:annotation>
@@ -482,14 +510,6 @@
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attribute name="reliability" type="fixr:reliability_t"/>
-	</xs:complexType>
-	<xs:complexType name="groupRefType">
-		<xs:complexContent>
-			<xs:extension base="fixr:componentRefType">
-				<xs:attribute name="implMinOccurs" type="xs:nonNegativeInteger"/>
-				<xs:attribute name="implMaxOccurs" type="fixr:unboundedIntType" default="unbounded"/>
-			</xs:extension>
-		</xs:complexContent>
 	</xs:complexType>
 	<xs:complexType name="groupType">
 		<xs:annotation>
