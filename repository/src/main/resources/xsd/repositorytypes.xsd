@@ -123,7 +123,7 @@
 			<xs:element ref="fixr:encodings" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attributeGroup ref="fixr:oidGrp"/>
-		<xs:attributeGroup ref="fixr:scenarioRefGrp"/>
+		<xs:attribute name="scenarioRef" type="fixr:Name_t"/>
 		<xs:attribute name="type" type="fixr:Name_t" use="required">
 			<xs:annotation>
 				<xs:documentation>Underlying datatype of codes</xs:documentation>
@@ -213,7 +213,7 @@
 		</xs:sequence>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 		<xs:attributeGroup ref="fixr:oidGrp"/>
-		<xs:attributeGroup ref="fixr:scenarioRefGrp"/>
+		<xs:attribute name="scenarioRef" type="fixr:Name_t"/>
 		<xs:attribute name="category" type="fixr:Name_t"/>
 		<xs:attribute name="rendering" type="xs:string">
 			<xs:annotation>
@@ -507,7 +507,7 @@
 		</xs:sequence>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 		<xs:attributeGroup ref="fixr:oidGrp"/>
-		<xs:attributeGroup ref="fixr:scenarioRefGrp"/>
+		<xs:attribute name="scenarioRef" type="fixr:Name_t"/>
 		<xs:attribute name="category" type="fixr:Name_t"/>
 		<xs:attribute name="rendering" type="xs:string">
 			<xs:annotation>
@@ -675,7 +675,7 @@
 		<xs:attribute name="msgType" type="fixr:MsgType_t"/>
 		<xs:attribute name="category" type="fixr:Name_t"/>
 		<xs:attributeGroup ref="fixr:oidGrp"/>
-		<xs:attributeGroup ref="fixr:scenarioRefGrp"/>
+		<xs:attribute name="scenarioRef" type="fixr:Name_t"/>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 		<xs:attribute name="flow" type="fixr:Name_t"/>
 		<xs:attribute name="rendering" type="xs:string">
@@ -825,21 +825,6 @@
 		<xs:attribute name="scenario" type="fixr:Name_t" default="base">
 			<xs:annotation>
 				<xs:documentation>The use case of an element, distinguished by workflow, asset class, etc.</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
-	</xs:attributeGroup>
-	<xs:attributeGroup name="scenarioRefGrp">
-		<xs:annotation>
-			<xs:documentation>A reference to a scenario by its key identifiers. There are no defaults as scenario references are optional.</xs:documentation>
-		</xs:annotation>
-		<xs:attribute name="scenarioRefId" type="fixr:id_t">
-			<xs:annotation>
-				<xs:documentation>Unique identifier of a scenario. The identifier is required when referencing another scenario.</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
-		<xs:attribute name="scenarioRef" type="fixr:Name_t">
-			<xs:annotation>
-				<xs:documentation>Name of a scenario. The name is optional as part of a reference and only for convenience.</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 	</xs:attributeGroup>
