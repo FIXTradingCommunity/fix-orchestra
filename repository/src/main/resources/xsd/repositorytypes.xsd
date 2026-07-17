@@ -716,7 +716,16 @@
 				<xs:documentation>Numeric identifier generally must be unique within a file for an element type, e.g. unique field tag</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="name" type="fixr:Name_t" use="required"/>
+		<xs:attribute name="name" type="fixr:Name_t" use="required">
+			<xs:annotation>
+				<xs:documentation>Name generally must be unique within a file for an element type, e.g. unique field name.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="displayName" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>Arbitrary name of the element that can be used for documentation or display purposes.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 		<xs:attribute name="abbrName" type="fixr:Name_t"/>
 		<xs:attribute name="scenario" type="fixr:Name_t" default="base">
 			<xs:annotation>
