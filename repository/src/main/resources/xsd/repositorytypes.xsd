@@ -136,10 +136,10 @@
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attributeGroup ref="fixr:fieldAttribGrp">
-		<xs:annotation>
-			<xs:documentation>Length and range information for values in the code set</xs:documentation>
-		</xs:annotation>
-	</xs:attribute>
+			<xs:annotation>
+				<xs:documentation>Length and range information for values in the code set</xs:documentation>
+			</xs:annotation>
+		</xs:attributeGroup>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
 		<xs:attribute name="unionDataType" type="fixr:Name_t"/>
 	</xs:complexType>
