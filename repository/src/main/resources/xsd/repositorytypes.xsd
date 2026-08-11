@@ -736,6 +736,16 @@
 					<xs:documentation>The field or component MUST be present.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
+			<xs:enumeration value="recommended">
+				<xs:annotation>
+					<xs:documentation>The field or component SHOULD be present.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="deprecated">
+				<xs:annotation>
+					<xs:documentation>The field or component SHOULD NOT be present.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
 			<xs:enumeration value="forbidden">
 				<xs:annotation>
 					<xs:documentation>The field or component MUST NOT be present.</xs:documentation>
