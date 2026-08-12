@@ -253,22 +253,15 @@
 	</xs:complexType>
 	<xs:attributeGroup name="entityAttribGrp">
 		<xs:attribute name="added" type="fixr:Version_t"/>
-		<xs:attribute name="addedEP" type="fixr:EP_t"/>
-		<xs:attribute name="changeType" type="fixr:changeType_t"/>
-		<xs:attribute name="deprecated" type="fixr:Version_t"/>
-		<xs:attribute name="deprecatedEP" type="fixr:EP_t"/>
-		<xs:attribute name="issue" type="xs:string"/>
-		<xs:attribute name="lastModified" type="fixr:Version_t"/>
-		<xs:attribute name="replaced" type="fixr:Version_t"/>
-		<xs:attribute name="replacedEP" type="fixr:EP_t"/>
-		<xs:attribute name="replacedByField" type="fixr:id_t"/>
-		<xs:attribute name="supported" type="fixr:supportType" default="supported"/>
 		<xs:attribute name="updated" type="fixr:Version_t"/>
-		<xs:attribute name="updatedEP" type="fixr:EP_t"/>
+		<xs:attribute name="deprecated" type="fixr:Version_t"/>
+		<xs:attribute name="moved" type="fixr:Version_t"/>
+		<xs:attribute name="removed" type="fixr:Version_t"/>
+		<xs:attribute name="restored" type="fixr:Version_t"/>
+		<xs:attribute name="changeType" type="fixr:changeType_t"/>
+		<xs:attribute name="issue" type="xs:string"/>
+		<xs:attribute name="supported" type="fixr:supportType" default="supported"/>
 	</xs:attributeGroup>
-	<xs:simpleType name="EP_t">
-		<xs:restriction base="xs:integer"/>
-	</xs:simpleType>
 	<xs:simpleType name="expressionType">
 		<xs:annotation>
 			<xs:documentation>Expressed in a Domain Specific Language
