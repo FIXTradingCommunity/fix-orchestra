@@ -192,9 +192,10 @@
 	    <xs:group ref="fixr:refTypeContent"/>
 	    <xs:attributeGroup ref="fixr:refTypeAttribGrp"/>
 	    <xs:attribute name="implMinOccurs" type="xs:nonNegativeInteger" default="0">
-			<xs:annotation>
-				<xs:documentation>Component is optional by default.</xs:documentation>
-			</xs:annotation>
+				<xs:annotation>
+					<xs:documentation>Component is optional by default.</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
 	    <xs:attribute name="implMaxOccurs" type="fixr:unboundedIntType" default="1">
 				<xs:annotation>
 					<xs:documentation>Single instance of a component by default.</xs:documentation>
@@ -208,6 +209,7 @@
 				<xs:annotation>
 					<xs:documentation>Repeating group is optional by default.</xs:documentation>
 				</xs:annotation>
+			</xs:attribute>
 	    <xs:attribute name="implMaxOccurs" type="fixr:unboundedIntType" default="unbounded">
 				<xs:annotation>
 					<xs:documentation>Unlimited instances of a repeating group by default.</xs:documentation>
