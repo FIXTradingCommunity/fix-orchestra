@@ -176,7 +176,7 @@
 		</xs:sequence>
 		<xs:attributeGroup ref="fixr:refidGrp"/>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
-		<xs:attribute name="presence" type="fixr:presence_t" default="optional"/>
+		<xs:attribute name="presence" type="fixr:presence_t"/>
 		<xs:attribute name="instanceName" type="fixr:ComponentName_t">
 			<xs:annotation>
 				<xs:documentation>Override the component name for this instance, for
@@ -300,7 +300,7 @@
 		</xs:attribute>
 		<xs:attribute name="implMinLength" type="xs:short"/>
 		<xs:attribute name="implMaxLength" type="xs:short"/>
-		<xs:attribute name="presence" type="fixr:presence_t" default="optional"/>
+		<xs:attribute name="presence" type="fixr:presence_t"/>
 		<xs:attribute name="encoding" type="xs:string">
 			<xs:annotation>
 				<xs:documentation>Character encoding if other than US-ASCII
