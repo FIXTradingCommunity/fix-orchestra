@@ -407,7 +407,7 @@
 				<xs:documentation>Overrides attributes of the referenced field, e.g. range or length.
 				</xs:documentation>
 			</xs:annotation>
-		</xs:attribute>
+		</xs:attributeGroup>
 		<xs:attribute name="implMinOccurs" type="xs:nonNegativeInteger">
 			<xs:annotation>
 				<xs:documentation>Overrides the minimum multiplicity of the referenced field.
