@@ -60,7 +60,7 @@
 		<module>repository-util</module>
 		<module>orchestra-common</module>
 		<module>interfaces-util</module>
-		<module>orchestra2doc</module>
+		<!-- <module>orchestra2doc</module> -->
 	</modules>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -137,7 +137,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>3.0.0-M4</version>
+					<version>3.6.0-M1</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>
