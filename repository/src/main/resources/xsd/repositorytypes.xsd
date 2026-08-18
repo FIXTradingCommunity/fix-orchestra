@@ -373,10 +373,10 @@
 		</xs:sequence>
 		<xs:attributeGroup ref="fixr:refidGrp"/>
 		<xs:attribute name="implMinOccurs" type="xs:nonNegativeInteger" default="0">
-		<xs:annotation>
-			<xs:documentation>Field is optional by default.</xs:documentation>
-		</xs:annotation>
-	</xs:attribute>
+			<xs:annotation>
+  			<xs:documentation>Field is optional by default.</xs:documentation>
+  		</xs:annotation>
+  	</xs:attribute>
 		<xs:attribute name="implMaxOccurs" type="fixr:unboundedIntType" default="1">
 			<xs:annotation>
 				<xs:documentation>Single instance of a field by default.</xs:documentation>
