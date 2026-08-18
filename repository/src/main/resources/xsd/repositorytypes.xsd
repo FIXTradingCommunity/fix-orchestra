@@ -176,7 +176,7 @@
 		</xs:sequence>
 		<xs:attributeGroup ref="fixr:refidGrp"/>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
-		<xs:attribute name="presence" type="fixr:presence_t" default="optional"/>
+		<xs:attribute name="presence" type="fixr:presence_t"/>
 		<xs:attribute name="instanceName" type="fixr:ComponentName_t">
 			<xs:annotation>
 				<xs:documentation>Override the component name for this instance, for
@@ -300,7 +300,6 @@
 		</xs:attribute>
 		<xs:attribute name="implMinLength" type="xs:short"/>
 		<xs:attribute name="implMaxLength" type="xs:short"/>
-		<xs:attribute name="presence" type="fixr:presence_t" default="optional"/>
 		<xs:attribute name="encoding" type="xs:string">
 			<xs:annotation>
 				<xs:documentation>Character encoding if other than US-ASCII
@@ -355,6 +354,7 @@
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attributeGroup ref="fixr:fieldAttribGrp"/>
+		<xs:attribute name="presence" type="fixr:presence_t"/>
 		<xs:attribute name="instanceName" type="fixr:Name_t">
 			<xs:annotation>
 				<xs:documentation>Override the field name for this instance, for
@@ -402,7 +402,24 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attributeGroup ref="fixr:fieldAttribGrp"/>
+		<xs:attributeGroup ref="fixr:fieldAttribGrp">
+			<xs:annotation>
+				<xs:documentation>Overrides attributes of the referenced field, e.g. range or length.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attributeGroup>
+		<xs:attribute name="implMinOccurs" type="xs:nonNegativeInteger">
+			<xs:annotation>
+				<xs:documentation>Overrides the minimum multiplicity of the referenced field.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="implMaxOccurs" type="fixr:unboundedIntType">
+			<xs:annotation>
+				<xs:documentation>Overrides the maximum multiplicity of the referenced field.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 	</xs:complexType>
 	<xs:complexType name="fieldType">
 		<xs:sequence>
@@ -734,6 +751,16 @@
 			<xs:enumeration value="required">
 				<xs:annotation>
 					<xs:documentation>The field or component MUST be present.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="recommended">
+				<xs:annotation>
+					<xs:documentation>The field or component SHOULD be present.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="deprecated">
+				<xs:annotation>
+					<xs:documentation>The field or component SHOULD NOT be present.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
 			<xs:enumeration value="forbidden">
