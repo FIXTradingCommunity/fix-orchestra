@@ -396,12 +396,6 @@
 				<xs:documentation>Name of this rule</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="type" type="fixr:Name_t">
-			<xs:annotation>
-				<xs:documentation>Overrides the type of the referenced field.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
 		<xs:attributeGroup ref="fixr:fieldAttribGrp"/>
 	</xs:complexType>
 	<xs:complexType name="fieldType">
