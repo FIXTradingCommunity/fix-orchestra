@@ -123,9 +123,6 @@
 								<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 								<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
 							</manifest>
-							<manifestEntries>
-								<Multi-Release>true</Multi-Release>
-							</manifestEntries>
 						</archive>
 					</configuration>
 				</plugin>
