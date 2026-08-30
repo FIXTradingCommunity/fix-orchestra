@@ -12,7 +12,7 @@ In addition to providing the XML schema as a resource, this module builds Java b
 
 ## Build
 
-This Maven module builds a multi-release jar (MRJAR) so it will run with either Java 8, prior to the introduction of the Java Package Module System (JPMS), or with modules in Java 11 or later. Building the MRJAR requires the presence of two Java Development Kits (JDK), but usage of it only requires a Java runtime version of choice.
+This Maven module is built with JDK 11.
 
 ### Java module
 
