@@ -159,7 +159,7 @@
 	<xs:simpleType name="ComponentName_t">
 		<xs:restriction base="fixr:Name_t"/>
 	</xs:simpleType>
-	<xs:complexType name="componentRefType">
+	<xs:group name="refTypeContent">
 		<xs:sequence>
 			<xs:element name="blockAssignment" type="fixr:blockAssignmentType" minOccurs="0" maxOccurs="unbounded">
 				<xs:annotation>
@@ -168,15 +168,17 @@
 			</xs:element>
 			<xs:element name="rule" type="fixr:componentRuleType" minOccurs="0" maxOccurs="unbounded">
 				<xs:annotation>
-					<xs:documentation>Rule to tell when a conditionally require component</xs:documentation>
+					<xs:documentation>Rule to tell when a component is conditionally required</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element ref="fixr:encodings" minOccurs="0"/>
 			<xs:element name="annotation" type="fixr:annotation" minOccurs="0"/>
 		</xs:sequence>
+	</xs:group>
+	<xs:attributeGroup name="refTypeAttribGrp">
 		<xs:attributeGroup ref="fixr:refidGrp"/>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
-		<xs:attribute name="presence" type="fixr:presence_t" default="optional"/>
+		<xs:attribute name="presence" type="fixr:presence_t"/>
 		<xs:attribute name="instanceName" type="fixr:ComponentName_t">
 			<xs:annotation>
 				<xs:documentation>Override the component name for this instance, for
@@ -185,6 +187,34 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
+	</xs:attributeGroup>
+	<xs:complexType name="componentRefType">
+	    <xs:group ref="fixr:refTypeContent"/>
+	    <xs:attributeGroup ref="fixr:refTypeAttribGrp"/>
+	    <xs:attribute name="implMinOccurs" type="xs:nonNegativeInteger" default="0">
+				<xs:annotation>
+					<xs:documentation>Component is optional by default.</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+	    <xs:attribute name="implMaxOccurs" type="fixr:unboundedIntType" default="1">
+				<xs:annotation>
+					<xs:documentation>Single instance of a component by default.</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="groupRefType">
+	    <xs:group ref="fixr:refTypeContent"/>
+	    <xs:attributeGroup ref="fixr:refTypeAttribGrp"/>
+	    <xs:attribute name="implMinOccurs" type="xs:nonNegativeInteger" default="0">
+				<xs:annotation>
+					<xs:documentation>Repeating group is optional by default.</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+	    <xs:attribute name="implMaxOccurs" type="fixr:unboundedIntType" default="unbounded">
+				<xs:annotation>
+					<xs:documentation>Unlimited instances of a repeating group by default.</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
 	</xs:complexType>
 	<xs:complexType name="componentRuleType">
 		<xs:sequence>
@@ -195,9 +225,19 @@
 				<xs:documentation>Name of this rule</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
+		<xs:attribute name="implMinOccurs" type="xs:nonNegativeInteger" default="0">
+			<xs:annotation>
+				<xs:documentation>Overrides minimum cardinality when expression is true.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="implMaxOccurs" type="fixr:unboundedIntType" default="unbounded">
+			<xs:annotation>
+				<xs:documentation>Overrides maximum cardinality when expression is true.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 		<xs:attribute name="presence" type="fixr:presence_t">
 			<xs:annotation>
-				<xs:documentation>Overrides presence when expression is true</xs:documentation>
+				<xs:documentation>Overrides presence when expression is true.</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 	</xs:complexType>
@@ -280,7 +320,7 @@
 	</xs:simpleType>
 	<xs:attributeGroup name="fieldAttribGrp">
 		<xs:annotation>
-			<xs:documentation>Attributes of a field that be overridden by a rule
+			<xs:documentation>Attributes of a field that may be overridden by a rule or as part of a field reference.
 			</xs:documentation>
 		</xs:annotation>
 		<xs:attribute name="minInclusive" type="xs:string">
@@ -300,7 +340,17 @@
 		</xs:attribute>
 		<xs:attribute name="implMinLength" type="xs:short"/>
 		<xs:attribute name="implMaxLength" type="xs:short"/>
-		<xs:attribute name="presence" type="fixr:presence_t" default="optional"/>
+		<xs:attribute name="implMinOccurs" type="xs:nonNegativeInteger" default="0">
+			<xs:annotation>
+  			<xs:documentation>Field is optional by default.</xs:documentation>
+  		</xs:annotation>
+  	</xs:attribute>
+		<xs:attribute name="implMaxOccurs" type="fixr:unboundedIntType" default="1">
+			<xs:annotation>
+				<xs:documentation>Single instance of a field by default.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="presence" type="fixr:presence_t"/>
 		<xs:attribute name="encoding" type="xs:string">
 			<xs:annotation>
 				<xs:documentation>Character encoding if other than US-ASCII
@@ -325,7 +375,7 @@
 		<xs:sequence>
 			<xs:element name="rule" type="fixr:fieldRuleType" minOccurs="0" maxOccurs="unbounded">
 				<xs:annotation>
-					<xs:documentation>Rule to tell when a conditionally require field
+					<xs:documentation>Rule to tell when a conditionally required field
 						is required or forbidden, to override other attributes, or perform
 						validation.
 					</xs:documentation>
@@ -482,14 +532,6 @@
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attribute name="reliability" type="fixr:reliability_t"/>
-	</xs:complexType>
-	<xs:complexType name="groupRefType">
-		<xs:complexContent>
-			<xs:extension base="fixr:componentRefType">
-				<xs:attribute name="implMinOccurs" type="xs:nonNegativeInteger"/>
-				<xs:attribute name="implMaxOccurs" type="fixr:unboundedIntType" default="unbounded"/>
-			</xs:extension>
-		</xs:complexContent>
 	</xs:complexType>
 	<xs:complexType name="groupType">
 		<xs:annotation>
@@ -725,22 +767,10 @@
 		</xs:attribute>
 	</xs:attributeGroup>
 	<xs:simpleType name="presence_t">
+		<xs:annotation>
+			<xs:documentation>Optional, required, and forbidden presence is to be expressed with implMin/MaxOccurs. </xs:documentation>
+		</xs:annotation>
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="optional">
-				<xs:annotation>
-					<xs:documentation>The field or component MAY be present; it may be conditionally required based on a rule.</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="required">
-				<xs:annotation>
-					<xs:documentation>The field or component MUST be present.</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="forbidden">
-				<xs:annotation>
-					<xs:documentation>The field or component MUST NOT be present.</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
 			<xs:enumeration value="ignored">
 				<xs:annotation>
 					<xs:documentation>The field or component MAY be present but is not validated.</xs:documentation>
