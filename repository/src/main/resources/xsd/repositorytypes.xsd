@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:fixr="http://fixprotocol.io/2026/orchestra/repository" targetNamespace="http://fixprotocol.io/2026/orchestra/repository" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.1-rc3">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:fixr="http://fixprotocol.io/v1.1/orchestra/repository" targetNamespace="http://fixprotocol.io/v1.1/orchestra/repository" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.1-rc4">
 	<xs:annotation>
 		<xs:documentation>
 			Repository standard types for messages with workflow
-			© Copyright 2016-2026 FIX Protocol Limited
+			© Copyright 2016-2027 FIX Protocol Limited
 			Creative Commons Attribution-NoDerivatives 4.0
 			International Public License
 		</xs:documentation>
