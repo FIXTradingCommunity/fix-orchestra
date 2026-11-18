@@ -129,7 +129,6 @@
 				<xs:documentation>Underlying datatype of codes</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="default" type="xs:string"/>
 		<xs:attribute name="specUrl" type="xs:anyURI">
 			<xs:annotation>
 				<xs:documentation>Reference documentation for an external code set</xs:documentation>
