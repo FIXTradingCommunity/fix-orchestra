@@ -325,7 +325,7 @@
 		<xs:sequence>
 			<xs:element name="rule" type="fixr:fieldRuleType" minOccurs="0" maxOccurs="unbounded">
 				<xs:annotation>
-					<xs:documentation>Rule to tell when a conditionally require field
+					<xs:documentation>Rule to tell when a conditionally required field
 						is required or forbidden, to override other attributes, or perform
 						validation.
 					</xs:documentation>
@@ -406,14 +406,6 @@
 	</xs:complexType>
 	<xs:complexType name="fieldType">
 		<xs:sequence>
-			<xs:element name="rule" type="fixr:fieldRuleType" minOccurs="0" maxOccurs="unbounded">
-				<xs:annotation>
-					<xs:documentation>Rule to tell when a conditionally require field
-						is required or forbidden, to override other attributes, or perform
-						validation.
-					</xs:documentation>
-				</xs:annotation>
-			</xs:element>
 			<xs:element name="assign" type="fixr:expressionType" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Content of element holds an assignment expression
