@@ -343,12 +343,6 @@
 		</xs:sequence>
 		<xs:attributeGroup ref="fixr:refidGrp"/>
 		<xs:attributeGroup ref="fixr:entityAttribGrp"/>
-		<xs:attribute name="lengthId" type="fixr:id_t">
-			<xs:annotation>
-				<xs:documentation>Identifies a field used as a length prefix
-				</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
 		<xs:attribute name="nonEncodedFieldId" type="fixr:id_t">
 			<xs:annotation>
 				<xs:documentation>Identifies a non-encoded field related to an encoded field</xs:documentation>
