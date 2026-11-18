@@ -349,11 +349,6 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="nonEncodedFieldId" type="fixr:id_t">
-			<xs:annotation>
-				<xs:documentation>Identifies a non-encoded field related to an encoded field</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
 		<xs:attributeGroup ref="fixr:fieldAttribGrp"/>
 		<xs:attribute name="instanceName" type="fixr:Name_t">
 			<xs:annotation>
